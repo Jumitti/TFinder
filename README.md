@@ -24,11 +24,14 @@ Advice: if you use the Responsive-Element-Finder.zip release, you'll find everyt
 - Run ``Responsive-Element-Finder.exe`` or ``Responsive-Element-Finder.py``
 - Enjoy :)
 
+![universal remotes](https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/Responsive%20Elements%20Finder.png)
+
 ## WARNING
 
 ``Promoter_finder_HELP.pdf`` must be in the same folder as Responsive-Elements-Finder.py and Responsive-Elements-Finder.exe
 
 ## Promoter Finder
 
-I use the NCBI API. For more information on this part, please refer to ``Promoter_finder_HELP.pdf`` (o
+I use the NCBI API. For more information on this part, please refer to ``Promoter_finder_HELP.pdf`` (or in the app top left corner ``How to use``)
 
+![universal remotes](https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/HELP_pdf.png)
