@@ -48,3 +48,7 @@ The Transcription Initiation Site (TIS) allows you to calculate the correct coor
 ## WARNING
 
 ``Promoter_finder_HELP.pdf`` and ``REF.png`` must be in the same folder as Responsive-Elements-Finder.py and Responsive-Elements-Finder.exe
+
+#Error
+
+In the PDF there is a small error in relation to NC_XXXXXX.XX. This is the accesion code of the chromosome used. But if you want the chromosome number, it's directly on the gene page.
