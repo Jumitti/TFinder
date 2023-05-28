@@ -240,6 +240,10 @@ def show_help_image():
     pdf_path = os.path.join(script_directory, "Promoter_finder_HELP.pdf")
     webbrowser.open(pdf_path)
 
+#Logo
+script_dir = os.path.dirname(os.path.abspath(__file__))
+image_path = os.path.join(script_dir, "REF.png")
+
 # Github
 def open_site():
     url = "https://github.com/Jumitti/Responsive-Elements-Finder"
@@ -247,7 +251,9 @@ def open_site():
     
 # Create TK windows
 window = tk.Tk()
-window.title("Promoter finder")
+window.title("Responsive Elements Finder")
+logo_image = tk.PhotoImage(file=image_path)
+window.iconphoto(True, logo_image)
 
 #How to use
 help_label = tk.Label(window, text="How to use", cursor="hand2")
