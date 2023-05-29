@@ -1,7 +1,5 @@
 # Responsive Elements Finder 🧬🔍
 
-Working on... finding mismatch sequences and displaying a percentage of homologies
-
 ## About
 
 Python script to quickly extract a promoter region with the NCBI API and search for the presence of transcription factor responsive elements.
@@ -14,6 +12,16 @@ When you have an idea, you want it to happen fast. Searching for a promoter sequ
 
 All you have to do is search for your responsive elements. No need to ctrl+F, it can do it. It also accepts IUPAC code and finds all possible shapes in all directions, reverse, complement, reverse complement. And last but not least, it gives you the coordinates of responsive element from the transcription initiation site.
 
+## Functions
+- Extract the promoter region with NCBI API
+- Find transcription factor responsive elements
+- IUPAC code can be used for responsive elements
+- Calculation of the distance of the found sequence to the transcription initiation site
+
+### NEW
+- Percentage of homology between the sequence found and the responsive elements (partially, see below)
+- Export results to excel
+
 ## Installation
 Made for and on Windows. Maybe works on Linux and MacOS (please install python packages)
 
@@ -22,11 +30,13 @@ Advice: You can use the source code. I recommend the releases (it's user friendl
 - Install ``python-3.10.11`` (or above) https://www.python.org/downloads/
 - Install python packages with ``python_packages_(windows).bat``. You can also install with cmd.exe:
     ```shell
-   pip install pillow
-   pip install pyperclip
-   pip install requests
-   pip install tabulate
-   pip install tk
+    pip install pandas
+    pip install pillow
+    pip install pyperclip
+    pip install openpyxl
+    pip install requests
+    pip install tabulate
+    pip install tk
     ```
 - Run ``Responsive-Element-Finder.exe``
 - Enjoy :)
@@ -35,19 +45,21 @@ Advice: You can use the source code. I recommend the releases (it's user friendl
 
 I use the NCBI API (https://www.ncbi.nlm.nih.gov/home/develop/api/). For more information on this part, please refer to ``Promoter_finder_HELP.pdf`` (or in the app top left corner ``How to use``)
 
-![universal remotes](https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/HELP_pdf.png)
-
 ## Responsive Elements Finder
 
-All you have to do is stick on your sequence.
+All you have to do is to paste  your sequence.
 
 For Responsive Elements (RE), you can use the IUPAC code or just ATGC.
 
 The Transcription Initiation Site (TIS) allows you to calculate the correct coordinates of the REs found. Set the distance of the TIS from the beginning of the pasted sequence or 'Upstream' used in Promoter Finder. Otherwise leave 0.
 
+Threshold excludes sequences with low homology
+
+Note: the homology percentage is calculated by analyzing the difference between the sequence found and the responsive element. However, my script has a small problem with this step. As soon as it finds a sequence and the homology % is higher than the threshold, it won't check whether it's the best homology % with an other responsive element. That's why, if you refine the threshold, you might find the same sequences with a better threshold. Nothing really dramatic
+
 ## Enjoy 😊
 
-![universal remotes](https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/Responsive%20Elements%20Finder.png)
+![universal remotes](https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/Responsive%20Elements%20Finder-v2.png)
 
 ## WARNING
 
