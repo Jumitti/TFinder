@@ -13,12 +13,15 @@ When you have an idea, you want it to happen fast. Searching for a promoter sequ
 All you have to do is search for your responsive elements. No need to ctrl+F, it can do it. It also accepts IUPAC code and finds all possible shapes in all directions, reverse, complement, reverse complement. And last but not least, it gives you the coordinates of responsive element from the transcription initiation site.
 
 ## Functions
+### Promoter Finder (requires internet connection)
 - Extract the promoter region with NCBI API
+
+### Responsive Elements Finder (no internet connection required)
 - Find transcription factor responsive elements
 - IUPAC code can be used for responsive elements
 - Calculation of the distance of the found sequence to the transcription initiation site
 
-### NEW
+#### ✨NEW✨
 - Percentage of homology between the sequence found and the responsive elements (partially, see below)
 - Export results to excel
 
@@ -63,7 +66,7 @@ Note: the homology percentage is calculated by analyzing the difference between 
 
 ## WARNING
 
-``Promoter_finder_HELP.pdf`` and ``REF.png`` must be in the same folder as Responsive-Elements-Finder.py and Responsive-Elements-Finder.exe
+``Promoter_finder_HELP.pdf`` and ``REF.png`` must be in the same folder as Responsive-Elements-Finder.py.
 
 ## Error
 
