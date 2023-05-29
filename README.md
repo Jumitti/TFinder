@@ -1,6 +1,6 @@
-# Responsive Elements Finder
+# Responsive Elements Finder 🧬🔍
 
-## Topics
+## About
 
 Python script to quickly extract a promoter region with the NCBI API and search for the presence of transcription factor responsive elements.
 
@@ -12,7 +12,8 @@ When you have an idea, you want it to happen fast. Searching for a promoter sequ
 
 All you have to do is search for your responsive elements. No need to ctrl+F, it can do it. It also accepts IUPAC code and finds all possible shapes in all directions, reverse, complement, reverse complement. And last but not least, it gives you the coordinates of responsive element from the transcription initiation site.
 
-## Installation WINDOWS
+## Installation
+For Windows. Works on Linux and MacOS (please install python packages)
 
 Advice: if you use the Responsive-Element-Finder.zip release, you'll find everything you need inside. I.e. installer for python 32-bit and 64-bit. The .bat or .exe script for  python packages. The PDF Helper for the Promoter Finder.
 
