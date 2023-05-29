@@ -15,9 +15,9 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 ## Installation
 For Windows. Works on Linux and MacOS (please install python packages)
 
-Advice: if you use the Responsive-Element-Finder.zip release, you'll find everything you need inside. I.e. installer for python 32-bit and 64-bit. The .bat script for python packages. The PDF Helper for the Promoter Finder.
+Advice: You can use the source code. I recommend the releases (it's user friendly)
 
-- Install ``python-3.10.11`` https://www.python.org/downloads/
+- Install ``python-3.10.11`` (or above) https://www.python.org/downloads/
 - Install python packages with ``python_packages_(windows).bat``. You can also install with cmd.exe:
     ```shell
    pip install pillow
@@ -26,7 +26,7 @@ Advice: if you use the Responsive-Element-Finder.zip release, you'll find everyt
    pip install tabulate
    pip install tk
     ```
-- Run ``Responsive-Element-Finder.exe`` or ``Responsive-Element-Finder.py``
+- Run ``Responsive-Element-Finder.exe``
 - Enjoy :)
 
 ## Promoter Finder
