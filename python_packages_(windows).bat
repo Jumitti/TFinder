@@ -1,11 +1,11 @@
 @echo off
 
-REM Installation des packages Python
+REM Installation of python packages
 pip install requests
 pip install pillow
 pip install pyperclip
 pip install tabulate
 
-REM Fin de l'installation
-echo Packages Python installés avec succès.
+REM End of installation
+echo Python packages successfully installed.
 pause
