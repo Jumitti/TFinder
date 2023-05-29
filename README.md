@@ -1,5 +1,7 @@
 # Responsive Elements Finder 🧬🔍
 
+Working on... finding mismatch sequences and displaying a percentage of homologies
+
 ## About
 
 Python script to quickly extract a promoter region with the NCBI API and search for the presence of transcription factor responsive elements.
