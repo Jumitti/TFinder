@@ -32,7 +32,7 @@ Made for and on Windows. Maybe works on Linux and MacOS (please install python p
 Advice: You can use the source code. I recommend the releases (it's user friendly)
 
 - Install ``python-3.10.11`` (or above) https://www.python.org/downloads/
-- Install python packages with ``python_packages_(windows).bat``. You can also install with cmd.exe:
+- Install python packages with ``python_packages_(windows).bat``. You can also install with ``cmd.exe``:
     ```shell
     pip install pandas
     pip install pillow
