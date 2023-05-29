@@ -31,7 +31,7 @@ Advice: You can use the source code. I recommend the releases (it's user friendl
 
 ## Promoter Finder
 
-I use the NCBI API. For more information on this part, please refer to ``Promoter_finder_HELP.pdf`` (or in the app top left corner ``How to use``)
+I use the NCBI API (https://www.ncbi.nlm.nih.gov/home/develop/api/). For more information on this part, please refer to ``Promoter_finder_HELP.pdf`` (or in the app top left corner ``How to use``)
 
 ![universal remotes](https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/HELP_pdf.png)
 
