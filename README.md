@@ -25,7 +25,7 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 - Percentage of homology between the sequence found and the responsive elements (partially, see below)
 - Export results to excel
 
-## Installation
+## Installation/Requirements
 Made for and on Windows. Maybe works on Linux and MacOS (please install python packages)
 
 Advice: You can use the source code. I recommend the releases (it's user friendly)
