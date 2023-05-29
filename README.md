@@ -13,7 +13,7 @@ When you have an idea, you want it to happen fast. Searching for a promoter sequ
 All you have to do is search for your responsive elements. No need to ctrl+F, it can do it. It also accepts IUPAC code and finds all possible shapes in all directions, reverse, complement, reverse complement. And last but not least, it gives you the coordinates of responsive element from the transcription initiation site.
 
 ## Installation
-For Windows. Works on Linux and MacOS (please install python packages)
+Made for and on Windows. Maybe works on Linux and MacOS (please install python packages)
 
 Advice: You can use the source code. I recommend the releases (it's user friendly)
 
