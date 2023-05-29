@@ -23,7 +23,7 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 
 #### ✨NEW✨
 - Percentage of homology between the sequence found and the responsive elements (partially, see below)
-- Find mismatches sequence
+- Find mismatches sequence (Allows only 25% mismatches compared to responsive element)
 - Export results to excel
 
 ## Installation/Requirements
