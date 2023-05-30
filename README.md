@@ -55,7 +55,7 @@ Advice: You can use the source code. I recommend the releases (it's user friendl
     pip install tk
     ```
 - Run ``Responsive-Element-Finder.exe``
-- Enjoy :)
+- Enjoy ☺
 
 ## Promoter Finder
 
