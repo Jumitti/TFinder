@@ -12,6 +12,10 @@ When you have an idea, you want it to happen fast. Searching for a promoter sequ
 
 All you have to do is search for your responsive elements. No need to ctrl+F, it can do it. It also accepts IUPAC code and finds all possible shapes in all directions, reverse, complement, reverse complement. And last but not least, it gives you the coordinates of responsive element from the transcription initiation site.
 
+## OS supported
+
+![universal remotes](https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/version%20supported.png)
+
 ## Functions
 ### Promoter Finder (requires internet connection)
 - Extract the promoter region with NCBI API
@@ -26,7 +30,15 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 - Find mismatches sequence (Allows only 25% mismatches compared to responsive element)
 - Export results to excel
 
-## Installation/Requirements
+## Windows version
+
+- Open latest release page - [Releases](https://github.com/Jumitti/Responsive-Elements-Finder/releases/latest)
+- Download ``Responsive.Elements.Finder-v?.exe``
+- Run app
+
+Note: Python packages are not required
+
+## Installation/Requirements for Python version
 Made for and on Windows. Maybe works on Linux and MacOS (please install python packages)
 
 Advice: You can use the source code. I recommend the releases (it's user friendly)
