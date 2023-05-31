@@ -13,6 +13,10 @@ from tkinter import filedialog
 
 #Gene informations
 def get_gene_info(gene_id, species):
+    text_statut.delete("1.0", "end")
+    statut = "Find gene information..."
+    text_statut.insert("1.0", statut)
+    window.update_idletasks()
     try:
         # Request for gene informations
         url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml&species={species}"
@@ -23,6 +27,10 @@ def get_gene_info(gene_id, species):
 
             # Extraction of gene informations
             gene_info = response_data['result'][str(gene_id)]
+            text_statut.delete("1.0", "end")
+            statut = "Gene information found"
+            text_statut.insert("1.0", statut)
+            window.update_idletasks()
             return gene_info
 
         else:
@@ -33,6 +41,10 @@ def get_gene_info(gene_id, species):
 
 #Promoter finder
 def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
+    text_statut.delete("1.0", "end")
+    statut = "Extract promoter..."
+    text_statut.insert("1.0", statut)
+    window.update_idletasks()
     try:
         # Request for DNA sequence
         url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&rettype=fasta&retmode=text"
@@ -52,7 +64,10 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
                 end = chrstart - downstream
                 sequence = dna_sequence[end:start]
                 sequence = reverse_complement(sequence)
-
+                text_statut.delete("1.0", "end")
+                statut = "Promoter extracted"
+                text_statut.insert("1.0", statut)
+                window.update_idletasks()
             return sequence
 
         else:
@@ -71,6 +86,7 @@ def paste_sequence():
     sequence = window.clipboard_get()
     text_promoter.delete("1.0", "end")
     text_promoter.insert("1.0", sequence)
+    messagebox.showinfo("Paste", "The sequence has been pasted.")
 
 #Display gene and promoter
 def get_sequence():
@@ -108,13 +124,25 @@ def get_sequence():
 
 # Reverse complement
 def reverse_complement(sequence):
+    text_statut.delete("1.0", "end")
+    statut = "Reverse complement..."
+    text_statut.insert("1.0", statut)
+    window.update_idletasks()
     complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
     reverse_sequence = sequence[::-1]
     complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
+    text_statut.delete("1.0", "end")
+    statut = "Reverse complement -> Done"
+    text_statut.insert("1.0", statut)
+    window.update_idletasks()
     return complement_sequence
 
 # Generation of all responsive elements
 def generate_variants(sequence):
+    text_statut.delete("1.0", "end")
+    statut = "Generate responsive elements variants..."
+    text_statut.insert("1.0", statut)
+    window.update_idletasks()    
     variants = []
 
     # Original sequence
@@ -128,11 +156,19 @@ def generate_variants(sequence):
     variants.append(complement_sequence)
     complement_mirror_sequence = complement_sequence[::-1]
     variants.append(complement_mirror_sequence)
-
+    
+    text_statut.delete("1.0", "end")
+    statut = "Generate responsive elemnts variants -> Done"
+    text_statut.insert("1.0", statut)
+    window.update_idletasks()   
     return variants
 
 # IUPAC code
 def generate_iupac_variants(sequence):
+    text_statut.delete("1.0", "end")
+    statut = "Generate IUPAC variants..."
+    text_statut.insert("1.0", statut)
+    window.update_idletasks()   
     iupac_codes = {
         "R": ["A", "G"],
         "Y": ["C", "T"],
@@ -156,7 +192,11 @@ def generate_iupac_variants(sequence):
                     new_sequence = seq[:i] + alternative + seq[i + 1:]
                     new_sequences.append(new_sequence)
             sequences = new_sequences
-
+    
+    text_statut.delete("1.0", "end")
+    statut = "Generate IUPAC variants -> Done"
+    text_statut.insert("1.0", statut)
+    window.update_idletasks()
     return sequences
 
 # Responsive Elements Finder (consensus sequence)
@@ -166,6 +206,10 @@ def find_sequence_consensus():
     text_result.delete("1.0", "end")
     promoter_region = text_promoter.get("1.0", "end-1c")
     sequence_consensus_input = entry_sequence.get()
+    text_statut.delete("1.0", "end")
+    statut = "Find sequence..."
+    text_statut.insert("1.0", statut)
+    window.update_idletasks()   
     tis_value = int(entry_tis.get())
 
     # Transform with IUPAC code
@@ -234,7 +278,12 @@ def find_sequence_consensus():
             result = "No consensus sequence found with the specified threshold."
     else:
         result = "No consensus sequence found in the promoter region."
-
+        
+    text_statut.delete("1.0", "end")
+    statut = "Find sequence -> Done"
+    text_statut.insert("1.0", statut)
+    window.update_idletasks()
+    
     text_result.delete("1.0", "end")
     text_result.insert("1.0", result)
 
@@ -283,11 +332,11 @@ help_button.place(x=10, y=10)
 
 # Github
 button = tk.Button(window, text="Github", command=open_site)
-button.grid(row=1, column=0, sticky="w")
+button.place(x=10, y=40)
 
 # Credit
 credit_label = tk.Label(window, text="By MINNITI Julien")
-credit_label.grid(row=2, column=0, sticky="w")
+credit_label.place(x=10, y=70)
 
 # Section "Promoter finder"
 section_promoter_finder = tk.LabelFrame(window, text="Promoter Finder")
@@ -309,11 +358,13 @@ species_combobox.grid(row=3, column=0)
 upstream_label = tk.Label(section_promoter_finder, text="Upstream (bp):")
 upstream_label.grid(row=4, column=0)
 upstream_entry = tk.Entry(section_promoter_finder)
+upstream_entry.insert(2000, "2000")  # $"2000" default
 upstream_entry.grid(row=5, column=0)
 
 downstream_label = tk.Label(section_promoter_finder, text="Downstream (bp):")
 downstream_label.grid(row=6, column=0)
 downstream_entry = tk.Entry(section_promoter_finder)
+downstream_entry.insert(500, "500")  # $"500" default
 downstream_entry.grid(row=7, column=0)
 
 # Search
@@ -385,6 +436,14 @@ text_result.grid(row=12, column=0)
 # Création du bouton Export to Excel
 export_button = tk.Button(section_responsive_finder, text="Export to Excel", command=export_to_excel)
 export_button.grid(row=13, column=0)
+
+# Section "Statut"
+section_statut = tk.LabelFrame(window, text="Statut")
+section_statut.grid(row=14, column=2, padx=10, pady=10)
+
+# Statut output
+text_statut = tk.Text(section_statut, height=1, width=100)
+text_statut.grid(row=15, column=0)
 
 # Configure grid weights
 window.grid_rowconfigure(0, weight=1)
