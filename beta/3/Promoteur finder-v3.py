@@ -13,10 +13,6 @@ from tkinter import filedialog
 
 #Gene informations
 def get_gene_info(gene_id, species):
-    text_statut.delete("1.0", "end")
-    statut = "Find gene information..."
-    text_statut.insert("1.0", statut)
-    window.update_idletasks()
     try:
         # Request for gene informations
         url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml&species={species}"
@@ -27,10 +23,7 @@ def get_gene_info(gene_id, species):
 
             # Extraction of gene informations
             gene_info = response_data['result'][str(gene_id)]
-            text_statut.delete("1.0", "end")
-            statut = "Gene information found"
-            text_statut.insert("1.0", statut)
-            window.update_idletasks()
+
             return gene_info
 
         else:
@@ -41,10 +34,6 @@ def get_gene_info(gene_id, species):
 
 #Promoter finder
 def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
-    text_statut.delete("1.0", "end")
-    statut = "Extract promoter..."
-    text_statut.insert("1.0", statut)
-    window.update_idletasks()
     try:
         # Request for DNA sequence
         url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&rettype=fasta&retmode=text"
@@ -64,10 +53,6 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
                 end = chrstart - downstream
                 sequence = dna_sequence[end:start]
                 sequence = reverse_complement(sequence)
-                text_statut.delete("1.0", "end")
-                statut = "Promoter extracted"
-                text_statut.insert("1.0", statut)
-                window.update_idletasks()
             return sequence
 
         else:
@@ -91,25 +76,43 @@ def paste_sequence():
 # Display gene and promoter
 def get_sequence():
     gene_ids = gene_id_entry.get("1.0", tk.END).strip().split("\n")
+    total_gene_ids = len(gene_ids)
     species = species_combobox.get()
     upstream = int(upstream_entry.get())
     downstream = int(downstream_entry.get())
-    result_text.delete("1.0", tk.END)  # Ajouter cette ligne pour effacer les résultats précédents
-    for gene_id in gene_ids:
+    result_text.delete("1.0", tk.END)
+    for i, gene_id in enumerate(gene_ids, start=1):
         try:
+            number_gene_id = i
+            
             # Gene information retrieval
+            text_statut.delete("1.0", "end")
+            text_statut.insert("1.0", f"Find gene information... ({number_gene_id}/{total_gene_ids})")
+            window.update_idletasks()
             gene_info = get_gene_info(gene_id, species)
             gene_name = gene_info['name']
+            text_statut.delete("1.0", "end")
+            text_statut.insert("1.0", f"Find {gene_name} information -> Done ({number_gene_id}/{total_gene_ids})")
+            window.update_idletasks()
+            
+            text_statut.delete("1.0", "end")
+            text_statut.insert("1.0", f"Extract {gene_name} promoter... ({number_gene_id}/{total_gene_ids})")
+            window.update_idletasks()
             chraccver = gene_info['genomicinfo'][0]['chraccver']
             chrstart = gene_info['genomicinfo'][0]['chrstart']
             chrstop = gene_info['genomicinfo'][0]['chrstop']
 
             # Promoter retrieval
             dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
+            text_statut.delete("1.0", "end")
+            text_statut.insert("1.0", f"Extract {gene_name} promoter -> Done ({number_gene_id}/{total_gene_ids})")
+            window.update_idletasks()
             
             # Append the result to the result_text
-            result_text.insert(tk.END, f"> {gene_name} | {chraccver} | TIS: {chrstart}\n{dna_sequence}\n")
-
+            result_text.insert(tk.END, f">{gene_name} | {chraccver} | TIS: {chrstart}\n{dna_sequence}\n\n")
+            text_statut.delete("1.0", "end")
+            text_statut.insert("1.0", f"Extract promoter -> Done ({number_gene_id}/{total_gene_ids})")
+            window.update_idletasks()
         except Exception as e:
             result_text.insert(tk.END, f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
 
@@ -195,23 +198,23 @@ downstream_entry.grid(row=7, column=0)
 search_button = tk.Button(section_promoter_finder, text="Find promoter  (CAN BE STUCK ! Don't worry, just wait)", command=get_sequence)
 search_button.grid(row=8, column=0)
 
-# Section "Statut"
-section_statut = tk.LabelFrame(window, text="Statut")
-section_statut.grid(row=15, column=1, padx=10, pady=10)
-
-# Statut output
-text_statut = tk.Text(section_statut, height=1, width=50)
-text_statut.grid(row=0, column=0)
-
 # Section "Results"
 section_results = tk.LabelFrame(window, text="Results")
-section_results.grid(row=16, column=1, padx=10, pady=10)
+section_results.grid(row=15, column=1, padx=10, pady=10)
 
 # Results output
 result_text = tk.Text(section_results, height=10, width=50)
 result_text.grid(row=0, column=0)
 copy_button = tk.Button(section_results, text="Copy", command=copy_sequence)
 copy_button.grid(row=1, column=0)
+
+# Section "Statut"
+section_statut = tk.LabelFrame(window, text="Statut")
+section_statut.grid(row=16, column=1, padx=10, pady=10)
+
+# Statut output
+text_statut = tk.Text(section_statut, height=1, width=50)
+text_statut.grid(row=0, column=0)
 
 # Configure grid weights
 window.grid_rowconfigure(0, weight=1)
