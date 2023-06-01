@@ -132,7 +132,6 @@ def find_sequence_consensus():
     # Responsive elements finder
     lines = text_promoter.get("1.0", "end-1c").split("\n")
     promoters = []
-
     first_line = lines[0]
 
     if first_line.startswith(("A", "T", "C", "G")):
@@ -154,8 +153,6 @@ def find_sequence_consensus():
 
     # Affichage des noms et des séquences correspondantes
     for shortened_promoter_name, promoter_region in promoters:
-        print("Nom:", shortened_promoter_name)
-        print("Séquence:", promoter_region)
         for consensus in sequence_consensus:
             variants = generate_variants(consensus)
             max_mismatches = len(variants[0]) // 4  # Mismatches authorized
