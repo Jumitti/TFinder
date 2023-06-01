@@ -76,9 +76,9 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
     except Exception as e:
         raise Exception(f"Error : {str(e)}")
 
-#Copy/Paste Button
+# Copy/Paste Button
 def copy_sequence():
-    sequence = sequence_text.get('1.0', tk.END).strip()
+    sequence = result_text.get('1.0', tk.END).strip()
     pyperclip.copy(sequence)
     messagebox.showinfo("Copy", "The sequence has been copied to the clipboard.")
 
@@ -88,39 +88,30 @@ def paste_sequence():
     text_promoter.insert("1.0", sequence)
     messagebox.showinfo("Paste", "The sequence has been pasted.")
 
-#Display gene and promoter
+# Display gene and promoter
 def get_sequence():
-    gene_id = gene_id_entry.get()
+    gene_ids = gene_id_entry.get("1.0", tk.END).strip().split("\n")
     species = species_combobox.get()
     upstream = int(upstream_entry.get())
     downstream = int(downstream_entry.get())
+    result_text.delete("1.0", tk.END)  # Ajouter cette ligne pour effacer les résultats précédents
+    for gene_id in gene_ids:
+        try:
+            # Gene information retrieval
+            gene_info = get_gene_info(gene_id, species)
+            gene_name = gene_info['name']
+            chraccver = gene_info['genomicinfo'][0]['chraccver']
+            chrstart = gene_info['genomicinfo'][0]['chrstart']
+            chrstop = gene_info['genomicinfo'][0]['chrstop']
 
-    try:
-        # Gene information retrieval
-        gene_info = get_gene_info(gene_id, species)
-        gene_name = gene_info['name']
-        chraccver = gene_info['genomicinfo'][0]['chraccver']
-        chrstart = gene_info['genomicinfo'][0]['chrstart']
-        chrstop = gene_info['genomicinfo'][0]['chrstop']
+            # Promoter retrieval
+            dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
+            
+            # Append the result to the result_text
+            result_text.insert(tk.END, f"> {gene_name} | {chraccver} | TIS: {chrstart}\n{dna_sequence}\n")
 
-        # Display informations
-        gene_name_label.config(text=f"Gene ID : {gene_name}")
-        gene_chr_label.config(text=f"Chromosome : {chraccver}")
-        chrstart_label.config(text=f"Transcription Initiation Site : {chrstart}")
-
-        # Promoter retrieval
-        dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
-
-        # Display promoter
-        sequence_text.delete('1.0', tk.END)
-        sequence_text.insert(tk.END, dna_sequence)
-
-    except Exception as e:
-        gene_name_label.config(text="Gene ID :")
-        gene_chr_label.config(text="Chromosome :")
-        chrstart_label.config(text=f"Transcription Initiation Site : {chrstart}")
-        sequence_text.delete('1.0', tk.END)
-        messagebox.showerror("Error", f"Error : {str(e)}")
+        except Exception as e:
+            result_text.insert(tk.END, f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
 
 # Reverse complement
 def reverse_complement(sequence):
@@ -177,8 +168,9 @@ section_promoter_finder.grid(row=0, column=1, padx=10, pady=10)
 # Gene ID entry
 gene_id_label = tk.Label(section_promoter_finder, text="Gene ID:")
 gene_id_label.grid(row=0, column=0)
-gene_id_entry = tk.Entry(section_promoter_finder)
+gene_id_entry = tk.Text(section_promoter_finder, height=5, width=20)
 gene_id_entry.grid(row=1, column=0)
+
 
 # Species selection
 species_label = tk.Label(section_promoter_finder, text="Species:")
@@ -203,31 +195,23 @@ downstream_entry.grid(row=7, column=0)
 search_button = tk.Button(section_promoter_finder, text="Find promoter  (CAN BE STUCK ! Don't worry, just wait)", command=get_sequence)
 search_button.grid(row=8, column=0)
 
-# Gene informations
-gene_name_label = tk.Label(section_promoter_finder, text="Gene name :")
-gene_name_label.grid(row=9, column=0)
-
-gene_chr_label = tk.Label(section_promoter_finder, text="Chromosome :")
-gene_chr_label.grid(row=10, column=0)
-
-chrstart_label = tk.Label(section_promoter_finder, text="Transcription Initiation Site (on the chromosome) :")
-chrstart_label.grid(row=11, column=0)
-
-# Promoter sequence
-promoter_label = tk.Label(section_promoter_finder, text="Promoter")
-promoter_label.grid(row=12, column=0)
-sequence_text = tk.Text(section_promoter_finder, height=2, width=50)
-sequence_text.grid(row=13, column=0)
-copy_button = tk.Button(section_promoter_finder, text="Copy", command=copy_sequence)
-copy_button.grid(row=14, column=0)
-
 # Section "Statut"
 section_statut = tk.LabelFrame(window, text="Statut")
 section_statut.grid(row=15, column=1, padx=10, pady=10)
 
 # Statut output
 text_statut = tk.Text(section_statut, height=1, width=50)
-text_statut.grid(row=16, column=0)
+text_statut.grid(row=0, column=0)
+
+# Section "Results"
+section_results = tk.LabelFrame(window, text="Results")
+section_results.grid(row=16, column=1, padx=10, pady=10)
+
+# Results output
+result_text = tk.Text(section_results, height=10, width=50)
+result_text.grid(row=0, column=0)
+copy_button = tk.Button(section_results, text="Copy", command=copy_sequence)
+copy_button.grid(row=1, column=0)
 
 # Configure grid weights
 window.grid_rowconfigure(0, weight=1)
