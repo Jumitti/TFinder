@@ -32,7 +32,7 @@ def load_fasta():
             text_promoter.delete("1.0", "end")
             text_promoter.insert("1.0", sequence)
             messagebox.showinfo("Load FASTA", "FASTA sequence loaded successfully.")
-	
+
 # Reverse complement
 def reverse_complement(sequence):
     text_statut.delete("1.0", "end")
@@ -115,10 +115,9 @@ def find_sequence_consensus():
     global table
     table = []
     text_result.delete("1.0", "end")
-    promoter_region = text_promoter.get("1.0", "end-1c")
     sequence_consensus_input = entry_sequence.get()
     text_statut.delete("1.0", "end")
-    statut = "Find sequence..."
+    statut = "Find responsive elements..."
     text_statut.insert("1.0", statut)
     window.update_idletasks()   
     tis_value = int(entry_tis.get())
@@ -131,76 +130,104 @@ def find_sequence_consensus():
     found_positions = []
 
     # Responsive elements finder
-    for consensus in sequence_consensus:
-        variants = generate_variants(consensus)
-        max_mismatches = len(variants[0]) // 4  # Mismatches authorized
-        for variant in variants:
-            variant_length = len(variant)
+    lines = text_promoter.get("1.0", "end-1c").split("\n")
+    promoters = []
 
-            for i in range(len(promoter_region) - variant_length + 1):
-                sequence = promoter_region[i:i + variant_length]
+    first_line = lines[0]
 
-                mismatches = sum(a != b for a, b in zip(sequence, variant))  # Mismatches with Hamming distance
+    if first_line.startswith(("A", "T", "C", "G")):
+        shortened_promoter_name = "n.d."
+        promoter_region = first_line
+        promoters.append((shortened_promoter_name, promoter_region))
+    else :
+        i = 0
+        while i < len(lines):
+            line = lines[i]
+            if line.startswith(">"):
+                promoter_name = line[1:]
+                shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
+                promoter_region = lines[i+1]
+                promoters.append((shortened_promoter_name, promoter_region))
+                i += 2  # Passer à la ligne suivante
+            else:
+                i += 1
 
-                if mismatches <= max_mismatches:
-                    # Eliminates short responsive elements that merge with long ones
-                    similar_position = False
-                    for position, _, _, _, _ in found_positions:
-                        if abs(i - position) <= 1:
-                            similar_position = True
-                            break
+    # Affichage des noms et des séquences correspondantes
+    for shortened_promoter_name, promoter_region in promoters:
+        print("Nom:", shortened_promoter_name)
+        print("Séquence:", promoter_region)
+        for consensus in sequence_consensus:
+            variants = generate_variants(consensus)
+            max_mismatches = len(variants[0]) // 4  # Mismatches authorized
+            for variant in variants:
+                variant_length = len(variant)
 
-                    if not similar_position:
-                        homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
+                for i in range(len(promoter_region) - variant_length + 1):
+                    sequence = promoter_region[i:i + variant_length]
 
-                        found_positions.append((i, sequence, variant, mismatches, homology_percentage))
+                    mismatches = sum(a != b for a, b in zip(sequence, variant))  # Mismatches with Hamming distance
 
-    # Sort positions in ascending order
-    found_positions.sort(key=lambda x: x[0])
+                    if mismatches <= max_mismatches:
+                        # Eliminates short responsive elements that merge with long ones
+                        similar_position = False
+                        for position, _, _, _, _ in found_positions:
+                            if abs(i - position) <= 1:
+                                similar_position = True
+                                break
 
-    # Creating a results table
-    if len(found_positions) > 0:
-        for position, sequence, variant, mismatches, homology_percentage in found_positions:
-            start_position = max(0, position - 3)
-            end_position = min(len(promoter_region), position + len(sequence) + 3)
-            sequence_with_context = promoter_region[start_position:end_position]
+                        if not similar_position:
+                            homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
 
-            sequence_parts = []
-            for j in range(start_position, end_position):
-                if j < position or j >= position + len(sequence):
-                    sequence_parts.append(sequence_with_context[j - start_position].lower())
-                else:
-                    sequence_parts.append(sequence_with_context[j - start_position].upper())
+                            found_positions.append((i, sequence, variant, mismatches, homology_percentage))
 
-            sequence_with_context = ''.join(sequence_parts)
-            tis_position = position - tis_value
+        # Sort positions in ascending order
+        found_positions.sort(key=lambda x: x[0])
 
-            row = [position, tis_position, sequence_with_context, homology_percentage, variant]
-            table.append(row)
+        # Creating a results table
+        if len(found_positions) > 0:
+            for position, sequence, variant, mismatches, homology_percentage in found_positions:
+                start_position = max(0, position - 3)
+                end_position = min(len(promoter_region), position + len(sequence) + 3)
+                sequence_with_context = promoter_region[start_position:end_position]
 
-        table.sort(key=lambda x: float(x[3]), reverse=True)
+                sequence_parts = []
+                for j in range(start_position, end_position):
+                    if j < position or j >= position + len(sequence):
+                        sequence_parts.append(sequence_with_context[j - start_position].lower())
+                    else:
+                        sequence_parts.append(sequence_with_context[j - start_position].upper())
 
-        # Filter results based on threshold
-        filtered_table = [row for row in table if float(row[3]) >= threshold]
+                sequence_with_context = ''.join(sequence_parts)
+                tis_position = position - tis_value
 
-        if len(filtered_table) > 0:
-            result = tabulate(filtered_table, headers=header, tablefmt="pipe")
+                row = [position, tis_position, sequence_with_context, homology_percentage, variant, shortened_promoter_name]
+                table.append(row)
+
+            table.sort(key=lambda x: (x[5], float(x[3])), reverse=False)
+
+            # Filter results based on threshold
+            filtered_table = [row for row in table if float(row[3]) >= threshold]
+            
+            filtered_table = sorted(filtered_table, key=lambda x: (x[5], -float(x[3])))
+
+            if len(filtered_table) > 0:
+                result = tabulate(filtered_table, headers=header, tablefmt="pipe")
+            else:
+                result = "No consensus sequence found with the specified threshold."
         else:
-            result = "No consensus sequence found with the specified threshold."
-    else:
-        result = "No consensus sequence found in the promoter region."
+            result = "No consensus sequence found in the promoter region."
+            
+        text_statut.delete("1.0", "end")
+        statut = "Find sequence -> Done"
+        text_statut.insert("1.0", statut)
+        window.update_idletasks()
         
-    text_statut.delete("1.0", "end")
-    statut = "Find sequence -> Done"
-    text_statut.insert("1.0", statut)
-    window.update_idletasks()
-    
-    text_result.delete("1.0", "end")
-    text_result.insert("1.0", result)
+        text_result.delete("1.0", "end")
+        text_result.insert("1.0", result)
 
 #Def table
 table = []
-header = ["Position", "Position (TIS)", "Sequence", "% Homology", "Ref seq"]
+header = ["Position", "Position (TIS)", "Sequence", "% Homology", "Ref seq", "Prom."]
 
 #Export to excel
 def export_to_excel():
@@ -260,10 +287,6 @@ text_promoter = tk.Text(section_responsive_finder, height=2, width=50)
 text_promoter.grid(row=1, column=0)
 paste_button = tk.Button(section_responsive_finder, text="Past", command=paste_sequence)
 paste_button.grid(row=2, column=0)
-
-#Fasta
-load_fasta_button = tk.Button(section_responsive_finder, text="Load FASTA", command=load_fasta)
-load_fasta_button.grid(row=3, column=1)
 
 # RE entry
 label_sequence = tk.Label(section_responsive_finder, text="Responsive element (IUPAC authorize) :")
