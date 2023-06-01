@@ -11,9 +11,59 @@ from PIL import Image, ImageTk
 from tabulate import tabulate
 from tkinter import filedialog
 
-#Copy/Paste Button
+#Gene informations
+def get_gene_info(gene_id, species):
+    try:
+        # Request for gene informations
+        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml&species={species}"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            response_data = response.json()
+
+            # Extraction of gene informations
+            gene_info = response_data['result'][str(gene_id)]
+
+            return gene_info
+
+        else:
+            raise Exception(f"Error during extraction of gene information : {response.status_code}")
+
+    except Exception as e:
+        raise Exception(f"Error : {str(e)}")
+
+#Promoter finder
+def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
+    try:
+        # Request for DNA sequence
+        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&rettype=fasta&retmode=text"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            # Extraction of DNA sequence
+            dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
+
+            # Calculating extraction coordinates on the chromosome
+            if chrstop > chrstart:
+                start = chrstart - upstream
+                end = chrstart + downstream
+                sequence = dna_sequence[start:end]
+            else:
+                start = chrstart + upstream
+                end = chrstart - downstream
+                sequence = dna_sequence[end:start]
+                sequence = reverse_complement(sequence)
+            return sequence
+
+        else:
+            raise Exception(f"An error occurred while retrieving the DNA sequence : {response.status_code}")
+
+    except Exception as e:
+        raise Exception(f"Error : {str(e)}")
+
+# Copy/Paste Button
 def copy_sequence():
-    sequence = sequence_text.get('1.0', tk.END).strip()
+    sequence = result_text.get('1.0', tk.END).strip()
     pyperclip.copy(sequence)
     messagebox.showinfo("Copy", "The sequence has been copied to the clipboard.")
 
@@ -21,17 +71,49 @@ def paste_sequence():
     sequence = window.clipboard_get()
     text_promoter.delete("1.0", "end")
     text_promoter.insert("1.0", sequence)
-    messagebox.showinfo("Paste", "The sequence has been pasted.")
 
-def load_fasta():
-    file_path = filedialog.askopenfilename(filetypes=[("FASTA Files", "*.fasta")])
-    if file_path:
-        with open(file_path, 'r') as file:
-            fasta_content = file.read()
-            sequence = parse_fasta(fasta_content)
-            text_promoter.delete("1.0", "end")
-            text_promoter.insert("1.0", sequence)
-            messagebox.showinfo("Load FASTA", "FASTA sequence loaded successfully.")
+# Display gene and promoter
+def get_sequence():
+    gene_ids = gene_id_entry.get("1.0", tk.END).strip().split("\n")
+    total_gene_ids = len(gene_ids)
+    species = species_combobox.get()
+    upstream = int(upstream_entry.get())
+    downstream = int(downstream_entry.get())
+    result_text.delete("1.0", tk.END)
+    for i, gene_id in enumerate(gene_ids, start=1):
+        try:
+            number_gene_id = i
+            
+            # Gene information retrieval
+            text_statut.delete("1.0", "end")
+            text_statut.insert("1.0", f"Find gene information... ({number_gene_id}/{total_gene_ids})")
+            window.update_idletasks()
+            gene_info = get_gene_info(gene_id, species)
+            gene_name = gene_info['name']
+            text_statut.delete("1.0", "end")
+            text_statut.insert("1.0", f"Find {gene_name} information -> Done ({number_gene_id}/{total_gene_ids})")
+            window.update_idletasks()
+            
+            text_statut.delete("1.0", "end")
+            text_statut.insert("1.0", f"Extract {gene_name} promoter... ({number_gene_id}/{total_gene_ids})")
+            window.update_idletasks()
+            chraccver = gene_info['genomicinfo'][0]['chraccver']
+            chrstart = gene_info['genomicinfo'][0]['chrstart']
+            chrstop = gene_info['genomicinfo'][0]['chrstop']
+
+            # Promoter retrieval
+            dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
+            text_statut.delete("1.0", "end")
+            text_statut.insert("1.0", f"Extract {gene_name} promoter -> Done ({number_gene_id}/{total_gene_ids})")
+            window.update_idletasks()
+            
+            # Append the result to the result_text
+            result_text.insert(tk.END, f">{gene_name} | {chraccver} | TIS: {chrstart}\n{dna_sequence}\n\n")
+            text_statut.delete("1.0", "end")
+            text_statut.insert("1.0", f"Extract promoter -> Done ({number_gene_id}/{total_gene_ids})")
+            window.update_idletasks()
+        except Exception as e:
+            result_text.insert(tk.END, f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
 
 # Reverse complement
 def reverse_complement(sequence):
@@ -127,8 +209,6 @@ def find_sequence_consensus():
 
     threshold = float(threshold_entry.get())
 
-    found_positions = []
-
     # Responsive elements finder
     lines = text_promoter.get("1.0", "end-1c").split("\n")
     promoters = []
@@ -147,12 +227,13 @@ def find_sequence_consensus():
                 shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
                 promoter_region = lines[i+1]
                 promoters.append((shortened_promoter_name, promoter_region))
-                i += 2  # Passer à la ligne suivante
+                i += 2
             else:
                 i += 1
 
     # Affichage des noms et des séquences correspondantes
     for shortened_promoter_name, promoter_region in promoters:
+        found_positions = []
         for consensus in sequence_consensus:
             variants = generate_variants(consensus)
             max_mismatches = len(variants[0]) // 4  # Mismatches authorized
@@ -165,6 +246,7 @@ def find_sequence_consensus():
                     mismatches = sum(a != b for a, b in zip(sequence, variant))  # Mismatches with Hamming distance
 
                     if mismatches <= max_mismatches:
+                    
                         # Eliminates short responsive elements that merge with long ones
                         similar_position = False
                         for position, _, _, _, _ in found_positions:
@@ -173,9 +255,12 @@ def find_sequence_consensus():
                                 break
 
                         if not similar_position:
+                           
                             homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
-
+                            
                             found_positions.append((i, sequence, variant, mismatches, homology_percentage))
+                            break
+                            
 
         # Sort positions in ascending order
         found_positions.sort(key=lambda x: x[0])
@@ -266,12 +351,48 @@ help_button = tk.Button(window, text="How to use", command=show_help_PDF)
 help_button.place(x=10, y=10)
 
 # Github
-button = tk.Button(window, text="Github", command=open_site)
+button = tk.Button(window, text="Github by MINNITI Julien", command=open_site)
 button.place(x=10, y=40)
 
-# Credit
-credit_label = tk.Label(window, text="By MINNITI Julien")
-credit_label.place(x=10, y=70)
+# Section "Promoter finder"
+section_promoter_finder = tk.LabelFrame(window, text="Promoter Finder")
+section_promoter_finder.grid(row=0, column=1, padx=10, pady=10)
+
+# Gene ID entry
+gene_id_label = tk.Label(section_promoter_finder, text="Gene ID:")
+gene_id_label.grid(row=0, column=0)
+gene_id_entry = tk.Text(section_promoter_finder, height=5, width=20)
+gene_id_entry.grid(row=1, column=0)
+
+
+# Species selection
+species_label = tk.Label(section_promoter_finder, text="Species:")
+species_label.grid(row=2, column=0)
+species_combobox = ttk.Combobox(section_promoter_finder, values=["Human", "Mouse", "Rat"])
+species_combobox.grid(row=3, column=0)
+
+# Upstream/downstream entry
+upstream_label = tk.Label(section_promoter_finder, text="Upstream (bp):")
+upstream_label.grid(row=4, column=0)
+upstream_entry = tk.Entry(section_promoter_finder)
+upstream_entry.insert(2000, "2000")  # $"2000" default
+upstream_entry.grid(row=5, column=0)
+
+downstream_label = tk.Label(section_promoter_finder, text="Downstream (bp):")
+downstream_label.grid(row=6, column=0)
+downstream_entry = tk.Entry(section_promoter_finder)
+downstream_entry.insert(500, "500")  # $"500" default
+downstream_entry.grid(row=7, column=0)
+
+# Search
+search_button = tk.Button(section_promoter_finder, text="Find promoter  (CAN BE STUCK ! Don't worry, just wait)", command=get_sequence)
+search_button.grid(row=8, column=0)
+
+# Promoter output
+result_text = tk.Text(section_promoter_finder, height=10, width=50)
+result_text.grid(row=9, column=0)
+copy_button = tk.Button(section_promoter_finder, text="Copy", command=copy_sequence)
+copy_button.grid(row=10, column=0)
 
 # Section "Responsive Elements finder"
 section_responsive_finder = tk.LabelFrame(window, text="Responsive Elements Finder")
@@ -333,6 +454,7 @@ text_statut.grid(row=16, column=0)
 window.grid_rowconfigure(0, weight=1)
 window.grid_columnconfigure(1, weight=1)
 window.grid_columnconfigure(2, weight=1)
+section_promoter_finder.grid_rowconfigure(13, weight=1)
 section_responsive_finder.grid_rowconfigure(12, weight=1)
 
 # Lancement de la boucle principale
