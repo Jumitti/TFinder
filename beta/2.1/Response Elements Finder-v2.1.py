@@ -11,6 +11,42 @@ from PIL import Image, ImageTk
 from tabulate import tabulate
 from tkinter import filedialog
 
+#Promoter finder
+
+#Display gene and promoter
+def get_sequence():
+    gene_id = gene_id_entry.get()
+    species = species_combobox.get()
+    upstream = int(upstream_entry.get())
+    downstream = int(downstream_entry.get())
+
+    try:
+        # Gene information retrieval
+        gene_info = get_gene_info(gene_id, species)
+        gene_name = gene_info['name']
+        chraccver = gene_info['genomicinfo'][0]['chraccver']
+        chrstart = gene_info['genomicinfo'][0]['chrstart']
+        chrstop = gene_info['genomicinfo'][0]['chrstop']
+
+        # Display informations
+        gene_name_label.config(text=f"Gene ID : {gene_name}")
+        gene_chr_label.config(text=f"Chromosome : {chraccver}")
+        chrstart_label.config(text=f"Transcription Initiation Site : {chrstart}")
+
+        # Promoter retrieval
+        dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
+
+        # Display promoter
+        sequence_text.delete('1.0', tk.END)
+        sequence_text.insert(tk.END, dna_sequence)
+
+    except Exception as e:
+        gene_name_label.config(text="Gene ID :")
+        gene_chr_label.config(text="Chromosome :")
+        chrstart_label.config(text=f"Transcription Initiation Site : {chrstart}")
+        sequence_text.delete('1.0', tk.END)
+        messagebox.showerror("Error", f"Error : {str(e)}")
+
 #Gene informations
 def get_gene_info(gene_id, species):
     text_statut.delete("1.0", "end")
@@ -75,131 +111,10 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
 
     except Exception as e:
         raise Exception(f"Error : {str(e)}")
+        
+# Responsive elements finder
 
-#Copy/Paste Button
-def copy_sequence():
-    sequence = sequence_text.get('1.0', tk.END).strip()
-    pyperclip.copy(sequence)
-    messagebox.showinfo("Copy", "The sequence has been copied to the clipboard.")
-
-def paste_sequence():
-    sequence = window.clipboard_get()
-    text_promoter.delete("1.0", "end")
-    text_promoter.insert("1.0", sequence)
-    messagebox.showinfo("Paste", "The sequence has been pasted.")
-
-#Display gene and promoter
-def get_sequence():
-    gene_id = gene_id_entry.get()
-    species = species_combobox.get()
-    upstream = int(upstream_entry.get())
-    downstream = int(downstream_entry.get())
-
-    try:
-        # Gene information retrieval
-        gene_info = get_gene_info(gene_id, species)
-        gene_name = gene_info['name']
-        chraccver = gene_info['genomicinfo'][0]['chraccver']
-        chrstart = gene_info['genomicinfo'][0]['chrstart']
-        chrstop = gene_info['genomicinfo'][0]['chrstop']
-
-        # Display informations
-        gene_name_label.config(text=f"Gene ID : {gene_name}")
-        gene_chr_label.config(text=f"Chromosome : {chraccver}")
-        chrstart_label.config(text=f"Transcription Initiation Site : {chrstart}")
-
-        # Promoter retrieval
-        dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
-
-        # Display promoter
-        sequence_text.delete('1.0', tk.END)
-        sequence_text.insert(tk.END, dna_sequence)
-
-    except Exception as e:
-        gene_name_label.config(text="Gene ID :")
-        gene_chr_label.config(text="Chromosome :")
-        chrstart_label.config(text=f"Transcription Initiation Site : {chrstart}")
-        sequence_text.delete('1.0', tk.END)
-        messagebox.showerror("Error", f"Error : {str(e)}")
-
-# Reverse complement
-def reverse_complement(sequence):
-    text_statut.delete("1.0", "end")
-    statut = "Reverse complement..."
-    text_statut.insert("1.0", statut)
-    window.update_idletasks()
-    complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
-    reverse_sequence = sequence[::-1]
-    complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
-    text_statut.delete("1.0", "end")
-    statut = "Reverse complement -> Done"
-    text_statut.insert("1.0", statut)
-    window.update_idletasks()
-    return complement_sequence
-
-# Generation of all responsive elements
-def generate_variants(sequence):
-    text_statut.delete("1.0", "end")
-    statut = "Generate responsive elements variants..."
-    text_statut.insert("1.0", statut)
-    window.update_idletasks()    
-    variants = []
-
-    # Original sequence
-    variants.append(sequence)
-
-    # Reverse sequence
-    variants.append(sequence[::-1])
-
-    # Complementary sequence
-    complement_sequence = "".join(reverse_complement(base) for base in sequence)
-    variants.append(complement_sequence)
-    complement_mirror_sequence = complement_sequence[::-1]
-    variants.append(complement_mirror_sequence)
-    
-    text_statut.delete("1.0", "end")
-    statut = "Generate responsive elemnts variants -> Done"
-    text_statut.insert("1.0", statut)
-    window.update_idletasks()   
-    return variants
-
-# IUPAC code
-def generate_iupac_variants(sequence):
-    text_statut.delete("1.0", "end")
-    statut = "Generate IUPAC variants..."
-    text_statut.insert("1.0", statut)
-    window.update_idletasks()   
-    iupac_codes = {
-        "R": ["A", "G"],
-        "Y": ["C", "T"],
-        "M": ["A", "C"],
-        "K": ["G", "T"],
-        "W": ["A", "T"],
-        "S": ["C", "G"],
-        "B": ["C", "G", "T"],
-        "D": ["A", "G", "T"],
-        "H": ["A", "C", "T"],
-        "V": ["A", "C", "G"],
-        "N": ["A", "C", "G", "T"]
-    }
-
-    sequences = [sequence]
-    for i, base in enumerate(sequence):
-        if base.upper() in iupac_codes:
-            new_sequences = []
-            for seq in sequences:
-                for alternative in iupac_codes[base.upper()]:
-                    new_sequence = seq[:i] + alternative + seq[i + 1:]
-                    new_sequences.append(new_sequence)
-            sequences = new_sequences
-    
-    text_statut.delete("1.0", "end")
-    statut = "Generate IUPAC variants -> Done"
-    text_statut.insert("1.0", statut)
-    window.update_idletasks()
-    return sequences
-
-# Responsive Elements Finder (consensus sequence)
+# Responsive Elements Finder
 def find_sequence_consensus():
     global table
     table = []
@@ -286,10 +201,100 @@ def find_sequence_consensus():
     
     text_result.delete("1.0", "end")
     text_result.insert("1.0", result)
-
+    
 #Def table
 table = []
 header = ["Position", "Position (TIS)", "Sequence", "% Homology", "Ref seq"]
+
+# IUPAC code
+def generate_iupac_variants(sequence):
+    text_statut.delete("1.0", "end")
+    statut = "Generate IUPAC variants..."
+    text_statut.insert("1.0", statut)
+    window.update_idletasks()   
+    iupac_codes = {
+        "R": ["A", "G"],
+        "Y": ["C", "T"],
+        "M": ["A", "C"],
+        "K": ["G", "T"],
+        "W": ["A", "T"],
+        "S": ["C", "G"],
+        "B": ["C", "G", "T"],
+        "D": ["A", "G", "T"],
+        "H": ["A", "C", "T"],
+        "V": ["A", "C", "G"],
+        "N": ["A", "C", "G", "T"]
+    }
+
+    sequences = [sequence]
+    for i, base in enumerate(sequence):
+        if base.upper() in iupac_codes:
+            new_sequences = []
+            for seq in sequences:
+                for alternative in iupac_codes[base.upper()]:
+                    new_sequence = seq[:i] + alternative + seq[i + 1:]
+                    new_sequences.append(new_sequence)
+            sequences = new_sequences
+    
+    text_statut.delete("1.0", "end")
+    statut = "Generate IUPAC variants -> Done"
+    text_statut.insert("1.0", statut)
+    window.update_idletasks()
+    return sequences
+    
+# Generation of all responsive elements
+def generate_variants(sequence):
+    text_statut.delete("1.0", "end")
+    statut = "Generate responsive elements variants..."
+    text_statut.insert("1.0", statut)
+    window.update_idletasks()    
+    variants = []
+
+    # Original sequence
+    variants.append(sequence)
+
+    # Reverse sequence
+    variants.append(sequence[::-1])
+
+    # Complementary sequence
+    complement_sequence = "".join(reverse_complement(base) for base in sequence)
+    variants.append(complement_sequence)
+    complement_mirror_sequence = complement_sequence[::-1]
+    variants.append(complement_mirror_sequence)
+    
+    text_statut.delete("1.0", "end")
+    statut = "Generate responsive elemnts variants -> Done"
+    text_statut.insert("1.0", statut)
+    window.update_idletasks()   
+    return variants
+
+## Common functions
+
+# Reverse complement
+def reverse_complement(sequence):
+    text_statut.delete("1.0", "end")
+    statut = "Reverse complement..."
+    text_statut.insert("1.0", statut)
+    window.update_idletasks()
+    complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
+    reverse_sequence = sequence[::-1]
+    complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
+    text_statut.delete("1.0", "end")
+    statut = "Reverse complement -> Done"
+    text_statut.insert("1.0", statut)
+    window.update_idletasks()
+    return complement_sequence
+    
+#Copy/Paste Button
+def copy_sequence():
+    sequence = sequence_text.get('1.0', tk.END).strip()
+    pyperclip.copy(sequence)
+    messagebox.showinfo("Copy", "The sequence has been copied to the clipboard.")
+
+def paste_sequence():
+    sequence = window.clipboard_get()
+    text_promoter.delete("1.0", "end")
+    text_promoter.insert("1.0", sequence)
 
 #Export to excel
 def export_to_excel():
@@ -310,16 +315,18 @@ def show_help_PDF():
     script_directory = os.path.dirname(os.path.abspath(__file__))
     pdf_path = os.path.join(script_directory, "Promoter_finder_HELP.pdf")
     webbrowser.open(pdf_path)
-
-#Logo
-script_dir = os.path.dirname(os.path.abspath(__file__))
-image_path = os.path.join(script_dir, "REF.png")
-
+    
 # Github
 def open_site():
     url = "https://github.com/Jumitti/Responsive-Elements-Finder"
     webbrowser.open(url)
-    
+
+#TK windows
+
+#Logo
+script_dir = os.path.dirname(os.path.abspath(__file__))
+image_path = os.path.join(script_dir, "REF.png")
+ 
 # Create TK windows
 window = tk.Tk()
 window.title("Responsive Elements Finder")
@@ -433,7 +440,7 @@ label_result.grid(row=11, column=0)
 text_result = tk.Text(section_responsive_finder, height=16, width=100)
 text_result.grid(row=12, column=0)
 
-# Création du bouton Export to Excel
+# Export to Excel
 export_button = tk.Button(section_responsive_finder, text="Export to Excel", command=export_to_excel)
 export_button.grid(row=13, column=0)
 
