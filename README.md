@@ -78,7 +78,7 @@ I use the NCBI API (https://www.ncbi.nlm.nih.gov/home/develop/api/). For more in
 
 - Threshold: excludes sequences with homology < threshold
 
-## Enjoy 😊
+## Screenshot
 
 ![universal remotes](https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/Responsive%20Elements%20Finder-v2.png)
 
