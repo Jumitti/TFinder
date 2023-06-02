@@ -36,6 +36,7 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 - Open latest release page - [Releases](https://github.com/Jumitti/Responsive-Elements-Finder/releases/latest)
 - Download ``Responsive.Elements.Finder-v?.exe``
 - Run app
+- Enjoy 😊
 
 Note: Python packages are not required
 
