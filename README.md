@@ -20,15 +20,14 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 
 ## Functions
 ### Promoter Finder (requires internet connection)
-- Extract the promoter region with NCBI API
+- Extract mutliple promoter regions using ENTREZ_GENE_ID in FASTA format (NEW ✨: v3.X)
 
 ### Responsive Elements Finder (no internet connection required)
+- Support multiple promoter regions in FASTA format (NEW ✨: v3.X)
 - Find transcription factor responsive elements
-- IUPAC code can be used for responsive elements
-- Calculation of the distance of the found sequence to the transcription initiation site
-
-#### ✨NEW✨
-- Percentage of homology between the sequence found and the responsive elements (partially, see below)
+- Support IUPAC code for responsive elements
+- Calculation of the distance of the found sequence to the transcription start site (TSS)
+- Percentage of homology between found sequences and responsive elements (Error: v2.X ; NEW ✨ Fixed: 3.X)
 - Find mismatches sequence (Allows only 25% mismatches compared to responsive element)
 - Export results to excel
 
@@ -43,10 +42,8 @@ Note: Python packages are not required
 ## Installation/Requirements for Python version
 Made for and on Windows. Maybe works on Linux and MacOS (please install python packages)
 
-Advice: You can use the source code. I recommend the releases (it's user friendly)
-
 - Install ``python-3.10.11`` (or above) https://www.python.org/downloads/
-- Install python packages with ``python_packages_(windows).bat``. You can also install with ``cmd.exe``:
+- Install python packages with cmd (Windows: run ``python_packages_(windows).bat``):
     ```shell
     pip install pandas
     pip install pillow
@@ -56,7 +53,7 @@ Advice: You can use the source code. I recommend the releases (it's user friendl
     pip install tabulate
     pip install tk
     ```
-- Run ``Responsive-Element-Finder.exe``
+- Run ``Responsive Element Finder.vX.py``
 - Enjoy ☺
 
 ## Promoter Finder
@@ -65,15 +62,21 @@ I use the NCBI API (https://www.ncbi.nlm.nih.gov/home/develop/api/). For more in
 
 ## Responsive Elements Finder
 
-All you have to do is to paste  your sequence.
+### Promoter region
 
-For Responsive Elements (RE), you can use the IUPAC code or just ATGC.
+- Put your ``promoter region`` or for **multiple promoter regions** use **FASTA format** like below (Required: all sequences must have the TSS at the same distance, otherwise you assume the inconsistency of the positions of found sequences):
+    ```shell
+    > Gene Name 1
+    ATGCCCGGAGATTTCCGATCGCCGCGAATTTTGGCGCGAGAG
+    > Gene Name 2
+    TGCCGGTGCTGCCCGTAAATGTAAAATGCGCGATGCGTATGC
+    ```
 
-The Transcription Initiation Site (TIS) allows you to calculate the correct coordinates of the REs found. Set the distance of the TIS from the beginning of the pasted sequence or 'Upstream' used in Promoter Finder. Otherwise leave 0.
+- Responsive Elements (RE) allows [IUPAC nucleotides code](https://www.bioinformatics.org/sms/iupac.html)
 
-Threshold excludes sequences with low homology
+- Transcription Start Site (TSS): Set the distance of the TSS from the beginning of the pasted sequence or 'Upstream' used in Promoter Finder. Otherwise leave 0.
 
-Note: the homology percentage is calculated by analyzing the difference between the sequence found and the responsive element. However, my script has a small problem with this step. As soon as it finds a sequence and the homology % is higher than the threshold, it won't check whether it's the best homology % with an other responsive element. That's why, if you refine the threshold, you might find the same sequences with a better threshold. Nothing really dramatic
+- Threshold: excludes sequences with homology < threshold
 
 ## Enjoy 😊
 
