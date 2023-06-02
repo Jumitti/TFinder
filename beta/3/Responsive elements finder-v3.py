@@ -210,15 +210,16 @@ def find_sequence_consensus():
     threshold = float(threshold_entry.get())
 
     # Responsive elements finder
-    lines = text_promoter.get("1.0", "end-1c").split("\n")
+    lines = text_promoter.get("1.0", "end-1c")
     promoters = []
-    first_line = lines[0]
+    first_line = lines
 
     if first_line.startswith(("A", "T", "C", "G")):
         shortened_promoter_name = "n.d."
-        promoter_region = first_line
+        promoter_region = lines
         promoters.append((shortened_promoter_name, promoter_region))
     else :
+        lines = text_promoter.get("1.0", "end-1c").split("\n")
         i = 0
         while i < len(lines):
             line = lines[i]
@@ -258,9 +259,7 @@ def find_sequence_consensus():
                            
                             homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
                             
-                            found_positions.append((i, sequence, variant, mismatches, homology_percentage))
-                            break
-                            
+                            found_positions.append((i, sequence, variant, mismatches, homology_percentage))                            
 
         # Sort positions in ascending order
         found_positions.sort(key=lambda x: x[0])
