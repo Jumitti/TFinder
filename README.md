@@ -14,7 +14,9 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 
 ## OS supported
 
-![universal remotes](https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/version%20supported.png)
+Win 7 : ❌
+Win 10/11 : ✅
+Linux/MacOS : Not tested
 
 ## Functions
 ### Promoter Finder (requires internet connection)
