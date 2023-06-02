@@ -14,9 +14,9 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 
 ## OS supported
 
-Win 7 : ❌
-Win 10/11 : ✅
-Linux/MacOS : Not tested
+- Win 7 : ❌
+- Win 10/11 : ✅
+- Linux/MacOS : Not tested
 
 ## Functions
 ### Promoter Finder (requires internet connection)
