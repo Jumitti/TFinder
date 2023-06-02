@@ -237,6 +237,7 @@ def find_sequence_consensus():
     # Affichage des noms et des séquences correspondantes
     for shortened_promoter_name, promoter_region in promoters:
         found_positions = []
+        best_homology_percentage =[]
         for consensus in sequence_consensus:
             variants = generate_variants(consensus)
             max_mismatches = len(variants[0]) // 4  # Mismatches authorized
@@ -247,19 +248,21 @@ def find_sequence_consensus():
                     sequence = promoter_region[i:i + variant_length]
 
                     mismatches = sum(a != b for a, b in zip(sequence, variant))  # Mismatches with Hamming distance
+                    
+                    homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
 
                     if mismatches <= max_mismatches:
                     
                         # Eliminates short responsive elements that merge with long ones
                         similar_position = False
                         for position, _, _, _, _ in found_positions:
-                            if abs(i - position) <= 1:
+                            if abs(i - position) <= 1 and homology_percentage <= best_homology_percentage:
                                 similar_position = True
                                 break
 
                         if not similar_position:
                            
-                            homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
+                            best_homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
                             
                             found_positions.append((i, sequence, variant, mismatches, homology_percentage))                            
 
