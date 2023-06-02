@@ -114,6 +114,8 @@ def get_sequence():
             window.update_idletasks()
         except Exception as e:
             result_text.insert(tk.END, f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
+    
+    messagebox.showinfo("Promoter", "Promoters region extracted.")
 
 # Reverse complement
 def reverse_complement(sequence):
@@ -384,7 +386,7 @@ downstream_entry.insert(500, "500")  # $"500" default
 downstream_entry.grid(row=7, column=0)
 
 # Search
-search_button = tk.Button(section_promoter_finder, text="Find promoter  (CAN BE STUCK ! Don't worry, just wait)", command=get_sequence)
+search_button = tk.Button(section_promoter_finder, text="Find promoter  (CAN BE STUCK ! Don't worry, just wait ~2min/gene)", command=get_sequence)
 search_button.grid(row=8, column=0)
 
 # Promoter output
