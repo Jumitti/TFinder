@@ -1,3 +1,4 @@
+import itertools
 import os
 import pandas as pd
 import pyperclip
@@ -147,13 +148,13 @@ def get_sequence():
                 
         # Gene information retrieval
         for gene_id in gene_entrez_id:
-            text_statut.delete("1.0", "end")
-            text_statut.insert("1.0", f"Find gene information... ({number_gene_id}/{total_gene_ids})")
+            text_status.delete("1.0", "end")
+            text_status.insert("1.0", f"Find gene information... ({number_gene_id}/{total_gene_ids})")
             window.update_idletasks()
             gene_info = get_gene_info(gene_id, species)
             gene_name = gene_info['name']
-            text_statut.delete("1.0", "end")
-            text_statut.insert("1.0", f"Find {gene_name} information -> Done ({number_gene_id}/{total_gene_ids})")
+            text_status.delete("1.0", "end")
+            text_status.insert("1.0", f"Find {gene_name} information -> Done ({number_gene_id}/{total_gene_ids})")
             window.update_idletasks()
 
             chraccver = gene_info['genomicinfo'][0]['chraccver']
@@ -161,40 +162,40 @@ def get_sequence():
             chrstop = gene_info['genomicinfo'][0]['chrstop']
 
             # Promoter retrieval
-            text_statut.delete("1.0", "end")
-            text_statut.insert("1.0", f"Extract {gene_name} promoter... ({number_gene_id}/{total_gene_ids})")
+            text_status.delete("1.0", "end")
+            text_status.insert("1.0", f"Extract {gene_name} promoter... ({number_gene_id}/{total_gene_ids})")
             window.update_idletasks()
             dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
-            text_statut.delete("1.0", "end")
-            text_statut.insert("1.0", f"Extract {gene_name} promoter -> Done ({number_gene_id}/{total_gene_ids})")
+            text_status.delete("1.0", "end")
+            text_status.insert("1.0", f"Extract {gene_name} promoter -> Done ({number_gene_id}/{total_gene_ids})")
             window.update_idletasks()
 
             # Append the result to the result_text
             result_text.insert(tk.END, f">{gene_name} | {species} | {chraccver} | TSS: {chrstart}\n{dna_sequence}\n\n")
-            text_statut.delete("1.0", "end")
-            text_statut.insert("1.0", f"Extract promoter -> Done ({number_gene_id}/{total_gene_ids})")
+            text_status.delete("1.0", "end")
+            text_status.insert("1.0", f"Extract promoter -> Done ({number_gene_id}/{total_gene_ids})")
             window.update_idletasks()
 
 # Reverse complement
 def reverse_complement(sequence):
-    text_statut.delete("1.0", "end")
-    statut = "Reverse complement..."
-    text_statut.insert("1.0", statut)
+    text_status.delete("1.0", "end")
+    status = "Reverse complement..."
+    text_status.insert("1.0", status)
     window.update_idletasks()
     complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
     reverse_sequence = sequence[::-1]
     complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
-    text_statut.delete("1.0", "end")
-    statut = "Reverse complement -> Done"
-    text_statut.insert("1.0", statut)
+    text_status.delete("1.0", "end")
+    status = "Reverse complement -> Done"
+    text_status.insert("1.0", status)
     window.update_idletasks()
     return complement_sequence
 
 # Generation of all responsive elements
 def generate_variants(sequence):
-    text_statut.delete("1.0", "end")
-    statut = "Generate responsive elements variants..."
-    text_statut.insert("1.0", statut)
+    text_status.delete("1.0", "end")
+    status = "Generate responsive elements variants..."
+    text_status.insert("1.0", status)
     window.update_idletasks()    
     variants = []
 
@@ -210,17 +211,17 @@ def generate_variants(sequence):
     complement_mirror_sequence = complement_sequence[::-1]
     variants.append(complement_mirror_sequence)
     
-    text_statut.delete("1.0", "end")
-    statut = "Generate responsive elemnts variants -> Done"
-    text_statut.insert("1.0", statut)
+    text_status.delete("1.0", "end")
+    status = "Generate responsive elements variants -> Done"
+    text_status.insert("1.0", status)
     window.update_idletasks()   
     return variants
 
 # IUPAC code
 def generate_iupac_variants(sequence):
-    text_statut.delete("1.0", "end")
-    statut = "Generate IUPAC variants..."
-    text_statut.insert("1.0", statut)
+    text_status.delete("1.0", "end")
+    status = "Generate IUPAC variants..."
+    text_status.insert("1.0", status)
     window.update_idletasks()   
     iupac_codes = {
         "R": ["A", "G"],
@@ -246,9 +247,9 @@ def generate_iupac_variants(sequence):
                     new_sequences.append(new_sequence)
             sequences = new_sequences
     
-    text_statut.delete("1.0", "end")
-    statut = "Generate IUPAC variants -> Done"
-    text_statut.insert("1.0", statut)
+    text_status.delete("1.0", "end")
+    status = "Generate IUPAC variants -> Done"
+    text_status.insert("1.0", status)
     window.update_idletasks()
     return sequences
 
@@ -258,9 +259,9 @@ def find_sequence_consensus():
     table = []
     text_result.delete("1.0", "end")
     sequence_consensus_input = entry_sequence.get()
-    text_statut.delete("1.0", "end")
-    statut = "Find responsive elements..."
-    text_statut.insert("1.0", statut)
+    text_status.delete("1.0", "end")
+    status = "Find responsive elements..."
+    text_status.insert("1.0", status)
     window.update_idletasks()   
     tis_value = int(entry_tis.get())
 
@@ -269,11 +270,11 @@ def find_sequence_consensus():
 
     threshold = float(threshold_entry.get())
 
-    # Responsive elements finder
+    # Promoter input type
     lines = text_promoter.get("1.0", "end-1c")
     promoters = []
+    
     first_line = lines
-
     if first_line.startswith(("A", "T", "C", "G")):
         shortened_promoter_name = "n.d."
         promoter_region = lines
@@ -295,33 +296,41 @@ def find_sequence_consensus():
     # Affichage des noms et des séquences correspondantes
     for shortened_promoter_name, promoter_region in promoters:
         found_positions = []
+        
+        # Définir le motif cyclique de caractères
+        pattern = "\|/-\|/-"
+        cycle = itertools.cycle(pattern)
+        
         for consensus in sequence_consensus:
             variants = generate_variants(consensus)
-            max_mismatches = len(variants[0])  # Mismatches authorized
             for variant in variants:
+                
                 variant_length = len(variant)
+                
+                status_char = next(cycle)                 
+                text_status.delete("1.0", "end")
+                text_status.insert("1.0", f"Find responsive element in {shortened_promoter_name}...{status_char}")
+                window.update_idletasks()        
 
                 for i in range(len(promoter_region) - variant_length + 1):
                     sequence = promoter_region[i:i + variant_length]
 
-                    mismatches = sum(a != b for a, b in zip(sequence, variant))  # Mismatches with Hamming distance
+                    mismatches = sum(a != b for a, b in zip(sequence, variant))  # Mismatches
                     
                     homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
-
-                    if mismatches <= max_mismatches:
                     
-                        # Eliminates short responsive elements that merge with long ones
-                        better_homology = False
-                        for position, _, _, _, best_homology_percentage in found_positions:
-                            if abs(i - position) < 1 and homology_percentage <= best_homology_percentage:
-                                better_homology = True
-                                break
+                    # Find best homology sequence
+                    better_homology = False
+                    for position, _, _, _, best_homology_percentage in found_positions:
+                        if abs(i - position) < 1 and homology_percentage <= best_homology_percentage:
+                            better_homology = True
+                            break
 
-                        if not better_homology:
-                           
-                            best_homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
-                            
-                            found_positions.append((i, sequence, variant, mismatches, best_homology_percentage))                            
+                    if not better_homology:
+                       
+                        best_homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
+                        
+                        found_positions.append((i, sequence, variant, mismatches, best_homology_percentage))                            
 
         # Sort positions in ascending order
         found_positions.sort(key=lambda x: x[0])
@@ -360,9 +369,9 @@ def find_sequence_consensus():
         else:
             result = "No consensus sequence found in the promoter region."
             
-        text_statut.delete("1.0", "end")
-        statut = "Find sequence -> Done"
-        text_statut.insert("1.0", statut)
+        text_status.delete("1.0", "end")
+        status = "Find sequence -> Done"
+        text_status.insert("1.0", status)
         window.update_idletasks()
         
         text_result.delete("1.0", "end")
@@ -446,7 +455,7 @@ downstream_entry.insert(500, "500")  # $"500" default
 downstream_entry.grid(row=7, column=0)
 
 # Search
-search_button = tk.Button(section_promoter_finder, text="Find promoter  (CAN BE STUCK ! Don't worry, just wait ~2min/gene)", command=get_sequence)
+search_button = tk.Button(section_promoter_finder, text="Find promoter  (CAN BE STUCK ! Don't worry, just wait ~30sec/gene)", command=get_sequence)
 search_button.grid(row=8, column=0)
 
 # Promoter output
@@ -503,13 +512,13 @@ text_result.grid(row=13, column=0)
 export_button = tk.Button(section_responsive_finder, text="Export to Excel", command=export_to_excel)
 export_button.grid(row=14, column=0)
 
-# Section "Statut"
-section_statut = tk.LabelFrame(window, text="Statut")
-section_statut.grid(row=15, column=2, padx=10, pady=10)
+# Section "status"
+section_status = tk.LabelFrame(window, text="status")
+section_status.grid(row=15, column=2, padx=10, pady=10)
 
-# Statut output
-text_statut = tk.Text(section_statut, height=1, width=100)
-text_statut.grid(row=16, column=0)
+# status output
+text_status = tk.Text(section_status, height=1, width=100)
+text_status.grid(row=16, column=0)
 
 # Configure grid weights
 window.grid_rowconfigure(0, weight=1)
