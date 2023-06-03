@@ -11,6 +11,34 @@ from PIL import Image, ImageTk
 from tabulate import tabulate
 from tkinter import filedialog
 
+# Convert gene to ENTREZ_GENE_ID
+def convert_gene_names_to_entrez_ids(gene_names):
+    try:
+        entrez_ids = []
+        for gene_id in gene_names:
+            species = species_combobox.get()
+            # Requête de recherche de gène par nom et espèce
+            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_id}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml"
+            response = requests.get(url)
+
+            if response.status_code == 200:
+                response_data = response.json()
+
+                if response_data['esearchresult']['count'] == '0':
+                    raise Exception(f"No gene found for name: {gene_name}")
+
+                else:
+                    gene_id = response_data['esearchresult']['idlist'][0]
+                    entrez_ids.append(gene_id)
+
+            else:
+                raise Exception(f"Error during gene search: {response.status_code}")
+
+        return entrez_ids
+
+    except Exception as e:
+        raise Exception(f"Error: {str(e)}")
+
 #Gene informations
 def get_gene_info(gene_id, species):
     try:
@@ -35,28 +63,44 @@ def get_gene_info(gene_id, species):
 #Promoter finder
 def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
     try:
-        # Request for DNA sequence
-        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&rettype=fasta&retmode=text"
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            # Extraction of DNA sequence
-            dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
-
-            # Calculating extraction coordinates on the chromosome
-            if chrstop > chrstart:
-                start = chrstart - upstream
-                end = chrstart + downstream
-                sequence = dna_sequence[start:end]
+        # Calculating extraction coordinates on the chromosome
+        if chrstop > chrstart:
+            start = chrstart - upstream
+            end = chrstart + downstream
+            
+            # Request for DNA sequence
+            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
+            response = requests.get(url)
+            
+            if response.status_code == 200:
+                # Extraction of DNA sequence
+                dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
+                
+                sequence = dna_sequence
+            
             else:
-                start = chrstart + upstream
-                end = chrstart - downstream
-                sequence = dna_sequence[end:start]
-                sequence = reverse_complement(sequence)
-            return sequence
-
+                raise Exception(f"An error occurred while retrieving the DNA sequence : {response.status_code}")
+        
         else:
-            raise Exception(f"An error occurred while retrieving the DNA sequence : {response.status_code}")
+            start = chrstart + upstream
+            end = chrstart - downstream
+            
+            # Request for DNA sequence
+            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={end}&to={start}&rettype=fasta&retmode=text"
+            response = requests.get(url)
+            
+            if response.status_code == 200:
+                # Extraction of DNA sequence
+                dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
+                
+                
+                sequence = dna_sequence
+                sequence = reverse_complement(sequence)
+                
+            else:
+                raise Exception(f"An error occurred while retrieving the DNA sequence : {response.status_code}")
+
+        return sequence
 
     except Exception as e:
         raise Exception(f"Error : {str(e)}")
@@ -71,20 +115,38 @@ def paste_sequence():
     sequence = window.clipboard_get()
     text_promoter.delete("1.0", "end")
     text_promoter.insert("1.0", sequence)
+    messagebox.showinfo("Paste", "The sequence has been pasted.")
 
 # Display gene and promoter
 def get_sequence():
+    species = species_combobox.get()
     gene_ids = gene_id_entry.get("1.0", tk.END).strip().split("\n")
     total_gene_ids = len(gene_ids)
-    species = species_combobox.get()
     upstream = int(upstream_entry.get())
     downstream = int(downstream_entry.get())
     result_text.delete("1.0", tk.END)
+    
     for i, gene_id in enumerate(gene_ids, start=1):
         try:
             number_gene_id = i
             
-            # Gene information retrieval
+            # Convertir le nom du gène en ENTREZ_GENE_ID si nécessaire
+            gene_names = []  # Déclaration de gene_names
+            if not gene_id.isdigit():
+                gene_id = gene_id.strip("'\'")
+                gene_names.append(gene_id)
+                gene_id = convert_gene_names_to_entrez_ids(gene_names)
+                gene_entrez_id = gene_id.copy()
+                
+            else:
+                gene_id = gene_id.strip("'\"")
+                gene_entrez_id = [gene_id]
+            
+        except Exception as e:
+            result_text.insert(tk.END, f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
+                
+        # Gene information retrieval
+        for gene_id in gene_entrez_id:
             text_statut.delete("1.0", "end")
             text_statut.insert("1.0", f"Find gene information... ({number_gene_id}/{total_gene_ids})")
             window.update_idletasks()
@@ -93,29 +155,25 @@ def get_sequence():
             text_statut.delete("1.0", "end")
             text_statut.insert("1.0", f"Find {gene_name} information -> Done ({number_gene_id}/{total_gene_ids})")
             window.update_idletasks()
-            
-            text_statut.delete("1.0", "end")
-            text_statut.insert("1.0", f"Extract {gene_name} promoter... ({number_gene_id}/{total_gene_ids})")
-            window.update_idletasks()
+
             chraccver = gene_info['genomicinfo'][0]['chraccver']
             chrstart = gene_info['genomicinfo'][0]['chrstart']
             chrstop = gene_info['genomicinfo'][0]['chrstop']
 
             # Promoter retrieval
+            text_statut.delete("1.0", "end")
+            text_statut.insert("1.0", f"Extract {gene_name} promoter... ({number_gene_id}/{total_gene_ids})")
+            window.update_idletasks()
             dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
             text_statut.delete("1.0", "end")
             text_statut.insert("1.0", f"Extract {gene_name} promoter -> Done ({number_gene_id}/{total_gene_ids})")
             window.update_idletasks()
-            
+
             # Append the result to the result_text
-            result_text.insert(tk.END, f">{gene_name} | {chraccver} | TIS: {chrstart}\n{dna_sequence}\n\n")
+            result_text.insert(tk.END, f">{gene_name} | {species} | {chraccver} | TSS: {chrstart}\n{dna_sequence}\n\n")
             text_statut.delete("1.0", "end")
             text_statut.insert("1.0", f"Extract promoter -> Done ({number_gene_id}/{total_gene_ids})")
             window.update_idletasks()
-        except Exception as e:
-            result_text.insert(tk.END, f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
-    
-    messagebox.showinfo("Promoter", "Promoters region extracted.")
 
 # Reverse complement
 def reverse_complement(sequence):
@@ -237,7 +295,6 @@ def find_sequence_consensus():
     # Affichage des noms et des séquences correspondantes
     for shortened_promoter_name, promoter_region in promoters:
         found_positions = []
-        #best_homology_percentage =[]
         for consensus in sequence_consensus:
             variants = generate_variants(consensus)
             max_mismatches = len(variants[0])  # Mismatches authorized
@@ -254,17 +311,13 @@ def find_sequence_consensus():
                     if mismatches <= max_mismatches:
                     
                         # Eliminates short responsive elements that merge with long ones
-                        similar_position = False
-                        for position, _, _, _, _ in found_positions:
-                            if abs(i - position) <= 1 and homology_percentage <= best_homology_percentage:
-                                similar_position = True
+                        better_homology = False
+                        for position, _, _, _, best_homology_percentage in found_positions:
+                            if abs(i - position) < 1 and homology_percentage <= best_homology_percentage:
+                                better_homology = True
                                 break
-                            else :
-                                best_homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
-                            
-                                found_positions.append((i, sequence, variant, mismatches, best_homology_percentage))
 
-                        if not similar_position:
+                        if not better_homology:
                            
                             best_homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
                             
