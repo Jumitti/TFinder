@@ -15,19 +15,21 @@ from tkinter import filedialog
 def convert_gene_names_to_entrez_ids(gene_names):
     try:
         entrez_ids = []
-        for gene_name in gene_names:
+        for gene_id in gene_names:
+            species = species_combobox.get()
             # Requête de recherche de gène par nom et espèce
-            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_name}[Gene%20Name]+AND+{species}[Organism]"
+            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_id}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml"
             response = requests.get(url)
 
             if response.status_code == 200:
                 response_data = response.json()
 
-                if response_data['eSearchResult']['Count'] == '0':
+                if response_data['esearchresult']['count'] == '0':
                     raise Exception(f"No gene found for name: {gene_name}")
 
-                entrez_id = response_data['eSearchResult']['IdList']['Id'][1]
-                entrez_ids.append(entrez_id)
+                else:
+                    gene_id = response_data['esearchresult']['idlist'][0]
+                    entrez_ids.append(gene_id)
 
             else:
                 raise Exception(f"Error during gene search: {response.status_code}")
@@ -123,21 +125,28 @@ def get_sequence():
     upstream = int(upstream_entry.get())
     downstream = int(downstream_entry.get())
     result_text.delete("1.0", tk.END)
+    
     for i, gene_id in enumerate(gene_ids, start=1):
         try:
             number_gene_id = i
-
+            
             # Convertir le nom du gène en ENTREZ_GENE_ID si nécessaire
+            gene_names = []  # Déclaration de gene_names
             if not gene_id.isdigit():
-                gene_names = gene_id.strip("'\"")
-                print(gene_names)
-                gene_ids = convert_gene_names_to_entrez_ids(gene_names)
-                gene_id = gene_ids
-                print(gene_id)
-            else :
+                gene_id = gene_id.strip("'\'")
+                gene_names.append(gene_id)
+                gene_id = convert_gene_names_to_entrez_ids(gene_names)
+                gene_entrez_id = gene_id.copy()
+                
+            else:
                 gene_id = gene_id.strip("'\"")
-
-            # Gene information retrieval
+                gene_entrez_id = [gene_id]
+            
+        except Exception as e:
+            result_text.insert(tk.END, f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
+                
+        # Gene information retrieval
+        for gene_id in gene_entrez_id:
             text_statut.delete("1.0", "end")
             text_statut.insert("1.0", f"Find gene information... ({number_gene_id}/{total_gene_ids})")
             window.update_idletasks()
@@ -161,12 +170,10 @@ def get_sequence():
             window.update_idletasks()
 
             # Append the result to the result_text
-            result_text.insert(tk.END, f">{gene_name} | {chraccver} | TIS: {chrstart}\n{dna_sequence}\n\n")
+            result_text.insert(tk.END, f">{gene_name} | {species} | {chraccver} | TSS: {chrstart}\n{dna_sequence}\n\n")
             text_statut.delete("1.0", "end")
             text_statut.insert("1.0", f"Extract promoter -> Done ({number_gene_id}/{total_gene_ids})")
             window.update_idletasks()
-        except Exception as e:
-            result_text.insert(tk.END, f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
 
 # Reverse complement
 def reverse_complement(sequence):
@@ -182,22 +189,6 @@ def reverse_complement(sequence):
     text_statut.insert("1.0", statut)
     window.update_idletasks()
     return complement_sequence
-
-# Convert gene names to ENTREZ_GENE_ID
-def convert_gene_names_to_entrez_ids(gene_names):
-    base_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
-    url = f"{base_url}esearch.fcgi?db=gene&term="
-    for name in gene_names:
-        url += f"{name}[gene]+OR+"
-    url = url[:-4]
-    url += "&retmode=json"
-    response = requests.get(url)
-    if response.status_code == 200:
-        response_data = response.json()
-        id_list = response_data["esearchresult"]["idlist"]
-        return id_list
-    else:
-        raise Exception(f"Error during conversion of gene names to ENTREZ_GENE_ID : {response.status_code}")
 
 #HELP
 def show_help_PDF():
