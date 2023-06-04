@@ -15,10 +15,17 @@ gene_id_entry = st.text_area("Gene ID:")
 species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat"], index=0)
 
 #Upstream
-
 upstream_entry = st.text_input("Upstream:", value="2000")
 
 #Downstream
+downstream_entry = st.text_input("Downstream:", value="500")
+
+#Run Promoter Finder
+if st.button("Find promoter (~30sec/gene)"):
+    get_sequence()
+    
+#Promoter
+result_promoter = st.text_area("Promoter:", height=10, width=50)
 
 # Responsive ELements Finder
 st.header('Responsive Elements Finder')
