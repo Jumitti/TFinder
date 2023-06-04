@@ -9,8 +9,9 @@ def reverse_complement(sequence):
     return complement_sequence
 
 # Convert gene to ENTREZ_GENE_ID
-def convert_gene_names_to_entrez_ids(gene_names, species):
+def convert_gene_names_to_entrez_ids(gene_names, species_combobox):
     try:
+        species = species_combobox
         entrez_ids = []
         for gene_name in gene_names:
             # Request for ENTREZ_GENE_ID
@@ -97,7 +98,7 @@ def find_promoters(gene_ids, species, upstream, downstream):
             dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
 
             # Append the result to the result_promoter
-            result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS: {chrstart}\n{dna_sequence}\n\n")
+            result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS: {chrstart}\n{dna_sequence}\n")
 
         return result_promoter
 
