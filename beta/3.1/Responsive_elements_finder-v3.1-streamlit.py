@@ -296,7 +296,7 @@ def find_sequence_consensus():
                 result_lines.append("|" + "-" * (len(header) * 5 + len(header) - 1) + "|")
                 for row in filtered_table:
                     result_lines.append("| " + " | ".join(str(cell) for cell in row) + " |")
-                text_result = "\n".join(lines)
+                text_result = "\n".join(result_lines)
             else:
                 text_result = "No consensus sequence found with the specified threshold."
         else:
