@@ -135,6 +135,7 @@ if st.button("Find promoter (~30sec/gene)"):
         try:
             result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
             st.success("Promoters extraction complete!")
+            
         except Exception as e:
             st.error(f"Error finding promoters: {str(e)}")
 
@@ -153,7 +154,7 @@ st.header('Responsive Elements Finder')
 entry_sequence = st.text_input("Responsive element (IUPAC authorized):", value="RRRCWWGYYY")
 
 # TSS entry
-if 'result_promoter' in locals():
-    entry_tis = st.text_input("TSS:", value=upstream)
+if 'upstream' not in locals():
+    entry_tis = st.text_input("TSS:", value="0")
 else:
-    entry_tis = st.text_input("Promoter:", value="0")
+    entry_tis = st.text_input("TSS:", value=upstream)
