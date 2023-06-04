@@ -113,26 +113,30 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
         raise Exception(f"Error : {str(e)}")
 
 # Display gene and promoter
-def get_sequence(result_promoter):
+def get_sequence():
     species = species_combobox
     gene_ids = gene_id_entry.strip().split("\n")
     total_gene_ids = len(gene_ids)
     upstream = int(upstream_entry)
     downstream = int(downstream_entry)
     
-    for gene_id in enumerate(gene_ids, start=1):
-        try:            
+    gene_entrez_id = []  # Déplacer la déclaration ici
+    
+    for i, gene_id in enumerate(gene_ids, start=1):
+        try:
+            number_gene_id = i
+            
             # gene name to ENTREZ_GENE_ID
             gene_names = []
             if not gene_id.isdigit():
                 gene_id = gene_id.strip("'\'")
                 gene_names.append(gene_id)
                 gene_id = convert_gene_names_to_entrez_ids(gene_names)
-                gene_entrez_id = gene_id.copy()
+                gene_entrez_id.extend(gene_id)  # Utiliser extend au lieu de copy
                 
             else:
                 gene_id = gene_id.strip("'\"")
-                gene_entrez_id = [gene_id]
+                gene_entrez_id.append(gene_id)
             
         except Exception as e:
             result_promoter += f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n"
@@ -150,6 +154,12 @@ def get_sequence(result_promoter):
 
             # Append the result to the result_promoter
             result_promoter += f">{gene_name} | {species} | {chraccver} | TSS: {chrstart}\n{dna_sequence}\n\n"
+
+
+
+
+
+
 
 # Promoter Finder STREAMLIT
 
