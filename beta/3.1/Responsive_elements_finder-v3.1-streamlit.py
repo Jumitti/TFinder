@@ -281,7 +281,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
                 sequence_with_context = ''.join(sequence_parts)
                 tis_position = position - tis_value
 
-                if homology_percentage >= threshold:
+                if best_homology_percentage >= threshold:
                     row = [str(position).ljust(8),
                            str(tis_position).ljust(15),
                            sequence_with_context,
