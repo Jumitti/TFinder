@@ -160,38 +160,18 @@ def get_sequence():
                 gene_entrez_id = [gene_id]
             
         except Exception as e:
-            result_promoter.insert(tk.END, f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
+            result_promoter += f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
                 
         # Gene information retrieval
         for gene_id in gene_entrez_id:
-            text_status.delete("1.0", "end")
-            text_status.insert("1.0", f"Find gene information... ({number_gene_id}/{total_gene_ids})")
-            window.update_idletasks()
             gene_info = get_gene_info(gene_id, species)
             gene_name = gene_info['name']
-            text_status.delete("1.0", "end")
-            text_status.insert("1.0", f"Find {gene_name} information -> Done ({number_gene_id}/{total_gene_ids})")
-            window.update_idletasks()
-
             chraccver = gene_info['genomicinfo'][0]['chraccver']
             chrstart = gene_info['genomicinfo'][0]['chrstart']
             chrstop = gene_info['genomicinfo'][0]['chrstop']
 
             # Promoter retrieval
-            text_status.delete("1.0", "end")
-            text_status.insert("1.0", f"Extract {gene_name} promoter... ({number_gene_id}/{total_gene_ids})")
-            window.update_idletasks()
             dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
-            text_status.delete("1.0", "end")
-            text_status.insert("1.0", f"Extract {gene_name} promoter -> Done ({number_gene_id}/{total_gene_ids})")
-            window.update_idletasks()
 
             # Append the result to the result_promoter
-            result_promoter.insert(tk.END, f">{gene_name} | {species} | {chraccver} | TSS: {chrstart}\n{dna_sequence}\n\n")
-            window.update_idletasks()
-    
-    text_status.delete("1.0", "end")
-    text_status.insert("1.0", f"Extract promoter -> Done ({number_gene_id}/{total_gene_ids})")
-    global entry_tis_var
-    entry_tis_var.set(upstream)
-    messagebox.showinfo("Promoter", "Promoters region extracted.")
+            result_promoter += f">{gene_name} | {species} | {chraccver} | TSS: {chrstart}\n{dna_sequence}\n\n"
