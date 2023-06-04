@@ -9,29 +9,27 @@ def reverse_complement(sequence):
     return complement_sequence
 
 # Convert gene to ENTREZ_GENE_ID
-def convert_gene_names_to_entrez_ids(gene_names, species_combobox):
+def convert_gene_to_entrez_id(gene, species):
     try:
-        species = species_combobox
-        entrez_ids = []
-        for gene_name in gene_names:
-            # Request for ENTREZ_GENE_ID
-            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_name}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml"
-            response = requests.get(url)
+        if gene.isdigit():
+            return gene  # Already an ENTREZ_GENE_ID
 
-            if response.status_code == 200:
-                response_data = response.json()
+        # Request for ENTREZ_GENE_ID
+        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml"
+        response = requests.get(url)
 
-                if response_data['esearchresult']['count'] == '0':
-                    raise Exception(f"No gene found for name: {gene_name}")
+        if response.status_code == 200:
+            response_data = response.json()
 
-                else:
-                    gene_id = response_data['esearchresult']['idlist'][0]
-                    entrez_ids.append(gene_id)
+            if response_data['esearchresult']['count'] == '0':
+                raise Exception(f"No gene found for name: {gene}")
 
             else:
-                raise Exception(f"Error during gene search: {response.status_code}")
+                gene_id = response_data['esearchresult']['idlist'][0]
+                return gene_id
 
-        return entrez_ids
+        else:
+            raise Exception(f"Error during gene search: {response.status_code}")
 
     except Exception as e:
         raise Exception(f"Error: {str(e)}")
@@ -49,10 +47,10 @@ def get_gene_info(gene_id, species):
             return gene_info
 
         else:
-            raise Exception(f"Error during extraction of gene information : {response.status_code}")
+            raise Exception(f"Error during extraction of gene information: {response.status_code}")
 
     except Exception as e:
-        raise Exception(f"Error : {str(e)}")
+        raise Exception(f"Error: {str(e)}")
 
 # Get DNA sequence
 def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
@@ -89,7 +87,12 @@ def find_promoters(gene_ids, species, upstream, downstream):
     try:
         result_promoter = []
         for gene_id in gene_ids:
-            gene_info = get_gene_info(gene_id, species)
+            if gene_id.isdigit():
+                entrez_id = gene_id
+            else:
+                entrez_id = convert_gene_to_entrez_id(gene_id, species)
+
+            gene_info = get_gene_info(entrez_id, species)
             gene_name = gene_info['name']
             chraccver = gene_info['genomicinfo'][0]['chraccver']
             chrstart = gene_info['genomicinfo'][0]['chrstart']
@@ -129,28 +132,11 @@ if st.button("Find promoter (~30sec/gene)"):
         gene_ids = gene_id_entry.strip().split("\n")
         upstream = int(upstream_entry)
         downstream = int(downstream_entry)
-        for gene_id in gene_ids:
-            try:            
-                # gene name to ENTREZ_GENE_ID
-                gene_names = []
-                if not gene_id.isdigit():
-                    gene_id = gene_id.strip("'\'")
-                    gene_names.append(gene_id)
-                    gene_id = convert_gene_names_to_entrez_ids(gene_names, species_combobox)
-                    gene_entrez_id = gene_id.copy()
-                    
-                else:
-                    gene_id = gene_id.strip("'\"")
-                    gene_entrez_id = [gene_id]
-                
-            except Exception as e:
-                st.error(f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
-                
-            try:
-                result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
-                st.success("Promoters extraction complete!")
-            except Exception as e:
-                st.error(f"Error finding promoters: {str(e)}")
+        try:
+            result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
+            st.success("Promoters extraction complete!")
+        except Exception as e:
+            st.error(f"Error finding promoters: {str(e)}")
 
 # Promoter
 if 'result_promoter' in locals():
