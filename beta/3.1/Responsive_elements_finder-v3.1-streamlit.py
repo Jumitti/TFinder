@@ -331,9 +331,5 @@ if 'table' in locals():
     for row in table:
         st.write("|".join(str(cell).ljust(15) for cell in row))
 else:
-    if 'no_consensus' in locals():
-        st.text(value = no_consensus)
-    else:
-        st.text("")
-
+    st.text("")
 
