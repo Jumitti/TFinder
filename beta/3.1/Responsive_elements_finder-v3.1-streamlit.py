@@ -231,9 +231,7 @@ def find_sequence_consensus():
                 i += 2
             else:
                 i += 1
-    
-    
-
+                
     # REF
     text_result = ""
     for shortened_promoter_name, promoter_region in promoters:
@@ -338,6 +336,6 @@ if st.button("Find responsive elements"):
 
 # RE output
 if 'text_result' in locals():
-    text_result = st.text_area("Responsive elements:", value=text_result)
+    text_result = st.text("Responsive elements:", value=text_result)
 else:
     text_result = st.text_area("Responsive elements:", value="")
