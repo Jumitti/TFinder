@@ -146,12 +146,11 @@ if st.button("Find promoter (~5sec/gene)"):
             st.error(f"Error finding promoters: {str(e)}")
 
 # Promoter output
-if 'result_promoter' in locals():
+if 'result_promoter' not in st.session_state:
     result_promoter_text = "\n".join(result_promoter)
-    if 'result_promoter' not in st.session_state:
-        st.session_state.result_promoter = result_promoter_text
-        result_promoter = st.text_area("Promoter:", value=st.session_state.result_promoter)
-        st.text("Copy: CTRL+A CTRL+C")
+    st.session_state.result_promoter = result_promoter_text
+    result_promoter = st.text_area("Promoter:", value=st.session_state.result_promoter)
+    st.text("Copy: CTRL+A CTRL+C")
 else:
     result_promoter = st.text_area("Promoter:", value="")
 
