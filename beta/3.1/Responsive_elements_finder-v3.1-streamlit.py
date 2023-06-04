@@ -1,6 +1,5 @@
 import streamlit as st
 import requests
-import tabulate
 import pandas as pd
 
 # Reverse complement
@@ -297,11 +296,16 @@ def find_sequence_consensus():
             filtered_table = sorted(filtered_table, key=lambda x: (x[5], -float(x[3])))
 
             if len(filtered_table) > 0:
-                result = tabulate(filtered_table, headers=header, tablefmt="pipe")
+                result_lines = []
+                result_lines.append("| " + " | ".join(header) + " |")
+                result_lines.append("|" + "-" * (len(header) * 5 + len(header) - 1) + "|")
+                for row in filtered_table:
+                    result_lines.append("| " + " | ".join(str(cell) for cell in row) + " |")
+                text_result = "\n".join(lines)
             else:
-                result = "No consensus sequence found with the specified threshold."
+                text_result = "No consensus sequence found with the specified threshold."
         else:
-            result = "No consensus sequence found in the promoter region."
+            text_result = "No consensus sequence found in the promoter region."
 
 #Def table
 table = []
