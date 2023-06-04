@@ -12,12 +12,14 @@ st.header('Promoter Finder')
 # Gene ID
 gene_id_entry = st.text_area("Gene ID:")
 
-if st.button("Paste"):
-    clipboard_content = clipboard.paste()
-
-    gene_id_entry = st.text_area("Gene ID:", value=clipboard_content)
-
 # Species
+st.text("Species:")
+
+# Sélection de l'espèce dans le menu déroulant
+selected_species = st.selectbox("", ["Human", "Mouse", "Rat"], index=0)
+
+# Affichage de l'espèce sélectionnée
+st.write("Species :", selected_species)
 
 
 
