@@ -127,7 +127,7 @@ upstream_entry = st.text_input("Upstream:", value="2000")
 downstream_entry = st.text_input("Downstream:", value="500")
 
 # Run Promoter Finder
-if st.button("Find promoter (~30sec/gene)"):
+if st.button("Find promoter (~5sec/gene)"):
     with st.spinner("Finding promoters..."):
         gene_ids = gene_id_entry.strip().split("\n")
         upstream = int(upstream_entry)
@@ -139,7 +139,7 @@ if st.button("Find promoter (~30sec/gene)"):
         except Exception as e:
             st.error(f"Error finding promoters: {str(e)}")
 
-# Promoter
+# Promoter output
 if 'result_promoter' in locals():
     result_promoter_text = "\n".join(result_promoter)
     result_promoter = st.text_area("Promoter:", value=result_promoter_text)
@@ -158,3 +158,22 @@ if 'upstream' not in locals():
     entry_tis = st.text_input("TSS:", value="0")
 else:
     entry_tis = st.text_input("TSS:", value=upstream)
+
+# Threshold
+threshold_entry = st.text_input("Threshold (%)", value="80")
+
+# Run Responsive Elements finder
+if st.button("Find responsive elements"):
+    with st.spinner("Finding responsive elements..."):
+        try:
+            text_result = 
+            st.success("Finding responsive elements done"
+        except Exception as e:
+            st.error(f"Error finding responsive elements: {str(e)})
+
+# RE output
+if 'text_result' in locals():
+    text_result_text = "\n".join(text_result)
+    text_result = st.text_area("Responsive elements:", value=result_promoter_text)
+else:
+    text_result = st.text_area("Responsive elements:", value="")
