@@ -7,6 +7,15 @@ import pandas as pd
 
 st.title('Responsive Elements Finder')
 
+# Common features
+
+# Reverse complement
+def reverse_complement(sequence):
+    complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
+    reverse_sequence = sequence[::-1]
+    complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
+    return complement_sequence
+
 #Promoter Finder
 
 # Convert gene to ENTREZ_GENE_ID
@@ -105,12 +114,11 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
 
 # Display gene and promoter
 def get_sequence():
-    species = species_combobox.get()
-    gene_ids = gene_id_entry.get("1.0", tk.END).strip().split("\n")
+    species = species_combobox
+    gene_ids = gene_id_entry.strip().split("\n")
     total_gene_ids = len(gene_ids)
-    upstream = int(upstream_entry.get())
-    downstream = int(downstream_entry.get())
-    result_promoter.delete("1.0", tk.END)
+    upstream = int(upstream_entry)
+    downstream = int(downstream_entry)
     
     for i, gene_id in enumerate(gene_ids, start=1):
         try:
@@ -164,6 +172,7 @@ downstream_entry = st.text_input("Downstream:", value="500")
 #Run Promoter Finder
 if st.button("Find promoter (~30sec/gene)"):
     with st.spinner("Finding promoters..."):
+        result_promoter.empty()
         get_sequence()
     st.success("Promoters extraction complete!")
 
