@@ -128,7 +128,6 @@ if st.button("Find promoter (~30sec/gene)"):
         gene_ids = gene_id_entry.strip().split("\n")
         upstream = int(upstream_entry)
         downstream = int(downstream_entry)
-        species = int(species_combobox)
         for gene_id in gene_ids:
             try:            
                 # gene name to ENTREZ_GENE_ID
@@ -136,7 +135,7 @@ if st.button("Find promoter (~30sec/gene)"):
                 if not gene_id.isdigit():
                     gene_id = gene_id.strip("'\'")
                     gene_names.append(gene_id)
-                    gene_id = convert_gene_names_to_entrez_ids(gene_names)
+                    gene_id = convert_gene_names_to_entrez_ids(gene_names, species_combobox)
                     gene_entrez_id = gene_id.copy()
                     
                 else:
