@@ -175,9 +175,8 @@ if st.button("Find promoter (~30sec/gene)"):
     st.success("Promoters extraction complete!")
 
 #Promoter
-if result_promoter is None:
+if 'result_promoter' not in locals():
     st.text_area("Promoter:")
-    st.text("Copy: CTRL+A CTRL+C") 
 else:
     st.text_area("Promoter:", value=result_promoter)
     st.text("Copy: CTRL+A CTRL+C")
