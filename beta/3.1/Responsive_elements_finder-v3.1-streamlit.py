@@ -200,6 +200,7 @@ def generate_iupac_variants(sequence):
 
 
 # Responsive Elements Finder (consensus sequence)
+# Responsive Elements Finder (consensus sequence)
 def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter):
     global table
     table = []
@@ -300,7 +301,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
                 for row in filtered_table:
                     result_lines.append("\t".join(str(cell) for cell in row))
                 text_result = "\n".join(result_lines)
-                filtered_table = pd.DataFrame(filtered_table, columns=header)
+                filtered_table = None
             else:
                 text_result = "No consensus sequence found with the specified threshold."
         else:
@@ -341,9 +342,7 @@ if st.button("Find responsive elements"):
             st.error(f"Error finding responsive elements: {str(e)}")
 
 # RE output
-if 'filtered_table' in locals():
-    st.write(filtered_table)
-else:
-    st.text_area("RE", value="None")
-
-
+if text_result:
+    st.text(text_result)
+elif filtered_table:
+    st.table(filtered_table)
