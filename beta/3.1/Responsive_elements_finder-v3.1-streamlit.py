@@ -337,7 +337,7 @@ threshold_entry = st.text_input("Threshold (%)", value="80")
 if st.button("Find responsive elements"):
     with st.spinner("Finding responsive elements..."):
         try:
-            text_result = 
+            text_result = find_sequence_consensus()
             st.success("Finding responsive elements done"
         except Exception as e:
             st.error(f"Error finding responsive elements: {str(e)}")
