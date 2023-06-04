@@ -12,8 +12,8 @@ st.header('Promoter Finder')
 gene_id_entry = st.text_area("Gene ID:")
 
 # Species
-st.text("Species :")
-species_combobox = st.selectbox("", ["Human", "Mouse", "Rat"], index=0)
+#st.text("Species :")
+species_combobox = st.selectbox("Species", ["Human", "Mouse", "Rat"], index=0)
 
 # Responsive ELements Finder
 st.header('Responsive Elements Finder')
