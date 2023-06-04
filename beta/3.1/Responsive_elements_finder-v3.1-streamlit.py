@@ -86,7 +86,10 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
 # Promoter Finder
 def find_promoters(gene_ids, species, upstream, downstream):
     try:
-        result_promoter = []
+        if 'result_promoter' not in st.session_state:
+            st.session_state.result_promoter = []
+            result_promoter = st.session_state.result_promoter
+
         for gene_id in gene_ids:
             if gene_id.isdigit():
                 entrez_id = gene_id
@@ -103,6 +106,8 @@ def find_promoters(gene_ids, species, upstream, downstream):
 
             # Append the result to the result_promoter
             result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
+            st.session_state.result_promoter = result_promoter
+
 
         return result_promoter
 
@@ -143,7 +148,9 @@ if st.button("Find promoter (~5sec/gene)"):
 # Promoter output
 if 'result_promoter' in locals():
     result_promoter_text = "\n".join(result_promoter)
-    result_promoter = st.text_area("Promoter:", value=result_promoter_text)
+    if 'result_promoter' not in st.session_state:
+    st.session_state.result_promoter = result_promoter_text
+    result_promoter = st.text_area("Promoter:", value=st.session_state.result_promoter)
     st.text("Copy: CTRL+A CTRL+C")
 else:
     result_promoter = st.text_area("Promoter:", value="")
@@ -332,4 +339,3 @@ if 'table' in locals():
         st.write("|".join(str(cell).ljust(15) for cell in row))
 else:
     st.text("")
-
