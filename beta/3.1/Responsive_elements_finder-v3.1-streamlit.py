@@ -9,7 +9,7 @@ st.title('Responsive Elements Finder')
 st.header('Promoter Finder')
 
 # Gene ID
-gene_id_entry = st.text_area("Gene ID:", value="PRKN \n 5071")
+gene_id_entry = st.text_area("Gene ID:", value="PRKN\n5071")
 
 # Species
 species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat"], index=0)
@@ -25,7 +25,7 @@ if st.button("Find promoter (~30sec/gene)"):
     get_sequence()
     
 #Promoter
-result_promoter = st.text_area("Promoter:")
+result_promoter = st.text_area("Promoter:\n(Copy: Ctrl+A Ctrl+C ; Paste: Ctrl+V)")
 
 # Responsive ELements Finder
 st.header('Responsive Elements Finder')
