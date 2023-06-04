@@ -120,6 +120,8 @@ def get_sequence(result_promoter):
     upstream = int(upstream_entry)
     downstream = int(downstream_entry)
     
+    gene_entrez_id = []
+    
     for gene_id in enumerate(gene_ids, start=1):
         try:            
             # gene name to ENTREZ_GENE_ID
