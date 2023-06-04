@@ -101,7 +101,7 @@ def find_promoters(gene_ids, species, upstream, downstream):
             dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
 
             # Append the result to the result_promoter
-            result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS: {chrstart}\n{dna_sequence}\n")
+            result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
 
         return result_promoter
 
@@ -145,3 +145,15 @@ if 'result_promoter' in locals():
     st.text("Copy: CTRL+A CTRL+C")
 else:
     st.text_area("Promoter:", value="")
+
+# Responsive Elements Finder
+st.header('Responsive Elements Finder')
+
+# RE entry
+entry_sequence = st.text_input("Responsive element (IUPAC authorized):", value="RRRCWWGYYY")
+
+# TSS entry
+if 'result_promoter' in locals():
+    st.text_input("TSS:", value=upstream)
+else:
+    st.text_input("Promoter:", value="2000")
