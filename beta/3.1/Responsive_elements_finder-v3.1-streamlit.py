@@ -141,6 +141,9 @@ if st.button("Find promoter (~30sec/gene)"):
             else:
                 gene_id = gene_id.strip("'\"")
                 gene_entrez_id = [gene_id]
+            
+        except Exception as e:
+            st.error(f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
         try:
             result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
             st.success("Promoters extraction complete!")
