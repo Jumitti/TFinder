@@ -296,7 +296,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
             if len(filtered_table) > 0:
                 result_lines = []
                 result_lines.append("| " + " | ".join(header) + " |")
-                result_lines.append("|" + "-" * (len(header) * 5 + len(header) - 1) + "|")
+                result_lines.append("|" + "-" * (len(header) * 6 + len(header) - 1) + "|")
                 for row in filtered_table:
                     result_lines.append("| " + " | ".join(str(cell) for cell in row) + " |")
                 text_result = result_lines
