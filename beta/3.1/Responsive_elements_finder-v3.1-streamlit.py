@@ -266,7 +266,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
 
         # Creating a results table
         if len(found_positions) > 0:
-            for position, sequence, variant, mismatches, homology_percentage in found_positions:
+            for position, sequence, variant, mismatches, best_homology_percentage in found_positions:
                 start_position = max(0, position - 3)
                 end_position = min(len(promoter_region), position + len(sequence) + 3)
                 sequence_with_context = promoter_region[start_position:end_position]
@@ -285,7 +285,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
                     row = [str(position).ljust(8),
                            str(tis_position).ljust(15),
                            sequence_with_context,
-                           "{:.2f}".format(homology_percentage).ljust(12),
+                           "{:.2f}".format(best_homology_percentage).ljust(12),
                            variant,
                            shortened_promoter_name]
                     table.append(row)
