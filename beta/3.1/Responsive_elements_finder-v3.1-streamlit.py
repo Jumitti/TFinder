@@ -170,7 +170,6 @@ upstream_entry = st.text_input("Upstream:", value="2000")
 downstream_entry = st.text_input("Downstream:", value="500")
 
 #Run Promoter Finder
-result_promoter = ""
 if st.button("Find promoter (~30sec/gene)"):
     with st.spinner("Finding promoters..."):
         result_promoter = ""
