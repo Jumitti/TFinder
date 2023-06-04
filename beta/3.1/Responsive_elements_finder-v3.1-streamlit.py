@@ -169,7 +169,7 @@ if st.button("Find responsive elements"):
             text_result = 
             st.success("Finding responsive elements done"
         except Exception as e:
-            st.error(f"Error finding responsive elements: {str(e)})
+            st.error(f"Error finding responsive elements: {str(e)}")
 
 # RE output
 if 'text_result' in locals():
