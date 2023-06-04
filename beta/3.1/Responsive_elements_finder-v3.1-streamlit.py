@@ -1,4 +1,5 @@
 import streamlit as st
+import clipboard
 
 #StreamLit
 
@@ -12,7 +13,7 @@ st.header('Promoter Finder')
 gene_id_entry = st.text_area("Gene ID:")
 
 if st.button("Paste"):
-    clipboard_content = st.paste()
+    clipboard_content = clipboard.paste()
 
     gene_id_entry = st.text_area("Gene ID:", value=clipboard_content)
 
