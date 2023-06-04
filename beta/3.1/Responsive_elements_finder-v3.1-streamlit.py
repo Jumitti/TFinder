@@ -139,6 +139,7 @@ def get_sequence():
             
         except Exception as e:
             result_promoter.append(f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
+            result_promoter_text = "\n".join(result_promoter)
                 
         # Gene information retrieval
         for gene_id in gene_entrez_id:
@@ -153,6 +154,7 @@ def get_sequence():
 
             # Append the result to the result_promoter
             result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS: {chrstart}\n{dna_sequence}\n\n")
+            result_promoter_text = "\n".join(result_promoter)
 
             print(result_promoter)
 
@@ -179,8 +181,7 @@ if st.button("Find promoter (~30sec/gene)"):
     st.success("Promoters extraction complete!")
 
 #Promoter
-result_promoter_text = "\n".join(result_promoter)
-if result_promoter_text:
+if 'result_promoter_text' is not None:
     st.text_area("Promoter:", value=result_promoter_text)
     st.text("Copy: CTRL+A CTRL+C")
 else:
