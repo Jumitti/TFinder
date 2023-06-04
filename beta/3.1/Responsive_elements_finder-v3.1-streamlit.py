@@ -198,7 +198,7 @@ def generate_iupac_variants(sequence):
     return sequences
 
 # Responsive Elements Finder (consensus sequence)
-def find_sequence_consensus():
+def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter):
     global table
     table = []
     
@@ -328,7 +328,7 @@ if st.button("Find responsive elements"):
             sequence_consensus_input = entry_sequence 
             tis_value = int(entry_tis)
             threshold = float(threshold_entry)
-            text_result = find_sequence_consensus()
+            text_result = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
             st.success("Finding responsive elements done")
         except Exception as e:
             st.error(f"Error finding responsive elements: {str(e)}")
