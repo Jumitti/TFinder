@@ -348,6 +348,6 @@ if st.button("Find responsive elements"):
 
 # RE output
 if 'text_result' in locals():
-    st.text("Responsive elements:", value=text_result)
+    text_result = st.text_area("Responsive elements:", value=text_result)
 else:
-    st.text("Responsive elements:", value="")
+    text_result = st.text_area("Responsive elements:", value="")
