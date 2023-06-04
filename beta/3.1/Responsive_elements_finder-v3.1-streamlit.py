@@ -121,7 +121,7 @@ def get_sequence():
     downstream = int(downstream_entry)
     
     gene_entrez_id = []
-    result_promoter= []
+    result_promoter= ""
     
     for gene_id in enumerate(gene_ids, start=1):
         try:            
