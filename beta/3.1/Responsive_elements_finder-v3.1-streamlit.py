@@ -12,13 +12,8 @@ st.header('Promoter Finder')
 gene_id_entry = st.text_area("Gene ID:")
 
 # Species
-st.text("Species:")
-
-# Sélection de l'espèce dans le menu déroulant
-selected_species = st.selectbox("", ["Human", "Mouse", "Rat"], index=0)
-
-# Affichage de l'espèce sélectionnée
-st.write("Species :", selected_species)
+st.text("Species :")
+species_combobox = st.selectbox("", ["Human", "Mouse", "Rat"], index=0)
 
 # Responsive ELements Finder
 st.header('Responsive Elements Finder')
