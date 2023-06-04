@@ -86,9 +86,9 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
 # Promoter Finder
 def find_promoters(gene_ids, species, upstream, downstream):
     try:
+        result_promoter = st.session_state.result_promoter
         if 'result_promoter' not in st.session_state:
             st.session_state.result_promoter = []
-            result_promoter = st.session_state.result_promoter
 
         for gene_id in gene_ids:
             if gene_id.isdigit():
