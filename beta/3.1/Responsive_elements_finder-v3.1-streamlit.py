@@ -323,8 +323,9 @@ if st.button("Find responsive elements"):
             st.error(f"Error finding responsive elements: {str(e)}")
 
 # RE output
-if 'table' in locals():
+if table:
     for row in table:
         st.write("|".join(str(cell).ljust(15) for cell in row))
 else:
     st.text("No consensus sequence found with the specified threshold.")
+
