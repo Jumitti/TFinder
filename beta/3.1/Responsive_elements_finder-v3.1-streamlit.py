@@ -160,7 +160,7 @@ def get_sequence():
                 gene_entrez_id = [gene_id]
             
         except Exception as e:
-            result_promoter += f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
+            result_promoter += f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n"
                 
         # Gene information retrieval
         for gene_id in gene_entrez_id:
