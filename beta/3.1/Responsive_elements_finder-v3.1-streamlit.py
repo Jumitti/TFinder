@@ -129,26 +129,27 @@ if st.button("Find promoter (~30sec/gene)"):
         upstream = int(upstream_entry)
         downstream = int(downstream_entry)
         for gene_id in gene_ids:
-        try:            
-            # gene name to ENTREZ_GENE_ID
-            gene_names = []
-            if not gene_id.isdigit():
-                gene_id = gene_id.strip("'\'")
-                gene_names.append(gene_id)
-                gene_id = convert_gene_names_to_entrez_ids(gene_names)
-                gene_entrez_id = gene_id.copy()
+            try:            
+                # gene name to ENTREZ_GENE_ID
+                gene_names = []
+                if not gene_id.isdigit():
+                    gene_id = gene_id.strip("'\'")
+                    gene_names.append(gene_id)
+                    gene_id = convert_gene_names_to_entrez_ids(gene_names)
+                    gene_entrez_id = gene_id.copy()
+                    
+                else:
+                    gene_id = gene_id.strip("'\"")
+                    gene_entrez_id = [gene_id]
                 
-            else:
-                gene_id = gene_id.strip("'\"")
-                gene_entrez_id = [gene_id]
-            
-        except Exception as e:
-            st.error(f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
-        try:
-            result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
-            st.success("Promoters extraction complete!")
-        except Exception as e:
-            st.error(f"Error finding promoters: {str(e)}")
+            except Exception as e:
+                st.error(f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
+                
+            try:
+                result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
+                st.success("Promoters extraction complete!")
+            except Exception as e:
+                st.error(f"Error finding promoters: {str(e)}")
 
 # Promoter
 if 'result_promoter' in locals():
