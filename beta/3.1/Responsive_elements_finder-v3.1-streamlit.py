@@ -10,7 +10,7 @@ st.header('Promoter Finder')
 
 # Gene ID
 if st.button("Paste"):
-    clipboard_content = pyperclip.paste()
+    clipboard_content = st.paste()
 
     gene_id_entry = st.text_area("Gene ID:", value=clipboard_content)
 
