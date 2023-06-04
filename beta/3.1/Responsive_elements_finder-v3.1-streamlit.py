@@ -146,6 +146,7 @@ if 'result_promoter' in locals():
     result_promoter_text = "\n".join(result_promoter)
     result_promoter = st.text_area("Promoter:", value=result_promoter_text)
     st.session_state.result_promoter = result_promoter
+    result_promoter = st.session_state.result_promoter
     st.text("Copy: CTRL+A CTRL+C")
 else:
     result_promoter = st.text_area("Promoter:", value="")
