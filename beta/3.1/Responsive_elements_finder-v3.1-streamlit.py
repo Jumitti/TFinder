@@ -177,6 +177,7 @@ downstream_entry = st.text_input("Downstream:", value="500")
 #Run Promoter Finder
 if st.button("Find promoter (~30sec/gene)"):
     with st.spinner("Finding promoters..."):
+        result_promoter= ""
         get_sequence(result_promoter)
     st.success("Promoters extraction complete!")
 
