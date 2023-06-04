@@ -231,7 +231,6 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
                 i += 1
 
     # REF
-    text_result = ""
     for shortened_promoter_name, promoter_region in promoters:
 
         found_positions = []
@@ -257,21 +256,13 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
                             break
 
                     if not better_homology:
+                        found_positions.append((i, sequence, variant, mismatches, homology_percentage))
 
-                        best_homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
-
-                        found_positions.append((i, sequence, variant, mismatches, best_homology_percentage))
-
-        # Sort positions in ascending order
-        found_positions.sort(key=lambda x: x[0])
+        # Sort positions in descending order of homology percentage
+        found_positions.sort(key=lambda x: x[4], reverse=True)
 
         # Creating a results table
         if len(found_positions) > 0:
-            result_lines = []
-            result_lines.append(" | ".join(header))
-            result_lines.append("-" * len(header) + "  " + "-" * (len(header[0]) + len(header[1]) + 3) +
-                                "  " + "-" * (len(header[2]) + len(header[3]) + len(header[4]) + 6) +
-                                "  " + "-" * (len(header[5]) + 2))
             for position, sequence, variant, mismatches, homology_percentage in found_positions:
                 start_position = max(0, position - 3)
                 end_position = min(len(promoter_region), position + len(sequence) + 3)
@@ -287,23 +278,22 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
                 sequence_with_context = ''.join(sequence_parts)
                 tis_position = position - tis_value
 
-                row = [str(position).ljust(len(header[0])),
-                       str(tis_position).ljust(len(header[1])),
-                       sequence_with_context.ljust(len(header[2])),
-                       "{:.2f}".format(homology_percentage).ljust(len(header[3])),
-                       variant.ljust(len(header[4])),
-                       shortened_promoter_name.ljust(len(header[5]))]
-                result_lines.append(" | ".join(row))
-            text_result = "\n".join(result_lines)
-        else:
-            text_result = "No consensus sequence found in the promoter region."
+                if homology_percentage >= threshold:
+                    row = [str(position).ljust(8),
+                           str(tis_position).ljust(15),
+                           sequence_with_context,
+                           "{:.2f}".format(homology_percentage).ljust(12),
+                           variant,
+                           shortened_promoter_name]
+                    table.append(row)
 
-    return text_result
+    if len(table) > 0:
+        table.sort(key=lambda x: float(x[3]), reverse=True)
+        header = ["Position", "Position (TIS)", "Sequence", "% Homology", "Ref seq", "Prom."]
+        table.insert(0, header)
 
+    return table
 
-# Def table
-table = []
-header = ["Position", "Position (TIS)", "Sequence", "% Homology", "Ref seq", "Prom."]
 
 # Responsive Elements Finder
 st.header('Responsive Elements Finder')
@@ -327,13 +317,14 @@ if st.button("Find responsive elements"):
             sequence_consensus_input = entry_sequence
             tis_value = int(entry_tis)
             threshold = float(threshold_entry)
-            text_result = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
+            table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
             st.success("Finding responsive elements done")
         except Exception as e:
             st.error(f"Error finding responsive elements: {str(e)}")
 
 # RE output
-if text_result:
-    st.text(text_result)
+if 'table' in locals():
+    for row in table:
+        st.write("|".join(str(cell).ljust(15) for cell in row))
 else:
-    st.text_area(value="")
+    st.text("No consensus sequence found with the specified threshold.")
