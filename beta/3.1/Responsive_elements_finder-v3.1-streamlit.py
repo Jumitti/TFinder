@@ -120,10 +120,8 @@ def get_sequence(result_promoter):
     upstream = int(upstream_entry)
     downstream = int(downstream_entry)
     
-    for i, gene_id in enumerate(gene_ids, start=1):
-        try:
-            number_gene_id = i
-            
+    for gene_id in enumerate(gene_ids, start=1):
+        try:            
             # gene name to ENTREZ_GENE_ID
             gene_names = []
             if not gene_id.isdigit():
@@ -177,8 +175,13 @@ if st.button("Find promoter (~30sec/gene)"):
     st.success("Promoters extraction complete!")
 
 #Promoter
-st.text_area("Promoter:", value=result_promoter)
-st.text("Copy: CTRL+A CTRL+C")
+if result_promoter is not None:
+    st.text_area("Promoter:")
+    st.text("Copy: CTRL+A CTRL+C")
+    
+    else:
+    st.text_area("Promoter:", value=result_promoter)
+    st.text("Copy: CTRL+A CTRL+C")
 
 # Responsive ELements Finder
 st.header('Responsive Elements Finder')
