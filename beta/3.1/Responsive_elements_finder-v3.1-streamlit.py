@@ -128,6 +128,7 @@ if st.button("Find promoter (~30sec/gene)"):
         gene_ids = gene_id_entry.strip().split("\n")
         upstream = int(upstream_entry)
         downstream = int(downstream_entry)
+        species = int(species_combobox)
         for gene_id in gene_ids:
             try:            
                 # gene name to ENTREZ_GENE_ID
