@@ -7,37 +7,6 @@ import pandas as pd
 
 st.title('Responsive Elements Finder')
 
-# Promoter Finder STREAMLIT
-
-st.header('Promoter Finder')
-
-# Gene ID
-gene_id_entry = st.text_area("Gene ID:", value="PRKN\n5071")
-
-# Species
-species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat"], index=0)
-
-#Upstream
-upstream_entry = st.text_input("Upstream:", value="2000")
-
-#Downstream
-downstream_entry = st.text_input("Downstream:", value="500")
-
-#Run Promoter Finder
-if st.button("Find promoter (~30sec/gene)"):
-    with st.spinner("Finding promoters..."):
-        get_sequence(result_promoter)
-    st.success("Promoters extraction complete!")
-
-#Promoter
-result_promoter = st.text_area("Promoter:")
-st.text("Copy: CTRL+A CTRL+C")
-
-# Responsive ELements Finder
-st.header('Responsive Elements Finder')
-
-
-
 #Promoter Finder
 
 # Convert gene to ENTREZ_GENE_ID
@@ -175,3 +144,32 @@ def get_sequence(result_promoter):
 
             # Append the result to the result_promoter
             result_promoter += f">{gene_name} | {species} | {chraccver} | TSS: {chrstart}\n{dna_sequence}\n\n"
+
+# Promoter Finder STREAMLIT
+
+st.header('Promoter Finder')
+
+# Gene ID
+gene_id_entry = st.text_area("Gene ID:", value="PRKN\n5071")
+
+# Species
+species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat"], index=0)
+
+#Upstream
+upstream_entry = st.text_input("Upstream:", value="2000")
+
+#Downstream
+downstream_entry = st.text_input("Downstream:", value="500")
+
+#Run Promoter Finder
+if st.button("Find promoter (~30sec/gene)"):
+    with st.spinner("Finding promoters..."):
+        get_sequence(result_promoter)
+    st.success("Promoters extraction complete!")
+
+#Promoter
+result_promoter = st.text_area("Promoter:")
+st.text("Copy: CTRL+A CTRL+C")
+
+# Responsive ELements Finder
+st.header('Responsive Elements Finder')
