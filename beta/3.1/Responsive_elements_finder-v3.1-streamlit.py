@@ -295,12 +295,12 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
 
             if len(filtered_table) > 0:
                 result_lines = []
-                result_lines.append("| " + " | ".join(header) + " |")
-                result_lines.append("|" + "-" * (len(header) * 6 + len(header) - 1) + "|")
+                result_lines.append("\t".join(header))
+                result_lines.append("\t".join("-" * len(col) for col in header))
                 for row in filtered_table:
-                    result_lines.append("| " + " | ".join(str(cell) for cell in row) + " |")
-                text_result = result_lines
-                filtered_table = pd.DataFrame(text_result, columns=header)
+                    result_lines.append("\t".join(str(cell) for cell in row))
+                text_result = "\n".join(result_lines)
+                filtered_table = pd.DataFrame(filtered_table, columns=header)
             else:
                 text_result = "No consensus sequence found with the specified threshold."
         else:
@@ -344,6 +344,8 @@ if st.button("Find responsive elements"):
 if 'filtered_table' in locals():
     st.table(filtered_table)
 else:
+
+
     st.text_area("RE", value="None")
 
 
