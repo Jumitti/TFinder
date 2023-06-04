@@ -201,14 +201,10 @@ def generate_iupac_variants(sequence):
 def find_sequence_consensus():
     global table
     table = []
-    sequence_consensus_input = entry_sequence 
-    tis_value = int(entry_tis)
-
+    
     # Transform with IUPAC code
     sequence_consensus = generate_iupac_variants(sequence_consensus_input)
-
-    threshold = float(threshold_entry)
-
+    
     # Promoter input type
     lines = result_promoter
     promoters = []
@@ -329,6 +325,9 @@ threshold_entry = st.text_input("Threshold (%)", value="80")
 if st.button("Find responsive elements"):
     with st.spinner("Finding responsive elements..."):
         try:
+            sequence_consensus_input = entry_sequence 
+            tis_value = int(entry_tis)
+            threshold = float(threshold_entry)
             text_result = find_sequence_consensus()
             st.success("Finding responsive elements done")
         except Exception as e:
