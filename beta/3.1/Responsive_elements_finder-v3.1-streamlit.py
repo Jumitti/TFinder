@@ -179,7 +179,7 @@ if result_promoter is not None:
     st.text_area("Promoter:")
     st.text("Copy: CTRL+A CTRL+C")
     
-    else:
+   else:
     st.text_area("Promoter:", value=result_promoter)
     st.text("Copy: CTRL+A CTRL+C")
 
