@@ -153,6 +153,7 @@ def get_sequence():
 
             # Append the result to the result_promoter
             result_promoter += f">{gene_name} | {species} | {chraccver} | TSS: {chrstart}\n{dna_sequence}\n\n"
+            print(result_promoter)
 
 # Promoter Finder STREAMLIT
 
