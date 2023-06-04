@@ -156,7 +156,7 @@ def get_sequence():
             result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS: {chrstart}\n{dna_sequence}\n\n")
             result_promoter_text = "\n".join(result_promoter)
 
-            print(result_promoter)
+            st.write(result_promoter)
 
 # Promoter Finder STREAMLIT
 
@@ -185,6 +185,6 @@ if 'result_promoter_text' in locals():
     st.text_area("Promoter:", value=result_promoter_text)
     st.text("Copy: CTRL+A CTRL+C")
 else:
-    st.text_area("Promoter:")
+    st.text_area("Promoter:", value="")
 # Responsive ELements Finder
 st.header('Responsive Elements Finder')
