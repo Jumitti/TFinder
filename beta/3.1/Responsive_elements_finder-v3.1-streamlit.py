@@ -141,10 +141,10 @@ if st.button("Find promoter (~30sec/gene)"):
 # Promoter
 if 'result_promoter' in locals():
     result_promoter_text = "\n".join(result_promoter)
-    st.text_area("Promoter:", value=result_promoter_text)
+    result_promoter = st.text_area("Promoter:", value=result_promoter_text)
     st.text("Copy: CTRL+A CTRL+C")
 else:
-    st.text_area("Promoter:", value="")
+    result_promoter = st.text_area("Promoter:", value="")
 
 # Responsive Elements Finder
 st.header('Responsive Elements Finder')
@@ -154,6 +154,6 @@ entry_sequence = st.text_input("Responsive element (IUPAC authorized):", value="
 
 # TSS entry
 if 'result_promoter' in locals():
-    st.text_input("TSS:", value=upstream)
+    entry_tis = st.text_input("TSS:", value=upstream)
 else:
-    st.text_input("Promoter:", value="2000")
+    entry_tis = st.text_input("Promoter:", value="0")
