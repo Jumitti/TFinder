@@ -106,8 +106,7 @@ def find_promoters(gene_ids, species, upstream, downstream):
 
             # Append the result to the result_promoter
             result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
-            result_promoter_text = "\n".join(result_promoter)
-            st.session_state.result_promoter = result_promoter_text
+            st.session_state.result_promoter = result_promoter
 
 
         return result_promoter
@@ -147,7 +146,7 @@ if st.button("Find promoter (~5sec/gene)"):
             st.error(f"Error finding promoters: {str(e)}")
 
 # Promoter output
-if 'result_promoter_text' not in st.session_state:
+if 'result_promoter' not in st.session_state:
     st.session_state.result_promoter = result_promoter_text
     result_promoter = st.text_area("Promoter:", value=st.session_state.result_promoter)
     st.text("Copy: CTRL+A CTRL+C")
