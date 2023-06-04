@@ -235,7 +235,8 @@ def find_sequence_consensus():
     
 
     # REF
-    for j, (shortened_promoter_name, promoter_region) in enumerate(promoters, start=1):
+    text_result = ""
+    for shortened_promoter_name, promoter_region in promoters:
         
         found_positions = []
         
@@ -311,17 +312,6 @@ def find_sequence_consensus():
 table = []
 header = ["Position", "Position (TIS)", "Sequence", "% Homology", "Ref seq", "Prom."]
  
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
 # Responsive Elements Finder
 st.header('Responsive Elements Finder')
 
