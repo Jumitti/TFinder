@@ -299,7 +299,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
                 result_lines.append("|" + "-" * (len(header) * 5 + len(header) - 1) + "|")
                 for row in filtered_table:
                     result_lines.append("| " + " | ".join(str(cell) for cell in row) + " |")
-                text_result = "\n".join(result_lines)
+                text_result = result_lines
             else:
                 text_result = "No consensus sequence found with the specified threshold."
         else:
@@ -341,6 +341,6 @@ if st.button("Find responsive elements"):
 
 # RE output
 if 'text_result' in locals():
-    text_result = st.text_area("Responsive elements:", value=text_result)
+    st.table(filtered_table)
 else:
     text_result = st.text_area("Responsive elements:", value="")
