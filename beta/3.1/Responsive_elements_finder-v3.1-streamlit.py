@@ -177,7 +177,7 @@ if st.button("Find promoter (~30sec/gene)"):
     st.success("Promoters extraction complete!")
 
 #Promoter
-result_promoter = st.text_area("Promoter:")
+st.text_area("Promoter:", value=result_promoter)
 st.text("Copy: CTRL+A CTRL+C")
 
 # Responsive ELements Finder
