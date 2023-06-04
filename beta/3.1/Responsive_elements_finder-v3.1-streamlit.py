@@ -200,7 +200,6 @@ def generate_iupac_variants(sequence):
 
 
 # Responsive Elements Finder (consensus sequence)
-# Responsive Elements Finder (consensus sequence)
 def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter):
     global table
     table = []
@@ -268,6 +267,11 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
 
         # Creating a results table
         if len(found_positions) > 0:
+            result_lines = []
+            result_lines.append(" | ".join(header))
+            result_lines.append("-" * len(header) + "  " + "-" * (len(header[0]) + len(header[1]) + 3) +
+                                "  " + "-" * (len(header[2]) + len(header[3]) + len(header[4]) + 6) +
+                                "  " + "-" * (len(header[5]) + 2))
             for position, sequence, variant, mismatches, homology_percentage in found_positions:
                 start_position = max(0, position - 3)
                 end_position = min(len(promoter_region), position + len(sequence) + 3)
@@ -283,27 +287,14 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
                 sequence_with_context = ''.join(sequence_parts)
                 tis_position = position - tis_value
 
-                row = [position, tis_position, sequence_with_context, homology_percentage, variant,
-                       shortened_promoter_name]
-                table.append(row)
-
-            table.sort(key=lambda x: (x[5], float(x[3])), reverse=False)
-
-            # Filter results based on threshold
-            filtered_table = [row for row in table if float(row[3]) >= threshold]
-
-            filtered_table = sorted(filtered_table, key=lambda x: (x[5], -float(x[3])))
-
-            if len(filtered_table) > 0:
-                result_lines = []
-                result_lines.append("\t".join(header))
-                result_lines.append("\t".join("-" * len(col) for col in header))
-                for row in filtered_table:
-                    result_lines.append("\t".join(str(cell) for cell in row))
-                text_result = "\n".join(result_lines)
-                filtered_table = None
-            else:
-                text_result = "No consensus sequence found with the specified threshold."
+                row = [str(position).ljust(len(header[0])),
+                       str(tis_position).ljust(len(header[1])),
+                       sequence_with_context.ljust(len(header[2])),
+                       "{:.2f}".format(homology_percentage).ljust(len(header[3])),
+                       variant.ljust(len(header[4])),
+                       shortened_promoter_name.ljust(len(header[5]))]
+                result_lines.append(" | ".join(row))
+            text_result = "\n".join(result_lines)
         else:
             text_result = "No consensus sequence found in the promoter region."
 
@@ -344,5 +335,5 @@ if st.button("Find responsive elements"):
 # RE output
 if text_result:
     st.text(text_result)
-elif filtered_table:
-    st.table(filtered_table)
+else filtered_table:
+    st.text_area(value="")
