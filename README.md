@@ -17,6 +17,9 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 - Win 7 : ❌
 - Win 10/11 : ✅
 - Linux/MacOS : Not tested
+- Online tools :
+
+![CargandoLoadingGIF](https://github.com/Jumitti/Responsive-Elements-Finder/assets/112354223/9f8112aa-341f-42de-9484-bf93e115ce5b)
 
 ## Functions
 ### Promoter Finder (requires internet connection)
