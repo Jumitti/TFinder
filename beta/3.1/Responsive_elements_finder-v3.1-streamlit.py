@@ -1,5 +1,4 @@
 import streamlit as st
-import clipboard
 
 #StreamLit
 
@@ -20,8 +19,6 @@ selected_species = st.selectbox("", ["Human", "Mouse", "Rat"], index=0)
 
 # Affichage de l'espèce sélectionnée
 st.write("Species :", selected_species)
-
-
 
 # Responsive ELements Finder
 st.header('Responsive Elements Finder')
