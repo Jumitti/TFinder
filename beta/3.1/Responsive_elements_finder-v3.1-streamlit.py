@@ -1,13 +1,5 @@
 import streamlit as st
 import requests
-import itertools
-import pandas as pd
-
-#StreamLit
-
-st.title('Responsive Elements Finder')
-
-# Common features
 
 # Reverse complement
 def reverse_complement(sequence):
@@ -16,16 +8,13 @@ def reverse_complement(sequence):
     complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
     return complement_sequence
 
-#Promoter Finder
-
 # Convert gene to ENTREZ_GENE_ID
-def convert_gene_names_to_entrez_ids(gene_names):
+def convert_gene_names_to_entrez_ids(gene_names, species):
     try:
         entrez_ids = []
-        for gene_id in gene_names:
-            species = species_combobox
+        for gene_name in gene_names:
             # Request for ENTREZ_GENE_ID
-            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_id}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml"
+            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_name}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml"
             response = requests.get(url)
 
             if response.status_code == 200:
@@ -46,19 +35,16 @@ def convert_gene_names_to_entrez_ids(gene_names):
     except Exception as e:
         raise Exception(f"Error: {str(e)}")
 
-#Gene informations
+# Get gene information
 def get_gene_info(gene_id, species):
     try:
-        # Request for gene informations
+        # Request gene information
         url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml&species={species}"
         response = requests.get(url)
 
         if response.status_code == 200:
             response_data = response.json()
-
-            # Extraction of gene informations
             gene_info = response_data['result'][str(gene_id)]
-
             return gene_info
 
         else:
@@ -67,99 +53,61 @@ def get_gene_info(gene_id, species):
     except Exception as e:
         raise Exception(f"Error : {str(e)}")
 
-#Promoter finder
+# Get DNA sequence
 def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
     try:
-        # Calculating extraction coordinates on the chromosome
         if chrstop > chrstart:
             start = chrstart - upstream
             end = chrstart + downstream
-            
-            # Request for DNA sequence
-            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
-            response = requests.get(url)
-            
-            if response.status_code == 200:
-                # Extraction of DNA sequence
-                dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
-                
-                sequence = dna_sequence
-            
-            else:
-                raise Exception(f"An error occurred while retrieving the DNA sequence : {response.status_code}")
-        
         else:
             start = chrstart + upstream
             end = chrstart - downstream
-            
-            # Request for DNA sequence
-            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={end}&to={start}&rettype=fasta&retmode=text"
-            response = requests.get(url)
-            
-            if response.status_code == 200:
-                # Extraction of DNA sequence
-                dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
-                
-                
-                sequence = dna_sequence
-                sequence = reverse_complement(sequence)
-                
-            else:
-                raise Exception(f"An error occurred while retrieving the DNA sequence : {response.status_code}")
 
-        return sequence
+        # Request for DNA sequence
+        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            # Extraction of DNA sequence
+            dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
+            if chrstop > chrstart:
+                sequence = dna_sequence
+            else:
+                sequence = reverse_complement(dna_sequence)
+
+            return sequence
+
+        else:
+            raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
 
     except Exception as e:
-        raise Exception(f"Error : {str(e)}")
+        raise Exception(f"Error: {str(e)}")
 
-# Display gene and promoter
-def get_sequence(result_promoter):
-    species = species_combobox
-    gene_ids = gene_id_entry.strip().split("\n")
-    total_gene_ids = len(gene_ids)
-    upstream = int(upstream_entry)
-    downstream = int(downstream_entry)
-    
-    gene_entrez_id = []
-    result_promoter= []
-    
-    for gene_id in enumerate(gene_ids, start=1):
-        try:            
-            # gene name to ENTREZ_GENE_ID
-            gene_names = []
-            if not gene_id.isdigit():
-                gene_id = gene_id.strip("'\'")
-                gene_names.append(gene_id)
-                gene_id = convert_gene_names_to_entrez_ids(gene_names)
-                gene_entrez_id = gene_id.copy()
-                
-            else:
-                gene_id = gene_id.strip("'\"")
-                gene_entrez_id = [gene_id]
-            
-        except Exception as e:
-            result_promoter.append(f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
-            result_promoter_text = "\n".join(result_promoter)
-                
-        # Gene information retrieval
-        for gene_id in gene_entrez_id:
+# Promoter Finder
+def find_promoters(gene_ids, species, upstream, downstream):
+    try:
+        result_promoter = []
+        for gene_id in gene_ids:
             gene_info = get_gene_info(gene_id, species)
             gene_name = gene_info['name']
             chraccver = gene_info['genomicinfo'][0]['chraccver']
             chrstart = gene_info['genomicinfo'][0]['chrstart']
             chrstop = gene_info['genomicinfo'][0]['chrstop']
 
-            # Promoter retrieval
             dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
 
             # Append the result to the result_promoter
             result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS: {chrstart}\n{dna_sequence}\n\n")
-            result_promoter_text = "\n".join(result_promoter)
 
-            st.write(result_promoter)
+        return result_promoter
 
-# Promoter Finder STREAMLIT
+    except Exception as e:
+        raise Exception(f"Error retrieving gene information: {str(e)}")
 
+# Streamlit app
+st.title('Responsive Elements Finder')
+
+# Promoter Finder
 st.header('Promoter Finder')
 
 # Gene ID
@@ -168,24 +116,28 @@ gene_id_entry = st.text_area("Gene ID:", value="PRKN\n5071")
 # Species
 species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat"], index=0)
 
-#Upstream
+# Upstream
 upstream_entry = st.text_input("Upstream:", value="2000")
 
-#Downstream
+# Downstream
 downstream_entry = st.text_input("Downstream:", value="500")
 
-#Run Promoter Finder
+# Run Promoter Finder
 if st.button("Find promoter (~30sec/gene)"):
     with st.spinner("Finding promoters..."):
-        result_promoter= ""
-        get_sequence(result_promoter)
-    st.success("Promoters extraction complete!")
+        gene_ids = gene_id_entry.strip().split("\n")
+        upstream = int(upstream_entry)
+        downstream = int(downstream_entry)
+        try:
+            result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
+            st.success("Promoters extraction complete!")
+        except Exception as e:
+            st.error(f"Error finding promoters: {str(e)}")
 
-#Promoter
-if 'result_promoter_text' in locals():
+# Promoter
+if 'result_promoter' in locals():
+    result_promoter_text = "\n".join(result_promoter)
     st.text_area("Promoter:", value=result_promoter_text)
     st.text("Copy: CTRL+A CTRL+C")
 else:
     st.text_area("Promoter:", value="")
-# Responsive ELements Finder
-st.header('Responsive Elements Finder')
