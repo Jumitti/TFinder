@@ -285,7 +285,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
                     row = [str(position).ljust(8),
                            str(tis_position).ljust(15),
                            sequence_with_context,
-                           "{:.2f}".format(best_homology_percentage).ljust(12),
+                           "{:.2f}".format(homology_percentage).ljust(12),
                            variant,
                            shortened_promoter_name]
                     table.append(row)
