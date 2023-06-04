@@ -1,5 +1,7 @@
 import streamlit as st
 import requests
+import tabulate
+import pandas as pd
 
 # Reverse complement
 def reverse_complement(sequence):
@@ -146,6 +148,175 @@ if 'result_promoter' in locals():
     st.text("Copy: CTRL+A CTRL+C")
 else:
     result_promoter = st.text_area("Promoter:", value="")
+    
+    
+# Responsive-Elements-Finder
+
+# Generation of all responsive elements
+def generate_variants(sequence):  
+    variants = []
+
+    # Original sequence
+    variants.append(sequence)
+
+    # Reverse sequence
+    variants.append(sequence[::-1])
+
+    # Complementary sequence
+    complement_sequence = "".join(reverse_complement(base) for base in sequence)
+    variants.append(complement_sequence)
+    complement_mirror_sequence = complement_sequence[::-1]
+    variants.append(complement_mirror_sequence)
+    
+    return variants
+
+# IUPAC code
+def generate_iupac_variants(sequence): 
+    iupac_codes = {
+        "R": ["A", "G"],
+        "Y": ["C", "T"],
+        "M": ["A", "C"],
+        "K": ["G", "T"],
+        "W": ["A", "T"],
+        "S": ["C", "G"],
+        "B": ["C", "G", "T"],
+        "D": ["A", "G", "T"],
+        "H": ["A", "C", "T"],
+        "V": ["A", "C", "G"],
+        "N": ["A", "C", "G", "T"]
+    }
+
+    sequences = [sequence]
+    for i, base in enumerate(sequence):
+        if base.upper() in iupac_codes:
+            new_sequences = []
+            for seq in sequences:
+                for alternative in iupac_codes[base.upper()]:
+                    new_sequence = seq[:i] + alternative + seq[i + 1:]
+                    new_sequences.append(new_sequence)
+            sequences = new_sequences
+            
+    return sequences
+
+# Responsive Elements Finder (consensus sequence)
+def find_sequence_consensus():
+    global table
+    table = []
+    sequence_consensus_input = entry_sequence 
+    tis_value = int(entry_tis)
+
+    # Transform with IUPAC code
+    sequence_consensus = generate_iupac_variants(sequence_consensus_input)
+
+    threshold = float(threshold_entry)
+
+    # Promoter input type
+    lines = result_promoter
+    promoters = []
+    
+    first_line = lines
+    if first_line.startswith(("A", "T", "C", "G")):
+        shortened_promoter_name = "n.d."
+        promoter_region = lines
+        promoters.append((shortened_promoter_name, promoter_region))
+    else :
+        lines = result_promoter.split("\n")
+        i = 0
+        while i < len(lines):
+            line = lines[i]
+            if line.startswith(">"):
+                promoter_name = line[1:]
+                shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
+                promoter_region = lines[i+1]
+                promoters.append((shortened_promoter_name, promoter_region))
+                i += 2
+            else:
+                i += 1
+    
+    
+
+    # REF
+    for j, (shortened_promoter_name, promoter_region) in enumerate(promoters, start=1):
+        
+        found_positions = []
+        
+        for consensus in sequence_consensus:
+            variants = generate_variants(consensus)
+            for variant in variants:
+                
+                variant_length = len(variant)  
+
+                for i in range(len(promoter_region) - variant_length + 1):
+                    sequence = promoter_region[i:i + variant_length]
+
+                    mismatches = sum(a != b for a, b in zip(sequence, variant))  # Mismatches
+                    
+                    homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
+                    
+                    # Find best homology sequence
+                    better_homology = False
+                    for position, _, _, _, best_homology_percentage in found_positions:
+                        if abs(i - position) < 1 and homology_percentage <= best_homology_percentage:
+                            better_homology = True
+                            break
+
+                    if not better_homology:
+                       
+                        best_homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
+                        
+                        found_positions.append((i, sequence, variant, mismatches, best_homology_percentage))                            
+
+        # Sort positions in ascending order
+        found_positions.sort(key=lambda x: x[0])
+
+        # Creating a results table
+        if len(found_positions) > 0:
+            for position, sequence, variant, mismatches, homology_percentage in found_positions:
+                start_position = max(0, position - 3)
+                end_position = min(len(promoter_region), position + len(sequence) + 3)
+                sequence_with_context = promoter_region[start_position:end_position]
+
+                sequence_parts = []
+                for j in range(start_position, end_position):
+                    if j < position or j >= position + len(sequence):
+                        sequence_parts.append(sequence_with_context[j - start_position].lower())
+                    else:
+                        sequence_parts.append(sequence_with_context[j - start_position].upper())
+
+                sequence_with_context = ''.join(sequence_parts)
+                tis_position = position - tis_value
+
+                row = [position, tis_position, sequence_with_context, homology_percentage, variant, shortened_promoter_name]
+                table.append(row)
+
+            table.sort(key=lambda x: (x[5], float(x[3])), reverse=False)
+
+            # Filter results based on threshold
+            filtered_table = [row for row in table if float(row[3]) >= threshold]
+            
+            filtered_table = sorted(filtered_table, key=lambda x: (x[5], -float(x[3])))
+
+            if len(filtered_table) > 0:
+                result = tabulate(filtered_table, headers=header, tablefmt="pipe")
+            else:
+                result = "No consensus sequence found with the specified threshold."
+        else:
+            result = "No consensus sequence found in the promoter region."
+
+#Def table
+table = []
+header = ["Position", "Position (TIS)", "Sequence", "% Homology", "Ref seq", "Prom."]
+ 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 # Responsive Elements Finder
 st.header('Responsive Elements Finder')
