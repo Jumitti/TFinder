@@ -121,7 +121,7 @@ def get_sequence():
     downstream = int(downstream_entry)
     
     gene_entrez_id = []
-    result_promoter= ""
+    result_promoter= []
     
     for gene_id in enumerate(gene_ids, start=1):
         try:            
@@ -138,7 +138,7 @@ def get_sequence():
                 gene_entrez_id = [gene_id]
             
         except Exception as e:
-            result_promoter += f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n"
+            result_promoter.append(f"Error retrieving gene information for ID: {gene_id}\nError: {str(e)}\n")
                 
         # Gene information retrieval
         for gene_id in gene_entrez_id:
@@ -152,7 +152,8 @@ def get_sequence():
             dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
 
             # Append the result to the result_promoter
-            result_promoter += f">{gene_name} | {species} | {chraccver} | TSS: {chrstart}\n{dna_sequence}\n\n"
+            result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS: {chrstart}\n{dna_sequence}\n\n")
+
             print(result_promoter)
 
 # Promoter Finder STREAMLIT
@@ -178,11 +179,11 @@ if st.button("Find promoter (~30sec/gene)"):
     st.success("Promoters extraction complete!")
 
 #Promoter
-if 'result_promoter' not in locals():
-    st.text_area("Promoter:")
-else:
-    st.text_area("Promoter:", value=result_promoter)
+result_promoter_text = "\n".join(result_promoter)
+if result_promoter_text:
+    st.text_area("Promoter:", value=result_promoter_text)
     st.text("Copy: CTRL+A CTRL+C")
-
+else:
+    st.text_area("Promoter:")
 # Responsive ELements Finder
 st.header('Responsive Elements Finder')
