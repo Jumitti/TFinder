@@ -256,6 +256,9 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
                             break
 
                     if not better_homology:
+                    
+                        best_homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
+                        
                         found_positions.append((i, sequence, variant, mismatches, homology_percentage))
 
         # Sort positions in descending order of homology percentage
