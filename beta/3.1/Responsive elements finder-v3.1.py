@@ -273,10 +273,15 @@ def find_sequence_consensus():
                 i += 2
             else:
                 i += 1
+    
+    
 
     # REF
-    for shortened_promoter_name, promoter_region in promoters:
+    for j, (shortened_promoter_name, promoter_region) in enumerate(promoters, start=1):
+        
         found_positions = []
+        
+        total_promoter = len(promoters)
         
         pattern = "\|/-\|/-"
         cycle = itertools.cycle(pattern)
@@ -289,7 +294,7 @@ def find_sequence_consensus():
                 
                 status_char = next(cycle)                 
                 text_status.delete("1.0", "end")
-                text_status.insert("1.0", f"Find responsive element in {shortened_promoter_name}...{status_char}")
+                text_status.insert("1.0", f"Find responsive element in {shortened_promoter_name}...({j}/{total_promoter}) {status_char}")
                 window.update_idletasks()        
 
                 for i in range(len(promoter_region) - variant_length + 1):
@@ -350,8 +355,7 @@ def find_sequence_consensus():
             result = "No consensus sequence found in the promoter region."
             
         text_status.delete("1.0", "end")
-        status = "Find sequence -> Done"
-        text_status.insert("1.0", status)
+        text_status.insert("1.0", f"Find sequence -> Done ({total_promoter}/{total_promoter})")
         window.update_idletasks()
         
         text_result.delete("1.0", "end")
