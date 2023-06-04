@@ -113,7 +113,7 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
         raise Exception(f"Error : {str(e)}")
 
 # Display gene and promoter
-def get_sequence():
+def get_sequence(result_promoter):
     species = species_combobox
     gene_ids = gene_id_entry.strip().split("\n")
     total_gene_ids = len(gene_ids)
@@ -173,7 +173,7 @@ downstream_entry = st.text_input("Downstream:", value="500")
 result_promoter = st.empty()
 if st.button("Find promoter (~30sec/gene)"):
     with st.spinner("Finding promoters..."):
-        result_promoter.empty()
+        result_promoter.empty(result_promoter)
         get_sequence()
     st.success("Promoters extraction complete!")
 
