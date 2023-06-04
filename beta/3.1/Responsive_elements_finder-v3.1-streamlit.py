@@ -23,7 +23,7 @@ def convert_gene_names_to_entrez_ids(gene_names):
     try:
         entrez_ids = []
         for gene_id in gene_names:
-            species = species_combobox.get()
+            species = species_combobox
             # Request for ENTREZ_GENE_ID
             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_id}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml"
             response = requests.get(url)
