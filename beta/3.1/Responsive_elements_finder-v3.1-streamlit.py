@@ -294,7 +294,8 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
         table.sort(key=lambda x: float(x[3]), reverse=True)
         header = ["Position", "Position (TIS)", "Sequence", "% Homology", "Ref seq", "Prom."]
         table.insert(0, header)
-
+    else:
+        no_consensus = "No consensus sequence found with the specified threshold."
     return table
 
 
@@ -330,5 +331,9 @@ if 'table' in locals():
     for row in table:
         st.write("|".join(str(cell).ljust(15) for cell in row))
 else:
-    st.text("No consensus sequence found with the specified threshold.")
+    if 'no_consensus' in locals():
+        st.text(value = no_consensus)
+    else:
+        st.text("")
+
 
