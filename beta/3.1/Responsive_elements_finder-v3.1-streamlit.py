@@ -25,7 +25,8 @@ if st.button("Find promoter (~30sec/gene)"):
     get_sequence()
     
 #Promoter
-result_promoter = st.text_area("Promoter:\n(Copy: Ctrl+A Ctrl+C ; Paste: Ctrl+V)")
+result_promoter = st.text_area("Promoter:")
+st.text("Copy: ")
 
 # Responsive ELements Finder
 st.header('Responsive Elements Finder')
