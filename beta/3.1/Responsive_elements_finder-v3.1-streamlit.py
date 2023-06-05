@@ -1,7 +1,10 @@
 import streamlit as st
 import requests
 import pandas as pd
-from functools import lru_cache
+
+if 'result_promoter_text' not in st.session_state:
+    st.session_state.result_promoter = ""
+
 
 # Reverse complement
 def reverse_complement(sequence):
@@ -144,7 +147,8 @@ if st.button("Find promoter (~5sec/gene)"):
 # Promoter output
 if 'result_promoter' in locals():
     result_promoter_text = "\n".join(result_promoter)
-    result_promoter = st.session_state.text_area("Promoter:", value=result_promoter_text)
+    result_promoter = st.text_area("Promoter:", value=result_promoter_text)
+    st.session_state.result_promoter = result_promoter
     st.text("Copy: CTRL+A CTRL+C")
 else:
     result_promoter = st.text_area("Promoter:", value="")
