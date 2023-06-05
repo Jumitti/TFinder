@@ -338,16 +338,11 @@ if 'table' in locals():
 
     # Créer un graphique à partir du DataFrame
     
-    # Convertir la colonne "% Homology" en type numérique (float)
-    df['% Homology'] = df['% Homology'].astype(float)
-
-    # Trier le DataFrame selon la colonne "% Homology" en ordre décroissant
-
-    ystart = math.floor(df_sorted['% Homology'].min()) - 10
+    ystart = math.floor(['% Homology'].min()) - 10
 
     color_scale = alt.Scale(domain=df['Prom.'].unique(), range=['red', 'blue', 'green', 'yellow'])
 
-    chart = alt.Chart(df_sorted).mark_circle().encode(
+    chart = alt.Chart().mark_circle().encode(
         x=alt.X('Position (TSS)', axis=alt.Axis(title='Position (bp)')),
         y=alt.Y('% Homology', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=[ystart, 100]))).properties(width=600, height=400)
     
