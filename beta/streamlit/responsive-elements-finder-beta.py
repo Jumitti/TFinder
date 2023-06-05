@@ -338,9 +338,9 @@ if 'table' in locals():
 
     # Créer un graphique à partir du DataFrame
     
-    homology_graph = df['% Homology'].astype(float)
+    df['% Homology'] = df['% Homology'].astype(float)
     
-    ystart = math.floor(homology_graph.min()) - 10
+    ystart = math.floor(df['% Homology'].astype(float).min()) - 10
 
     color_scale = alt.Scale(domain=df['Prom.'].unique(), range=['red', 'blue', 'green', 'yellow'])
 
