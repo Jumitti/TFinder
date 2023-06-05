@@ -145,7 +145,7 @@ if st.button("Find promoter (~5sec/gene)"):
 if 'result_promoter' not in st.session_state:
     result_promoter = st.text_area("Promoter:", value="")
 else:
-    result_promoter_text = "\n".join(st.write(st.session_state['result_promoter'])
+    result_promoter_text = "\n".join(st.session_state['result_promoter'])
     result_promoter = st.text_area("Promoter:", value=result_promoter_text)
     st.text("Copy: CTRL+A CTRL+C")
 
