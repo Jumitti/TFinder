@@ -331,8 +331,15 @@ if st.button("Find responsive elements"):
 if 'table' in locals():
     df = pd.DataFrame(table[1:], columns=table[0])
     st.dataframe(df)
+    
     if st.button("Export to Excel"):
-        df.to_excel('resultats.xlsx', index=False)
+        # Demander à l'utilisateur de spécifier le nom du fichier Excel
+        file_name = st.text_input("Enter a file name", "resultats.xlsx")
+        
+        if st.button("Export"):
+            # Exporter la table vers un fichier Excel
+            df.to_excel(file_name, index=False)
+            st.success("Table exported successfully.")
 else:
     st.text("")
 
