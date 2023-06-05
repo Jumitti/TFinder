@@ -134,10 +134,10 @@ if st.button("Find promoter (~5sec/gene)"):
         gene_ids = gene_id_entry.strip().split("\n")
         upstream = int(upstream_entry)
         downstream = int(downstream_entry)
+        st.session_state['upstream'] = upstream
         try:
             result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
             st.success("Promoters extraction complete!")
-            
         except Exception as e:
             st.error(f"Error finding promoters: {str(e)}")
 
@@ -148,16 +148,6 @@ else:
     result_promoter_text = "\n".join(st.session_state['result_promoter'])
     result_promoter = st.text_area("Promoter:", value=result_promoter_text)
     st.text("Copy: CTRL+A CTRL+C")
-
-# Promoter output
-'''
-if 'result_promoter' in locals():
-    result_promoter_text = "\n".join(result_promoter)
-    result_promoter = st.text_area("Promoter:", value=result_promoter_text)
-    st.text("Copy: CTRL+A CTRL+C")
-else:
-    result_promoter = st.text_area("Promoter:", value="")
-'''
 
 # Responsive-Elements-Finder
 
@@ -316,10 +306,10 @@ st.header('Responsive Elements Finder')
 entry_sequence = st.text_input("Responsive element (IUPAC authorized):", value="RRRCWWGYYY")
 
 # TSS entry
-if 'upstream' not in locals():
+if 'upstream' not in st.session_state():
     entry_tis = st.text_input("TSS:", value="0")
 else:
-    entry_tis = st.text_input("TSS:", value=upstream)
+    entry_tis = st.text_input("TSS:", value=st.session_state['upstream'])
 
 # Threshold
 threshold_entry = st.text_input("Threshold (%)", value="80")
