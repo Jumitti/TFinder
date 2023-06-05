@@ -346,10 +346,10 @@ if 'table' in locals():
     color_scale = alt.Scale(domain=df['Prom.'].unique(), range=['red', 'blue', 'green', 'yellow'])
     
     chart = alt.Chart(df_sorted).mark_circle().encode(
-        x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Position (bp)'), sort='ascending'),
-        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=[ystart, 100])),
+        x=alt.X('Position (TSS):N', axis=alt.Axis(title='Position (bp)'), sort='ascending'),
+        y=alt.Y('% Homology:N', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=[ystart, 100])),
         color=alt.Color('Prom.:N', scale=color_scale),
-        tooltip=['Position (TSS):Q', '% Homology:Q', 'Prom.:N']
+        tooltip=['Position (TSS):N', '% Homology:N', 'Prom.:N']
     ).properties(width=600, height=400)
     
     # Afficher le graphique dans Streamlit
