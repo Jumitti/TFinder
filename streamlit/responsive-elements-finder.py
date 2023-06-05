@@ -358,7 +358,6 @@ else:
 st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder)")
 st.sidebar.write("By Minniti Julien")
 with st.sidebar.expander("Help"):
-    st.title("Help")
     st.divider()
     with st.expander("Promoter Finder"):
         st.subheader("Gene ID:")
