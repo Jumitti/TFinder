@@ -310,7 +310,6 @@ if 'upstream' not in locals():
     entry_tis = st.text_input("TSS:", value="0")
 else:
     entry_tis_value = st.session_state['upstream']
-    st.session_state['entry_tis'] = entry_tis_value
     entry_tis = st.text_input("TSS:", value=entry_tis_value)
 
 # Threshold
@@ -322,7 +321,6 @@ if st.button("Find responsive elements"):
         sequence_consensus_input = entry_sequence
         tis_value = int(entry_tis)
         threshold = float(threshold_entry)
-        st.session_state['upstream'] = tis_value
         try:
             table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
             st.success("Finding responsive elements done")
