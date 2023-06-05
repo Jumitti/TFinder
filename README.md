@@ -14,10 +14,10 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 
 ## OS supported
 
-- Win 7 : ❌
+- Win 7 : ❌ (use [REF StreamLit](https://responsive-elements-finder2.streamlit.app/))
 - Win 10/11 : ✅
 - Linux/MacOS : Not tested
-- WebUI ✨ : https://responsive-elements-finder2.streamlit.app/
+- WebUI ✨ : [REF StreamLit](https://responsive-elements-finder2.streamlit.app/)
 
 ## Functions
 ### Promoter Finder (requires internet connection)
@@ -28,9 +28,14 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 - Find transcription factor responsive elements
 - Support IUPAC code for responsive elements
 - Calculation of the distance of the found sequence to the transcription start site (TSS)
-- Percentage of homology between found sequences and responsive elements (Error: v2.X ; NEW ✨ Fixed: 3.X)
-- Find mismatches sequence (Allows only 25% mismatches compared to responsive element)
+- Percentage of homology between found sequences and responsive elements (NEW ✨ Fixed: 3.X)
+- Find mismatches sequence
 - Export results to excel
+- 
+
+## WebUI
+Yes, there's a WebUI version too 😊 nothing's too good for you
+[REF StreamLit](https://responsive-elements-finder2.streamlit.app/)
 
 ## Windows version
 
