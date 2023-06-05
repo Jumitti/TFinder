@@ -2,10 +2,6 @@ import streamlit as st
 import requests
 import pandas as pd
 
-if 'result_promoter_text' not in st.session_state:
-    st.session_state.result_promoter = ""
-
-
 # Reverse complement
 def reverse_complement(sequence):
     complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
@@ -148,7 +144,6 @@ if st.button("Find promoter (~5sec/gene)"):
 if 'result_promoter' in locals():
     result_promoter_text = "\n".join(result_promoter)
     result_promoter = st.text_area("Promoter:", value=result_promoter_text)
-    st.session_state.result_promoter = result_promoter
     st.text("Copy: CTRL+A CTRL+C")
 else:
     result_promoter = st.text_area("Promoter:", value="")
@@ -321,10 +316,21 @@ threshold_entry = st.text_input("Threshold (%)", value="80")
 
 # Run Responsive Elements finder
 if st.button("Find responsive elements"):
+    with st.spinner("Finding promoters..."):
+        gene_ids = gene_id_entry.strip().split("\n")
+        upstream = int(upstream_entry)
+        downstream = int(downstream_entry)
+        try:
+            result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
+            st.success("Promoters extraction complete!")
+            
+        except Exception as e:
+            st.error(f"Error finding promoters: {str(e)}")
     with st.spinner("Finding responsive elements..."):
         try:
+            
             sequence_consensus_input = entry_sequence
-            tis_value = int(entry_tis)
+            tis_value = int(upstream)
             threshold = float(threshold_entry)
             table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
             st.success("Finding responsive elements done")
