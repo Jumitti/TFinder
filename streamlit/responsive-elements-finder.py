@@ -345,7 +345,7 @@ if 'table' in locals():
     
     chart = alt.Chart(source).mark_circle().encode(
         x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, 100])), color=color_scale, tooltip = ['Position (TSS)','% Homology','Sequence','Promoter']
+        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, 110])), color=color_scale, tooltip = ['Position (TSS)','% Homology','Sequence','Promoter']
     ).properties(width=600, height=400)
     
     st.altair_chart(chart, use_container_width=True)
