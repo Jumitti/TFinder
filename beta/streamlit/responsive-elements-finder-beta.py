@@ -337,7 +337,7 @@ if 'table' in locals():
 
     # Créer un graphique à partir du DataFrame
     
-    chart = alt.Chart(df).mark_circle().encode(x='tis_position', y='best_homology_percentage').properties(width=600,height=400)
+    chart = alt.Chart(df).mark_circle().encode(x='table[2]', y='table[4]').properties(width=600,height=400)
 
     # Afficher le graphique dans Streamlit
     st.altair_chart(chart, use_container_width=True)
