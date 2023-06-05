@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import pandas as pd
+from functools import lru_cache
 
 # Reverse complement
 def reverse_complement(sequence):
@@ -84,6 +85,7 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
         raise Exception(f"Error: {str(e)}")
 
 # Promoter Finder
+@st.cache(allow_output_mutation=True)
 def find_promoters(gene_ids, species, upstream, downstream):
     try:
         result_promoter = []
@@ -128,7 +130,7 @@ upstream_entry = st.text_input("Upstream:", value="2000")
 downstream_entry = st.text_input("Downstream:", value="500")
 
 # Run Promoter Finder
-if st.button("Find promoter (~5sec/gene)"):
+if st.button("Find promoter (~5sec/gene)") and 'result_promoter' not in locals():
     with st.spinner("Finding promoters..."):
         gene_ids = gene_id_entry.strip().split("\n")
         upstream = int(upstream_entry)
@@ -141,11 +143,9 @@ if st.button("Find promoter (~5sec/gene)"):
             st.error(f"Error finding promoters: {str(e)}")
 
 # Promoter output
-st.session_state.result_promoter = ""
 if 'result_promoter' in locals():
     result_promoter_text = "\n".join(result_promoter)
     result_promoter = st.text_area("Promoter:", value=result_promoter_text)
-    st.session_state.result_promoter = result_promoter
     st.text("Copy: CTRL+A CTRL+C")
 else:
     result_promoter = st.text_area("Promoter:", value="")
@@ -320,9 +320,6 @@ threshold_entry = st.text_input("Threshold (%)", value="80")
 if st.button("Find responsive elements"):
     with st.spinner("Finding responsive elements..."):
         try:
-            if 'result_promoter' not in locals():
-                result_promoter = st.session_state.result_promoter
-            
             sequence_consensus_input = entry_sequence
             tis_value = int(entry_tis)
             threshold = float(threshold_entry)
