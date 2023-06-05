@@ -303,7 +303,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
 st.header('Responsive Elements Finder')
 
 # RE entry
-entry_sequence = st.text_input("Responsive element (IUPAC authorized):", value="RRRCWWGYYY")
+entry_sequence = st.text_input("Responsive element (IUPAC authorized):", value="GGGRNYYYCC")
 
 # TSS entry
 if 'upstream' not in st.session_state:
