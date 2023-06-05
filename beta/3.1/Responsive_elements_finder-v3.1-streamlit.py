@@ -129,9 +129,6 @@ upstream_entry = st.text_input("Upstream:", value="2000")
 downstream_entry = st.text_input("Downstream:", value="500")
 
 # Run Promoter Finder
-if 'result_promoter' not in st.session_state:
-    st.session_state.result_promoter = ""
-    
 if st.button("Find promoter (~5sec/gene)"):
     with st.spinner("Finding promoters..."):
         gene_ids = gene_id_entry.strip().split("\n")
