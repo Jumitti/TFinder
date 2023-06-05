@@ -331,35 +331,24 @@ if st.button("Find responsive elements"):
 
 # RE output
 if 'table' in locals():
+    #Results table
     df = pd.DataFrame(table[1:], columns=table[0])
     st.session_state['df'] = df
     st.dataframe(df)
     st.text("Copy to clipboard: select one or multiple cells, copy them to clipboard, and paste them into your favorite spreadsheet software.")
-
-    # Créer un graphique à partir du DataFrame
-    '''
-    df['% Homology'] = df['% Homology'].astype(float)
     
-    ystart = math.floor(df['% Homology'].min()) - 10
-
-    df_sorted = df.sort_values(by='Position (TSS)')'''
-
+    # Promoteur display
     source = df
-    
     homology_range = source['% Homology'].astype(float)
-    
     ystart = math.floor(homology_range.min() - 10)
-    
     scale = alt.Scale(scheme='category10')
-
     color_scale = alt.Color("Promoter:N", scale=scale)
     
     chart = alt.Chart(source).mark_circle().encode(
         x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Position (bp)'), sort='ascending'),
-        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=[ystart, 100])), color=color_scale
+        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=[ystart, 100])), color=color_scale, tooltip = ['Position (TSS)','% Homology','Sequence','Promoter']
     ).properties(width=600, height=400)
     
-    # Afficher le graphique dans Streamlit
     st.altair_chart(chart, use_container_width=True)
 else:
     st.text("")
