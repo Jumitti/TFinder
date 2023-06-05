@@ -141,14 +141,12 @@ if st.button("Find promoter (~5sec/gene)"):
             st.error(f"Error finding promoters: {str(e)}")
 
 # Promoter output
-'''
 if 'result_promoter' in locals():
     result_promoter_text = "\n".join(result_promoter)
     result_promoter = st.text_area("Promoter:", value=result_promoter_text)
     st.text("Copy: CTRL+A CTRL+C")
 else:
     result_promoter = st.text_area("Promoter:", value="")
-'''
 
 # Responsive-Elements-Finder
 
@@ -317,21 +315,8 @@ threshold_entry = st.text_input("Threshold (%)", value="80")
 
 # Run Responsive Elements finder
 if st.button("Find responsive elements"):
-    with st.spinner("Finding promoters..."):
-        gene_ids = gene_id_entry.strip().split("\n")
-        upstream = int(upstream_entry)
-        downstream = int(downstream_entry)
-        try:
-            result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
-            st.success("Promoters extraction complete!")
-            
-        except Exception as e:
-            st.error(f"Error finding promoters: {str(e)}")
-    
     with st.spinner("Finding responsive elements..."):
         try:
-            result_promoter_text = "\n".join(result_promoter)
-            result_promoter = result_promoter_text
             sequence_consensus_input = entry_sequence
             tis_value = int(upstream)
             threshold = float(threshold_entry)
