@@ -141,13 +141,14 @@ if st.button("Find promoter (~5sec/gene)"):
             st.error(f"Error finding promoters: {str(e)}")
 
 # Promoter output
+'''
 if 'result_promoter' in locals():
-    #result_promoter_text = "\n".join(result_promoter)
-    #result_promoter = st.text_area("Promoter:", value=result_promoter_text)
-    #st.text("Copy: CTRL+A CTRL+C")
+    result_promoter_text = "\n".join(result_promoter)
+    result_promoter = st.text_area("Promoter:", value=result_promoter_text)
+    st.text("Copy: CTRL+A CTRL+C")
 else:
     result_promoter = st.text_area("Promoter:", value="")
-
+'''
 
 # Responsive-Elements-Finder
 
