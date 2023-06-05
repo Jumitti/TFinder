@@ -338,22 +338,23 @@ if 'table' in locals():
 
     # Créer un graphique à partir du DataFrame
     df['% Homology'] = df['% Homology'].astype(float)
-    
+
     ystart = math.floor(df['% Homology'].min()) - 10
 
     df_sorted = df.sort_values(by='Position (TSS)')
 
     color_scale = alt.Scale(domain=df['Prom.'].unique(), range=['red', 'blue', 'green', 'yellow'])
-    
+
     chart = alt.Chart(df_sorted).mark_circle().encode(
-        x=alt.X('Position (TSS):N', axis=alt.Axis(title='Position (bp)'), sort='ascending'),
-        y=alt.Y('% Homology:N', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=[ystart, 100])),
+        x='Position (TSS):Q',
+        y=alt.Y('% Homology', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=[ystart, 100])),
         color=alt.Color('Prom.:N', scale=color_scale),
-        tooltip=['Position (TSS):N', '% Homology:N', 'Prom.:N']
+        tooltip=['Position (TSS):Q', '% Homology:Q', 'Prom.:N']
     ).properties(width=600, height=400)
-    
+
     # Afficher le graphique dans Streamlit
     st.altair_chart(chart, use_container_width=True)
+
 
 else:
     st.text("")
