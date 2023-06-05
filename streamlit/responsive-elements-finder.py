@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 import altair as alt
 import math
+import webbrowser
 
 # Reverse complement
 def reverse_complement(sequence):
