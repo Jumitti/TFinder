@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import pandas as pd
+import openpyxl
 
 # Reverse complement
 def reverse_complement(sequence):
