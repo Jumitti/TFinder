@@ -151,7 +151,7 @@ else:
     result_promoter_text = "\n".join(st.session_state['result_promoter'])
     result_promoter = st.text_area("Promoter:", value=result_promoter_text)
     st.info("⬆ You can paste your sequences here (FASTA required for multiple sequences).")
-    st.info("Copy: CTRL+A CTRL+C")
+    st.info("⬆ Copy: Click in sequence, CTRL+A, CTRL+C")
 
 # Responsive-Elements-Finder
 
@@ -335,7 +335,7 @@ if 'table' in locals():
     df = pd.DataFrame(table[1:], columns=table[0])
     st.session_state['df'] = df
     st.dataframe(df)
-    st.info("Copy: select one cells, CTRL+A, CTRL+C, CTRL+V into spreadsheet softwares.")
+    st.info("⬆ Copy: select one cells, CTRL+A, CTRL+C, CTRL+V into spreadsheet softwares.")
     
     # Promoteur display
     source = df
