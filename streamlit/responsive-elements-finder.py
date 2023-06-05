@@ -1,6 +1,8 @@
 import streamlit as st
 import requests
 import pandas as pd
+import altair as alt
+import math
 
 # Reverse complement
 def reverse_complement(sequence):
@@ -293,7 +295,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
 
     if len(table) > 0:
         table.sort(key=lambda x: float(x[3]), reverse=True)
-        header = ["Position", "Position (TSS)", "Sequence", "% Homology", "Ref seq", "Prom."]
+        header = ["Position", "Position (TSS)", "Sequence", "% Homology", "Ref seq", "Promoter"]
         table.insert(0, header)
     else:
         no_consensus = "No consensus sequence found with the specified threshold."
@@ -328,10 +330,25 @@ if st.button("Find responsive elements"):
 
 # RE output
 if 'table' in locals():
+    #Results table
     df = pd.DataFrame(table[1:], columns=table[0])
     st.session_state['df'] = df
     st.dataframe(df)
     st.text("Copy to clipboard: select one or multiple cells, copy them to clipboard, and paste them into your favorite spreadsheet software.")
+    
+    # Promoteur display
+    source = df
+    homology_range = source['% Homology'].astype(float)
+    ystart = math.floor(homology_range.min() - 10)
+    scale = alt.Scale(scheme='category10')
+    color_scale = alt.Color("Promoter:N", scale=scale)
+    
+    chart = alt.Chart(source).mark_circle().encode(
+        x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Position (bp)'), sort='ascending'),
+        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=[ystart, 100])), color=color_scale, tooltip = ['Position (TSS)','% Homology','Sequence','Promoter']
+    ).properties(width=600, height=400)
+    
+    st.altair_chart(chart, use_container_width=True)
 else:
     st.text("")
 
