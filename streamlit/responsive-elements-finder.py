@@ -150,7 +150,8 @@ if 'result_promoter' not in st.session_state:
 else:
     result_promoter_text = "\n".join(st.session_state['result_promoter'])
     result_promoter = st.text_area("Promoter:", value=result_promoter_text)
-    st.text("Copy: CTRL+A CTRL+C")
+    st.info("⬆ You can paste your sequences here (FASTA required for multiple sequences).")
+    st.info("Copy: CTRL+A CTRL+C")
 
 # Responsive-Elements-Finder
 
