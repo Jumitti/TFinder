@@ -1,7 +1,6 @@
 import streamlit as st
 import requests
 import pandas as pd
-import openpyxl
 
 # Reverse complement
 def reverse_complement(sequence):
@@ -332,8 +331,6 @@ if st.button("Find responsive elements"):
 if 'table' in locals():
     df = pd.DataFrame(table[1:], columns=table[0])
     st.dataframe(df)
-    if st.button("Export to Excel"):
-        df.to_excel('resultats.xlsx', index=False)
 else:
     st.text("")
 
