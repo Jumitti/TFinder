@@ -85,7 +85,6 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
         raise Exception(f"Error: {str(e)}")
 
 # Promoter Finder
-@st.cache(allow_output_mutation=True)
 def find_promoters(gene_ids, species, upstream, downstream):
     try:
         result_promoter = []
@@ -130,13 +129,14 @@ upstream_entry = st.text_input("Upstream:", value="2000")
 downstream_entry = st.text_input("Downstream:", value="500")
 
 # Run Promoter Finder
-if st.button("Find promoter (~5sec/gene)") and 'result_promoter' not in locals():
+if st.button("Find promoter (~5sec/gene)"):
     with st.spinner("Finding promoters..."):
         gene_ids = gene_id_entry.strip().split("\n")
         upstream = int(upstream_entry)
         downstream = int(downstream_entry)
         try:
             result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
+            st.session_state.result_promoter = result_promoter
             st.success("Promoters extraction complete!")
             
         except Exception as e:
@@ -202,7 +202,6 @@ def generate_iupac_variants(sequence):
 
 
 # Responsive Elements Finder (consensus sequence)
-@st.cache
 def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter):
     global table
     table = []
