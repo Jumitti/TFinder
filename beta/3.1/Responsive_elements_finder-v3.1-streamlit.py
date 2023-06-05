@@ -3,7 +3,8 @@ import requests
 import pandas as pd
 
 if 'result_promoter' not in st.session_state:
-else :
+    break
+else:
     st.session_state['result_promoter'] = result_promoter
 
 # Reverse complement
