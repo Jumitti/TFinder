@@ -334,5 +334,8 @@ else:
     st.text("")
 
 # Help
-st.sidebar.title("Aide")
+st.sidebar.title("Help")
 st.sidebar.write("Bienvenue dans la section d'aide.")
+st.sidebar.header("Promoter Finder")
+st.sidebar.header("Responsive Elements Finder")
+
