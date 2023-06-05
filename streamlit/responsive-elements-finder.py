@@ -353,7 +353,7 @@ else:
     st.text("")
 
 # Help
-st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder")
+st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder)")
 st.sidebar.write("By Minniti Julien")
 st.sidebar.title("Help")
 st.sidebar.divider()
