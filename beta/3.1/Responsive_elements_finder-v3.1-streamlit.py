@@ -306,7 +306,7 @@ st.header('Responsive Elements Finder')
 entry_sequence = st.text_input("Responsive element (IUPAC authorized):", value="RRRCWWGYYY")
 
 # TSS entry
-if 'upstream' not in st.session_state():
+if 'upstream' not in st.session_state:
     entry_tis = st.text_input("TSS:", value="0")
 else:
     entry_tis = st.text_input("TSS:", value=st.session_state['upstream'])
