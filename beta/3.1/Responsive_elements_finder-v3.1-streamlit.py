@@ -2,6 +2,9 @@ import streamlit as st
 import requests
 import pandas as pd
 
+if 'key' not in st.session_state:
+    st.session_state['key'] = 'value'
+
 # Reverse complement
 def reverse_complement(sequence):
     complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
@@ -103,7 +106,8 @@ def find_promoters(gene_ids, species, upstream, downstream):
 
             # Append the result to the result_promoter
             result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
-
+            result_promoter_text = "\n".join(result_promoter)
+            
         return result_promoter
 
     except Exception as e:
@@ -142,7 +146,7 @@ if st.button("Find promoter (~5sec/gene)"):
 
 # Promoter output
 if 'result_promoter' in locals():
-    result_promoter_text = "\n".join(result_promoter)
+    '''result_promoter_text = "\n".join(result_promoter)'''
     result_promoter = st.text_area("Promoter:", value=result_promoter_text)
     st.text("Copy: CTRL+A CTRL+C")
 else:
@@ -318,7 +322,7 @@ if st.button("Find responsive elements"):
     with st.spinner("Finding responsive elements..."):
         try:
             sequence_consensus_input = entry_sequence
-            tis_value = int(upstream)
+            tis_value = int(entry_tis)
             threshold = float(threshold_entry)
             table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
             st.success("Finding responsive elements done")
