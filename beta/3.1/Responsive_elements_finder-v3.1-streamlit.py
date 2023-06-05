@@ -309,7 +309,8 @@ entry_sequence = st.text_input("Responsive element (IUPAC authorized):", value="
 if 'upstream' not in locals():
     entry_tis = st.text_input("TSS:", value="0")
 else:
-    entry_tis = st.text_input("TSS:", value=st.session_state['upstream'])
+    entry_tis_value = st.session_state['upstream']
+    entry_tis = st.text_input("TSS:", value=entry_tis_value)
 
 # Threshold
 threshold_entry = st.text_input("Threshold (%)", value="80")
