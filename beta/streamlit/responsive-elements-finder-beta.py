@@ -342,9 +342,8 @@ if 'table' in locals():
     df['% Homology'] = df['% Homology'].astype(float)
 
     # Trier le DataFrame selon la colonne "% Homology" en ordre décroissant
-    df_sorted = df.sort_values(df['Position (TSS)'].astype(float), ascending=True)
 
-    ystart = math.floor(df['% Homology'].min()) - 10
+    ystart = math.floor(df_sorted['% Homology'].min()) - 10
 
     color_scale = alt.Scale(domain=df['Prom.'].unique(), range=['red', 'blue', 'green', 'yellow'])
 
