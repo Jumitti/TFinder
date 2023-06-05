@@ -2,11 +2,6 @@ import streamlit as st
 import requests
 import pandas as pd
 
-if 'result_promoter' not in st.session_state:
-    break
-else:
-    st.session_state['result_promoter'] = result_promoter
-
 # Reverse complement
 def reverse_complement(sequence):
     complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
@@ -145,13 +140,20 @@ if st.button("Find promoter (~5sec/gene)"):
         except Exception as e:
             st.error(f"Error finding promoters: {str(e)}")
 
+# Promoter output state
+if 'result_promoter' not in st.session_state:
+    result_promoter = st.text_area("Promoter:", value="")
+else:
+    st.session_state['result_promoter'] = result_promoter
+    st.write(st.session_state['result_promoter'])
+'''
 # Promoter output
 if 'result_promoter' in locals():
     result_promoter_text = "\n".join(result_promoter)
     result_promoter = st.text_area("Promoter:", value=result_promoter_text)
     st.text("Copy: CTRL+A CTRL+C")
 else:
-    result_promoter = st.text_area("Promoter:", value="")
+    result_promoter = st.text_area("Promoter:", value="")'''
 
 # Responsive-Elements-Finder
 
