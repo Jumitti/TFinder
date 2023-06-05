@@ -318,10 +318,10 @@ threshold_entry = st.text_input("Threshold (%)", value="80")
 # Run Responsive Elements finder
 if st.button("Find responsive elements"):
     with st.spinner("Finding responsive elements..."):
+        sequence_consensus_input = entry_sequence
+        tis_value = int(entry_tis)
+        threshold = float(threshold_entry)
         try:
-            sequence_consensus_input = entry_sequence
-            tis_value = int(entry_tis)
-            threshold = float(threshold_entry)
             table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
             st.success("Finding responsive elements done")
         except Exception as e:
