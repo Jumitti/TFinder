@@ -334,11 +334,10 @@ if 'table' in locals():
     st.session_state['df'] = df
     st.dataframe(df)
     st.text("Copy to clipboard: select one or multiple cells, copy them to clipboard, and paste them into your favorite spreadsheet software.")
-    
-    df['promoter_id'] = pd.factorize(df[table[6]])[0] + 1
+
     # Créer un graphique à partir du DataFrame
     
-    chart = alt.Chart(df).mark_circle().encode(x='tis_position', y='promoter_id', color='shortened_promoter_name').properties(width=600,height=400)
+    chart = alt.Chart(df).mark_circle().encode(x='tis_position', y='best_homology_percentage').properties(width=600,height=400)
 
     # Afficher le graphique dans Streamlit
     st.altair_chart(chart, use_container_width=True)
