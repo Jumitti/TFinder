@@ -2,7 +2,7 @@
 
 ## About
 
-Python script to quickly extract a promoter region with the NCBI API and search for the presence of transcription factor responsive elements.
+Python script to quickly extract a promoter region with the NCBI API and search for the presence of transcription factor responsive elements. NOW IN WEBUI ! [REF StreamLit](https://responsive-elements-finder2.streamlit.app/)
 
 ## Description
 
