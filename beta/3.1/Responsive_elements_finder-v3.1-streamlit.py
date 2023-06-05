@@ -146,7 +146,6 @@ if 'result_promoter' in locals():
     result_promoter_text = "\n".join(result_promoter)
     result_promoter = st.text_area("Promoter:", value=result_promoter_text)
     st.session_state.result_promoter = result_promoter
-    result_promoter = st.session_state.result_promoter
     st.text("Copy: CTRL+A CTRL+C")
 else:
     result_promoter = st.text_area("Promoter:", value="")
@@ -321,6 +320,9 @@ threshold_entry = st.text_input("Threshold (%)", value="80")
 if st.button("Find responsive elements"):
     with st.spinner("Finding responsive elements..."):
         try:
+            if 'result_promoter' not in locals():
+                result_promoter = st.session_state.result_promoter
+            
             sequence_consensus_input = entry_sequence
             tis_value = int(entry_tis)
             threshold = float(threshold_entry)
