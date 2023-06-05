@@ -337,6 +337,7 @@ if 'table' in locals():
     st.session_state['df'] = df
     st.dataframe(df)
     if st.button("Export"):
+        df = st.dataframe(st.session_state['df'])
         export_to_excel(df)
 else:
     st.text("")
