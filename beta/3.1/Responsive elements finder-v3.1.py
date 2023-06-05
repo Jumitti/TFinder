@@ -423,6 +423,11 @@ def open_site():
     url = "https://github.com/Jumitti/Responsive-Elements-Finder"
     webbrowser.open(url)
 
+# Github
+def open_site_webui():
+    url = "https://responsive-elements-finder2.streamlit.app/"
+    webbrowser.open(url)
+
 # TK window
 
 #Logo
@@ -494,6 +499,10 @@ section_help.grid(row=1, column=0, padx=10, pady=10)
 help_button = tk.Button(section_help, text="How to use", command=show_help_PDF)
 help_button.pack(side="left", fill="x", expand=True)
 
+# WebUI
+button = tk.Button(section_help, text="WebUI", command=open_site_webui)
+button.pack(side="left", fill="x", expand=True)
+
 # Github
 button = tk.Button(section_help, text="Github by MINNITI Julien", command=open_site)
 button.pack(side="left", fill="x", expand=True)
@@ -536,7 +545,7 @@ label_result.grid(row=9, column=0)
 text_result = tk.Text(section_responsive_finder, height=16, width=100)
 text_result.grid(row=10, column=0)
 
-# Création du bouton Export to Excel
+# Export to Excel
 export_button = tk.Button(section_responsive_finder, text="Export to Excel", command=export_to_excel)
 export_button.grid(row=11, column=0)
 
@@ -555,5 +564,5 @@ window.grid_columnconfigure(2, weight=1)
 section_promoter_finder.grid_rowconfigure(13, weight=1)
 section_responsive_finder.grid_rowconfigure(12, weight=1)
 
-# Lancement de la boucle principale
+# Main loop
 window.mainloop()
