@@ -104,7 +104,6 @@ def find_promoters(gene_ids, species, upstream, downstream):
 
             # Append the result to the result_promoter
             result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
-            result_promoter_text = "\n".join(result_promoter)
 
         return result_promoter
 
@@ -130,6 +129,9 @@ upstream_entry = st.text_input("Upstream:", value="2000")
 downstream_entry = st.text_input("Downstream:", value="500")
 
 # Run Promoter Finder
+if 'result_promoter' not in st.session_state:
+    st.session_state.result_promoter = ""
+    
 if st.button("Find promoter (~5sec/gene)"):
     with st.spinner("Finding promoters..."):
         gene_ids = gene_id_entry.strip().split("\n")
@@ -137,7 +139,7 @@ if st.button("Find promoter (~5sec/gene)"):
         downstream = int(downstream_entry)
         try:
             result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
-            st.session_state.result_promoter = result_promoter_text
+            st.session_state.result_promoter = result_promoter
             st.success("Promoters extraction complete!")
             
         except Exception as e:
@@ -145,6 +147,7 @@ if st.button("Find promoter (~5sec/gene)"):
 
 # Promoter output
 if 'result_promoter' in locals():
+    result_promoter_text = "\n".join(result_promoter)
     result_promoter = st.text_area("Promoter:", value=st.session_state.result_promoter)
     st.text("Copy: CTRL+A CTRL+C")
 else:
