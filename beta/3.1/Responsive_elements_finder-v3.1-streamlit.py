@@ -306,10 +306,11 @@ st.header('Responsive Elements Finder')
 entry_sequence = st.text_input("Responsive element (IUPAC authorized):", value="RRRCWWGYYY")
 
 # TSS entry
-if 'upstream' in st.session_state():
-    entry_tis = st.text_input("TSS:", value=st.session_state['upstream'])
-else:
+if 'upstream' not in locals():
     entry_tis = st.text_input("TSS:", value="0")
+else:
+    entry_tis = st.text_input("TSS:", value=st.session_state['upstream'])
+
 # Threshold
 threshold_entry = st.text_input("Threshold (%)", value="80")
 
