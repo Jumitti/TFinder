@@ -144,6 +144,7 @@ if st.button("Find promoter (~5sec/gene)"):
 # Promoter output state
 if 'result_promoter' not in st.session_state:
     result_promoter = st.text_area("Promoter:", value="")
+    st.info("➡️ Collez votre séquence ici")
 else:
     result_promoter_text = "\n".join(st.session_state['result_promoter'])
     result_promoter = st.text_area("Promoter:", value=result_promoter_text)
@@ -342,8 +343,10 @@ st.sidebar.write("ENTREZ_GENE_ID of NCBI and gene names are allowed.")
 st.sidebar.subheader("Species:")
 st.sidebar.write("Human, mouse and rat are allowed.")
 st.sidebar.subheader("Upstream/Downstream:")
-st.sidebar.write("Distance to Transcription Start Site (TSS) in bp")
+st.sidebar.write("Distance to Transcription Start Site (TSS) in bp.")
 st.sidebar.image("https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/whatisagene.png")
+st.sidebar.subheader("Promoter:")
+st.sidebar.write('Use "Find promoter" button or paste your sequences (FASTA allowed).')
 st.sidebar.divider()
 st.sidebar.header("Responsive Elements Finder")
 
