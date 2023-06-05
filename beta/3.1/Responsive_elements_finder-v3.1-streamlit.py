@@ -333,3 +333,6 @@ if 'table' in locals():
 else:
     st.text("")
 
+# Help
+st.sidebar.title("Aide")
+st.sidebar.write("Bienvenue dans la section d'aide.")
