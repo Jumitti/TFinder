@@ -335,10 +335,8 @@ else:
 
 # Help
 st.sidebar.title("Help")
-st.sidebar.write("")
 st.sidebar.header("Promoter Finder")
-st.sidebar.subheader("Gene ID:")
-st.sidebar.write("ENTREZ_GENE_ID of NCBI and gene names are allowed")
-st.sidebar.write("")
+st.sidebar.subheader("  Gene ID:")
+st.sidebar.write("  ENTREZ_GENE_ID of NCBI and gene names are allowed.")
 st.sidebar.header("Responsive Elements Finder")
 
