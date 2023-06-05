@@ -337,8 +337,8 @@ if 'table' in locals():
     
     chart = alt.Chart(df).mark_point().encode(
     x='tis_position',
-    y=alt.Y('index', title='Promoter'),
-    tooltip=['index', 'tis_position']
+    y=alt.Y('result_promoter', title='Promoter'),
+    tooltip=['result_promoter', 'tis_position']
     )
 
     st.altair_chart(chart, use_container_width=True)
