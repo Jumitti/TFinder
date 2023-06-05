@@ -338,8 +338,8 @@ if 'table' in locals():
     # Créer un graphique à partir du DataFrame
     chart = alt.Chart(df).mark_circle().encode(
         x='tis_position',
-        y=alt.Y('result_promoteur', sort=None),
-        color='result_promoteur'
+        y=alt.Y('', sort=None),
+        color=''
     ).properties(
         width=600,
         height=400
