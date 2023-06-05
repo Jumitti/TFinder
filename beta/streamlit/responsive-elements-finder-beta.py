@@ -335,7 +335,7 @@ if 'table' in locals():
     st.dataframe(df)
     st.text("Copy to clipboard: select one or multiple cells, copy them to clipboard, and paste them into your favorite spreadsheet software.")
     
-    c = alt.Chart(df).mark_circle().encode(x='tis_position', y='promoter_region', size='best_homology_percentage', color='c', tooltip=['tis_position', 'promoter_region', 'best_homology_percentage'])
+    c = alt.Chart(df).mark_circle().encode(x=table[2], y=table[6], size=table[4], color=table[4], tooltip=[table[2], table[6], table[4]])
 
     st.write(c)
 else:
