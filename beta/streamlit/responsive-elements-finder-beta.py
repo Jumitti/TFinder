@@ -2,7 +2,8 @@ import streamlit as st
 import requests
 import pandas as pd
 import numpy as np
-import altair as alt
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Reverse complement
 def reverse_complement(sequence):
@@ -334,10 +335,6 @@ if 'table' in locals():
     st.session_state['df'] = df
     st.dataframe(df)
     st.text("Copy to clipboard: select one or multiple cells, copy them to clipboard, and paste them into your favorite spreadsheet software.")
-    
-    c = alt.Chart(df).mark_circle().encode(x=table[2], y=table[6], size=table[4], color=table[4], tooltip=[table[2], table[6], table[4]])
-
-    st.write(c)
 else:
     st.text("")
 
