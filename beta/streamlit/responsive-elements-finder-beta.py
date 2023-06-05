@@ -1,6 +1,8 @@
 import streamlit as st
 import requests
 import pandas as pd
+import numpy as np
+import altair as alt
 
 # Reverse complement
 def reverse_complement(sequence):
@@ -332,6 +334,10 @@ if 'table' in locals():
     st.session_state['df'] = df
     st.dataframe(df)
     st.text("Copy to clipboard: select one or multiple cells, copy them to clipboard, and paste them into your favorite spreadsheet software.")
+    
+    c = alt.Chart(df).mark_circle().encode(x='tis_position', y='promoter_region', size='best_homology_percentage', color='c', tooltip=['tis_position', 'promoter_region', 'best_homology_percentage'])
+
+    st.write(c)
 else:
     st.text("")
 
