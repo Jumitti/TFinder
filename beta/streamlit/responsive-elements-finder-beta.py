@@ -346,7 +346,7 @@ if 'table' in locals():
 
     chart = alt.Chart(df_sorted).mark_circle().encode(
         x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Position (bp)'), sort='ascending'),
-        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=[ystart, 100])), color='Prom.:N', tooltip = ['Position (TSS):Q', '% Homology:Q', 'Prom.:N']
+        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=[ystart, 100])), color='Prom.', tooltip = ['Position (TSS):Q', '% Homology:Q', 'Prom.:N']
     ).properties(width=600, height=400)
     
     # Afficher le graphique dans Streamlit
