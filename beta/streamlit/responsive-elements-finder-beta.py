@@ -336,8 +336,13 @@ if 'table' in locals():
     st.text("Copy to clipboard: select one or multiple cells, copy them to clipboard, and paste them into your favorite spreadsheet software.")
 
     # Créer un graphique à partir du DataFrame
+    # Convertir la colonne "% Homology" en type numérique (float)
+    df['% Homology'] = df['% Homology'].astype(float)
+
+    # Trier le DataFrame selon la colonne "% Homology" en ordre décroissant
+    df_sorted = df.sort_values('% Homology', ascending=False)
     
-    chart = alt.Chart(df).mark_circle().encode(x=alt.X('Position (TSS)', axis=alt.Axis(title='Position (bp)')),y=alt.Y('% Homology', axis=alt.Axis(title='Homologie %'), sort='-y')).properties(width=600,height=400)
+    chart = alt.Chart(df).mark_circle().encode(x=alt.X('Position (TSS)', axis=alt.Axis(title='Position (bp)')),y=alt.Y('% Homology', axis=alt.Axis(title='Homologie %'))).properties(width=600,height=400)
 
     # Afficher le graphique dans Streamlit
     st.altair_chart(chart, use_container_width=True)
