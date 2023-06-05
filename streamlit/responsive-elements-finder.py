@@ -329,8 +329,8 @@ if st.button("Find responsive elements"):
 
 # RE output
 if 'table' in locals():
-    for row in table:
-        st.write("|".join(str(cell).ljust(15) for cell in row))
+    df = pd.DataFrame(table[1:], columns=table[0])
+    st.dataframe(df)
 else:
     st.text("")
 
