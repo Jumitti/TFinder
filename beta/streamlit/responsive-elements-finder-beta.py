@@ -346,13 +346,17 @@ if 'table' in locals():
 
     source = df
     
+    homology_range = source['% Homology'].astype(float)
+    
+    ystart = math.floor(homology_range.min()-10
+    
     scale = alt.Scale(scheme='category10')
 
     color_scale = alt.Color("Promoter:N", scale=scale)
     
     chart = alt.Chart(source).mark_circle().encode(
         x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Position (bp)'), sort='ascending'),
-        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homologie %')), color=color_scale
+        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=[ystart, 100])), color=color_scale
     ).properties(width=600, height=400)
     
     # Afficher le graphique dans Streamlit
