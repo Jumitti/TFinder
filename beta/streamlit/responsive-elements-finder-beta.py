@@ -348,7 +348,7 @@ if 'table' in locals():
     
     chart = alt.Chart(source).mark_circle().encode(
         x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Position (bp)'), sort='ascending'),
-        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homologie %')), color='Prom.:N', tooltip = ['Position (TSS)', '% Homology', 'Prom.']
+        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homologie %')), color='Prom.', tooltip = ['Position (TSS)', '% Homology', 'Prom.']
     ).properties(width=600, height=400)
     
     # Afficher le graphique dans Streamlit
