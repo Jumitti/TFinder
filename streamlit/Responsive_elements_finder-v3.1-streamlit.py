@@ -292,7 +292,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
 
     if len(table) > 0:
         table.sort(key=lambda x: float(x[3]), reverse=True)
-        header = ["Position", "Position (TIS)", "Sequence", "% Homology", "Ref seq", "Prom."]
+        header = ["Position", "Position (TSS)", "Sequence", "% Homology", "Ref seq", "Prom."]
         table.insert(0, header)
     else:
         no_consensus = "No consensus sequence found with the specified threshold."
@@ -307,9 +307,9 @@ entry_sequence = st.text_input("Responsive element (IUPAC authorized):", value="
 
 # TSS entry
 if 'upstream' not in st.session_state:
-    entry_tis = st.text_input("TSS:", value="0")
+    entry_tis = st.text_input("Transcription Start Site (TSS):", value="0")
 else:
-    entry_tis = st.text_input("TSS:", value=st.session_state['upstream'])
+    entry_tis = st.text_input("Transcription Start Site (TSS):", value=st.session_state['upstream'])
 
 # Threshold
 threshold_entry = st.text_input("Threshold (%)", value="80")
@@ -337,8 +337,13 @@ else:
 st.sidebar.title("Help")
 st.sidebar.divider()
 st.sidebar.header("Promoter Finder")
-st.sidebar.subheader("  Gene ID:")
-st.sidebar.write("  ENTREZ_GENE_ID of NCBI and gene names are allowed.")
+st.sidebar.subheader("Gene ID:")
+st.sidebar.write("ENTREZ_GENE_ID of NCBI and gene names are allowed.")
+st.sidebar.subheader("Species:")
+st.sidebar.write("Human, mouse and rat are allowed.")
+st.sidebar.subheader("Upstream/Downstream:")
+st.sidebar.write("Distance to Transcription Start Site (TSS) in bp")
+st.sidebar.image("https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/whatisagene.png")
 st.sidebar.divider()
 st.sidebar.header("Responsive Elements Finder")
 
