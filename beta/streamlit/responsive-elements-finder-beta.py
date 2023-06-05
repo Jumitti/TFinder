@@ -296,7 +296,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
 
     if len(table) > 0:
         table.sort(key=lambda x: float(x[3]), reverse=True)
-        header = ["Position", "Position (TSS)", "Sequence", "% Homology", "Ref seq", "Prom."]
+        header = ["Position", "Position (TSS)", "Sequence", "% Homology", "Ref seq", "Promoter"]
         table.insert(0, header)
     else:
         no_consensus = "No consensus sequence found with the specified threshold."
@@ -347,8 +347,8 @@ if 'table' in locals():
     source = df
     
     scale = alt.Scale(scheme='category10')
-    
-    color_scale = alt.Color("Prom.:Q", scale=scale)
+
+    color_scale = alt.Color("Promoter:N", scale=scale)
     
     chart = alt.Chart(source).mark_circle().encode(
         x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Position (bp)'), sort='ascending'),
