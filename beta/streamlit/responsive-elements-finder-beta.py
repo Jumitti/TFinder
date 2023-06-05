@@ -337,7 +337,7 @@ if 'table' in locals():
 
     # Créer un graphique à partir du DataFrame
     
-    chart = alt.Chart(df).mark_circle().encode(x=alt.X('Position (TSS)', axis=alt.Axis(title='Position (bp)')),y=alt.Y('% Homology', axis=alt.Axis(title='Homologie %'))).properties(width=600,height=400)
+    chart = alt.Chart(df).mark_circle().encode(x=alt.X('Position (TSS)', axis=alt.Axis(title='Position (bp)')),y=alt.Y('% Homology', axis=alt.Axis(title='Homologie %'), sort='-y')).properties(width=600,height=400)
 
     # Afficher le graphique dans Streamlit
     st.altair_chart(chart, use_container_width=True)
