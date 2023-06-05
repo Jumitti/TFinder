@@ -310,8 +310,8 @@ if 'upstream' not in locals():
     entry_tis = st.text_input("TSS:", value="0")
 else:
     entry_tis_value = st.session_state['upstream']
+    st.session_state['entry_tis'] = entry_tis_value
     entry_tis = st.text_input("TSS:", value=entry_tis_value)
-    st.session_state['entry_tis'] = entry_tis
 
 # Threshold
 threshold_entry = st.text_input("Threshold (%)", value="80")
