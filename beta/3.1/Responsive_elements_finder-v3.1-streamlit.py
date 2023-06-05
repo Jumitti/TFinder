@@ -202,6 +202,7 @@ def generate_iupac_variants(sequence):
 
 
 # Responsive Elements Finder (consensus sequence)
+@st.cache
 def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter):
     global table
     table = []
