@@ -31,11 +31,15 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 - Percentage of homology between found sequences and responsive elements (NEW ✨ Fixed: 3.X)
 - Find mismatches sequence
 - Export results to excel
-- 
+- Graph of sequence positions found on the promoter (NEW ✨: WebUI only)
 
 ## WebUI
-Yes, there's a WebUI version too 😊 nothing's too good for you
-[REF StreamLit](https://responsive-elements-finder2.streamlit.app/)
+Yes, there's a WebUI version too 😊 nothing's too good for you 😊
+
+- Use [REF StreamLit](https://responsive-elements-finder2.streamlit.app/)
+
+Graph of sequence positions found on the promoter
+![graph_webui](https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/Graph%20WebUI.png)
 
 ## Windows version
 
@@ -60,7 +64,7 @@ Made for and on Windows. Maybe works on Linux and MacOS (please install python p
     pip install tabulate
     pip install tk
     ```
-- Run ``Responsive Element Finder.vX.py``
+- Run ``Responsive Element Finder.v?.py``
 - Enjoy ☺
 
 ## Promoter Finder
@@ -87,7 +91,7 @@ I use the NCBI API (https://www.ncbi.nlm.nih.gov/home/develop/api/). For more in
 
 ## Screenshot
 
-![universal remotes](https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/Responsive%20Elements%20Finder-v2.png)
+![screenshot](https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/Responsive%20Elements%20Finder-v2.png)
 
 ## WARNING
 
