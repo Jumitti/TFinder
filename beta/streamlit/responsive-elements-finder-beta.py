@@ -345,7 +345,7 @@ if 'table' in locals():
     
     ystart = math.floor(df_sorted['% Homology'].min()) - 10
     
-    color_scale = alt.Scale(domain=df_sorted['Prom.'].unique(), range=['red', 'blue', 'green', 'yellow'])
+    color_scale = alt.Scale(domain=df['Prom.'].unique(), range=['red', 'blue', 'green', 'yellow'])
     
     chart = alt.Chart(df).mark_circle().encode(x=alt.X('Position (TSS)', axis=alt.Axis(title='Position (bp)')),y=alt.Y('% Homology', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=[ystart, 100])), color=alt.Color('Prom.:N', scale=color_scale)).properties(width=600,height=400)
 
