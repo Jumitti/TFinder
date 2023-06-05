@@ -4,7 +4,6 @@ import pandas as pd
 import altair as alt
 import math
 
-
 # Reverse complement
 def reverse_complement(sequence):
     complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
@@ -151,7 +150,8 @@ if 'result_promoter' not in st.session_state:
 else:
     result_promoter_text = "\n".join(st.session_state['result_promoter'])
     result_promoter = st.text_area("Promoter:", value=result_promoter_text)
-    st.text("Copy: CTRL+A CTRL+C")
+    st.info("⬆ You can paste your sequences here (FASTA required for multiple sequences).")
+    st.info("⬆ Copy: Click in sequence, CTRL+A, CTRL+C")
 
 # Responsive-Elements-Finder
 
@@ -335,18 +335,19 @@ if 'table' in locals():
     df = pd.DataFrame(table[1:], columns=table[0])
     st.session_state['df'] = df
     st.dataframe(df)
-    st.text("Copy to clipboard: select one or multiple cells, copy them to clipboard, and paste them into your favorite spreadsheet software.")
+    st.info("⬆ Copy: select one cells, CTRL+A, CTRL+C, CTRL+V into spreadsheet softwares.")
     
     # Promoteur display
     source = df
     homology_range = source['% Homology'].astype(float)
-    ystart = math.floor(homology_range.min() - 10)
+    ystart = math.floor(homology_range.min() - 5)
+    ystop = math.floor(homology_range.max() + 5)
     scale = alt.Scale(scheme='category10')
     color_scale = alt.Color("Promoter:N", scale=scale)
     
     chart = alt.Chart(source).mark_circle().encode(
-        x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Position (bp)'), sort='ascending'),
-        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=[ystart, 100])), color=color_scale, tooltip = ['Position (TSS)','% Homology','Sequence','Promoter']
+        x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
+        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])), color=color_scale, tooltip = ['Position (TSS)','% Homology','Sequence','Promoter']
     ).properties(width=600, height=400)
     
     st.altair_chart(chart, use_container_width=True)
@@ -354,18 +355,22 @@ else:
     st.text("")
 
 # Help
+st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder)")
+st.sidebar.write("By Minniti Julien")
 st.sidebar.title("Help")
 st.sidebar.divider()
 st.sidebar.header("Promoter Finder")
 st.sidebar.subheader("Gene ID:")
 st.sidebar.write("ENTREZ_GENE_ID of NCBI and gene names are allowed.")
+st.sidebar.write("There is no limit to the number of names/ENTREZ_GENE_ID. Add them with a line break (like those displayed by default). You can mix ENTREZ_GENE_ID and gene names as long as they are of the same species.")
 st.sidebar.subheader("Species:")
 st.sidebar.write("Human, mouse and rat are allowed.")
+st.sidebar.write("If you use several ENTREZ_GENE_ID/gene names, make sure you select the correct species.")
 st.sidebar.subheader("Upstream/Downstream:")
 st.sidebar.write("Distance to Transcription Start Site (TSS) in bp.")
 st.sidebar.image("https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/whatisagene.png")
 st.sidebar.subheader("Promoter:")
-st.sidebar.write('Use "Find promoter" button or paste your sequences (FASTA allowed).')
+st.sidebar.write('Use "Find promoter" button or paste your sequences. FASTA format allowed and required for multiple sequences.')
 st.sidebar.divider()
 st.sidebar.header("Responsive Elements Finder")
 st.sidebar.subheader("Responsive element:")
