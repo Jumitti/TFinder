@@ -346,7 +346,7 @@ if 'table' in locals():
 
     source = df
     
-    scale = alt.Scale(schemecategory10)
+    scale = alt.Scale(scheme=category10)
     
     color_scale = alt.Color("Prom. :N", scale=scale)
     
