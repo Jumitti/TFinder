@@ -299,6 +299,10 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
         no_consensus = "No consensus sequence found with the specified threshold."
     return table
 
+# Export to Excel
+def export_to_excel(df):
+        df.to_excel("REF_results.xlsx", index=False)
+        st.success("Table exported successfully.")
 
 # Responsive Elements Finder
 st.header('Responsive Elements Finder')
@@ -331,17 +335,9 @@ if st.button("Find responsive elements"):
 if 'table' in locals():
     df = pd.DataFrame(table[1:], columns=table[0])
     st.dataframe(df)
-    
+
     if st.button("Export"):
-        # Demander à l'utilisateur de spécifier le nom du fichier Excel
-        file_name = st.text_input("Enter a file name", "resultats.xlsx")
-        
-        # Exporter la table vers un fichier Excel si un nom de fichier est spécifié
-        if file_name:
-            df.to_excel(file_name, index=False)
-            st.success("Table exported successfully.")
-        else:
-            st.warning("Please enter a valid file name.")
+        export_to_excel(df)
 else:
     st.text("")
 
