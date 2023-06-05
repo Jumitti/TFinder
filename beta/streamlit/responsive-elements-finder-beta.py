@@ -346,9 +346,11 @@ if 'table' in locals():
 
     source = df
     
+    color_scale = alt.Color('Prom.:N', scale=alt.Scale(scheme='category10'))
+    
     chart = alt.Chart(source).mark_circle().encode(
         x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Position (bp)'), sort='ascending'),
-        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homologie %')), color='Prom.', tooltip = ['Position (TSS)', '% Homology', 'Prom.']
+        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homologie %')), color=color_scale
     ).properties(width=600, height=400)
     
     # Afficher le graphique dans Streamlit
