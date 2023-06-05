@@ -346,7 +346,7 @@ if 'table' in locals():
 
     source = df
     
-    color_scale = alt.Color('Prom.:N', scale=alt.Scale(scheme='category10'))
+    color_scale = alt.Color(df['Prom.:N'], scale=alt.Scale(scheme='category10'))
     
     chart = alt.Chart(source).mark_circle().encode(
         x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Position (bp)'), sort='ascending'),
