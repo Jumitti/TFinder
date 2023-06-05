@@ -353,6 +353,9 @@ else:
     st.text("")
 
 # Help
+if st.sidebar.button('GitHub'):
+    webbrowser.open('https://github.com/Jumitti/Responsive-Elements-Finder')
+st.sidebar.write("By Minniti Julien")
 st.sidebar.title("Help")
 st.sidebar.divider()
 st.sidebar.header("Promoter Finder")
