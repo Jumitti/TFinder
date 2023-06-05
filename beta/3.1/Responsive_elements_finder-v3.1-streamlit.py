@@ -104,6 +104,7 @@ def find_promoters(gene_ids, species, upstream, downstream):
             # Append the result to the result_promoter
             result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
             st.session_state['result_promoter'] = result_promoter
+            st.session_state['upstream'] = upstream
 
         return result_promoter
 
@@ -134,7 +135,6 @@ if st.button("Find promoter (~5sec/gene)"):
         gene_ids = gene_id_entry.strip().split("\n")
         upstream = int(upstream_entry)
         downstream = int(downstream_entry)
-        st.session_state['upstream'] = upstream
         try:
             result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
             st.success("Promoters extraction complete!")
