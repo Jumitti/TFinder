@@ -85,7 +85,9 @@ I use the NCBI API (https://www.ncbi.nlm.nih.gov/home/develop/api/). For more in
 
 - Responsive Elements (RE) allows [IUPAC nucleotides code](https://www.bioinformatics.org/sms/iupac.html)
 
-- Transcription Start Site (TSS): Set the distance of the TSS from the beginning of the pasted sequence or 'Upstream' used in Promoter Finder. Otherwise leave 0.
+- Transcription Start Site (TSS): Set the distance of the TSS from the beginning of the pasted sequence or 'Upstream' used in Promoter Finder. Otherwise leave 0. 
+
+Note: If you use "Promoter finder", it will be defined automatically.
 
 - Threshold: excludes sequences with homology < threshold
 
