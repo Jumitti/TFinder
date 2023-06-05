@@ -334,8 +334,8 @@ if st.button("Find responsive elements"):
 # RE output
 if 'table' in locals():
     df = pd.DataFrame(table[1:], columns=table[0])
+    st.session_state['df'] = df
     st.dataframe(df)
-
     if st.button("Export"):
         export_to_excel(df)
 else:
