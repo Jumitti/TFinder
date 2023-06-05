@@ -335,12 +335,17 @@ if 'table' in locals():
     st.dataframe(df)
     st.text("Copy to clipboard: select one or multiple cells, copy them to clipboard, and paste them into your favorite spreadsheet software.")
     
-    chart = alt.Chart(df).mark_point().encode(
-    x='tis_position',
-    y=alt.Y('result_promoter', title='Promoter'),
-    tooltip=['result_promoter', 'tis_position']
+    # Créer un graphique à partir du DataFrame
+    chart = alt.Chart(df).mark_circle().encode(
+        x='tis_position',
+        y=alt.Y('result_promoteur', sort=None),
+        color='result_promoteur'
+    ).properties(
+        width=600,
+        height=400
     )
 
+    # Afficher le graphique dans Streamlit
     st.altair_chart(chart, use_container_width=True)
 else:
     st.text("")
