@@ -337,14 +337,16 @@ if 'table' in locals():
     st.text("Copy to clipboard: select one or multiple cells, copy them to clipboard, and paste them into your favorite spreadsheet software.")
 
     # Créer un graphique à partir du DataFrame
-    
+    '''
     df['% Homology'] = df['% Homology'].astype(float)
     
     ystart = math.floor(df['% Homology'].min()) - 10
 
-    df_sorted = df.sort_values(by='Position (TSS)')
+    df_sorted = df.sort_values(by='Position (TSS)')'''
 
-    chart = alt.Chart(df_sorted).mark_circle().encode(
+    source = df
+    
+    chart = alt.Chart(source).mark_circle().encode(
         x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Position (bp)'), sort='ascending'),
         y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=[ystart, 100])), color='Prom.', tooltip = ['Position (TSS):Q', '% Homology:Q', 'Prom.:N']
     ).properties(width=600, height=400)
