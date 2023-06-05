@@ -299,11 +299,6 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
         no_consensus = "No consensus sequence found with the specified threshold."
     return table
 
-# Export to Excel
-def export_to_excel(df):
-        df.to_excel("REF_results.xlsx", index=False)
-        st.success("Table exported successfully.")
-
 # Responsive Elements Finder
 st.header('Responsive Elements Finder')
 
@@ -336,9 +331,7 @@ if 'table' in locals():
     df = pd.DataFrame(table[1:], columns=table[0])
     st.session_state['df'] = df
     st.dataframe(df)
-    if st.button("Export"):
-        df = st.dataframe(st.session_state['df'])
-        export_to_excel(df)
+    st.text("Copy: Click random case CTRL+A CTRL+C")
 else:
     st.text("")
 
