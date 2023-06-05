@@ -335,7 +335,7 @@ if 'table' in locals():
     df = pd.DataFrame(table[1:], columns=table[0])
     st.session_state['df'] = df
     st.dataframe(df)
-    st.text("Copy: select one cells, CTRL+A, CTRL+C, CTRL+V into spreadsheet softwares.")
+    st.info("Copy: select one cells, CTRL+A, CTRL+C, CTRL+V into spreadsheet softwares.")
     
     # Promoteur display
     source = df
