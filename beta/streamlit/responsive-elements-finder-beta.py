@@ -342,9 +342,9 @@ if 'table' in locals():
     # Trier le DataFrame selon la colonne "% Homology" en ordre décroissant
     df_sorted = df.sort_values('% Homology', ascending=False)
     
-    y_start = math.floor(df_sorted['% Homology'].min()) - 10
+    ystart = math.floor(df_sorted['% Homology'].min()) - 10
     
-    chart = alt.Chart(df).mark_circle().encode(x=alt.X('Position (TSS)', axis=alt.Axis(title='Position (bp)')),y=alt.Y('% Homology', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=[y_start 100])).properties(width=600,height=400)
+    chart = alt.Chart(df).mark_circle().encode(x=alt.X('Position (TSS)', axis=alt.Axis(title='Position (bp)')),y=alt.Y('% Homology', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=[ystart 100])).properties(width=600,height=400)
 
     # Afficher le graphique dans Streamlit
     st.altair_chart(chart, use_container_width=True)
