@@ -336,14 +336,7 @@ if 'table' in locals():
     st.text("Copy to clipboard: select one or multiple cells, copy them to clipboard, and paste them into your favorite spreadsheet software.")
     
     # Créer un graphique à partir du DataFrame
-    chart = alt.Chart(df).mark_circle().encode(
-        x='tis_position',
-        y=alt.Y('', sort=None),
-        color=''
-    ).properties(
-        width=600,
-        height=400
-    )
+    chart = alt.Chart(df).mark_circle().encode(x='tis_position', y=alt.Y('', sort=None), color='').properties(width=600,height=400)
 
     # Afficher le graphique dans Streamlit
     st.altair_chart(chart, use_container_width=True)
