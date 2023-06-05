@@ -144,7 +144,7 @@ if st.button("Find promoter (~5sec/gene)"):
 # Promoter output state
 if 'result_promoter' not in st.session_state:
     result_promoter = st.text_area("Promoter:", value="")
-    st.info("➡️ Collez votre séquence ici")
+    st.info("⬆ You can paste your sequences here (FASTA required for multiple sequences).")
 else:
     result_promoter_text = "\n".join(st.session_state['result_promoter'])
     result_promoter = st.text_area("Promoter:", value=result_promoter_text)
