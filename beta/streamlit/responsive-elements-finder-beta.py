@@ -346,9 +346,9 @@ if 'table' in locals():
 
     source = df
     
-    source['% Homology'] = source['% Homology'].astype(float)
+    homology_range = source['% Homology'].astype(float)
     
-    ystart = math.floor(source['% Homology'].min() - 10
+    ystart = math.floor(homology_range.min() - 10)
     
     scale = alt.Scale(scheme='category10')
 
