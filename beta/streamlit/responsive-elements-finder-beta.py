@@ -343,18 +343,26 @@ if 'table' in locals():
 
     df_sorted = df.sort_values(by='Position (TSS)')
 
-    color_scale = alt.Scale(domain=df['Prom.'].unique(), range=['red', 'blue', 'green', 'yellow'])
+    # Vérifier les valeurs de 'Position (TSS)' et '% Homology'
+    x_min = df_sorted['Position (TSS)'].min()
+    x_max = df_sorted['Position (TSS)'].max()
+    y_min = df_sorted['% Homology'].min()
+    y_max = df_sorted['% Homology'].max()
 
-    chart = alt.Chart(df_sorted).mark_circle().encode(
-        x='Position (TSS):Q',
-        y=alt.Y('% Homology', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=[ystart, 100])),
-        color=alt.Color('Prom.:N', scale=color_scale),
-        tooltip=['Position (TSS):Q', '% Homology:Q', 'Prom.:N']
-    ).properties(width=600, height=400)
+    if x_min == x_max or y_min == y_max:
+        st.warning("Les données sont insuffisantes pour afficher le graphique.")
+    else:
+        color_scale = alt.Scale(domain=df['Prom.'].unique(), range=['red', 'blue', 'green', 'yellow'])
 
-    # Afficher le graphique dans Streamlit
-    st.altair_chart(chart, use_container_width=True)
+        chart = alt.Chart(df_sorted).mark_circle().encode(
+            x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Position (bp)'), scale=alt.Scale(domain=(x_min, x_max))),
+            y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homologie %'), scale=alt.Scale(domain=(y_min, y_max))),
+            color=alt.Color('Prom.:N', scale=color_scale),
+            tooltip=['Position (TSS):Q', '% Homology:Q', 'Prom.:N']
+        ).properties(width=600, height=400)
 
+        # Afficher le graphique dans Streamlit
+        st.altair_chart(chart, use_container_width=True)
 
 else:
     st.text("")
