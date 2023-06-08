@@ -360,6 +360,8 @@ else:
 st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder)")
 st.sidebar.write("By Minniti Julien")
 st.sidebar.title("Help")
+with st.sidebar.expander("Video tutorials"):
+    st.video('https://www.youtube.com/watch?v=HAsTCYWk308')
 with st.sidebar.expander("Promoter Finder"):
     st.subheader("Gene ID:")
     st.write("ENTREZ_GENE_ID of NCBI and gene names are allowed.")
