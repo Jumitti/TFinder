@@ -141,7 +141,7 @@ if st.button("Find promoter (~5sec/gene)"):
         downstream = int(downstream_entry)
         try:
             result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
-            st.success("Promoters extraction complete!")
+            st.success("Promoters extraction complete and add to Step 2 !")
         except Exception as e:
             st.error(f"Error finding promoters: {str(e)}")
 
