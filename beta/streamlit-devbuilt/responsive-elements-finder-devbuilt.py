@@ -146,13 +146,13 @@ if st.button("Find promoter (~5sec/gene)"):
             st.error(f"Error finding promoters: {str(e)}")
 
 # Promoter output state
+st.subheader('Step 2: Promoters sequence')
+st.info("⬇️ You can paste your sequences here (FASTA required for multiple sequences).")
 if 'result_promoter' not in st.session_state:
     result_promoter = st.text_area("Promoter:", value="")
-    st.info("⬆ You can paste your sequences here (FASTA required for multiple sequences).")
 else:
     result_promoter_text = "\n".join(st.session_state['result_promoter'])
     result_promoter = st.text_area("Promoter:", value=result_promoter_text)
-    st.info("⬆ You can paste your sequences here (FASTA required for multiple sequences).")
     st.info("⬆ Copy: Click in sequence, CTRL+A, CTRL+C")
 
 # Responsive-Elements-Finder
@@ -305,7 +305,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
     return table
 
 # Responsive Elements Finder
-st.header('Responsive Elements Finder')
+st.subheader('Step 3: Responsive Elements Finder')
 
 # RE entry
 entry_sequence = st.text_input("Responsive element (IUPAC authorized, take more time):", value="ATGCN")
