@@ -117,7 +117,9 @@ def find_promoters(gene_ids, species, upstream, downstream):
 st.title('Responsive Elements Finder')
 
 # Promoter Finder
-st.header('Promoter Finder')
+st.subheader('Step 1: Promoter Finder')
+st.info("If you have a FASTA sequence, go to Step 2")
+
 
 # Gene ID
 gene_id_entry = st.text_area("Gene ID:", value="PRKN\n5071")
