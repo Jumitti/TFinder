@@ -362,6 +362,7 @@ st.sidebar.write("By Minniti Julien")
 st.sidebar.title("Help")
 with st.sidebar.expander("Video tutorials"):
     st.video('https://www.youtube.com/watch?v=HAsTCYWk308')
+    st.video('https://www.youtube.com/watch?v=JGjuKxbUhoc')
 with st.sidebar.expander("Promoter Finder"):
     st.subheader("Gene ID:")
     st.write("ENTREZ_GENE_ID of NCBI and gene names are allowed.")
