@@ -498,15 +498,14 @@ if st.button("Find responsive elements"):
             st.error(f"Error finding responsive elements: {str(e)}")
 
 # RE output
-if 'table' in locals():
-    #Results table
-    df = pd.DataFrame(table[1:], columns=table[0])
-    st.session_state['df'] = df
-    st.dataframe(df)
-    st.info("⬆ Copy: select one cells, CTRL+A, CTRL+C, CTRL+V into spreadsheet softwares.")
-    
+if 'table' in locals():    
     # Promoteur display
     if jaspar:
+        df = pd.DataFrame(table[1:], columns=table[0])
+        st.session_state['df'] = df
+        st.dataframe(df)
+        st.info("⬆ Copy: select one cells, CTRL+A, CTRL+C, CTRL+V into spreadsheet softwares.")
+        
         source = df
         score_range = source['Source %'].astype(float)
         ystart = math.floor(score_range.min() - 5)
@@ -521,6 +520,11 @@ if 'table' in locals():
         
         st.altair_chart(chart, use_container_width=True)
     else :
+        df = pd.DataFrame(table[1:], columns=table[0])
+        st.session_state['df'] = df
+        st.dataframe(df)
+        st.info("⬆ Copy: select one cells, CTRL+A, CTRL+C, CTRL+V into spreadsheet softwares.")
+        
         source = df
         homology_range = source['% Homology'].astype(float)
         ystart = math.floor(homology_range.min() - 5)
