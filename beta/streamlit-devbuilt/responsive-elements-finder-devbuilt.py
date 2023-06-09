@@ -209,7 +209,7 @@ def generate_iupac_variants(sequence):
 def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter):
     if jaspar:
         jaspar_id = sequence_consensus_input
-        matrix_extraction(sequence_consensus_input, threshold, tis_value, result_promoter)
+        matrix_extraction(sequence_consensus_input)
         
     else:
         global table
