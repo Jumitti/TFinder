@@ -207,107 +207,102 @@ def generate_iupac_variants(sequence):
 
 # Responsive Elements Finder (consensus sequence)
 def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter):
-    if jaspar:
-        jaspar_id = sequence_consensus_input
-        matrix_extraction(sequence_consensus_input)
-        
+    global table
+    table = []
+
+    # Transform with IUPAC code
+    sequence_consensus = generate_iupac_variants(sequence_consensus_input)
+
+    # Promoter input type
+    lines = result_promoter
+    promoters = []
+
+    first_line = lines
+    if first_line.startswith(("A", "T", "C", "G")):
+        shortened_promoter_name = "n.d."
+        promoter_region = lines
+        promoters.append((shortened_promoter_name, promoter_region))
     else:
-        global table
-        table = []
+        lines = result_promoter.split("\n")
+        i = 0
+        while i < len(lines):
+            line = lines[i]
+            if line.startswith(">"):
+                promoter_name = line[1:]
+                shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
+                promoter_region = lines[i + 1]
+                promoters.append((shortened_promoter_name, promoter_region))
+                i += 2
+            else:
+                i += 1
 
-        # Transform with IUPAC code
-        sequence_consensus = generate_iupac_variants(sequence_consensus_input)
+    # REF
+    for shortened_promoter_name, promoter_region in promoters:
 
-        # Promoter input type
-        lines = result_promoter
-        promoters = []
+        found_positions = []
 
-        first_line = lines
-        if first_line.startswith(("A", "T", "C", "G")):
-            shortened_promoter_name = "n.d."
-            promoter_region = lines
-            promoters.append((shortened_promoter_name, promoter_region))
-        else:
-            lines = result_promoter.split("\n")
-            i = 0
-            while i < len(lines):
-                line = lines[i]
-                if line.startswith(">"):
-                    promoter_name = line[1:]
-                    shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
-                    promoter_region = lines[i + 1]
-                    promoters.append((shortened_promoter_name, promoter_region))
-                    i += 2
-                else:
-                    i += 1
+        for consensus in sequence_consensus:
+            variants = generate_variants(consensus)
+            for variant in variants:
 
-        # REF
-        for shortened_promoter_name, promoter_region in promoters:
+                variant_length = len(variant)
 
-            found_positions = []
+                for i in range(len(promoter_region) - variant_length + 1):
+                    sequence = promoter_region[i:i + variant_length]
 
-            for consensus in sequence_consensus:
-                variants = generate_variants(consensus)
-                for variant in variants:
+                    mismatches = sum(a != b for a, b in zip(sequence, variant))  # Mismatches
 
-                    variant_length = len(variant)
+                    homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
 
-                    for i in range(len(promoter_region) - variant_length + 1):
-                        sequence = promoter_region[i:i + variant_length]
+                    # Find best homology sequence
+                    better_homology = False
+                    for position, _, _, _, best_homology_percentage in found_positions:
+                        if abs(i - position) < 1 and homology_percentage <= best_homology_percentage:
+                            better_homology = True
+                            break
 
-                        mismatches = sum(a != b for a, b in zip(sequence, variant))  # Mismatches
+                    if not better_homology:
 
-                        homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
+                        best_homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
 
-                        # Find best homology sequence
-                        better_homology = False
-                        for position, _, _, _, best_homology_percentage in found_positions:
-                            if abs(i - position) < 1 and homology_percentage <= best_homology_percentage:
-                                better_homology = True
-                                break
+                        found_positions.append((i, sequence, variant, mismatches, best_homology_percentage))
 
-                        if not better_homology:
-                        
-                            best_homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
-                            
-                            found_positions.append((i, sequence, variant, mismatches, best_homology_percentage))
+        # Sort positions in descending order of homology percentage
+        found_positions.sort(key=lambda x: x[4], reverse=True)
 
-            # Sort positions in descending order of homology percentage
-            found_positions.sort(key=lambda x: x[4], reverse=True)
+        # Creating a results table
+        if len(found_positions) > 0:
+            for position, sequence, variant, mismatches, best_homology_percentage in found_positions:
+                start_position = max(0, position - 3)
+                end_position = min(len(promoter_region), position + len(sequence) + 3)
+                sequence_with_context = promoter_region[start_position:end_position]
 
-            # Creating a results table
-            if len(found_positions) > 0:
-                for position, sequence, variant, mismatches, best_homology_percentage in found_positions:
-                    start_position = max(0, position - 3)
-                    end_position = min(len(promoter_region), position + len(sequence) + 3)
-                    sequence_with_context = promoter_region[start_position:end_position]
+                sequence_parts = []
+                for j in range(start_position, end_position):
+                    if j < position or j >= position + len(sequence):
+                        sequence_parts.append(sequence_with_context[j - start_position].lower())
+                    else:
+                        sequence_parts.append(sequence_with_context[j - start_position].upper())
 
-                    sequence_parts = []
-                    for j in range(start_position, end_position):
-                        if j < position or j >= position + len(sequence):
-                            sequence_parts.append(sequence_with_context[j - start_position].lower())
-                        else:
-                            sequence_parts.append(sequence_with_context[j - start_position].upper())
+                sequence_with_context = ''.join(sequence_parts)
+                tis_position = position - tis_value
 
-                    sequence_with_context = ''.join(sequence_parts)
-                    tis_position = position - tis_value
+                if best_homology_percentage >= threshold:
+                    row = [str(position).ljust(8),
+                           str(tis_position).ljust(15),
+                           sequence_with_context,
+                           "{:.1f}".format(best_homology_percentage).ljust(12),
+                           variant,
+                           shortened_promoter_name]
+                    table.append(row)
 
-                    if best_homology_percentage >= threshold:
-                        row = [str(position).ljust(8),
-                               str(tis_position).ljust(15),
-                               sequence_with_context,
-                               "{:.1f}".format(best_homology_percentage).ljust(12),
-                               variant,
-                               shortened_promoter_name]
-                        table.append(row)
-
-        if len(table) > 0:
-            table.sort(key=lambda x: float(x[3]), reverse=True)
-            header = ["Position", "Position (TSS)", "Sequence", "% Homology", "Ref seq", "Promoter"]
-            table.insert(0, header)
-        else:
-            no_consensus = "No consensus sequence found with the specified threshold."
-        return table
+    if len(table) > 0:
+        table.sort(key=lambda x: float(x[3]), reverse=True)
+        header = ["Position", "Position (TSS)", "Sequence", "% Homology", "Ref seq", "Promoter"]
+        table.insert(0, header)
+    else:
+        no_consensus = "No consensus sequence found with the specified threshold."
+    return table
 
 #Find with JASPAR
 def search_sequence(matrices, threshold, tis_value, result_promoter):
@@ -320,7 +315,7 @@ def search_sequence(matrices, threshold, tis_value, result_promoter):
         # Max score per matrix
         max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
         max_scores.append(max_score)
-        
+
         # Promoter input type
         lines = result_promoter
         promoters = []
@@ -343,24 +338,24 @@ def search_sequence(matrices, threshold, tis_value, result_promoter):
                     i += 2
                 else:
                     i += 1
-                    
+
         # REF
         for shortened_promoter_name, promoter_region in promoters:
-            
+
             found_positions = []
             total_promoter = len(promoters)
-                            
+
             for i in range(len(promoter_region) - seq_length + 1):
                 seq = promoter_region[i:i + seq_length]
                 score = calculate_score(seq, matrix)
-                normalized_score = (score / max_score)*100
-                
+                normalized_score = (score / max_score) * 100
+
                 found_positions.append((i, seq, normalized_score))
-                
+
             # Sort positions in descending order of score percentage
             found_positions.sort(key=lambda x: x[1], reverse=True)
-            
-             # Creating a results table
+
+            # Creating a results table
             if len(found_positions) > 0:
                 for position, sequence, normalized_score in found_positions:
                     start_position = max(0, position - 3)
@@ -405,11 +400,11 @@ def matrix_extraction(sequence_consensus_input):
         messagebox.showerror("Erreur", f"Erreur lors de la récupération de la matrice de fréquence : {response.status_code}")
         return
 
-    # Transform matrix in revers, complement, reverse-complement
+    # Transform matrix in reverse, complement, reverse-complement
     matrices = transform_matrix(matrix)
 
     # search sequence
-    search_sequence(jaspar_id,matrices)
+    search_sequence(matrices, jaspar_id, threshold, tis_value, result_promoter)
 
 #Transform JASPAR matrix
 def transform_matrix(matrix):
@@ -437,6 +432,7 @@ def calculate_score(sequence, matrix):
             base_score = matrix[base]
             score += base_score[i]
     return score
+
 
 
 
