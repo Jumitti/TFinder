@@ -394,7 +394,7 @@ def search_sequence(sequence_consensus_input, matrices, threshold, tis_value, re
         return table
 
 #Extract JASPAR matrix
-def matrix_extraction():
+def matrix_extraction(sequence_consensus_input):
     jaspar_id = sequence_consensus_input
     url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
     response = requests.get(url)
