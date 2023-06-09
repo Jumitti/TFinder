@@ -395,7 +395,7 @@ def search_sequence(jaspar_id, matrices, threshold, tis_value, result_promoter):
 
 #Extract JASPAR matrix
 def matrix_extraction():
-    jaspar_id = entry_sequence.get()
+    jaspar_id = entry_sequence
     url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
     response = requests.get(url)
     if response.status_code == 200:
