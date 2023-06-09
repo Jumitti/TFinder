@@ -208,6 +208,7 @@ def generate_iupac_variants(sequence):
 # Responsive Elements Finder (consensus sequence)
 def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter):
     if jaspar:
+        jaspar_id = sequence_consensus_input
         matrix_extraction()
         
     else:
@@ -309,12 +310,9 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
         return table
 
 #Find with JASPAR
-def search_sequence(jaspar_id, matrices):
-    text_result.delete("1.0", "end")
+def search_sequence(jaspar_id, matrices, threshold, tis_value, result_promoter):
     results = []
     max_scores = []
-    threshold = float(threshold_entry.get())
-    tis_value = int(entry_tis.get())
 
     for matrix_name, matrix in matrices.items():
         seq_length = len(matrix['A'])
@@ -324,23 +322,23 @@ def search_sequence(jaspar_id, matrices):
         max_scores.append(max_score)
         
         # Promoter input type
-        lines = result_promoter.get("1.0", "end-1c")
+        lines = result_promoter
         promoters = []
-        
+
         first_line = lines
         if first_line.startswith(("A", "T", "C", "G")):
             shortened_promoter_name = "n.d."
             promoter_region = lines
             promoters.append((shortened_promoter_name, promoter_region))
-        else :
-            lines = result_promoter.get("1.0", "end-1c").split("\n")
+        else:
+            lines = result_promoter.split("\n")
             i = 0
             while i < len(lines):
                 line = lines[i]
                 if line.startswith(">"):
                     promoter_name = line[1:]
                     shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
-                    promoter_region = lines[i+1]
+                    promoter_region = lines[i + 1]
                     promoters.append((shortened_promoter_name, promoter_region))
                     i += 2
                 else:
