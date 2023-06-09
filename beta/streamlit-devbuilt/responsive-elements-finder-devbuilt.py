@@ -310,7 +310,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
         return table
 
 #Find with JASPAR
-def search_sequence(sequence_consensus_input, matrices, threshold, tis_value, result_promoter):
+def search_sequence(matrices, threshold, tis_value, result_promoter):
     results = []
     max_scores = []
 
@@ -394,7 +394,7 @@ def search_sequence(sequence_consensus_input, matrices, threshold, tis_value, re
         return table
 
 #Extract JASPAR matrix
-def matrix_extraction(sequence_consensus_input):
+def matrix_extraction(sequence_consensus_input, threshold, tis_value, result_promoter):
     jaspar_id = sequence_consensus_input
     url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
     response = requests.get(url)
@@ -409,7 +409,7 @@ def matrix_extraction(sequence_consensus_input):
     matrices = transform_matrix(matrix)
 
     # search sequence
-    search_sequence(jaspar_id,matrices)
+    search_sequence(jaspar_id,matrices, threshold, tis_value, result_promoter)
 
 #Transform JASPAR matrix
 def transform_matrix(matrix):
