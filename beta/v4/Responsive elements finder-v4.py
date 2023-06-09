@@ -172,6 +172,151 @@ def get_sequence():
 
 # Responsive-Elements-Finder
 
+#Find with JASPAR
+def search_sequence(jaspar_id, matrices):
+    text_result.delete("1.0", "end")
+    results = []
+    max_scores = []
+    threshold = float(threshold_entry.get())
+    tis_value = int(entry_tis.get())
+
+    for matrix_name, matrix in matrices.items():
+        seq_length = len(matrix['A'])
+
+        # Calcul du score maximum pour chaque position
+        max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+        max_scores.append(max_score)
+        
+        # Promoter input type
+        lines = result_promoter.get("1.0", "end-1c")
+        promoters = []
+        
+        first_line = lines
+        if first_line.startswith(("A", "T", "C", "G")):
+            shortened_promoter_name = "n.d."
+            promoter_region = lines
+            promoters.append((shortened_promoter_name, promoter_region))
+        else :
+            lines = result_promoter.get("1.0", "end-1c").split("\n")
+            i = 0
+            while i < len(lines):
+                line = lines[i]
+                if line.startswith(">"):
+                    promoter_name = line[1:]
+                    shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
+                    promoter_region = lines[i+1]
+                    promoters.append((shortened_promoter_name, promoter_region))
+                    i += 2
+                else:
+                    i += 1
+                    
+        # REF
+        for j, (shortened_promoter_name, promoter_region) in enumerate(promoters, start=1):
+            
+            found_positions = []
+            
+            total_promoter = len(promoters)
+            
+            pattern = "\|/-\|/-"
+            cycle = itertools.cycle(pattern)
+                    
+            status_char = next(cycle)                 
+            text_status.delete("1.0", "end")
+            text_status.insert("1.0", f"Find responsive element in {shortened_promoter_name}...({j}/{total_promoter}) {status_char}")
+            window.update_idletasks()        
+
+            for i in range(len(promoter_region) - seq_length + 1):
+                seq = promoter_region[i:i + seq_length]
+                score = calculate_score(seq, matrix)
+                normalized_score = score / max_score  # Score normalisé
+                
+                if normalized_score >= (threshold/100):  # Filtrer les scores inférieurs au seuil
+                    tis_position = i - tis_value  # Position par rapport au TSS
+                    
+                    # Extraire la séquence avec des majuscules et des minuscules
+                    sequence_with_case = promoter_region[i-3:i].lower() + seq.upper() + promoter_region[i+seq_length:i+seq_length+3].lower()
+                    
+                    results.append({
+                        'Matrix': matrix_name,
+                        'Sequence': sequence_with_case,
+                        'Score': normalized_score,
+                        'Position': i,
+                        'TIS Position': tis_position,
+                        'Promoter Name': shortened_promoter_name
+                    })
+
+    # Tri des résultats par score décroissant, puis par shortened_promoter_name
+    sorted_results = sorted(results, key=lambda x: (x['Score'], x['Promoter Name']), reverse=True)
+
+    # Affichage des résultats dans un tableau
+    table_data = []
+    for result in sorted_results:
+        table_data.append([
+            result['Position'],
+            result['TIS Position'],
+            result['Sequence'],
+            f"{result['Score']:.3g}",
+            result['Promoter Name']
+        ])
+    
+    text_status.delete("1.0", "end")
+    text_status.insert("1.0", f"Find sequence -> Done ({total_promoter}/{total_promoter})")
+    window.update_idletasks()
+    
+    table = tabulate(table_data, headers=['Position', 'TIS Position', 'Sequence', 'Score', 'Promoter Name'], tablefmt='orgtbl')
+    text_result.delete("1.0", "end")
+    text_result.insert("1.0", table)
+
+
+
+#Calculate score with JASPAR
+def calculate_score(sequence, matrix):
+    score = 0
+    for i, base in enumerate(sequence):
+        if base in {'A', 'C', 'G', 'T'}:
+            base_score = matrix[base]
+            score += base_score[i]
+    return score
+
+#Transform JASPAR matrix
+def transform_matrix(matrix):
+    reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
+    complement_matrix = {
+        'A': matrix['T'],
+        'C': matrix['G'],
+        'G': matrix['C'],
+        'T': matrix['A']
+    }
+    reversed_complement_matrix = {base: list(reversed(scores)) for base, scores in complement_matrix.items()}
+
+    return {
+        'Original': matrix,
+        'Reversed': reversed_matrix,
+        'Complement': complement_matrix,
+        'Reversed Complement': reversed_complement_matrix
+    }
+
+#Extract JASPAR matrix
+def matrix_extraction():
+    # Récupération des valeurs des champs d'entrée
+    jaspar_id = entry_sequence.get()
+
+    # Appel à l'API de Jaspar pour récupérer la matrice de fréquence
+    url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
+    response = requests.get(url)
+    if response.status_code == 200:
+        response_data = response.json()
+        matrix = response_data['pfm']
+    else:
+        messagebox.showerror("Erreur", f"Erreur lors de la récupération de la matrice de fréquence : {response.status_code}")
+        return
+
+    # Transformation de la matrice de fréquence
+    matrices = transform_matrix(matrix)
+
+    # Recherche de la séquence référence dans chaque matrice
+    search_sequence(jaspar_id,matrices)
+
 # Generation of all responsive elements
 def generate_variants(sequence):
     text_status.delete("1.0", "end")
@@ -236,130 +381,133 @@ def generate_iupac_variants(sequence):
 
 # Responsive Elements Finder (consensus sequence)
 def find_sequence_consensus():
-    global table
-    table = []
-    text_result.delete("1.0", "end")
-    sequence_consensus_input = entry_sequence.get()
-    text_status.delete("1.0", "end")
-    status = "Find responsive elements..."
-    text_status.insert("1.0", status)
-    window.update_idletasks()   
-    tis_value = int(entry_tis.get())
-
-    # Transform with IUPAC code
-    sequence_consensus = generate_iupac_variants(sequence_consensus_input)
-
-    threshold = float(threshold_entry.get())
-
-    # Promoter input type
-    lines = result_promoter.get("1.0", "end-1c")
-    promoters = []
-    
-    first_line = lines
-    if first_line.startswith(("A", "T", "C", "G")):
-        shortened_promoter_name = "n.d."
-        promoter_region = lines
-        promoters.append((shortened_promoter_name, promoter_region))
-    else :
-        lines = result_promoter.get("1.0", "end-1c").split("\n")
-        i = 0
-        while i < len(lines):
-            line = lines[i]
-            if line.startswith(">"):
-                promoter_name = line[1:]
-                shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
-                promoter_region = lines[i+1]
-                promoters.append((shortened_promoter_name, promoter_region))
-                i += 2
-            else:
-                i += 1
-    
-    
-
-    # REF
-    for j, (shortened_promoter_name, promoter_region) in enumerate(promoters, start=1):
+    if use_jaspar.get() == 1 :
+        print('ok')
+        matrix_extraction()
         
-        found_positions = []
-        
-        total_promoter = len(promoters)
-        
-        pattern = "\|/-\|/-"
-        cycle = itertools.cycle(pattern)
-        
-        for consensus in sequence_consensus:
-            variants = generate_variants(consensus)
-            for variant in variants:
-                
-                variant_length = len(variant)
-                
-                status_char = next(cycle)                 
-                text_status.delete("1.0", "end")
-                text_status.insert("1.0", f"Find responsive element in {shortened_promoter_name}...({j}/{total_promoter}) {status_char}")
-                window.update_idletasks()        
-
-                for i in range(len(promoter_region) - variant_length + 1):
-                    sequence = promoter_region[i:i + variant_length]
-
-                    mismatches = sum(a != b for a, b in zip(sequence, variant))  # Mismatches
-                    
-                    homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
-                    
-                    # Find best homology sequence
-                    better_homology = False
-                    for position, _, _, _, best_homology_percentage in found_positions:
-                        if abs(i - position) < 1 and homology_percentage <= best_homology_percentage:
-                            better_homology = True
-                            break
-
-                    if not better_homology:
-                       
-                        best_homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
-                        
-                        found_positions.append((i, sequence, variant, mismatches, best_homology_percentage))                            
-
-        # Sort positions in ascending order
-        found_positions.sort(key=lambda x: x[0])
-
-        # Creating a results table
-        if len(found_positions) > 0:
-            for position, sequence, variant, mismatches, best_homology_percentage in found_positions:
-                start_position = max(0, position - 3)
-                end_position = min(len(promoter_region), position + len(sequence) + 3)
-                sequence_with_context = promoter_region[start_position:end_position]
-
-                sequence_parts = []
-                for j in range(start_position, end_position):
-                    if j < position or j >= position + len(sequence):
-                        sequence_parts.append(sequence_with_context[j - start_position].lower())
-                    else:
-                        sequence_parts.append(sequence_with_context[j - start_position].upper())
-
-                sequence_with_context = ''.join(sequence_parts)
-                tis_position = position - tis_value
-
-                row = [position, tis_position, sequence_with_context, best_homology_percentage, variant, shortened_promoter_name]
-                table.append(row)
-
-            table.sort(key=lambda x: (x[5], float(x[3])), reverse=False)
-
-            # Filter results based on threshold
-            filtered_table = [row for row in table if float(row[3]) >= threshold]
-            
-            filtered_table = sorted(filtered_table, key=lambda x: (x[5], -float(x[3])))
-
-            if len(filtered_table) > 0:
-                result = tabulate(filtered_table, headers=header, tablefmt="pipe")
-            else:
-                result = "No consensus sequence found with the specified threshold."
-        else:
-            result = "No consensus sequence found in the promoter region."
-            
-        text_status.delete("1.0", "end")
-        text_status.insert("1.0", f"Find sequence -> Done ({total_promoter}/{total_promoter})")
-        window.update_idletasks()
-        
+    else:
+        global table
+        table = []
         text_result.delete("1.0", "end")
-        text_result.insert("1.0", result)
+        sequence_consensus_input = entry_sequence.get()
+        text_status.delete("1.0", "end")
+        status = "Find responsive elements..."
+        text_status.insert("1.0", status)
+        window.update_idletasks()   
+        tis_value = int(entry_tis.get())
+
+        # Transform with IUPAC code
+        sequence_consensus = generate_iupac_variants(sequence_consensus_input)
+
+        threshold = float(threshold_entry.get())
+
+        # Promoter input type
+        lines = result_promoter.get("1.0", "end-1c")
+        promoters = []
+        
+        first_line = lines
+        if first_line.startswith(("A", "T", "C", "G")):
+            shortened_promoter_name = "n.d."
+            promoter_region = lines
+            promoters.append((shortened_promoter_name, promoter_region))
+        else :
+            lines = result_promoter.get("1.0", "end-1c").split("\n")
+            i = 0
+            while i < len(lines):
+                line = lines[i]
+                if line.startswith(">"):
+                    promoter_name = line[1:]
+                    shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
+                    promoter_region = lines[i+1]
+                    promoters.append((shortened_promoter_name, promoter_region))
+                    i += 2
+                else:
+                    i += 1
+                    
+        # REF
+        for j, (shortened_promoter_name, promoter_region) in enumerate(promoters, start=1):
+            
+            found_positions = []
+            
+            total_promoter = len(promoters)
+            
+            pattern = "\|/-\|/-"
+            cycle = itertools.cycle(pattern)
+            
+            for consensus in sequence_consensus:
+                variants = generate_variants(consensus)
+                for variant in variants:
+                    
+                    variant_length = len(variant)
+                    
+                    status_char = next(cycle)                 
+                    text_status.delete("1.0", "end")
+                    text_status.insert("1.0", f"Find responsive element in {shortened_promoter_name}...({j}/{total_promoter}) {status_char}")
+                    window.update_idletasks()        
+
+                    for i in range(len(promoter_region) - variant_length + 1):
+                        sequence = promoter_region[i:i + variant_length]
+
+                        mismatches = sum(a != b for a, b in zip(sequence, variant))  # Mismatches
+                        
+                        homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
+                        
+                        # Find best homology sequence
+                        better_homology = False
+                        for position, _, _, _, best_homology_percentage in found_positions:
+                            if abs(i - position) < 1 and homology_percentage <= best_homology_percentage:
+                                better_homology = True
+                                break
+
+                        if not better_homology:
+                           
+                            best_homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
+                            
+                            found_positions.append((i, sequence, variant, mismatches, best_homology_percentage))                            
+
+            # Sort positions in ascending order
+            found_positions.sort(key=lambda x: x[0])
+
+            # Creating a results table
+            if len(found_positions) > 0:
+                for position, sequence, variant, mismatches, best_homology_percentage in found_positions:
+                    start_position = max(0, position - 3)
+                    end_position = min(len(promoter_region), position + len(sequence) + 3)
+                    sequence_with_context = promoter_region[start_position:end_position]
+
+                    sequence_parts = []
+                    for j in range(start_position, end_position):
+                        if j < position or j >= position + len(sequence):
+                            sequence_parts.append(sequence_with_context[j - start_position].lower())
+                        else:
+                            sequence_parts.append(sequence_with_context[j - start_position].upper())
+
+                    sequence_with_context = ''.join(sequence_parts)
+                    tis_position = position - tis_value
+
+                    row = [position, tis_position, sequence_with_context, best_homology_percentage, variant, shortened_promoter_name]
+                    table.append(row)
+
+                table.sort(key=lambda x: (x[5], float(x[3])), reverse=False)
+
+                # Filter results based on threshold
+                filtered_table = [row for row in table if float(row[3]) >= threshold]
+                
+                filtered_table = sorted(filtered_table, key=lambda x: (x[5], -float(x[3])))
+
+                if len(filtered_table) > 0:
+                    result = tabulate(filtered_table, headers=header, tablefmt="pipe")
+                else:
+                    result = "No consensus sequence found with the specified threshold."
+            else:
+                result = "No consensus sequence found in the promoter region."
+                
+            text_status.delete("1.0", "end")
+            text_status.insert("1.0", f"Find sequence -> Done ({total_promoter}/{total_promoter})")
+            window.update_idletasks()
+            
+            text_result.delete("1.0", "end")
+            text_result.insert("1.0", result)
 
 #Def table
 table = []
@@ -517,37 +665,40 @@ label_sequence.grid(row=1, column=0)
 entry_sequence = tk.Entry(section_responsive_finder)
 entry_sequence.insert(0, "ATGCCGTA")  # default
 entry_sequence.grid(row=2, column=0)
+use_jaspar = tk.IntVar()
+checkbox_jaspar = tk.Checkbutton(section_responsive_finder, text="JASPAR", variable=use_jaspar)
+checkbox_jaspar.grid(row=3, column=0)
 
 # TIS entry
 label_tis = tk.Label(section_responsive_finder, text="Transcription Initiation Site (bp)")
-label_tis.grid(row=3, column=0)
+label_tis.grid(row=4, column=0)
 label_tis_info = tk.Label(section_responsive_finder, text="(distance from start of promoter or 'Upstream' if you use the Promoter Finder)")
-label_tis_info.grid(row=4, column=0)
+label_tis_info.grid(row=5, column=0)
 entry_tis_var = tk.StringVar()
 entry_tis_var.set("0")  # Valeur par défaut
 entry_tis = tk.Entry(section_responsive_finder, textvariable=entry_tis_var)
-entry_tis.grid(row=5, column=0)
+entry_tis.grid(row=6, column=0)
 
 # Threshold
 threshold_label = tk.Label(section_responsive_finder, text="Threshold (%)")
-threshold_label.grid(row=6, column=0)
+threshold_label.grid(row=7, column=0)
 threshold_entry = tk.Entry(section_responsive_finder)
 threshold_entry.insert(80, "80")  # $"80" default
-threshold_entry.grid(row=7, column=0)
+threshold_entry.grid(row=8, column=0)
 
 # Find RE
 button_search = tk.Button(section_responsive_finder, text="Find responsive elements", command=find_sequence_consensus)
-button_search.grid(row=8, column=0)
+button_search.grid(row=9, column=0)
 
 # RE output
 label_result = tk.Label(section_responsive_finder, text="Responsive elements")
-label_result.grid(row=9, column=0)
+label_result.grid(row=10, column=0)
 text_result = tk.Text(section_responsive_finder, height=16, width=100)
-text_result.grid(row=10, column=0)
+text_result.grid(row=11, column=0)
 
 # Export to Excel
 export_button = tk.Button(section_responsive_finder, text="Export to Excel", command=export_to_excel)
-export_button.grid(row=11, column=0)
+export_button.grid(row=12, column=0)
 
 # Section "status"
 section_status = tk.LabelFrame(window, text="Status")
