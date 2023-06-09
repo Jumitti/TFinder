@@ -308,7 +308,11 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
 st.subheader('Step 3: Responsive Elements Finder')
 
 # RE entry
-entry_sequence = st.text_input("Responsive element (IUPAC authorized, take more time):", value="ATGCN")
+jaspar = st.checkbox('Use JASPAR')
+if jaspar:
+    entry_sequence = st.text_input("Responsive element (IUPAC authorized, take more time):", value="MA0106.1")
+else:
+    entry_sequence = st.text_input("Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
 # TSS entry
 if 'upstream' not in st.session_state:
@@ -322,14 +326,24 @@ threshold_entry = st.text_input("Threshold (%)", value="80")
 # Run Responsive Elements finder
 if st.button("Find responsive elements"):
     with st.spinner("Finding responsive elements..."):
-        sequence_consensus_input = entry_sequence
-        tis_value = int(entry_tis)
-        threshold = float(threshold_entry)
-        try:
-            table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
-            st.success("Finding responsive elements done")
-        except Exception as e:
-            st.error(f"Error finding responsive elements: {str(e)}")
+        if jaspar:
+            sequence_consensus_input = entry_sequence
+            tis_value = int(entry_tis)
+            threshold = float(threshold_entry)
+            try:
+                table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
+                st.success("Finding responsive elements done")
+            except Exception as e:
+                st.error(f"Error finding responsive elements: {str(e)}")
+        else:
+            sequence_consensus_input = entry_sequence
+            tis_value = int(entry_tis)
+            threshold = float(threshold_entry)
+            try:
+                table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
+                st.success("Finding responsive elements done")
+            except Exception as e:
+                st.error(f"Error finding responsive elements: {str(e)}")
 
 # RE output
 if 'table' in locals():
