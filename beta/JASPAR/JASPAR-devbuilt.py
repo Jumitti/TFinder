@@ -4,7 +4,60 @@ from tkinter import ttk
 from tkinter import messagebox
 from tabulate import tabulate
 
-def search_sequence():
+def search_sequence(jaspar_id, promoter_sequence, matrices):
+    results = []
+    max_scores = []
+
+    for matrix_name, matrix in matrices.items():
+        seq_length = len(matrix['A'])
+
+        # Calcul du score maximum pour chaque position
+        max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+        max_scores.append(max_score)
+
+        for i in range(len(promoter_sequence) - seq_length + 1):
+            seq = promoter_sequence[i:i + seq_length]
+            score = calculate_score(seq, matrix)
+            normalized_score = score / max_score  # Score normalisé
+            results.append({'Matrix': matrix_name, 'Sequence': seq, 'Score': normalized_score})
+
+    # Affichage des résultats dans un tableau avec 3 chiffres significatifs
+    table_data = []
+    for result in results:
+        table_data.append([result['Matrix'], result['Sequence'], f"{result['Score']:.3g}"])
+
+    table = tabulate(table_data, headers=['Matrix', 'Sequence', 'Score'], tablefmt='orgtbl')
+    output_text.delete(1.0, tk.END)
+    output_text.insert(tk.END, table)
+
+    max_score_label.config(text=f"Score maximums: {', '.join([f'{score:.3g}' for score in max_scores])}")
+
+def calculate_score(sequence, matrix):
+    score = 0
+    for i, base in enumerate(sequence):
+        if base in {'A', 'C', 'G', 'T'}:
+            base_score = matrix[base]
+            score += base_score[i]
+    return score
+
+def transform_matrix(matrix):
+    reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
+    complement_matrix = {
+        'A': matrix['T'],
+        'C': matrix['G'],
+        'G': matrix['C'],
+        'T': matrix['A']
+    }
+    reversed_complement_matrix = {base: list(reversed(scores)) for base, scores in complement_matrix.items()}
+
+    return {
+        'Original': matrix,
+        'Reversed': reversed_matrix,
+        'Complement': complement_matrix,
+        'Reversed Complement': reversed_complement_matrix
+    }
+
+def matrix_extraction():
     # Récupération des valeurs des champs d'entrée
     jaspar_id = entry_jaspar.get()
     promoter_sequence = entry_promoter.get()
@@ -19,48 +72,11 @@ def search_sequence():
         messagebox.showerror("Erreur", f"Erreur lors de la récupération de la matrice de fréquence : {response.status_code}")
         return
 
-     # Recherche de la séquence référence dans le promoteur
-    results = []
-    seq_length = len(matrix['A'])
+    # Transformation de la matrice de fréquence
+    matrices = transform_matrix(matrix)
 
-    # Calcul du score maximum pour chaque position
-    max_scores = [max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length)]
-    max_score = sum(max_scores)
-
-    for i in range(len(promoter_sequence) - seq_length + 1):
-        seq = promoter_sequence[i:i + seq_length]
-        score = calculate_score(seq, matrix, max_scores)
-        normalized_score = score / max_score
-        results.append({'Sequence': seq, 'Score': normalized_score})
-
-        # Recherche dans le brin complémentaire
-        rev_seq = reverse_complement(seq)
-        rev_score = calculate_score(rev_seq, matrix, max_scores)
-        rev_normalized_score = rev_score / max_score
-        results.append({'Sequence': rev_seq, 'Score': rev_normalized_score})
-
-    # Affichage des résultats dans un tableau avec 3 chiffres significatifs
-    table_data = []
-    for result in results:
-        table_data.append([result['Sequence'], f"{result['Score']:.3g}"])
-
-    table = tabulate(table_data, headers=['Sequence', 'Score'], tablefmt='orgtbl')
-    output_text.delete(1.0, tk.END)
-    output_text.insert(tk.END, table)
-    max_score_label.config(text=f"Score maximum: {max_score:.3g}")
-    
-def reverse_complement(sequence):
-    complement_dict = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'}
-    rev_sequence = ''.join(complement_dict[base] for base in reversed(sequence))
-    return rev_sequence
-
-def calculate_score(sequence, matrix, max_scores):
-    score = 0
-    for i, base in enumerate(sequence):
-        if base in {'A', 'C', 'G', 'T'}:
-            base_score = matrix[base]
-            score += base_score[i]
-    return score
+    # Recherche de la séquence référence dans chaque matrice
+    search_sequence(jaspar_id, promoter_sequence, matrices)
 
 # Création de la fenêtre principale
 window = tk.Tk()
@@ -84,11 +100,11 @@ entry_promoter = ttk.Entry(input_frame, width=30)
 entry_promoter.grid(row=1, column=1, padx=5, pady=5)
 
 # Bouton de recherche
-search_button = ttk.Button(window, text="Rechercher", command=search_sequence)
+search_button = ttk.Button(window, text="Rechercher", command=matrix_extraction)
 search_button.pack()
 
-# Étiquette pour afficher le score maximum
-max_score_label = ttk.Label(window, text="Score maximum: ")
+# Étiquette pour afficher les scores maximums
+max_score_label = ttk.Label(window, text="Score maximums: ")
 max_score_label.pack()
 
 # Zone de texte pour afficher les résultats
