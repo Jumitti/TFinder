@@ -394,7 +394,7 @@ def search_sequence(matrices, threshold, tis_value, result_promoter):
         return table
 
 #Extract JASPAR matrix
-def matrix_extraction(sequence_consensus_input, threshold, tis_value, result_promoter):
+def matrix_extraction(sequence_consensus_input):
     jaspar_id = sequence_consensus_input
     url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
     response = requests.get(url)
@@ -409,7 +409,7 @@ def matrix_extraction(sequence_consensus_input, threshold, tis_value, result_pro
     matrices = transform_matrix(matrix)
 
     # search sequence
-    search_sequence(jaspar_id,matrices, threshold, tis_value, result_promoter)
+    search_sequence(jaspar_id,matrices)
 
 #Transform JASPAR matrix
 def transform_matrix(matrix):
