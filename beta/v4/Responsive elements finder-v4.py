@@ -172,213 +172,6 @@ def get_sequence():
 
 # Responsive-Elements-Finder
 
-#Find with JASPAR
-def search_sequence(jaspar_id, matrices):
-    text_result.delete("1.0", "end")
-    results = []
-    max_scores = []
-    threshold = float(threshold_entry.get())
-    tis_value = int(entry_tis.get())
-
-    for matrix_name, matrix in matrices.items():
-        seq_length = len(matrix['A'])
-
-        # Calcul du score maximum pour chaque position
-        max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-        max_scores.append(max_score)
-        
-        # Promoter input type
-        lines = result_promoter.get("1.0", "end-1c")
-        promoters = []
-        
-        first_line = lines
-        if first_line.startswith(("A", "T", "C", "G")):
-            shortened_promoter_name = "n.d."
-            promoter_region = lines
-            promoters.append((shortened_promoter_name, promoter_region))
-        else :
-            lines = result_promoter.get("1.0", "end-1c").split("\n")
-            i = 0
-            while i < len(lines):
-                line = lines[i]
-                if line.startswith(">"):
-                    promoter_name = line[1:]
-                    shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
-                    promoter_region = lines[i+1]
-                    promoters.append((shortened_promoter_name, promoter_region))
-                    i += 2
-                else:
-                    i += 1
-                    
-        # REF
-        for j, (shortened_promoter_name, promoter_region) in enumerate(promoters, start=1):
-            
-            found_positions = []
-            
-            total_promoter = len(promoters)
-            
-            pattern = "\|/-\|/-"
-            cycle = itertools.cycle(pattern)
-                    
-            status_char = next(cycle)                 
-            text_status.delete("1.0", "end")
-            text_status.insert("1.0", f"Find responsive element in {shortened_promoter_name}...({j}/{total_promoter}) {status_char}")
-            window.update_idletasks()        
-
-            for i in range(len(promoter_region) - seq_length + 1):
-                seq = promoter_region[i:i + seq_length]
-                score = calculate_score(seq, matrix)
-                normalized_score = score / max_score  # Score normalisé
-                
-                if normalized_score >= (threshold/100):  # Filtrer les scores inférieurs au seuil
-                    tis_position = i - tis_value  # Position par rapport au TSS
-                    
-                    # Extraire la séquence avec des majuscules et des minuscules
-                    sequence_with_case = promoter_region[i-3:i].lower() + seq.upper() + promoter_region[i+seq_length:i+seq_length+3].lower()
-                    
-                    results.append({
-                        'Matrix': matrix_name,
-                        'Sequence': sequence_with_case,
-                        'Score': normalized_score,
-                        'Position': i,
-                        'TIS Position': tis_position,
-                        'Promoter Name': shortened_promoter_name
-                    })
-
-    # Tri des résultats par score décroissant, puis par shortened_promoter_name
-    sorted_results = sorted(results, key=lambda x: (x['Score'], x['Promoter Name']), reverse=True)
-
-    # Affichage des résultats dans un tableau
-    table_data = []
-    for result in sorted_results:
-        table_data.append([
-            result['Position'],
-            result['TIS Position'],
-            result['Sequence'],
-            f"{result['Score']:.3g}",
-            result['Promoter Name']
-        ])
-    
-    text_status.delete("1.0", "end")
-    text_status.insert("1.0", f"Find sequence -> Done ({total_promoter}/{total_promoter})")
-    window.update_idletasks()
-    
-    table = tabulate(table_data, headers=['Position', 'TIS Position', 'Sequence', 'Score', 'Promoter Name'], tablefmt='orgtbl')
-    text_result.delete("1.0", "end")
-    text_result.insert("1.0", table)
-
-
-
-#Calculate score with JASPAR
-def calculate_score(sequence, matrix):
-    score = 0
-    for i, base in enumerate(sequence):
-        if base in {'A', 'C', 'G', 'T'}:
-            base_score = matrix[base]
-            score += base_score[i]
-    return score
-
-#Transform JASPAR matrix
-def transform_matrix(matrix):
-    reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
-    complement_matrix = {
-        'A': matrix['T'],
-        'C': matrix['G'],
-        'G': matrix['C'],
-        'T': matrix['A']
-    }
-    reversed_complement_matrix = {base: list(reversed(scores)) for base, scores in complement_matrix.items()}
-
-    return {
-        'Original': matrix,
-        'Reversed': reversed_matrix,
-        'Complement': complement_matrix,
-        'Reversed Complement': reversed_complement_matrix
-    }
-
-#Extract JASPAR matrix
-def matrix_extraction():
-    # Récupération des valeurs des champs d'entrée
-    jaspar_id = entry_sequence.get()
-
-    # Appel à l'API de Jaspar pour récupérer la matrice de fréquence
-    url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
-    response = requests.get(url)
-    if response.status_code == 200:
-        response_data = response.json()
-        matrix = response_data['pfm']
-    else:
-        messagebox.showerror("Erreur", f"Erreur lors de la récupération de la matrice de fréquence : {response.status_code}")
-        return
-
-    # Transformation de la matrice de fréquence
-    matrices = transform_matrix(matrix)
-
-    # Recherche de la séquence référence dans chaque matrice
-    search_sequence(jaspar_id,matrices)
-
-# Generation of all responsive elements
-def generate_variants(sequence):
-    text_status.delete("1.0", "end")
-    status = "Generate responsive elements variants..."
-    text_status.insert("1.0", status)
-    window.update_idletasks()    
-    variants = []
-
-    # Original sequence
-    variants.append(sequence)
-
-    # Reverse sequence
-    variants.append(sequence[::-1])
-
-    # Complementary sequence
-    complement_sequence = "".join(reverse_complement(base) for base in sequence)
-    variants.append(complement_sequence)
-    complement_mirror_sequence = complement_sequence[::-1]
-    variants.append(complement_mirror_sequence)
-    
-    text_status.delete("1.0", "end")
-    status = "Generate responsive elements variants -> Done"
-    text_status.insert("1.0", status)
-    window.update_idletasks()   
-    return variants
-
-# IUPAC code
-def generate_iupac_variants(sequence):
-    text_status.delete("1.0", "end")
-    status = "Generate IUPAC variants..."
-    text_status.insert("1.0", status)
-    window.update_idletasks()   
-    iupac_codes = {
-        "R": ["A", "G"],
-        "Y": ["C", "T"],
-        "M": ["A", "C"],
-        "K": ["G", "T"],
-        "W": ["A", "T"],
-        "S": ["C", "G"],
-        "B": ["C", "G", "T"],
-        "D": ["A", "G", "T"],
-        "H": ["A", "C", "T"],
-        "V": ["A", "C", "G"],
-        "N": ["A", "C", "G", "T"]
-    }
-
-    sequences = [sequence]
-    for i, base in enumerate(sequence):
-        if base.upper() in iupac_codes:
-            new_sequences = []
-            for seq in sequences:
-                for alternative in iupac_codes[base.upper()]:
-                    new_sequence = seq[:i] + alternative + seq[i + 1:]
-                    new_sequences.append(new_sequence)
-            sequences = new_sequences
-    
-    text_status.delete("1.0", "end")
-    status = "Generate IUPAC variants -> Done"
-    text_status.insert("1.0", status)
-    window.update_idletasks()
-    return sequences
-
 # Responsive Elements Finder (consensus sequence)
 def find_sequence_consensus():
     if use_jaspar.get() == 1 :
@@ -508,6 +301,208 @@ def find_sequence_consensus():
             
             text_result.delete("1.0", "end")
             text_result.insert("1.0", result)
+
+# IUPAC code
+def generate_iupac_variants(sequence):
+    text_status.delete("1.0", "end")
+    status = "Generate IUPAC variants..."
+    text_status.insert("1.0", status)
+    window.update_idletasks()   
+    iupac_codes = {
+        "R": ["A", "G"],
+        "Y": ["C", "T"],
+        "M": ["A", "C"],
+        "K": ["G", "T"],
+        "W": ["A", "T"],
+        "S": ["C", "G"],
+        "B": ["C", "G", "T"],
+        "D": ["A", "G", "T"],
+        "H": ["A", "C", "T"],
+        "V": ["A", "C", "G"],
+        "N": ["A", "C", "G", "T"]
+    }
+
+    sequences = [sequence]
+    for i, base in enumerate(sequence):
+        if base.upper() in iupac_codes:
+            new_sequences = []
+            for seq in sequences:
+                for alternative in iupac_codes[base.upper()]:
+                    new_sequence = seq[:i] + alternative + seq[i + 1:]
+                    new_sequences.append(new_sequence)
+            sequences = new_sequences
+    
+    text_status.delete("1.0", "end")
+    status = "Generate IUPAC variants -> Done"
+    text_status.insert("1.0", status)
+    window.update_idletasks()
+    return sequences
+
+# Generation of all responsive elements
+def generate_variants(sequence):
+    text_status.delete("1.0", "end")
+    status = "Generate responsive elements variants..."
+    text_status.insert("1.0", status)
+    window.update_idletasks()    
+    variants = []
+
+    # Original sequence
+    variants.append(sequence)
+
+    # Reverse sequence
+    variants.append(sequence[::-1])
+
+    # Complementary sequence
+    complement_sequence = "".join(reverse_complement(base) for base in sequence)
+    variants.append(complement_sequence)
+    complement_mirror_sequence = complement_sequence[::-1]
+    variants.append(complement_mirror_sequence)
+    
+    text_status.delete("1.0", "end")
+    status = "Generate responsive elements variants -> Done"
+    text_status.insert("1.0", status)
+    window.update_idletasks()   
+    return variants
+
+#Find with JASPAR
+def search_sequence(jaspar_id, matrices):
+    text_result.delete("1.0", "end")
+    results = []
+    max_scores = []
+    threshold = float(threshold_entry.get())
+    tis_value = int(entry_tis.get())
+
+    for matrix_name, matrix in matrices.items():
+        seq_length = len(matrix['A'])
+
+        # Max score per matrix
+        max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+        max_scores.append(max_score)
+        
+        # Promoter input type
+        lines = result_promoter.get("1.0", "end-1c")
+        promoters = []
+        
+        first_line = lines
+        if first_line.startswith(("A", "T", "C", "G")):
+            shortened_promoter_name = "n.d."
+            promoter_region = lines
+            promoters.append((shortened_promoter_name, promoter_region))
+        else :
+            lines = result_promoter.get("1.0", "end-1c").split("\n")
+            i = 0
+            while i < len(lines):
+                line = lines[i]
+                if line.startswith(">"):
+                    promoter_name = line[1:]
+                    shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
+                    promoter_region = lines[i+1]
+                    promoters.append((shortened_promoter_name, promoter_region))
+                    i += 2
+                else:
+                    i += 1
+                    
+        # REF
+        for j, (shortened_promoter_name, promoter_region) in enumerate(promoters, start=1):
+            
+            found_positions = []
+            
+            total_promoter = len(promoters)
+            
+            pattern = "\|/-\|/-"
+            cycle = itertools.cycle(pattern)
+                    
+            status_char = next(cycle)                 
+            text_status.delete("1.0", "end")
+            text_status.insert("1.0", f"Find responsive element in {shortened_promoter_name}...({j}/{total_promoter}) {status_char}")
+            window.update_idletasks()        
+
+            for i in range(len(promoter_region) - seq_length + 1):
+                seq = promoter_region[i:i + seq_length]
+                score = calculate_score(seq, matrix)
+                normalized_score = (score / max_score)*100
+                
+                if normalized_score >= threshold:  
+                    tis_position = i - tis_value
+                    
+                    sequence_with_case = promoter_region[i-3:i].lower() + seq.upper() + promoter_region[i+seq_length:i+seq_length+3].lower()
+                    
+                    results.append({
+                        'Matrix': matrix_name,
+                        'Sequence': sequence_with_case,
+                        'Score': normalized_score,
+                        'Position': i,
+                        'TIS Position': tis_position,
+                        'Promoter Name': shortened_promoter_name
+                    })
+
+    
+    sorted_results = sorted(results, key=lambda x: (x['Score'], x['Promoter Name']), reverse=True)
+
+    
+    table_data = []
+    for result in sorted_results:
+        table_data.append([
+            result['Position'],
+            result['TIS Position'],
+            result['Sequence'],
+            f"{result['Score']:.3g}",
+            result['Promoter Name']
+        ])
+    
+    text_status.delete("1.0", "end")
+    text_status.insert("1.0", f"Find sequence -> Done ({total_promoter}/{total_promoter})")
+    window.update_idletasks()
+    
+    table = tabulate(table_data, headers=['Position', 'TIS Position', 'Sequence', 'Score %', 'Promoter Name'], tablefmt='orgtbl')
+    text_result.delete("1.0", "end")
+    text_result.insert("1.0", table)
+
+#Extract JASPAR matrix
+def matrix_extraction():
+    jaspar_id = entry_sequence.get()
+    url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
+    response = requests.get(url)
+    if response.status_code == 200:
+        response_data = response.json()
+        matrix = response_data['pfm']
+    else:
+        messagebox.showerror("Erreur", f"Erreur lors de la récupération de la matrice de fréquence : {response.status_code}")
+        return
+
+    # Transform matrix in revers, complement, reverse-complement
+    matrices = transform_matrix(matrix)
+
+    # search sequence
+    search_sequence(jaspar_id,matrices)
+
+#Transform JASPAR matrix
+def transform_matrix(matrix):
+    reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
+    complement_matrix = {
+        'A': matrix['T'],
+        'C': matrix['G'],
+        'G': matrix['C'],
+        'T': matrix['A']
+    }
+    reversed_complement_matrix = {base: list(reversed(scores)) for base, scores in complement_matrix.items()}
+
+    return {
+        'Original': matrix,
+        'Reversed': reversed_matrix,
+        'Complement': complement_matrix,
+        'Reversed Complement': reversed_complement_matrix
+    }
+
+#Calculate score with JASPAR
+def calculate_score(sequence, matrix):
+    score = 0
+    for i, base in enumerate(sequence):
+        if base in {'A', 'C', 'G', 'T'}:
+            base_score = matrix[base]
+            score += base_score[i]
+    return score
+
 
 #Def table
 table = []
