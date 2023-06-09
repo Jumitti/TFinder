@@ -347,60 +347,53 @@ def search_sequence(jaspar_id, matrices):
                     i += 1
                     
         # REF
-        for j, (shortened_promoter_name, promoter_region) in enumerate(promoters, start=1):
+        for shortened_promoter_name, promoter_region in promoters:
             
             found_positions = []
-            
             total_promoter = len(promoters)
-            
-            pattern = "\|/-\|/-"
-            cycle = itertools.cycle(pattern)
-                    
-            status_char = next(cycle)                 
-            text_status.delete("1.0", "end")
-            text_status.insert("1.0", f"Find responsive element in {shortened_promoter_name}...({j}/{total_promoter}) {status_char}")
-            window.update_idletasks()        
-
+                            
             for i in range(len(promoter_region) - seq_length + 1):
                 seq = promoter_region[i:i + seq_length]
                 score = calculate_score(seq, matrix)
                 normalized_score = (score / max_score)*100
                 
-                if normalized_score >= threshold:  
-                    tis_position = i - tis_value
-                    
-                    sequence_with_case = promoter_region[i-3:i].lower() + seq.upper() + promoter_region[i+seq_length:i+seq_length+3].lower()
-                    
-                    results.append({
-                        'Matrix': matrix_name,
-                        'Sequence': sequence_with_case,
-                        'Score': normalized_score,
-                        'Position': i,
-                        'TIS Position': tis_position,
-                        'Promoter Name': shortened_promoter_name
-                    })
+                found_positions.append((i, seq, normalized_score))
+                
+            # Sort positions in descending order of score percentage
+            found_positions.sort(key=lambda x: x[1], reverse=True)
+            
+             # Creating a results table
+            if len(found_positions) > 0:
+                for position, sequence, normalized_score in found_positions:
+                    start_position = max(0, position - 3)
+                    end_position = min(len(promoter_region), position + len(sequence) + 3)
+                    sequence_with_context = promoter_region[start_position:end_position]
 
-    
-    sorted_results = sorted(results, key=lambda x: (x['Score'], x['Promoter Name']), reverse=True)
+                    sequence_parts = []
+                    for j in range(start_position, end_position):
+                        if j < position or j >= position + len(sequence):
+                            sequence_parts.append(sequence_with_context[j - start_position].lower())
+                        else:
+                            sequence_parts.append(sequence_with_context[j - start_position].upper())
 
-    
-    table_data = []
-    for result in sorted_results:
-        table_data.append([
-            result['Position'],
-            result['TIS Position'],
-            result['Sequence'],
-            f"{result['Score']:.3g}",
-            result['Promoter Name']
-        ])
-    
-    text_status.delete("1.0", "end")
-    text_status.insert("1.0", f"Find sequence -> Done ({total_promoter}/{total_promoter})")
-    window.update_idletasks()
-    
-    table = tabulate(table_data, headers=['Position', 'TIS Position', 'Sequence', 'Score %', 'Promoter'], tablefmt='orgtbl')
-    text_result.delete("1.0", "end")
-    text_result.insert("1.0", table)
+                    sequence_with_context = ''.join(sequence_parts)
+                    tis_position = position - tis_value
+
+                    if normalized_score >= threshold:
+                        row = [str(position).ljust(8),
+                               str(tis_position).ljust(15),
+                               sequence_with_context,
+                               "{:.1f}".format(normalized_score).ljust(12),
+                               shortened_promoter_name]
+                        table.append(row)
+
+        if len(table) > 0:
+            table.sort(key=lambda x: float(x[3]), reverse=True)
+            header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
+            table.insert(0, header)
+        else:
+            no_consensus = "No consensus sequence found with the specified threshold."
+        return table
 
 #Extract JASPAR matrix
 def matrix_extraction():
