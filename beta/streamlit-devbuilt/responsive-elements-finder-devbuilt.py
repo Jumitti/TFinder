@@ -345,8 +345,8 @@ def calculate_score(sequence, matrix):
 
 # Find with JASPAR
 def search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices):
-    global table
-    table = []
+    global table2
+    table2 = []
     results = []
     max_scores = []
 
@@ -418,15 +418,15 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
                                sequence_with_context,
                                "{:.1f}".format(normalized_score).ljust(12),
                                shortened_promoter_name]
-                        table.append(row)
+                        table2.append(row)
 
-        if len(table) > 0:
-            table.sort(key=lambda x: float(x[3]), reverse=True)
+        if len(table2) > 0:
+            table2.sort(key=lambda x: float(x[3]), reverse=True)
             header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
-            table.insert(0, header)
+            table2.insert(0, header)
         else:
             no_consensus = "No consensus sequence found with the specified threshold."
-    return table
+    return table2
 
 # Responsive Elements Finder
 st.subheader('Step 3: Responsive Elements Finder')
@@ -465,10 +465,10 @@ if st.button("Find responsive elements"):
             st.error(f"Error finding responsive elements: {str(e)}")
 
 # RE output
-if 'table' in locals():
-    if jaspar:
-        st.write(table)
-        df = pd.DataFrame(table[1:], columns=table[0])
+if jaspar:
+    if 'table2' in locals():
+        st.write(table2)
+        df = pd.DataFrame(table2[1:], columns=table2[0])
         st.session_state['df'] = df
         st.dataframe(df)
         st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
@@ -489,6 +489,9 @@ if 'table' in locals():
 
         st.altair_chart(chart, use_container_width=True)
     else:
+        st.text("")
+else:
+    if 'table' in locals():
         df = pd.DataFrame(table[1:], columns=table[0])
         st.session_state['df'] = df
         st.dataframe(df)
@@ -509,8 +512,8 @@ if 'table' in locals():
         ).properties(width=600, height=400)
 
         st.altair_chart(chart, use_container_width=True)
-else:
-    st.text("")
+    else:
+        st.text("")
 
 
 # Help
