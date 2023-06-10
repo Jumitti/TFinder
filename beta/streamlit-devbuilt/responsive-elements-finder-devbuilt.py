@@ -467,7 +467,7 @@ if st.button("Find responsive elements"):
 # RE output
 if 'table' in locals():
     if jaspar:
-        print(table)
+        st.write(table)
         df = pd.DataFrame(table[1:], columns=table[0])
         st.session_state['df'] = df
         st.dataframe(df)
