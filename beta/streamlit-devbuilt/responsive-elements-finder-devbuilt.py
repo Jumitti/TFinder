@@ -393,7 +393,6 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
                 position = i
 
                 found_positions.append((position, seq, normalized_score))
-                st.write(found_positions)
 
             # Sort positions in descending order of score percentage
             found_positions.sort(key=lambda x: x[1], reverse=True)
