@@ -305,13 +305,11 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
     return table
 
 # Find with JASPAR
-def search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter):
+def search_sequence(matrices, threshold, tis_value, result_promoter):
     global table
     table = []
     results = []
     max_scores = []
-
-    matrices = transform_matrix(sequence_consensus_input)  # Add this line to define the 'matrices' variable
 
     for matrix_name, matrix in matrices.items():
         seq_length = len(matrix['A'])
@@ -391,7 +389,6 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
             no_consensus = "No consensus sequence found with the specified threshold."
     return table
 
-# Extract JASPAR matrix
 # Extract JASPAR matrix
 def matrix_extraction(sequence_consensus_input):
     jaspar_id = sequence_consensus_input
