@@ -441,9 +441,11 @@ else:
 
 # TSS entry
 if 'upstream' not in st.session_state:
-    entry_tis = st.text_input("Transcription Start Site (TSS):", value="0")
+    entry_tis = st.number_input("Transcription Start Site (TSS) at (in bp):", value="0")
+    st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
 else:
-    entry_tis = st.text_input("Transcription Start Site (TSS):", value=st.session_state['upstream'])
+    entry_tis = st.number_input("Transcription Start Site (TSS) at (in bp):", value=st.session_state['upstream'])
+    st.info("Do not modify if you use Step 1 ")
 
 # Threshold
 if jaspar:
