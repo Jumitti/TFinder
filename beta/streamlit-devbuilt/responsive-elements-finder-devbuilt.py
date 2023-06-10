@@ -313,7 +313,7 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
     
     matrices = matrix_extraction(sequence_consensus_input)
     
-    for matrix_name, matrix in matrices.items():
+    for matrix_name, matrix in matrices:
         seq_length = len(matrix['A'])
 
         # Max score per matrix
