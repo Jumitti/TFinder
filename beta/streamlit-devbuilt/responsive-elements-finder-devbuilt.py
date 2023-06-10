@@ -127,14 +127,11 @@ gene_id_entry = st.text_area("Gene ID:", value="PRKN\n5071")
 # Species
 species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat"], index=0)
 
-# Upstream
-#upstream_entry = st.text_input("Upstream:", value="2000")
-updown_slide = st.slider("Upstream/downstream from the TSS (bp)", "Upstream" -10000, "Downstream" 10000 , (-5000, 5000), step = 100)
+# Upstream/Downstream
+value_labels = [(-10000, 0, "Upstream"), (0, 10000, "Downstream")]
+updown_slide = st.slider("Upstream/downstream from the TSS (bp)", "Upstream" -10000, "Downstream" 10000 , (-5000, 5000), step = 100, format="%d", value=(0, 0), key="updown_slider", value_labels=value_labels)
 upstream_entry = -min(updown_slide)
 downstream_entry = max(updown_slide)
-
-# Downstream
-#downstream_entry = st.text_input("Downstream:", value="500")
 
 # Run Promoter Finder
 if st.button("Find promoter (~5sec/gene)"):
