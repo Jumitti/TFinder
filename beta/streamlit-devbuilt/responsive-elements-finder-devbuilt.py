@@ -387,7 +387,7 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
                 seq = promoter_region[i:i + seq_length]
                 score = calculate_score(seq, matrix)
                 normalized_score = (score / max_score) * 100
-                position = i
+                position = int(i)
 
                 found_positions.append((position, seq, normalized_score))
 
