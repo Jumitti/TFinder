@@ -551,9 +551,9 @@ with st.sidebar.expander("Promoter Finder"):
     st.write('Use "Find promoter" button or paste your sequences. FASTA format allowed and required for multiple sequences.')
     st.write('FASTA format: All sequences must have the TSS at the same distance, otherwise you assume the inconsistency of the positions of found sequences')
 with st.sidebar.expander("Responsive Elements Finder"):
-    st.subheader("Responsive element:")
-    st.write('IUPAC allowed')
-    st.image("https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/IUPAC.png")
+    st.subheader.expander("Responsive element:")
+        st.write('IUPAC allowed')
+        st.image("https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/IUPAC.png")
     st.subheader("Transcription Start Site (TSS):")
     st.write('Distance to Transcription Start Site (TSS) in bp')
     st.write('Note: If you use "Promoter finder", it will be defined automatically.')
