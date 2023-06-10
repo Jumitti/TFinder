@@ -347,7 +347,6 @@ def calculate_score(sequence, matrix):
 def search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices):
     global table2
     table2 = []
-    no_consensus = []
     
     for matrix_name, matrix in matrices.items():
         seq_length = len(matrix['A'])
@@ -465,32 +464,29 @@ if st.button("Find responsive elements"):
 
 # RE output
 if jaspar:
-    if "no_consensus" in locals():
-        st.write(no_consensus)
+    if 'table2' in locals():
+        df = pd.DataFrame(table2[1:], columns=table2[0])
+        st.session_state['df'] = df
+        st.dataframe(df)
+        st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+
+        source = df
+        score_range = source['Score %'].astype(float)
+        ystart = math.floor(score_range.min() - 5)
+        ystop = math.floor(score_range.max() + 5)
+        scale = alt.Scale(scheme='category10')
+        color_scale = alt.Color("Promoter:N", scale=scale)
+
+        chart = alt.Chart(source).mark_circle().encode(
+            x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
+            y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+            color=color_scale,
+            tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
+        ).properties(width=600, height=400)
+
+        st.altair_chart(chart, use_container_width=True)
     else:
-        if 'table2' in locals():
-            df = pd.DataFrame(table2[1:], columns=table2[0])
-            st.session_state['df'] = df
-            st.dataframe(df)
-            st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
-
-            source = df
-            score_range = source['Score %'].astype(float)
-            ystart = math.floor(score_range.min() - 5)
-            ystop = math.floor(score_range.max() + 5)
-            scale = alt.Scale(scheme='category10')
-            color_scale = alt.Color("Promoter:N", scale=scale)
-
-            chart = alt.Chart(source).mark_circle().encode(
-                x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-                y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-                color=color_scale,
-                tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-            ).properties(width=600, height=400)
-
-            st.altair_chart(chart, use_container_width=True)
-        else:
-            st.text("")
+        st.text("")
 else:
     if 'table' in locals():
         df = pd.DataFrame(table[1:], columns=table[0])
