@@ -474,7 +474,7 @@ if jaspar:
         if len(table2) > 0:
             st.success("Finding responsive elements done")
             jaspar_id = sequence_consensus_input
-            st.image("https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
+            st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
             st.dataframe(df)
