@@ -299,7 +299,8 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
         header = ["Position", "Position (TSS)", "Sequence", "% Homology", "Ref seq", "Promoter"]
         table.insert(0, header)
     else:
-   
+        break
+        
     return table
 
 # Extract JASPAR matrix
@@ -424,7 +425,8 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
         table2.insert(0, header)
         
     else:
-    
+        break
+        
     return table2
     
 
