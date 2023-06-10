@@ -311,13 +311,11 @@ def matrix_extraction(sequence_consensus_input):
     if response.status_code == 200:
         response_data = response.json()
         matrix = response_data['pfm']
-        TF_name = response_data['name']
     else:
         messagebox.showerror("Erreur", f"Erreur lors de la récupération de la matrice de fréquence : {response.status_code}")
         return
 
-    transformed_matrix = transform_matrix(matrix)
-    return transformed_matrix, TF_name
+    return transform_matrix(matrix)
 
 # Transform JASPAR matrix
 def transform_matrix(matrix):
@@ -474,7 +472,7 @@ if st.button("Find responsive elements"):
 if jaspar:
     if 'table2' in locals():
         if len(table2) > 0:
-            st.success(TF_name)
+            st.success("Finding responsive elements done")
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
             st.dataframe(df)
