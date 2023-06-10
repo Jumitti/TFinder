@@ -472,8 +472,11 @@ if st.button("Find responsive elements"):
 if jaspar:
     if 'table2' in locals():
         if len(table2) > 0:
-            st.success("Finding responsive elements done")
-            jaspar_id = sequence_consensus_input
+            url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
+            response = requests.get(url)
+            response_data = response.json()
+            TF_name = response_data['name']
+            st.success(f"Finding responsive elements done for {TF_name}")
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
@@ -496,8 +499,12 @@ if jaspar:
 
             st.altair_chart(chart, use_container_width=True)
         else: 
-            st.error("No consensus sequence found with the specified threshold.")
             jaspar_id = sequence_consensus_input
+            url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
+            response = requests.get(url)
+            response_data = response.json()
+            TF_name = response_data['name']
+            st.error(f"No consensus sequence found with the specified threshold for {TF_name}")
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
     else:
         st.text("")
