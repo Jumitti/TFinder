@@ -128,8 +128,8 @@ gene_id_entry = st.text_area("Gene ID:", value="PRKN\n5071")
 species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat"], index=0)
 
 # Upstream/Downstream
-value_labels = [(-10000, -1, "Upstream"), (0, "TSS"), (1, 10000, "Downstream")]
-updown_slide = st.slider("Upstream/downstream from the TSS (bp)", -10000, 10000, (-5000, 5000), step=100, format="%d", key="updown_slider", value_labels=value_labels)
+label_visibility  = [(-10000, -1, "Upstream"), (0, "TSS"), (1, 10000, "Downstream")]
+updown_slide = st.slider("Upstream/downstream from the TSS (bp)", -10000, 10000, (-5000, 5000), step=100, format="%d", key="updown_slider", label_visibility =label_visibility)
 upstream_entry = -min(updown_slide)
 downstream_entry = max(updown_slide)
 
