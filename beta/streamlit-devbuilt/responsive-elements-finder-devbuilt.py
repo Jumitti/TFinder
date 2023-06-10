@@ -457,9 +457,11 @@ if st.button("Find responsive elements"):
             if jaspar:
                 matrices = matrix_extraction(sequence_consensus_input)
                 table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
+                st.write(table2)
                 st.success("Finding responsive elements done")
             else:
                 table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
+                st.write(table)
                 st.success("Finding responsive elements done")
         except Exception as e:
             st.error(f"Error finding responsive elements: {str(e)}")
