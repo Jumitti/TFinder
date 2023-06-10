@@ -270,7 +270,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
 
         # Creating a results table
         if len(found_positions) > 0:
-            st.write(lenf(found_positions))
+            st.write(len(found_positions))
             for position, sequence, variant, mismatches, best_homology_percentage in found_positions:
                 start_position = max(0, position - 3)
                 end_position = min(len(promoter_region), position + len(sequence) + 3)
@@ -400,7 +400,7 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
 
             # Creating a results table
             if len(found_positions) > 0:
-                st.write(lenf(found_positions))
+                st.write(len(found_positions))
                 for position, seq, normalized_score in found_positions:
                     start_position = max(0, position - 3)
                     end_position = min(len(promoter_region), position + len(seq) + 3)
