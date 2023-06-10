@@ -299,7 +299,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
         header = ["Position", "Position (TSS)", "Sequence", "% Homology", "Ref seq", "Promoter"]
         table.insert(0, header)
     else:
-        no_consensus = "No consensus sequence found with the specified threshold."
+    
     return table
 
 # Extract JASPAR matrix
@@ -424,7 +424,6 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
         table2.insert(0, header)
         
     else:
-        st.write("No consensus sequence found with the specified threshold.")
     
     return table2
     
@@ -490,31 +489,34 @@ if jaspar:
 
             st.altair_chart(chart, use_container_width=True)
         else: 
-            st.write("No consensus sequence found with the specified threshold.")
+            st.error("No consensus sequence found with the specified threshold.")
     else:
         st.text("")
 else:
     if 'table' in locals():
-        df = pd.DataFrame(table[1:], columns=table[0])
-        st.session_state['df'] = df
-        st.dataframe(df)
-        st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+        if len(table) > 0 :
+            df = pd.DataFrame(table[1:], columns=table[0])
+            st.session_state['df'] = df
+            st.dataframe(df)
+            st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
 
-        source = df
-        homology_range = source['% Homology'].astype(float)
-        ystart = math.floor(homology_range.min() - 5)
-        ystop = math.floor(homology_range.max() + 5)
-        scale = alt.Scale(scheme='category10')
-        color_scale = alt.Color("Promoter:N", scale=scale)
+            source = df
+            homology_range = source['% Homology'].astype(float)
+            ystart = math.floor(homology_range.min() - 5)
+            ystop = math.floor(homology_range.max() + 5)
+            scale = alt.Scale(scheme='category10')
+            color_scale = alt.Color("Promoter:N", scale=scale)
 
-        chart = alt.Chart(source).mark_circle().encode(
-            x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-            y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
-            color=color_scale,
-            tooltip=['Position (TSS)', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
-        ).properties(width=600, height=400)
+            chart = alt.Chart(source).mark_circle().encode(
+                x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
+                y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
+                color=color_scale,
+                tooltip=['Position (TSS)', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
+            ).properties(width=600, height=400)
 
-        st.altair_chart(chart, use_container_width=True)
+            st.altair_chart(chart, use_container_width=True)
+        else:
+            st.error("No consensus sequence found with the specified threshold.")
     else:
         st.text("")
 
