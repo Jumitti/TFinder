@@ -125,7 +125,7 @@ st.info("If you have a FASTA sequence, go to Step 2")
 gene_id_entry = st.text_area("Gene ID:", value="PRKN\n5071")
 
 # Species
-species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat"], index=0)
+species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
 
 # Upstream/Downstream
 updown_slide = st.slider("Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
