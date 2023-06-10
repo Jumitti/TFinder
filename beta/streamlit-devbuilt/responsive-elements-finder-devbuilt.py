@@ -495,12 +495,13 @@ if st.button("Find responsive elements"):
         sequence_consensus_input = entry_sequence
         tis_value = int(entry_tis)
         threshold = float(threshold_entry)
-        if jaspar:
-            table = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter)
-            st.success("Finding responsive elements done")
-        else : 
-            table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
-            st.success("Finding responsive elements done")
+        try: 
+            if jaspar:
+                table = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter)
+                st.success("Finding responsive elements done")
+            else : 
+                table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
+                st.success("Finding responsive elements done")
         except Exception as e:
             st.error(f"Error finding responsive elements: {str(e)}")
 
