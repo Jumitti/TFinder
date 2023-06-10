@@ -130,8 +130,8 @@ species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat"], index=0)
 # Upstream
 #upstream_entry = st.text_input("Upstream:", value="2000")
 updown_slide = st.slider("Up/down", -10000, 10000 , (-5000, 5000), step = 100)
-upstream_entry = -min(updown_slide))
-downstream_entry = max(updown_slide))
+upstream_entry = -min(updown_slide)
+downstream_entry = max(updown_slide)
 
 # Downstream
 #downstream_entry = st.text_input("Downstream:", value="500")
