@@ -207,7 +207,7 @@ def generate_iupac_variants(sequence):
 
 # Responsive Elements Finder (consensus sequence)
 def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter):
-    global table
+
     table = []
     
     # Transform with IUPAC code
