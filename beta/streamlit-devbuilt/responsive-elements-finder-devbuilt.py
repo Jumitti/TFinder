@@ -400,7 +400,6 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
             # Creating a results table
             if len(found_positions) > 0:
                 for position, seq, normalized_score in found_positions:
-                    st.write(position)
                     start_position = max(0, position - 3)
                     end_position = min(len(promoter_region), position + len(seq) + 3)
                     sequence_with_context = promoter_region[start_position:end_position]
@@ -416,6 +415,7 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
                     tis_position = position - tis_value
 
                     if normalized_score >= threshold:
+                        st.write(normalized_score)
                         row = [str(position).ljust(8),
                                str(tis_position).ljust(15),
                                sequence_with_context,
