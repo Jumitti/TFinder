@@ -410,7 +410,6 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
 
                     sequence_with_context = ''.join(sequence_parts)
                     tis_position = position - tis_value
-                    st.write(tis_position)
 
                     if normalized_score >= threshold:
                         row = [str(position).ljust(8),
