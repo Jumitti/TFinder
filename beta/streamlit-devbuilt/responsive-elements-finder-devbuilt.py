@@ -344,7 +344,7 @@ def calculate_score(sequence, matrix):
     return score
 
 # Find with JASPAR
-def search_sequence(matrices, threshold, tis_value, result_promoter, matrices):
+def search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices):
     global table
     table = []
     results = []
