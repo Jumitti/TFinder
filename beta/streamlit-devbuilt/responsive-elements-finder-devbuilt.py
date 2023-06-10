@@ -270,7 +270,6 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
 
         # Creating a results table
         if len(found_positions) > 0:
-            st.write(len(found_positions))
             for position, sequence, variant, mismatches, best_homology_percentage in found_positions:
                 start_position = max(0, position - 3)
                 end_position = min(len(promoter_region), position + len(sequence) + 3)
@@ -420,12 +419,11 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
                         table2.append(row)
 
     if len(table2) > 0:
-        st.write(len(table2))
         table2.sort(key=lambda x: float(x[3]), reverse=True)
         header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
         table2.insert(0, header)
     else:
-        st.write("No consensus sequence found with the specified threshold.")
+        no_consensus = "No consensus sequence found with the specified threshold."
     return table2
 
 # Responsive Elements Finder
@@ -466,29 +464,32 @@ if st.button("Find responsive elements"):
 
 # RE output
 if jaspar:
-    if 'table2' in locals():
-        df = pd.DataFrame(table2[1:], columns=table2[0])
-        st.session_state['df'] = df
-        st.dataframe(df)
-        st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
-
-        source = df
-        score_range = source['Score %'].astype(float)
-        ystart = math.floor(score_range.min() - 5)
-        ystop = math.floor(score_range.max() + 5)
-        scale = alt.Scale(scheme='category10')
-        color_scale = alt.Color("Promoter:N", scale=scale)
-
-        chart = alt.Chart(source).mark_circle().encode(
-            x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-            y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-            color=color_scale,
-            tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-        ).properties(width=600, height=400)
-
-        st.altair_chart(chart, use_container_width=True)
+    if "no_consensus" in locals():
+        st.write(no_consensus)
     else:
-        st.text("")
+        if 'table2' in locals():
+            df = pd.DataFrame(table2[1:], columns=table2[0])
+            st.session_state['df'] = df
+            st.dataframe(df)
+            st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+
+            source = df
+            score_range = source['Score %'].astype(float)
+            ystart = math.floor(score_range.min() - 5)
+            ystop = math.floor(score_range.max() + 5)
+            scale = alt.Scale(scheme='category10')
+            color_scale = alt.Color("Promoter:N", scale=scale)
+
+            chart = alt.Chart(source).mark_circle().encode(
+                x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
+                y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+                color=color_scale,
+                tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
+            ).properties(width=600, height=400)
+
+            st.altair_chart(chart, use_container_width=True)
+        else:
+            st.text("")
 else:
     if 'table' in locals():
         df = pd.DataFrame(table[1:], columns=table[0])
