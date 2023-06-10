@@ -304,16 +304,13 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
         no_consensus = "No consensus sequence found with the specified threshold."
     return table
 
-#Find with JASPAR
+# Find with JASPAR
 def search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter):
     global table
     table = []
     results = []
     max_scores = []
-    
-    matrices = matrix_extraction(sequence_consensus_input, threshold, tis_value, result_promoter)
 
-    
     for matrix_name, matrix in matrices.items():
         seq_length = len(matrix['A'])
 
@@ -346,7 +343,6 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
 
         # REF
         for shortened_promoter_name, promoter_region in promoters:
-
             found_positions = []
             total_promoter = len(promoters)
 
@@ -391,9 +387,9 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
             table.insert(0, header)
         else:
             no_consensus = "No consensus sequence found with the specified threshold."
-        return table
+    return table
 
-#Extract JASPAR matrix
+# Extract JASPAR matrix
 def matrix_extraction(sequence_consensus_input):
     jaspar_id = sequence_consensus_input
     url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
@@ -408,7 +404,10 @@ def matrix_extraction(sequence_consensus_input):
     # Transform matrix in reverse, complement, reverse-complement
     matrices = transform_matrix(matrix)
 
-#Transform JASPAR matrix
+    # Search sequence
+    return search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter)
+
+# Transform JASPAR matrix
 def transform_matrix(matrix):
     reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
     complement_matrix = {
@@ -426,7 +425,7 @@ def transform_matrix(matrix):
         'Reversed Complement': reversed_complement_matrix
     }
 
-#Calculate score with JASPAR
+# Calculate score with JASPAR
 def calculate_score(sequence, matrix):
     score = 0
     for i, base in enumerate(sequence):
@@ -434,39 +433,6 @@ def calculate_score(sequence, matrix):
             base_score = matrix[base]
             score += base_score[i]
     return score
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # Responsive Elements Finder
 st.subheader('Step 3: Responsive Elements Finder')
@@ -493,59 +459,64 @@ if st.button("Find responsive elements"):
         sequence_consensus_input = entry_sequence
         tis_value = int(entry_tis)
         threshold = float(threshold_entry)
-        try: 
+        try:
             if jaspar:
-                table = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter)
+                table = matrix_extraction(sequence_consensus_input)
                 st.success("Finding responsive elements done")
-            else : 
+            else:
                 table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
                 st.success("Finding responsive elements done")
         except Exception as e:
             st.error(f"Error finding responsive elements: {str(e)}")
 
 # RE output
-if 'table' in locals():    
+if 'table' in locals():
     # Promoteur display
     if jaspar:
         df = pd.DataFrame(table[1:], columns=table[0])
         st.session_state['df'] = df
         st.dataframe(df)
-        st.info("⬆ Copy: select one cells, CTRL+A, CTRL+C, CTRL+V into spreadsheet softwares.")
-        
+        st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+
         source = df
-        score_range = source['Source %'].astype(float)
+        score_range = source['Score %'].astype(float)
         ystart = math.floor(score_range.min() - 5)
         ystop = math.floor(score_range.max() + 5)
         scale = alt.Scale(scheme='category10')
         color_scale = alt.Color("Promoter:N", scale=scale)
-        
+
         chart = alt.Chart(source).mark_circle().encode(
             x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-            y=alt.Y('Source %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])), color=color_scale, tooltip = ['Position (TSS)','Score %','Sequence','Promoter']
+            y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+            color=color_scale,
+            tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
         ).properties(width=600, height=400)
-        
+
         st.altair_chart(chart, use_container_width=True)
-    else :
+    else:
         df = pd.DataFrame(table[1:], columns=table[0])
         st.session_state['df'] = df
         st.dataframe(df)
-        st.info("⬆ Copy: select one cells, CTRL+A, CTRL+C, CTRL+V into spreadsheet softwares.")
-        
+        st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+
         source = df
         homology_range = source['% Homology'].astype(float)
         ystart = math.floor(homology_range.min() - 5)
         ystop = math.floor(homology_range.max() + 5)
         scale = alt.Scale(scheme='category10')
         color_scale = alt.Color("Promoter:N", scale=scale)
-        
+
         chart = alt.Chart(source).mark_circle().encode(
             x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-            y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])), color=color_scale, tooltip = ['Position (TSS)','% Homology','Sequence','Ref seq','Promoter']
+            y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
+            color=color_scale,
+            tooltip=['Position (TSS)', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
         ).properties(width=600, height=400)
-        
+
         st.altair_chart(chart, use_container_width=True)
 else:
     st.text("")
+
 
 # Help
 st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder)")
