@@ -492,7 +492,7 @@ if jaspar:
         st.text("")
 else:
     if 'table' in locals():
-    st.write(table)
+        st.write(table)
         df = pd.DataFrame(table[1:], columns=table[0])
         st.session_state['df'] = df
         st.dataframe(df)
