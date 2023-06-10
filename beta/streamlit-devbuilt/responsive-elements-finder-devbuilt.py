@@ -417,7 +417,6 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
                                sequence_with_context,
                                "{:.1f}".format(normalized_score).ljust(12),
                                shortened_promoter_name]
-                        st.write(row)
                         table2.append(row)
 
     if len(table2) > 0:
@@ -426,7 +425,7 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
         header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
         table2.insert(0, header)
     else:
-        no_consensus = "No consensus sequence found with the specified threshold."
+        st.write("No consensus sequence found with the specified threshold.")
     return table2
 
 # Responsive Elements Finder
