@@ -311,8 +311,7 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
     results = []
     max_scores = []
     
-    matrices = matrix_extraction(sequence_consensus_input, threshold, tis_value, result_promoter)
-
+    matrices = matrix_extraction(sequence_consensus_input)
     
     for matrix_name, matrix in matrices:
         seq_length = len(matrix['A'])
@@ -438,6 +437,39 @@ def calculate_score(sequence, matrix):
             score += base_score[i]
     return score
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Responsive Elements Finder
 st.subheader('Step 3: Responsive Elements Finder')
 
@@ -465,7 +497,7 @@ if st.button("Find responsive elements"):
         threshold = float(threshold_entry)
         try: 
             if jaspar:
-                table = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter)
+                table = matrix_extraction(sequence_consensus_input, threshold, tis_value, result_promoter)
                 st.success("Finding responsive elements done")
             else : 
                 table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
