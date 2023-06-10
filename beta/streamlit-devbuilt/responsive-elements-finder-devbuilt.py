@@ -349,7 +349,7 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
     table2 = []
     results = []
     max_scores = []
-    print(matrices)
+    st.write(matrices)
     
     for matrix_name, matrix in matrices.items():
         seq_length = len(matrix['A'])
