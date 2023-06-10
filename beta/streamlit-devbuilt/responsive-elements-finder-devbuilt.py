@@ -433,10 +433,11 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
 st.subheader('Step 3: Responsive Elements Finder')
 
 # RE entry
-jaspar = st.checkbox('Use JASPAR')
 if jaspar:
+    jaspar = st.checkbox('Use JASPAR')
     entry_sequence = st.text_input("JASPAR ID:", value="MA0106.1")
 else:
+    jaspar = st.checkbox('Use JASPAR')
     entry_sequence = st.text_input("Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
 # TSS entry
