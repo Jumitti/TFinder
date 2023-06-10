@@ -429,14 +429,13 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
         
     return table2
     
-
 # Responsive Elements Finder
 st.subheader('Step 3: Responsive Elements Finder')
 
 # RE entry
 jaspar = st.checkbox('Use JASPAR')
 if jaspar:
-    entry_sequence = st.text_input("Responsive element (IUPAC authorized, take more time):", value="MA0106.1")
+    entry_sequence = st.text_input("JASPAR ID:", value="MA0106.1")
 else:
     entry_sequence = st.text_input("Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
@@ -447,7 +446,10 @@ else:
     entry_tis = st.text_input("Transcription Start Site (TSS):", value=st.session_state['upstream'])
 
 # Threshold
-threshold_entry = st.text_input("Threshold (%)", value="80")
+if jaspar:
+    threshold_entry = st.number_input("Score threshold (%)", value="80", min_value = 0, max_value = 100)
+else:
+    threshold_entry = st.number_input("Homology threshold (%)", value="80", min_value = 0, max_value = 100)
 
 # Run Responsive Elements finder
 if st.button("Find responsive elements"):
