@@ -27,9 +27,9 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 - Support multiple promoter regions in FASTA format
 - Find transcription factor responsive elements
 - Support IUPAC code for responsive elements
+- Support PWM transcription factor with JASPAR API (NEW ✨: v4.X))
 - Calculation of the distance of the found sequence to the transcription start site (TSS)
 - Percentage of homology between found sequences and responsive elements
-- Use PWM transcription factor with JASPAR API (NEW ✨: v4.X))
 - Score calcul with PWM transcription factor with JASPAR API (NEW ✨: v4.X))
 - Export results to excel (Windows)
 - Graph of sequence positions found on the promoter
