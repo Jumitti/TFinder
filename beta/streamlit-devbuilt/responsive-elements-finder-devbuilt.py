@@ -419,14 +419,14 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
                         table2.append(row)
 
     if len(table2) > 0:
-        st.write("Table > 0", table2)
         table2.sort(key=lambda x: float(x[3]), reverse=True)
         header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
         table2.insert(0, header)
-        return table2
+        
     else:
-        st.write("Table < 0", table2)
         st.write("No consensus sequence found with the specified threshold.")
+    
+    return table2
     
 
 # Responsive Elements Finder
@@ -468,26 +468,29 @@ if st.button("Find responsive elements"):
 # RE output
 if jaspar:
     if 'table2' in locals():
-        df = pd.DataFrame(table2[1:], columns=table2[0])
-        st.session_state['df'] = df
-        st.dataframe(df)
-        st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+        if len(table2) > 0:
+            df = pd.DataFrame(table2[1:], columns=table2[0])
+            st.session_state['df'] = df
+            st.dataframe(df)
+            st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
 
-        source = df
-        score_range = source['Score %'].astype(float)
-        ystart = math.floor(score_range.min() - 5)
-        ystop = math.floor(score_range.max() + 5)
-        scale = alt.Scale(scheme='category10')
-        color_scale = alt.Color("Promoter:N", scale=scale)
+            source = df
+            score_range = source['Score %'].astype(float)
+            ystart = math.floor(score_range.min() - 5)
+            ystop = math.floor(score_range.max() + 5)
+            scale = alt.Scale(scheme='category10')
+            color_scale = alt.Color("Promoter:N", scale=scale)
 
-        chart = alt.Chart(source).mark_circle().encode(
-            x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-            y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-            color=color_scale,
-            tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-        ).properties(width=600, height=400)
+            chart = alt.Chart(source).mark_circle().encode(
+                x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
+                y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+                color=color_scale,
+                tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
+            ).properties(width=600, height=400)
 
-        st.altair_chart(chart, use_container_width=True)
+            st.altair_chart(chart, use_container_width=True)
+        else: 
+            st.write("No consensus sequence found with the specified threshold.")
     else:
         st.text("")
 else:
