@@ -358,14 +358,14 @@ def search_sequence(matrices, threshold, tis_value, result_promoter):
 
             # Creating a results table
             if len(found_positions) > 0:
-                for position, sequence, normalized_score in found_positions:
-                    start_position = max(0, position - 3)
-                    end_position = min(len(promoter_region), position + len(sequence) + 3)
+                for i, seq, normalized_score in found_positions:
+                    start_position = max(0, i - 3)
+                    end_position = min(len(promoter_region), i + len(seq) + 3)
                     sequence_with_context = promoter_region[start_position:end_position]
 
                     sequence_parts = []
                     for j in range(start_position, end_position):
-                        if j < position or j >= position + len(sequence):
+                        if j < i or j >= i + len(seq):
                             sequence_parts.append(sequence_with_context[j - start_position].lower())
                         else:
                             sequence_parts.append(sequence_with_context[j - start_position].upper())
@@ -374,7 +374,7 @@ def search_sequence(matrices, threshold, tis_value, result_promoter):
                     tis_position = position - tis_value
 
                     if normalized_score >= threshold:
-                        row = [str(position).ljust(8),
+                        row = [str(i).ljust(8),
                                str(tis_position).ljust(15),
                                sequence_with_context,
                                "{:.1f}".format(normalized_score).ljust(12),
