@@ -311,6 +311,8 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
     results = []
     max_scores = []
 
+    matrices = transform_matrix(sequence_consensus_input)  # Add this line to define the 'matrices' variable
+
     for matrix_name, matrix in matrices.items():
         seq_length = len(matrix['A'])
 
@@ -390,6 +392,7 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
     return table
 
 # Extract JASPAR matrix
+# Extract JASPAR matrix
 def matrix_extraction(sequence_consensus_input):
     jaspar_id = sequence_consensus_input
     url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
@@ -401,11 +404,7 @@ def matrix_extraction(sequence_consensus_input):
         messagebox.showerror("Erreur", f"Erreur lors de la récupération de la matrice de fréquence : {response.status_code}")
         return
 
-    # Transform matrix in reverse, complement, reverse-complement
-    matrices = transform_matrix(matrix)
-
-    # Search sequence
-    return search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter)
+    return transform_matrix(matrix)
 
 # Transform JASPAR matrix
 def transform_matrix(matrix):
@@ -461,7 +460,8 @@ if st.button("Find responsive elements"):
         threshold = float(threshold_entry)
         try:
             if jaspar:
-                table = matrix_extraction(sequence_consensus_input)
+                 matrices = matrix_extraction(sequence_consensus_input)
+                table = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter)
                 st.success("Finding responsive elements done")
             else:
                 table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
