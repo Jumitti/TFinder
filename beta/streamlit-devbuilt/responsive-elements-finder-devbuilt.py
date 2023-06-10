@@ -472,6 +472,7 @@ if st.button("Find responsive elements"):
 if jaspar:
     if 'table2' in locals():
         if len(table2) > 0:
+            jaspar_id = sequence_consensus_input
             url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
             response = requests.get(url)
             response_data = response.json()
