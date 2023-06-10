@@ -460,7 +460,7 @@ if st.button("Find responsive elements"):
         threshold = float(threshold_entry)
         try:
             if jaspar:
-                 matrices = matrix_extraction(sequence_consensus_input)
+                matrices = matrix_extraction(sequence_consensus_input)
                 table = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter)
                 st.success("Finding responsive elements done")
             else:
