@@ -311,6 +311,7 @@ def matrix_extraction(sequence_consensus_input):
     if response.status_code == 200:
         response_data = response.json()
         matrix = response_data['pfm']
+        TF_name = response_data['name']
     else:
         messagebox.showerror("Erreur", f"Erreur lors de la récupération de la matrice de fréquence : {response.status_code}")
         return
@@ -472,7 +473,7 @@ if st.button("Find responsive elements"):
 if jaspar:
     if 'table2' in locals():
         if len(table2) > 0:
-            st.success("Finding responsive elements done")
+            st.success("Finding responsive elements done for ", TF_name)
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
             st.dataframe(df)
@@ -539,7 +540,7 @@ with st.sidebar.expander("Promoter Finder"):
     st.write("ENTREZ_GENE_ID of NCBI and gene names are allowed.")
     st.write("There is no limit to the number of gene names/ENTREZ_GENE_ID. Add them with a line break (like those displayed by default). You can mix ENTREZ_GENE_ID and gene names as long as they are of the same species.")
     st.subheader("Species:")
-    st.write("Human, mouse and rat are allowed.")
+    st.write("Human, mouse, rat, drosophila and zebrafish are allowed.")
     st.write("If you use several ENTREZ_GENE_ID/gene names, make sure you select the correct species.")
     st.subheader("Upstream/Downstream:")
     st.write("Distance to Transcription Start Site (TSS) in bp.")
