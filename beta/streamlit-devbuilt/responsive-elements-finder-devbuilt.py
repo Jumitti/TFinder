@@ -497,6 +497,8 @@ if jaspar:
             st.altair_chart(chart, use_container_width=True)
         else: 
             st.error("No consensus sequence found with the specified threshold.")
+            jaspar_id = sequence_consensus_input
+            st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
     else:
         st.text("")
 else:
