@@ -551,7 +551,7 @@ with st.sidebar.expander("Promoter Finder"):
     st.write('Use "Find promoter" button or paste your sequences. FASTA format allowed and required for multiple sequences.')
     st.write('FASTA format: All sequences must have the TSS at the same distance, otherwise you assume the inconsistency of the positions of found sequences')
 with st.sidebar.expander("Responsive Elements Finder"):
-    st.subheader.expander("Responsive element:")
+    st.subheader("Responsive element:")
     st.write("To use the JASPAR option, check the box and use the JASPAR_ID of your transcription factor.")
     st.write('If you want to use your responsive element, do not check the JASPAR option.')
     st.write('IUPAC allowed')
