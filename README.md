@@ -21,17 +21,18 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 
 ## Functions
 ### Promoter Finder (requires internet connection)
-- Extract mutliple promoter regions using ENTREZ_GENE_ID in FASTA format (NEW ✨: v3.X)
+- Extract mutliple promoter regions using ENTREZ_GENE_ID in FASTA format with NCBI API
 
 ### Responsive Elements Finder (no internet connection required)
-- Support multiple promoter regions in FASTA format (NEW ✨: v3.X)
+- Support multiple promoter regions in FASTA format
 - Find transcription factor responsive elements
 - Support IUPAC code for responsive elements
+- Support PWM transcription factor with JASPAR API (NEW ✨: v4.X))
 - Calculation of the distance of the found sequence to the transcription start site (TSS)
-- Percentage of homology between found sequences and responsive elements (NEW ✨ Fixed: 3.X)
-- Find mismatches sequence
-- Export results to excel
-- Graph of sequence positions found on the promoter (NEW ✨: WebUI only)
+- Percentage of homology between found sequences and responsive elements
+- Score calcul with PWM transcription factor with JASPAR API (NEW ✨: v4.X))
+- Export results to excel (Windows)
+- Graph of sequence positions found on the promoter
 
 ## WebUI
 Yes, there's a WebUI version too 😊 nothing's too good for you 😊
