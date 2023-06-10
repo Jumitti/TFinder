@@ -311,7 +311,7 @@ def search_sequence(matrices, threshold, tis_value, result_promoter):
     results = []
     max_scores = []
 
-    for matrix_name, matrix in matrices.items():
+    for matrix_name, matrix in matrices:
         seq_length = len(matrix['A'])
 
         # Max score per matrix
