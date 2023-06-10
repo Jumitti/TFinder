@@ -420,12 +420,12 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
                                shortened_promoter_name]
                         table2.append(row)
 
-        if len(table2) > 0:
-            table2.sort(key=lambda x: float(x[3]), reverse=True)
-            header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
-            table2.insert(0, header)
-        else:
-            no_consensus = "No consensus sequence found with the specified threshold."
+    if len(table2) > 0:
+        table2.sort(key=lambda x: float(x[3]), reverse=True)
+        header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
+        table2.insert(0, header)
+    else:
+        no_consensus = "No consensus sequence found with the specified threshold."
     return table2
 
 # Responsive Elements Finder
