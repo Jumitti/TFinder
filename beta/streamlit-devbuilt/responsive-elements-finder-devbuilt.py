@@ -160,7 +160,6 @@ else:
 # Generation of all responsive elements
 def generate_variants(sequence):
     variants = []
-    no_consensus = []
 
     # Original sequence
     variants.append(sequence)
@@ -349,7 +348,6 @@ def calculate_score(sequence, matrix):
 def search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices):
     global table2
     table2 = []
-    no_consensus = []
     
     for matrix_name, matrix in matrices.items():
         seq_length = len(matrix['A'])
@@ -493,7 +491,7 @@ if jaspar:
 
             st.altair_chart(chart, use_container_width=True)
         else: 
-            st.error(no_consensus)
+            st.error("No consensus sequence found with the specified threshold.")
     else:
         st.text("")
 else:
@@ -520,7 +518,7 @@ else:
 
             st.altair_chart(chart, use_container_width=True)
         else:
-            st.error(no_consensus)
+            st.error("No consensus sequence found with the specified threshold.")
     else:
         st.text("")
 
