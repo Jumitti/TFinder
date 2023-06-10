@@ -304,6 +304,47 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
         no_consensus = "No consensus sequence found with the specified threshold."
     return table
 
+# Extract JASPAR matrix
+def matrix_extraction(sequence_consensus_input):
+    jaspar_id = sequence_consensus_input
+    url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
+    response = requests.get(url)
+    if response.status_code == 200:
+        response_data = response.json()
+        matrix = response_data['pfm']
+    else:
+        messagebox.showerror("Erreur", f"Erreur lors de la récupération de la matrice de fréquence : {response.status_code}")
+        return
+
+    return transform_matrix(matrix)
+
+# Transform JASPAR matrix
+def transform_matrix(matrix):
+    reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
+    complement_matrix = {
+        'A': matrix['T'],
+        'C': matrix['G'],
+        'G': matrix['C'],
+        'T': matrix['A']
+    }
+    reversed_complement_matrix = {base: list(reversed(scores)) for base, scores in complement_matrix.items()}
+
+    return {
+        'Original': matrix,
+        'Reversed': reversed_matrix,
+        'Complement': complement_matrix,
+        'Reversed Complement': reversed_complement_matrix
+    }
+
+# Calculate score with JASPAR
+def calculate_score(sequence, matrix):
+    score = 0
+    for i, base in enumerate(sequence):
+        if base in {'A', 'C', 'G', 'T'}:
+            base_score = matrix[base]
+            score += base_score[i]
+    return score
+
 # Find with JASPAR
 def search_sequence(matrices, threshold, tis_value, result_promoter):
     global table
@@ -311,7 +352,7 @@ def search_sequence(matrices, threshold, tis_value, result_promoter):
     results = []
     max_scores = []
 
-    for matrix_name, matrix in matrices:
+    for matrix_name, matrix in matrices.items():
         seq_length = len(matrix['A'])
 
         # Max score per matrix
@@ -388,47 +429,6 @@ def search_sequence(matrices, threshold, tis_value, result_promoter):
         else:
             no_consensus = "No consensus sequence found with the specified threshold."
     return table
-
-# Extract JASPAR matrix
-def matrix_extraction(sequence_consensus_input):
-    jaspar_id = sequence_consensus_input
-    url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
-    response = requests.get(url)
-    if response.status_code == 200:
-        response_data = response.json()
-        matrix = response_data['pfm']
-    else:
-        messagebox.showerror("Erreur", f"Erreur lors de la récupération de la matrice de fréquence : {response.status_code}")
-        return
-
-    return transform_matrix(matrix)
-
-# Transform JASPAR matrix
-def transform_matrix(matrix):
-    reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
-    complement_matrix = {
-        'A': matrix['T'],
-        'C': matrix['G'],
-        'G': matrix['C'],
-        'T': matrix['A']
-    }
-    reversed_complement_matrix = {base: list(reversed(scores)) for base, scores in complement_matrix.items()}
-
-    return {
-        'Original': matrix,
-        'Reversed': reversed_matrix,
-        'Complement': complement_matrix,
-        'Reversed Complement': reversed_complement_matrix
-    }
-
-# Calculate score with JASPAR
-def calculate_score(sequence, matrix):
-    score = 0
-    for i, base in enumerate(sequence):
-        if base in {'A', 'C', 'G', 'T'}:
-            base_score = matrix[base]
-            score += base_score[i]
-    return score
 
 # Responsive Elements Finder
 st.subheader('Step 3: Responsive Elements Finder')
