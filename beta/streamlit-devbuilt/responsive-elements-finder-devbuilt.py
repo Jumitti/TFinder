@@ -175,7 +175,6 @@ def generate_variants(sequence):
 
     return variants
 
-
 # IUPAC code
 def generate_iupac_variants(sequence):
     iupac_codes = {
@@ -203,7 +202,6 @@ def generate_iupac_variants(sequence):
             sequences = new_sequences
 
     return sequences
-
 
 # Responsive Elements Finder (consensus sequence)
 def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter):
@@ -346,7 +344,7 @@ def calculate_score(sequence, matrix):
     return score
 
 # Find with JASPAR
-def search_sequence(matrices, threshold, tis_value, result_promoter):
+def search_sequence(matrices, threshold, tis_value, result_promoter, matrices):
     global table
     table = []
     results = []
@@ -458,7 +456,7 @@ if st.button("Find responsive elements"):
         try:
             if jaspar:
                 matrices = matrix_extraction(sequence_consensus_input)
-                table = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter)
+                table = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
                 st.success("Finding responsive elements done")
             else:
                 table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
@@ -468,7 +466,6 @@ if st.button("Find responsive elements"):
 
 # RE output
 if 'table' in locals():
-    # Promoteur display
     if jaspar:
         df = pd.DataFrame(table[1:], columns=table[0])
         st.session_state['df'] = df
