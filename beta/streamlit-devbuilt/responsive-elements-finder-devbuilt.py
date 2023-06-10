@@ -264,13 +264,13 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
                         best_homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
 
                         found_positions.append((i, sequence, variant, mismatches, best_homology_percentage))
-                        st.write(found_positions)
 
         # Sort positions in descending order of homology percentage
         found_positions.sort(key=lambda x: x[4], reverse=True)
 
         # Creating a results table
         if len(found_positions) > 0:
+            st.write(lenf(found_positions))
             for position, sequence, variant, mismatches, best_homology_percentage in found_positions:
                 start_position = max(0, position - 3)
                 end_position = min(len(promoter_region), position + len(sequence) + 3)
@@ -390,8 +390,9 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
                 seq = promoter_region[i:i + seq_length]
                 score = calculate_score(seq, matrix)
                 normalized_score = (score / max_score) * 100
+                position = i
 
-                found_positions.append((i, seq, normalized_score))
+                found_positions.append((position, seq, normalized_score))
                 st.write(found_positions)
 
             # Sort positions in descending order of score percentage
@@ -399,23 +400,24 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
 
             # Creating a results table
             if len(found_positions) > 0:
-                for i, seq, normalized_score in found_positions:
-                    start_position = max(0, i - 3)
-                    end_position = min(len(promoter_region), i + len(seq) + 3)
+            st.write(lenf(found_positions))
+                for position, seq, normalized_score in found_positions:
+                    start_position = max(0, position - 3)
+                    end_position = min(len(promoter_region), position + len(seq) + 3)
                     sequence_with_context = promoter_region[start_position:end_position]
 
                     sequence_parts = []
                     for j in range(start_position, end_position):
-                        if j < i or j >= i + len(seq):
+                        if j < position or j >= position + len(seq):
                             sequence_parts.append(sequence_with_context[j - start_position].lower())
                         else:
                             sequence_parts.append(sequence_with_context[j - start_position].upper())
 
                     sequence_with_context = ''.join(sequence_parts)
-                    tis_position = i - tis_value
+                    tis_position = position - tis_value
 
                     if normalized_score >= threshold:
-                        row = [str(i).ljust(8),
+                        row = [str(position).ljust(8),
                                str(tis_position).ljust(15),
                                sequence_with_context,
                                "{:.1f}".format(normalized_score).ljust(12),
