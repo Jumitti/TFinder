@@ -311,7 +311,8 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
     results = []
     max_scores = []
     
-    matrices = matrix_extraction(sequence_consensus_input)
+    matrices = matrix_extraction(sequence_consensus_input, threshold, tis_value, result_promoter)
+
     
     for matrix_name, matrix in matrices:
         seq_length = len(matrix['A'])
@@ -436,39 +437,6 @@ def calculate_score(sequence, matrix):
             base_score = matrix[base]
             score += base_score[i]
     return score
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # Responsive Elements Finder
 st.subheader('Step 3: Responsive Elements Finder')
