@@ -129,7 +129,7 @@ species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat", "Drosophil
 
 # Upstream/Downstream
 updown_slide = st.slider("Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
-st.write("Upstream: ", min(updown_slide), " | Downstream: ", max(updown_slide))
+st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
 upstream_entry = -min(updown_slide)
 downstream_entry = max(updown_slide)
 
