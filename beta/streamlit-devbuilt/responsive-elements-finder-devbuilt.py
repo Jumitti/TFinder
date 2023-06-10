@@ -305,7 +305,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
     return table
 
 #Find with JASPAR
-def search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter):
+def search_sequence(sequence_consensus_input, matrices, threshold, tis_value, result_promoter):
     global table
     table = []
     results = []
