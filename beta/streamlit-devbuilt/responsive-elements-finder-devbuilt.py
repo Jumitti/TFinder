@@ -545,9 +545,12 @@ st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Fin
 st.sidebar.write("By Minniti Julien")
 st.sidebar.title("Help")
 with st.sidebar.expander("Video tutorials"):
-    st.video("How to extract promoter and find responsive elements",'https://www.youtube.com/watch?v=lknbKbZCXuo')
-    st.video("How to use FASTA sequences and find responsive elements", 'https://www.youtube.com/watch?v=QelVLLuNJqs')
-    st.video("How to use JASPAR option", 'https://www.youtube.com/watch?v=DH8PBVqa860')
+    st.write("How to extract promoter and find responsive elements")
+    st.video('https://www.youtube.com/watch?v=lknbKbZCXuo')
+    st.write("How to use FASTA sequences and find responsive elements")
+    st.video('https://www.youtube.com/watch?v=QelVLLuNJqs')
+    st.write("How to use JASPAR option")
+    st.video('https://www.youtube.com/watch?v=DH8PBVqa860')
 with st.sidebar.expander("Promoter Finder"):
     st.subheader("Gene ID:")
     st.write("ENTREZ_GENE_ID of NCBI and gene names are allowed.")
