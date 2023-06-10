@@ -347,6 +347,7 @@ def calculate_score(sequence, matrix):
 def search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices):
     global table2
     table2 = []
+    no_consensus = []
     
     for matrix_name, matrix in matrices.items():
         seq_length = len(matrix['A'])
