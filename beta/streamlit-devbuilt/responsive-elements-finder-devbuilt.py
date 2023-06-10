@@ -348,15 +348,12 @@ def calculate_score(sequence, matrix):
 def search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices):
     global table2
     table2 = []
-    results = []
-    max_scores = []
     
     for matrix_name, matrix in matrices.items():
         seq_length = len(matrix['A'])
 
         # Max score per matrix
         max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-        max_scores.append(max_score)
 
         # Promoter input type
         lines = result_promoter
