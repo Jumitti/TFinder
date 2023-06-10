@@ -209,7 +209,7 @@ def generate_iupac_variants(sequence):
 def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter):
     global table
     table = []
-
+    
     # Transform with IUPAC code
     sequence_consensus = generate_iupac_variants(sequence_consensus_input)
 
@@ -305,12 +305,14 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
     return table
 
 #Find with JASPAR
-def search_sequence(matrices, threshold, tis_value, result_promoter):
+def search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter):
     global table
     table = []
     results = []
     max_scores = []
-
+    
+    generate_matrix = matrix_extraction(sequence_consensus_input)
+    
     for matrix_name, matrix in matrices.items():
         seq_length = len(matrix['A'])
 
@@ -493,7 +495,10 @@ if st.button("Find responsive elements"):
         sequence_consensus_input = entry_sequence
         tis_value = int(entry_tis)
         threshold = float(threshold_entry)
-        try:
+        if jaspar:
+            table = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter)
+            st.success("Finding responsive elements done")
+        else : 
             table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
             st.success("Finding responsive elements done")
         except Exception as e:
