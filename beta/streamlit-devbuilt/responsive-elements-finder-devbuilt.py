@@ -398,12 +398,12 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
             if len(found_positions) > 0:
                 for position, seq, normalized_score in found_positions:
                     start_position = max(0, position - 3)
-                    end_position = min(len(promoter_region), position + len(seq) + 3)
+                    end_position = min(len(promoter_region), position + len(position) + 3)
                     sequence_with_context = promoter_region[start_position:end_position]
 
                     sequence_parts = []
                     for j in range(start_position, end_position):
-                        if j < position or j >= position + len(seq):
+                        if j < position or j >= position + len(position):
                             sequence_parts.append(sequence_with_context[j - start_position].lower())
                         else:
                             sequence_parts.append(sequence_with_context[j - start_position].upper())
