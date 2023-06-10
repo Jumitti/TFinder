@@ -447,9 +447,9 @@ else:
 
 # Threshold
 if jaspar:
-    threshold_entry = st.number_input("Score threshold (%)", value="80", min_value = 0, max_value = 100)
+    threshold_entry = st.number_input("Score threshold (%)", value=int(80), min_value = int(0), max_value = int(100))
 else:
-    threshold_entry = st.number_input("Homology threshold (%)", value="80", min_value = 0, max_value = 100)
+    threshold_entry = st.number_input("Homology threshold (%)", value=int(80), min_value = int(0), max_value = int(100))
 
 # Run Responsive Elements finder
 if st.button("Find responsive elements"):
