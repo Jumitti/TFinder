@@ -311,7 +311,9 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
     results = []
     max_scores = []
     
-    for matrix_name, matrix in matrices:
+    matrices = matrix_extraction(sequence_consensus_input)
+    
+    for matrix_name, matrix in matrices.items():
         seq_length = len(matrix['A'])
 
         # Max score per matrix
@@ -405,9 +407,6 @@ def matrix_extraction(sequence_consensus_input):
     # Transform matrix in reverse, complement, reverse-complement
     matrices = transform_matrix(matrix)
 
-    # search sequence
-    search_sequence(matrices, jaspar_id, threshold, tis_value, result_promoter)
-
 #Transform JASPAR matrix
 def transform_matrix(matrix):
     reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
@@ -495,7 +494,7 @@ if st.button("Find responsive elements"):
         threshold = float(threshold_entry)
         try: 
             if jaspar:
-                table = matrix_extraction(sequence_consensus_input, threshold, tis_value, result_promoter)
+                table = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter)
                 st.success("Finding responsive elements done")
             else : 
                 table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
