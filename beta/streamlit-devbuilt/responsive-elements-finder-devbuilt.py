@@ -160,6 +160,7 @@ else:
 # Generation of all responsive elements
 def generate_variants(sequence):
     variants = []
+    no_consensus = []
 
     # Original sequence
     variants.append(sequence)
@@ -299,7 +300,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
         header = ["Position", "Position (TSS)", "Sequence", "% Homology", "Ref seq", "Promoter"]
         table.insert(0, header)
     else:
-        break
+        no_consensus = "No consensus sequence found with the specified threshold."
         
     return table
 
@@ -348,6 +349,7 @@ def calculate_score(sequence, matrix):
 def search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices):
     global table2
     table2 = []
+    no_consensus = []
     
     for matrix_name, matrix in matrices.items():
         seq_length = len(matrix['A'])
@@ -425,7 +427,7 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
         table2.insert(0, header)
         
     else:
-        break
+        no_consensus = "No consensus sequence found with the specified threshold."
         
     return table2
     
@@ -491,7 +493,7 @@ if jaspar:
 
             st.altair_chart(chart, use_container_width=True)
         else: 
-            st.error("No consensus sequence found with the specified threshold.")
+            st.error(no_consensus)
     else:
         st.text("")
 else:
@@ -518,7 +520,7 @@ else:
 
             st.altair_chart(chart, use_container_width=True)
         else:
-            st.error("No consensus sequence found with the specified threshold.")
+            st.error(no_consensus)
     else:
         st.text("")
 
