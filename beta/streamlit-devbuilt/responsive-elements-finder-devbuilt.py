@@ -418,6 +418,7 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
                                sequence_with_context,
                                "{:.1f}".format(normalized_score).ljust(12),
                                shortened_promoter_name]
+                        print(row)
                         table2.append(row)
 
     if len(table2) > 0:
@@ -457,11 +458,9 @@ if st.button("Find responsive elements"):
             if jaspar:
                 matrices = matrix_extraction(sequence_consensus_input)
                 table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
-                st.write(table2)
                 st.success("Finding responsive elements done")
             else:
                 table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)
-                st.write(table)
                 st.success("Finding responsive elements done")
         except Exception as e:
             st.error(f"Error finding responsive elements: {str(e)}")
@@ -469,7 +468,6 @@ if st.button("Find responsive elements"):
 # RE output
 if jaspar:
     if 'table2' in locals():
-        st.write(table2)
         df = pd.DataFrame(table2[1:], columns=table2[0])
         st.session_state['df'] = df
         st.dataframe(df)
@@ -494,7 +492,6 @@ if jaspar:
         st.text("")
 else:
     if 'table' in locals():
-        st.write(table)
         df = pd.DataFrame(table[1:], columns=table[0])
         st.session_state['df'] = df
         st.dataframe(df)
