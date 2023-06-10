@@ -418,7 +418,7 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
                                sequence_with_context,
                                "{:.1f}".format(normalized_score).ljust(12),
                                shortened_promoter_name]
-                        print(row)
+                        st.write(row)
                         table2.append(row)
 
     if len(table2) > 0:
