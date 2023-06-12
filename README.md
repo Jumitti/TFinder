@@ -85,17 +85,17 @@ I use the NCBI API (https://www.ncbi.nlm.nih.gov/home/develop/api/). For more in
     TGCCGGTGCTGCCCGTAAATGTAAAATGCGCGATGCGTATGC
     ```
 
-- Responsive Elements (RE) allows [IUPAC nucleotides code](https://www.bioinformatics.org/sms/iupac.html)
+- Responsive Elements (RE) allows [IUPAC nucleotides code](https://www.bioinformatics.org/sms/iupac.html) or JASPAR_ID [p53 exemple](https://jaspar.genereg.net/search?q=p53&collection=all&tax_group=all&tax_id=all&type=all&class=all&family=all&version=all)
 
-- Transcription Start Site (TSS): Set the distance of the TSS from the beginning of the pasted sequence or 'Upstream' used in Promoter Finder. Otherwise leave 0. 
+- Transcription Start Site (TSS): Set the distance of the TSS from the beginning of the pasted sequence. If you use Promoter Finder, it will be automaticaly defined.
 
 Note: If you use "Promoter finder", it will be defined automatically.
 
-- Threshold: excludes sequences with homology < threshold
+- Threshold: excludes sequences with homology < threshold or score < threshold
 
 ## Screenshot
 
-![screenshot](https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/Responsive%20Elements%20Finder-v2.png)
+![screenshot](https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/REF-4.1.PNG)
 
 ## WARNING
 
