@@ -22,6 +22,7 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 ## Functions
 ### Promoter Finder (requires internet connection)
 - Extract mutliple promoter regions using ENTREZ_GENE_ID in FASTA format with NCBI API
+- Species: Human 🙋🏼‍♂️, Mouse 🖱, Rat 🐀, Drosophila 🦟, Zebrafish 🐟
 
 ### Responsive Elements Finder (no internet connection required)
 - Support multiple promoter regions in FASTA format
