@@ -599,7 +599,7 @@ paste_button.grid(row=2, column=0)
 # Species selection
 species_label = tk.Label(section_promoter_finder, text="Species:")
 species_label.grid(row=3, column=0)
-species_combobox = ttk.Combobox(section_promoter_finder, values=["Human", "Mouse", "Rat"])
+species_combobox = ttk.Combobox(section_promoter_finder, values=["Human", "Mouse", "Rat","Drosophila", "Zebrafish"])
 species_combobox.current(0)
 species_combobox.grid(row=4, column=0)
 
