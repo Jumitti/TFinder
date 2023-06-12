@@ -23,7 +23,7 @@ st.title("Recherche de facteurs de transcription")
 sequence = st.text_input("Saisissez la séquence d'ADN", "ATCGATCGATCG")
 
 if st.button("Rechercher"):
-    transcription_factors = find_transcription_factors(sequence, species)
+    transcription_factors = find_transcription_factors(sequence)
     if transcription_factors:
         df = pd.DataFrame(transcription_factors, columns=["Facteur de transcription"])
         st.table(df)
