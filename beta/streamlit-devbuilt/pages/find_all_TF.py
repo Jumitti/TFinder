@@ -7,7 +7,7 @@ def find_transcription_factors(sequence, species):
     data = {
         "format": "json",
         "seq": sequence,
-        "tax_group": species
+        "tax_id": species
     }
     response = requests.post(url, json=data)
     if response.status_code == 200:
