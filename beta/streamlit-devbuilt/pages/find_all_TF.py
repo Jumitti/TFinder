@@ -2,12 +2,12 @@ import streamlit as st
 import requests
 import pandas as pd
 
-def find_transcription_factors(sequence, species):
+def find_transcription_factors(sequence):
     url = "https://jaspar.genereg.net/api/v1/matrix/search/"
     data = {
         "format": "json",
         "seq": sequence,
-        "tax_id": species
+        "tax_id": 9606 
     }
     response = requests.post(url, json=data)
     if response.status_code == 200:
@@ -21,7 +21,6 @@ def find_transcription_factors(sequence, species):
 st.title("Recherche de facteurs de transcription")
 
 sequence = st.text_input("Saisissez la séquence d'ADN", "ATCGATCGATCG")
-species = st.selectbox("Sélectionnez l'espèce", ["Homo sapiens", "Mus musculus", "Drosophila melanogaster"])
 
 if st.button("Rechercher"):
     transcription_factors = find_transcription_factors(sequence, species)
