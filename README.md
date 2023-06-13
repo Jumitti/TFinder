@@ -87,9 +87,9 @@ I use the NCBI API (https://www.ncbi.nlm.nih.gov/home/develop/api/). For more in
 
 - Responsive Elements (RE) allows [IUPAC nucleotides code](https://www.bioinformatics.org/sms/iupac.html) or JASPAR_ID [p53 exemple](https://jaspar.genereg.net/search?q=p53&collection=all&tax_group=all&tax_id=all&type=all&class=all&family=all&version=all)
 
-- Transcription Start Site (TSS): Set the distance of the TSS from the beginning of the pasted sequence. If you use Promoter Finder, it will be automaticaly defined.
+- Transcription Start Site (TSS): Set the distance of the TSS from the beginning of the pasted sequence. If you use "Promoter Finder", it will be automaticaly defined.
 
-Note: If you use "Promoter finder", it will be defined automatically.
+Note: Same TSS is raquired for multiple FASTA sequences.
 
 - Threshold: excludes sequences with homology < threshold or score < threshold
 
