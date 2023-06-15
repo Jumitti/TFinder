@@ -504,7 +504,7 @@ if jaspar:
             ).properties(width=chart_width, height=chart_height)
 
             # Créer le fond transparent
-            background = alt.Chart(df).mark_rect(width=chart_width, height=chart_height).encode(
+            background = alt.Chart(df).mark_rect(width=chart_width, height=chart_height, align='center').encode(
                 color=alt.value('transparent')
             )
 
