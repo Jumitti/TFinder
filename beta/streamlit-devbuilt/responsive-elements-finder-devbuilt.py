@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 import altair as alt
 import math
+import pickle
 
 # Reverse complement
 def reverse_complement(sequence):
@@ -577,3 +578,20 @@ with st.sidebar.expander("Responsive Elements Finder"):
     st.write('Eliminates responsive element with homology < threshold or score < threshold')
     st.write('Note for JASPAR option: Score is normalized to the maximum PWM score of the requested transcription factor. The result is displayed as a percentage')
     st.write('Note without JASPAR option: Homology is calculated between the responsive element in the promoter and the responsive element requested. The calculation uses the Hamming distance, counts the number of differences and gives a percentage score homology.')
+    
+rating = st.slider("Rate the application (1-5 stars)", 1, 5)
+submit_button = st.button("Submit Rating")
+ratings = []
+if submit_button:
+    ratings.append(rating)
+
+try:
+    with open("ratings.pkl", "rb") as file:
+        ratings = pickle.load(file)
+except FileNotFoundError:
+    ratings = []
+
+if submit_button:
+    ratings.append(rating)
+    with open("ratings.pkl", "wb") as file:
+        pickle.dump(ratings, file)
