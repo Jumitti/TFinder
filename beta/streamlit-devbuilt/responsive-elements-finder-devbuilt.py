@@ -489,27 +489,31 @@ if jaspar:
             chart_width = 600
             chart_height = 400
 
+            # Agréger les données pour réduire le nombre de points
+            aggregated_df = df.groupby(['Position (TSS)', 'Score %', 'Sequence', 'Promoter']).size().reset_index(name='count')
+
             # Créer le graphique avec Altair
-            score_range = df['Score %'].astype(float)
+            score_range = aggregated_df['Score %'].astype(float)
             ystart = math.floor(score_range.min() - 5)
             ystop = math.floor(score_range.max() + 5)
             scale = alt.Scale(scheme='category10')
             color_scale = alt.Color("Promoter:N", scale=scale)
 
-            chart = alt.Chart(df).mark_circle().encode(
+            chart = alt.Chart(aggregated_df).mark_circle().encode(
                 x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
                 y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+                size=alt.Size('count:Q', title='Count'),
                 color=color_scale,
-                tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
+                tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter', 'count']
             ).properties(width=alt.Step(chart_width), height=alt.Step(chart_height))
 
             # Créer le fond transparent
-            background = alt.Chart(df).mark_rect(width=chart_width, height=chart_height).encode(
+            background = alt.Chart(aggregated_df).mark_rect(width=chart_width, height=chart_height).encode(
                 color=alt.value('transparent')
             )
 
             # Créer le texte avec la couleur souhaitée
-            text = alt.Chart(df).mark_text(
+            text = alt.Chart(aggregated_df).mark_text(
                 text="Responsive Elements Finder by Minniti Julien",
                 fontSize=14,
                 align='left',
