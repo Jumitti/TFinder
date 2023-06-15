@@ -515,11 +515,10 @@ if jaspar:
                 url=background_image_url,
                 width=600,
                 height=400,
-                clip=True
+                align='center'
             ).properties(
                 width=600,
-                height=400,
-                align='center'
+                height=400
             )
 
             # Combinez le graphique principal et la couche d'arrière-plan
