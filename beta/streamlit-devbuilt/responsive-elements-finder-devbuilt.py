@@ -485,50 +485,33 @@ if jaspar:
             st.dataframe(df)
             st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
             
-            # Définir la taille du graphique
-            chart_width = 600
-            chart_height = 400
+            
 
-            # Agréger les données pour réduire le nombre de points
-            aggregated_df = df.groupby(['Position (TSS)', 'Score %', 'Sequence', 'Promoter']).size().reset_index(name='count')
-
-            # Créer le graphique avec Altair
-            score_range = aggregated_df['Score %'].astype(float)
+            source = df
+            score_range = source['Score %'].astype(float)
             ystart = math.floor(score_range.min() - 5)
             ystop = math.floor(score_range.max() + 5)
             scale = alt.Scale(scheme='category10')
             color_scale = alt.Color("Promoter:N", scale=scale)
 
-            chart = alt.Chart(aggregated_df).mark_circle().encode(
+            background_image_url = "https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/watermark_responsive-elements-finder-by-minniti-ju_editingtools.io.png"
+            
+            # Créer le graphique avec Altair
+            score_range = df['Score %'].astype(float)
+            ystart = math.floor(score_range.min() - 5)
+            ystop = math.floor(score_range.max() + 5)
+            scale = alt.Scale(scheme='category10')
+            color_scale = alt.Color("Promoter:N", scale=scale)
+
+            chart = alt.Chart(df).mark_circle().encode(
                 x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
                 y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-                size=alt.Size('count:Q', title='Count'),
                 color=color_scale,
-                tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter', 'count']
-            ).properties(width=alt.Step(chart_width), height=alt.Step(chart_height))
+                tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
+            ).properties(width=600, height=400).configure(background={'fill': background_image_url})
 
-            # Créer le fond transparent
-            background = alt.Chart(aggregated_df).mark_rect(width=chart_width, height=chart_height).encode(
-                color=alt.value('transparent')
-            )
-
-            # Créer le texte avec la couleur souhaitée
-            text = alt.Chart(aggregated_df).mark_text(
-                text="Responsive Elements Finder by Minniti Julien",
-                fontSize=14,
-                align='left',
-                baseline='top',
-                color='darkgray'
-            ).encode(
-                x=alt.value(10),
-                y=alt.value(10)
-            )
-
-            # Combiner le fond transparent, le texte et le graphique principal
-            combined_chart = background + text + chart
-
-            # Afficher le graphique Altair combiné
-            st.altair_chart(combined_chart.to_dict(), use_container_width=True)           
+            # Afficher le graphique Altair
+            st.altair_chart(chart, use_container_width=True)
         else: 
             jaspar_id = sequence_consensus_input
             url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
