@@ -552,7 +552,7 @@ except FileNotFoundError:
     ratings = []
 
 # Saisie d'une nouvelle note
-rating = st.sidebar.slider("Rate it 😊 (1-5 ⭐)", 1, 5)
+rating = st.sidebar.slider("Rate it 😊 (1-5 ⭐)", 1, 5, 5)
 
 # Soumission de la note
 submit_button = st.sidebar.button("Submit Rating")
@@ -602,27 +602,3 @@ with st.sidebar.expander("Responsive Elements Finder"):
     st.write('Eliminates responsive element with homology < threshold or score < threshold')
     st.write('Note for JASPAR option: Score is normalized to the maximum PWM score of the requested transcription factor. The result is displayed as a percentage')
     st.write('Note without JASPAR option: Homology is calculated between the responsive element in the promoter and the responsive element requested. The calculation uses the Hamming distance, counts the number of differences and gives a percentage score homology.')
-
-# Chargement des notes précédentes depuis le fichier
-try:
-    with open("ratings.pkl", "rb") as file:
-        ratings = pickle.load(file)
-except FileNotFoundError:
-    ratings = []
-
-# Saisie d'une nouvelle note
-rating = st.slider("Rate it 😊 (1-5 ⭐)", 1, 5)
-
-# Soumission de la note
-submit_button = st.button("Submit Rating")
-
-if submit_button:
-    ratings.append(rating)
-    with open("ratings.pkl", "wb") as file:
-        pickle.dump(ratings, file)
-    st.success("Thank you for rating the application!")
-
-# Calcul des statistiques
-average_rating = sum(ratings) / len(ratings) if ratings else 0
-num_ratings = len(ratings)
-st.write(f"Average rating: {average_rating:.2f} ⭐ ({num_ratings} votes)")
