@@ -285,14 +285,13 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
                 sequence_with_context = ''.join(sequence_parts)
                 tis_position = position - tis_value
 
-                if best_homology_percentage >= threshold:
-                    row = [str(position).ljust(8),
-                           str(tis_position).ljust(15),
-                           sequence_with_context,
-                           "{:.1f}".format(best_homology_percentage).ljust(12),
-                           variant,
-                           shortened_promoter_name]
-                    table.append(row)
+                row = [str(position).ljust(8),
+                       str(tis_position).ljust(15),
+                       sequence_with_context,
+                       "{:.1f}".format(best_homology_percentage).ljust(12),
+                       variant,
+                       shortened_promoter_name]
+                table.append(row)
 
     if len(table) > 0:
         table.sort(key=lambda x: float(x[3]), reverse=True)
@@ -411,13 +410,12 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
                     sequence_with_context = ''.join(sequence_parts)
                     tis_position = position - tis_value
 
-                    if normalized_score >= threshold:
-                        row = [str(position).ljust(8),
-                               str(tis_position).ljust(15),
-                               sequence_with_context,
-                               "{:.1f}".format(normalized_score).ljust(12),
-                               shortened_promoter_name]
-                        table2.append(row)
+                    row = [str(position).ljust(8),
+                           str(tis_position).ljust(15),
+                           sequence_with_context,
+                           "{:.1f}".format(normalized_score).ljust(12),
+                           shortened_promoter_name]
+                    table2.append(row)
 
     if len(table2) > 0:
         table2.sort(key=lambda x: float(x[3]), reverse=True)
@@ -483,6 +481,14 @@ if jaspar:
             st.session_state['df'] = df
             st.dataframe(df)
             st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+            
+            threshold = alt.binding_range(min=ystart, max=ystop, step=1)  # Définir les valeurs min et max en fonction de votre plage de scores
+            threshold_selection = alt.selection_single(bind=threshold, fields=['Threshold'], init={'Threshold': ystart})
+
+            # Filtrer les données en fonction du curseur
+            filtered_data = source.transform_filter(
+                alt.datum['Score %'] >= threshold_selection.Threshold
+            )
 
             source = df
             score_range = source['Score %'].astype(float)
@@ -491,12 +497,14 @@ if jaspar:
             scale = alt.Scale(scheme='category10')
             color_scale = alt.Color("Promoter:N", scale=scale)
 
-            chart = alt.Chart(source).mark_circle().encode(
+            chart = alt.Chart(filtered_data).mark_circle().encode(
                 x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
                 y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
                 color=color_scale,
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
             ).properties(width=600, height=400)
+            
+            chart = chart.add_selection(threshold_selection)
 
             st.altair_chart(chart, use_container_width=True)
         else: 
