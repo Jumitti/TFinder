@@ -518,7 +518,8 @@ if jaspar:
                 clip=True
             ).properties(
                 width=600,
-                height=400
+                height=400,
+                align='center'
             )
 
             # Combinez le graphique principal et la couche d'arrière-plan
