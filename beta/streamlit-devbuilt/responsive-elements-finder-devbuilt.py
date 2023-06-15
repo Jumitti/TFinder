@@ -494,6 +494,8 @@ if jaspar:
 
             filtered_data = source[source['Score %'] >= threshold]
 
+            chart_placeholder = st.empty()
+
             chart = alt.Chart(filtered_data).mark_circle().encode(
                 x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
                 y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
@@ -501,7 +503,8 @@ if jaspar:
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
             ).properties(width=600, height=400)
 
-            st.altair_chart(chart, use_container_width=True)
+            # Afficher le graphique dans l'espace vide
+            chart_placeholder.altair_chart(chart, use_container_width=True)
 
         else: 
             jaspar_id = sequence_consensus_input
