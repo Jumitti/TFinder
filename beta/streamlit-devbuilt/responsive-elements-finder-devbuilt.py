@@ -501,15 +501,15 @@ if jaspar:
                 y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
                 color=color_scale,
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-            ).properties(width=chart_width, height=chart_height)
+            ).properties(width=alt.Step(chart_width), height=alt.Step(chart_height))
 
             # Créer le fond transparent
-            background = alt.Chart(df).mark_rect(width=chart_width, height=chart_height, align='center').encode(
+            background = alt.Chart(df).mark_rect(width=chart_width, height=chart_height).encode(
                 color=alt.value('transparent')
             )
 
             # Créer le texte avec la couleur souhaitée
-            text = alt.Chart(df).mark_text(width=chart_width, height=chart_height,
+            text = alt.Chart(df).mark_text(
                 text="Responsive Elements Finder by Minniti Julien",
                 fontSize=14,
                 align='left',
@@ -524,7 +524,7 @@ if jaspar:
             combined_chart = background + text + chart
 
             # Afficher le graphique Altair combiné
-            st.altair_chart(combined_chart, use_container_width=True)            
+            st.altair_chart(combined_chart.to_dict(), use_container_width=True)           
         else: 
             jaspar_id = sequence_consensus_input
             url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
