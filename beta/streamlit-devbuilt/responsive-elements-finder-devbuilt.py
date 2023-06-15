@@ -484,6 +484,8 @@ if jaspar:
             st.session_state['df'] = df
             st.dataframe(df)
             st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+            
+            background_image_url = "https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/watermark_responsive-elements-finder-by-minniti-ju_editingtools.io.png"
 
             source = df
             score_range = source['Score %'].astype(float)
@@ -498,7 +500,8 @@ if jaspar:
                 color=color_scale,
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
             ).properties(width=600, height=400)
-
+            
+            st.image(background_image, use_column_width=True)
             st.altair_chart(chart, use_container_width=True)
         else: 
             jaspar_id = sequence_consensus_input
