@@ -515,7 +515,8 @@ if jaspar:
                 url=background_image_url,
                 width=600,
                 height=400,
-                align='center'
+                align='center',
+                clip=True 
             ).properties(
                 width=600,
                 height=400
