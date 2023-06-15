@@ -501,7 +501,7 @@ if jaspar:
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
             ).properties(width=600, height=400)
             
-            st.image(background_image, use_column_width=True)
+            st.image(background_image_url, use_column_width=True)
             st.altair_chart(chart, use_container_width=True)
         else: 
             jaspar_id = sequence_consensus_input
