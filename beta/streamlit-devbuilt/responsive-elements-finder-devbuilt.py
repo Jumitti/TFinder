@@ -490,10 +490,9 @@ if jaspar:
             scale = alt.Scale(scheme='category10')
             color_scale = alt.Color("Promoter:N", scale=scale)
 
-            threshold = alt.binding_range(min=ystart, max=ystop, step=1)  # Définir les valeurs min et max en fonction de votre plage de scores
-            threshold_selection = alt.selection_single(bind=threshold, fields=['Threshold'], init={'Threshold': ystart})
+            threshold = alt.binding_range(min=ystart, max=ystop, step=1)
+            threshold_selection = alt.selection(type='point', bind=threshold, fields=['Threshold'], init={'value': ystart})
 
-            # Filtrer les données en fonction du curseur
             filtered_data = source.transform_filter(
                 alt.datum['Score %'] >= threshold_selection.Threshold
             )
@@ -507,8 +506,8 @@ if jaspar:
 
             chart = chart.add_selection(threshold_selection)
 
-            # Afficher le graphique
             st.altair_chart(chart, use_container_width=True)
+
 
         else: 
             jaspar_id = sequence_consensus_input
