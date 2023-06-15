@@ -485,7 +485,7 @@ if jaspar:
             st.dataframe(df)
             st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
             
-            background_image_url = "https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/watermark_responsive-elements-finder-by-minniti-ju_editingtools.io.png"
+            
 
             source = df
             score_range = source['Score %'].astype(float)
@@ -494,9 +494,8 @@ if jaspar:
             scale = alt.Scale(scheme='category10')
             color_scale = alt.Color("Promoter:N", scale=scale)
 
-            # Afficher l'image de fond
-            st.image(background_image_url, use_column_width=True)
-
+            background_image_url = "https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/watermark_responsive-elements-finder-by-minniti-ju_editingtools.io.png"
+            
             # Créer le graphique avec Altair
             score_range = df['Score %'].astype(float)
             ystart = math.floor(score_range.min() - 5)
@@ -509,7 +508,7 @@ if jaspar:
                 y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
                 color=color_scale,
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-            ).properties(width=600, height=400)
+            ).properties(width=600, height=400).configure(background={'fill': background_image_url})
 
             # Afficher le graphique Altair
             st.altair_chart(chart, use_container_width=True)
