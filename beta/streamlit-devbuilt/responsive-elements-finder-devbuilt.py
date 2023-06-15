@@ -506,7 +506,7 @@ if jaspar:
                 y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
                 color=color_scale,
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-            ).properties(width=chart_width, height=chart_height).configure(background='transparent').mark_text(
+            ).properties(width=600, height=400).configure(background='transparent').mark_text(
                 text='Responsive Elements Finder by Minniti Julien',
                 color='darkgray',
                 align='center',
