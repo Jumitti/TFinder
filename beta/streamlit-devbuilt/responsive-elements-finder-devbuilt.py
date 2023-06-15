@@ -542,8 +542,32 @@ else:
 
 
 # Help
-st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder)")
-st.sidebar.write("By Minniti Julien")
+st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder) by Minniti Julien")
+
+# Chargement des notes précédentes depuis le fichier
+try:
+    with open("ratings.pkl", "rb") as file:
+        ratings = pickle.load(file)
+except FileNotFoundError:
+    ratings = []
+
+# Saisie d'une nouvelle note
+rating = st.sidebar.slider("Rate it 😊 (1-5 ⭐)", 1, 5)
+
+# Soumission de la note
+submit_button = st.sidebar.button("Submit Rating")
+
+if submit_button:
+    ratings.append(rating)
+    with open("ratings.pkl", "wb") as file:
+        pickle.dump(ratings, file)
+    st.sidebar.success("Thank you for rating the application!")
+
+# Calcul des statistiques
+average_rating = sum(ratings) / len(ratings) if ratings else 0
+num_ratings = len(ratings)
+st.sidebar.write(f"Average rating: {average_rating:.2f} ⭐ ({num_ratings} votes)")
+
 st.sidebar.title("Help")
 with st.sidebar.expander("Video tutorials"):
     st.write("How to extract promoter and find responsive elements")
