@@ -490,12 +490,9 @@ if jaspar:
             scale = alt.Scale(scheme='category10')
             color_scale = alt.Color("Promoter:N", scale=scale)
 
-            threshold = alt.binding_range(min=ystart, max=ystop, step=1)
-            threshold_selection = alt.selection_point(bind=threshold, fields=['Threshold'], init={'value': ystart})
+            threshold = st.slider('Threshold', min_value=ystart, max_value=ystop, value=ystart, step=1)
 
-            filtered_data = source.transform_filter(
-                alt.datum['Score %'] >= threshold_selection.Threshold
-            )
+            filtered_data = source[source['Score %'] >= threshold]
 
             chart = alt.Chart(filtered_data).mark_circle().encode(
                 x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
@@ -503,8 +500,6 @@ if jaspar:
                 color=color_scale,
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
             ).properties(width=600, height=400)
-
-            chart = chart.add_selection(threshold_selection)
 
             st.altair_chart(chart, use_container_width=True)
 
