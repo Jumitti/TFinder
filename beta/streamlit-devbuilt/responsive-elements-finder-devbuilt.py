@@ -204,7 +204,7 @@ def generate_iupac_variants(sequence):
     return sequences
 
 # Responsive Elements Finder (consensus sequence)
-def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter):
+def find_sequence_consensus(sequence_consensus_input, tis_value, result_promoter):
     global table
     table = []
     
@@ -344,7 +344,7 @@ def calculate_score(sequence, matrix):
     return score
 
 # Find with JASPAR
-def search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices):
+def search_sequence(sequence_consensus_input, tis_value, result_promoter, matrices):
     global table2
     table2 = []
     
@@ -444,25 +444,24 @@ if 'upstream' not in st.session_state:
 else:
     entry_tis = st.number_input("Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream'])
     st.info("Do not modify if you use Step 1 ")
-
+'''
 # Threshold
 if jaspar:
     threshold_entry = st.slider("Score threshold (%)", 0, 100 ,90)
 else:
     threshold_entry = st.slider("Homology threshold (%)", 0, 100 ,80)
-
+'''
 # Run Responsive Elements finder
 if st.button("Find responsive elements"):
     with st.spinner("Finding responsive elements..."):
         sequence_consensus_input = entry_sequence
         tis_value = int(entry_tis)
-        threshold = float(threshold_entry)
         try:
             if jaspar:
                 matrices = matrix_extraction(sequence_consensus_input)
-                table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
+                table2 = search_sequence(sequence_consensus_input, tis_value, result_promoter, matrices)
             else:
-                table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
+                table = find_sequence_consensus(sequence_consensus_input, tis_value, result_promoter)                
         except Exception as e:
             st.error(f"Error finding responsive elements: {str(e)}")
 
