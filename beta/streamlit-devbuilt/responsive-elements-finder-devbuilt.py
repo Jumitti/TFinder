@@ -509,7 +509,7 @@ if jaspar:
             )
 
             # Créer le texte avec la couleur souhaitée
-            text = alt.Chart(df).mark_text(
+            text = alt.Chart(df).mark_text(width=chart_width, height=chart_height,
                 text="Responsive Elements Finder by Minniti Julien",
                 fontSize=14,
                 align='left',
@@ -524,7 +524,7 @@ if jaspar:
             combined_chart = background + text + chart
 
             # Afficher le graphique Altair combiné
-            st.write(combined_chart, use_container_width=False, width=800, height=600)
+            st.altair_chart(combined_chart, use_container_width=False)            
         else: 
             jaspar_id = sequence_consensus_input
             url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
