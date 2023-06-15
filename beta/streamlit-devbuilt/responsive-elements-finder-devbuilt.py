@@ -514,7 +514,8 @@ if jaspar:
             background_layer = alt.Chart(df).mark_image(
                 url=background_image_url,
                 width=600,
-                height=400
+                height=400,
+                aspect=False
                 
             ).properties(
                 width=600,
