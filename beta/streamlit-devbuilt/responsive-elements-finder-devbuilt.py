@@ -494,37 +494,25 @@ if jaspar:
             scale = alt.Scale(scheme='category10')
             color_scale = alt.Color("Promoter:N", scale=scale)
 
-            background_spec = {
-                "$schema": "https://vega.github.io/schema/vega/v5.json",
-                "width": 600,
-                "height": 400,
-                "autosize": "none",
-                "background": background_image_url,
-                "padding": 10,
-                "data": [{"name": "data", "values": df.to_dict(orient='records')}],
-                "marks": [
-                    {
-                        "type": "circle",
-                        "from": {"data": "data"},
-                        "encode": {
-                            "enter": {
-                                "x": {"field": "Position (TSS)", "type": "quantitative", "scale": {"zero": False}},
-                                "y": {"field": "Score %", "type": "quantitative", "scale": {"zero": False}},
-                                "fill": {"field": "Promoter", "type": "nominal", "scale": {"scheme": "category10"}},
-                                "tooltip": [
-                                    {"field": "Position (TSS)", "type": "quantitative"},
-                                    {"field": "Score %", "type": "quantitative"},
-                                    {"field": "Sequence", "type": "nominal"},
-                                    {"field": "Promoter", "type": "nominal"}
-                                ]
-                            }
-                        }
-                    }
-                ]
-            }
+            # Afficher l'image de fond
+            st.image(background_image_url, use_column_width=True)
 
-            # Afficher le graphique Altair avec l'image de fond
-            st.altair_chart(background_spec)
+            # Créer le graphique avec Altair
+            score_range = df['Score %'].astype(float)
+            ystart = math.floor(score_range.min() - 5)
+            ystop = math.floor(score_range.max() + 5)
+            scale = alt.Scale(scheme='category10')
+            color_scale = alt.Color("Promoter:N", scale=scale)
+
+            chart = alt.Chart(df).mark_circle().encode(
+                x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
+                y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+                color=color_scale,
+                tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
+            ).properties(width=600, height=400)
+
+            # Afficher le graphique Altair
+            st.altair_chart(chart, use_container_width=True)
         else: 
             jaspar_id = sequence_consensus_input
             url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
