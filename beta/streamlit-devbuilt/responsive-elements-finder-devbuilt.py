@@ -481,14 +481,14 @@ if jaspar:
             st.dataframe(df)
             st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
             
-            
-
             source = df
             score_range = source['Score %'].astype(float)
             ystart = math.floor(score_range.min() - 5)
             ystop = math.floor(score_range.max() + 5)
             scale = alt.Scale(scheme='category10')
             color_scale = alt.Color("Promoter:N", scale=scale)
+
+            source['Score %'] = source['Score %'].astype(float)
 
             threshold = st.slider('Threshold', min_value=ystart, max_value=ystop, value=ystart, step=1)
 
@@ -502,7 +502,6 @@ if jaspar:
             ).properties(width=600, height=400)
 
             st.altair_chart(chart, use_container_width=True)
-
 
         else: 
             jaspar_id = sequence_consensus_input
