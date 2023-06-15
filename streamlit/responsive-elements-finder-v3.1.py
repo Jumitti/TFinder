@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 import altair as alt
 import math
+import pickle
 
 # Reverse complement
 def reverse_complement(sequence):
@@ -541,8 +542,24 @@ else:
 
 
 # Help
-st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder)")
-st.sidebar.write("By Minniti Julien")
+st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder) by Minniti Julien")
+
+try:
+    with open("ratings.pkl", "rb") as file:
+        ratings = pickle.load(file)
+except FileNotFoundError:
+    ratings = []
+rating = st.sidebar.slider("Rate it 😊 (1-5 ⭐)", 1, 5, 5)
+submit_button = st.sidebar.button("Submit Rating")
+if submit_button:
+    ratings.append(rating)
+    with open("ratings.pkl", "wb") as file:
+        pickle.dump(ratings, file)
+    st.sidebar.success("Thank you for rating the application!")
+average_rating = sum(ratings) / len(ratings) if ratings else 0
+num_ratings = len(ratings)
+st.sidebar.write(f"Average rating: {average_rating:.2f} ⭐ ({num_ratings} votes)")
+
 st.sidebar.title("Help")
 with st.sidebar.expander("Video tutorials"):
     st.write("How to extract promoter and find responsive elements")
@@ -551,6 +568,7 @@ with st.sidebar.expander("Video tutorials"):
     st.video('https://www.youtube.com/watch?v=QelVLLuNJqs')
     st.write("How to use JASPAR option")
     st.video('https://www.youtube.com/watch?v=DH8PBVqa860')
+    
 with st.sidebar.expander("Promoter Finder"):
     st.subheader("Gene ID:")
     st.write("ENTREZ_GENE_ID of NCBI and gene names are allowed.")
@@ -564,6 +582,7 @@ with st.sidebar.expander("Promoter Finder"):
     st.subheader("Promoter:")
     st.write('Use "Find promoter" button or paste your sequences. FASTA format allowed and required for multiple sequences.')
     st.write('FASTA format: All sequences must have the TSS at the same distance, otherwise you assume the inconsistency of the positions of found sequences')
+    
 with st.sidebar.expander("Responsive Elements Finder"):
     st.subheader("Responsive element:")
     st.write("To use the JASPAR option, check the box and use the JASPAR_ID of your transcription factor.")
