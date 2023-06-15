@@ -493,8 +493,6 @@ if jaspar:
             ystop = math.floor(score_range.max() + 5)
             scale = alt.Scale(scheme='category10')
             color_scale = alt.Color("Promoter:N", scale=scale)
-
-            background_image_url = "https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/watermark_responsive-elements-finder-by-minniti-ju_editingtools.io.png"
             
             # Créer le graphique avec Altair
             score_range = df['Score %'].astype(float)
@@ -508,11 +506,16 @@ if jaspar:
                 y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
                 color=color_scale,
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-            ).properties(width=600, height=400).configure(background='transparent').configure_text(color='darkgray', text='Responsive Elements Finder by Minniti Julien', align='center')
-
+            ).properties(width=chart_width, height=chart_height).configure(background='transparent').mark_text(
+                text='Responsive Elements Finder by Minniti Julien',
+                color='darkgray',
+                align='center',
+                baseline='middle',
+                fontSize=14
+            )
 
             # Afficher le graphique Altair
-            st.altair_chart(chart, use_container_width=False)
+            st.altair_chart(chart, use_container_width=True)
         else: 
             jaspar_id = sequence_consensus_input
             url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
