@@ -516,7 +516,7 @@ if jaspar:
                 width=600,
                 height=400,
                 align='center',
-                object='fit'
+                fill=True
             ).properties(
                 width=600,
                 height=400
