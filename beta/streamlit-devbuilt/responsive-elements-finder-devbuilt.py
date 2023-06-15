@@ -491,7 +491,7 @@ if jaspar:
             color_scale = alt.Color("Promoter:N", scale=scale)
 
             threshold = alt.binding_range(min=ystart, max=ystop, step=1)
-            threshold_selection = alt.selection(type='point', bind=threshold, fields=['Threshold'], init={'value': ystart})
+            threshold_selection = alt.selection_point(bind=threshold, fields=['Threshold'], init={'value': ystart})
 
             filtered_data = source.transform_filter(
                 alt.datum['Score %'] >= threshold_selection.Threshold
