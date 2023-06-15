@@ -586,11 +586,6 @@ try:
 except FileNotFoundError:
     ratings = []
 
-# Affichage des notes actuelles
-st.write("Current ratings:")
-for rating in ratings:
-    st.write(f"Rating: {rating} stars")
-
 # Saisie d'une nouvelle note
 rating = st.slider("Rate the application (1-5 stars)", 1, 5)
 
@@ -605,4 +600,6 @@ if submit_button:
 
 # Calcul des statistiques
 average_rating = sum(ratings) / len(ratings) if ratings else 0
+num_ratings = len(ratings)
 st.write(f"Average rating: {average_rating:.2f} stars")
+st.write(f"Number of ratings: {num_ratings}")
