@@ -204,7 +204,7 @@ def generate_iupac_variants(sequence):
     return sequences
 
 # Responsive Elements Finder (consensus sequence)
-def find_sequence_consensus(sequence_consensus_input, tis_value, result_promoter):
+def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter):
     global table
     table = []
     
@@ -285,13 +285,14 @@ def find_sequence_consensus(sequence_consensus_input, tis_value, result_promoter
                 sequence_with_context = ''.join(sequence_parts)
                 tis_position = position - tis_value
 
-                row = [str(position).ljust(8),
-                       str(tis_position).ljust(15),
-                       sequence_with_context,
-                       "{:.1f}".format(best_homology_percentage).ljust(12),
-                       variant,
-                       shortened_promoter_name]
-                table.append(row)
+                if best_homology_percentage >= threshold:
+                    row = [str(position).ljust(8),
+                           str(tis_position).ljust(15),
+                           sequence_with_context,
+                           "{:.1f}".format(best_homology_percentage).ljust(12),
+                           variant,
+                           shortened_promoter_name]
+                    table.append(row)
 
     if len(table) > 0:
         table.sort(key=lambda x: float(x[3]), reverse=True)
@@ -344,7 +345,7 @@ def calculate_score(sequence, matrix):
     return score
 
 # Find with JASPAR
-def search_sequence(sequence_consensus_input, tis_value, result_promoter, matrices):
+def search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices):
     global table2
     table2 = []
     
@@ -410,12 +411,13 @@ def search_sequence(sequence_consensus_input, tis_value, result_promoter, matric
                     sequence_with_context = ''.join(sequence_parts)
                     tis_position = position - tis_value
 
-                    row = [str(position).ljust(8),
-                           str(tis_position).ljust(15),
-                           sequence_with_context,
-                           "{:.1f}".format(normalized_score).ljust(12),
-                           shortened_promoter_name]
-                    table2.append(row)
+                    if normalized_score >= threshold:
+                        row = [str(position).ljust(8),
+                               str(tis_position).ljust(15),
+                               sequence_with_context,
+                               "{:.1f}".format(normalized_score).ljust(12),
+                               shortened_promoter_name]
+                        table2.append(row)
 
     if len(table2) > 0:
         table2.sort(key=lambda x: float(x[3]), reverse=True)
@@ -444,24 +446,25 @@ if 'upstream' not in st.session_state:
 else:
     entry_tis = st.number_input("Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream'])
     st.info("Do not modify if you use Step 1 ")
-'''
+
 # Threshold
 if jaspar:
     threshold_entry = st.slider("Score threshold (%)", 0, 100 ,90)
 else:
     threshold_entry = st.slider("Homology threshold (%)", 0, 100 ,80)
-'''
+
 # Run Responsive Elements finder
 if st.button("Find responsive elements"):
     with st.spinner("Finding responsive elements..."):
         sequence_consensus_input = entry_sequence
         tis_value = int(entry_tis)
+        threshold = float(threshold_entry)
         try:
             if jaspar:
                 matrices = matrix_extraction(sequence_consensus_input)
-                table2 = search_sequence(sequence_consensus_input, tis_value, result_promoter, matrices)
+                table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
             else:
-                table = find_sequence_consensus(sequence_consensus_input, tis_value, result_promoter)                
+                table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
         except Exception as e:
             st.error(f"Error finding responsive elements: {str(e)}")
 
@@ -480,7 +483,7 @@ if jaspar:
             st.session_state['df'] = df
             st.dataframe(df)
             st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
-            
+
             source = df
             score_range = source['Score %'].astype(float)
             ystart = math.floor(score_range.min() - 5)
@@ -488,24 +491,14 @@ if jaspar:
             scale = alt.Scale(scheme='category10')
             color_scale = alt.Color("Promoter:N", scale=scale)
 
-            source['Score %'] = source['Score %'].astype(float)
-
-            threshold = st.slider('Threshold', min_value=ystart, max_value=ystop, value=ystart, step=1)
-
-            filtered_data = source[source['Score %'] >= threshold]
-
-            chart_placeholder = st.empty()
-
-            chart = alt.Chart(filtered_data).mark_circle().encode(
+            chart = alt.Chart(source).mark_circle().encode(
                 x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
                 y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
                 color=color_scale,
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
             ).properties(width=600, height=400)
 
-            # Afficher le graphique dans l'espace vide
-            chart_placeholder.altair_chart(chart, use_container_width=True)
-
+            st.altair_chart(chart, use_container_width=True)
         else: 
             jaspar_id = sequence_consensus_input
             url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
