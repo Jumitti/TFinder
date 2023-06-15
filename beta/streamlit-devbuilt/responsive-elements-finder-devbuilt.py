@@ -509,8 +509,7 @@ if jaspar:
             ).properties(width=600, height=400).configure_title(
                 fontSize=14,
                 align='center',
-                color='darkgray',
-                text='Responsive Elements Finder by Minniti Julien'
+                color='darkgray'
             )
 
             # Afficher le graphique Altair
