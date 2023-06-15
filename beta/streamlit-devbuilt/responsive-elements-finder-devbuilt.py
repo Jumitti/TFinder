@@ -481,13 +481,7 @@ if jaspar:
             st.dataframe(df)
             st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
             
-            threshold = alt.binding_range(min=ystart, max=ystop, step=1)  # Définir les valeurs min et max en fonction de votre plage de scores
-            threshold_selection = alt.selection_single(bind=threshold, fields=['Threshold'], init={'Threshold': ystart})
-
-            # Filtrer les données en fonction du curseur
-            filtered_data = source.transform_filter(
-                alt.datum['Score %'] >= threshold_selection.Threshold
-            )
+            
 
             source = df
             score_range = source['Score %'].astype(float)
@@ -495,6 +489,14 @@ if jaspar:
             ystop = math.floor(score_range.max() + 5)
             scale = alt.Scale(scheme='category10')
             color_scale = alt.Color("Promoter:N", scale=scale)
+            
+            threshold = alt.binding_range(min=ystart, max=ystop, step=1)  # Définir les valeurs min et max en fonction de votre plage de scores
+            threshold_selection = alt.selection_single(bind=threshold, fields=['Threshold'], init={'Threshold': ystart})
+
+            # Filtrer les données en fonction du curseur
+            filtered_data = source.transform_filter(
+                alt.datum['Score %'] >= threshold_selection.Threshold
+            )
 
             chart = alt.Chart(filtered_data).mark_circle().encode(
                 x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
