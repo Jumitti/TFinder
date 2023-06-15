@@ -510,23 +510,34 @@ if jaspar:
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
             ).properties(width=600, height=400)
 
-            # Créer une couche pour l'image de fond
-            background_layer = alt.Chart(df).mark_image(
-                url=background_image_url,
-                width=600,
-                height=400,
-                aspect=True
-                
-            ).properties(
-                width=600,
-                height=400
+            st.markdown(
+                f"""
+                <style>
+                    .background-image-container {{
+                        position: relative;
+                        width: 600px;
+                        height: 400px;
+                        background-image: url("{background_image_url}");
+                        background-size: contain;
+                        background-repeat: no-repeat;
+                        background-position: center;
+                    }}
+                    .chart-container {{
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                    }}
+                </style>
+                <div class="background-image-container">
+                    <div class="chart-container">
+                        {chart.to_html(vega_embed_options={"actions": False})}
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
             )
-
-            # Combinez le graphique principal et la couche d'arrière-plan
-            combined_chart = background_layer + chart
-
-            # Afficher le graphique Altair combiné
-            st.altair_chart(combined_chart, use_container_width=True)
         else: 
             jaspar_id = sequence_consensus_input
             url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
