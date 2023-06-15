@@ -508,7 +508,7 @@ if jaspar:
                 y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
                 color=color_scale,
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-            ).properties(width=600, height=400)
+            ).properties(width=600, height=400, clip=True)
 
             # Créer une couche pour l'image de fond
             background_layer = alt.Chart(df).mark_image(
