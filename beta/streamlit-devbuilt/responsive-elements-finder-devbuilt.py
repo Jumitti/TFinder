@@ -489,7 +489,7 @@ if jaspar:
             ystop = math.floor(score_range.max() + 5)
             scale = alt.Scale(scheme='category10')
             color_scale = alt.Color("Promoter:N", scale=scale)
-            
+
             threshold = alt.binding_range(min=ystart, max=ystop, step=1)  # Définir les valeurs min et max en fonction de votre plage de scores
             threshold_selection = alt.selection_single(bind=threshold, fields=['Threshold'], init={'Threshold': ystart})
 
@@ -504,10 +504,12 @@ if jaspar:
                 color=color_scale,
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
             ).properties(width=600, height=400)
-            
+
             chart = chart.add_selection(threshold_selection)
 
+            # Afficher le graphique
             st.altair_chart(chart, use_container_width=True)
+
         else: 
             jaspar_id = sequence_consensus_input
             url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
