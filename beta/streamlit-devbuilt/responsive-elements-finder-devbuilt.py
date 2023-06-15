@@ -512,7 +512,7 @@ if jaspar:
 
 
             # Afficher le graphique Altair
-            st.altair_chart(chart, use_container_width=True)
+            st.altair_chart(chart, use_container_width=False)
         else: 
             jaspar_id = sequence_consensus_input
             url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
