@@ -525,7 +525,7 @@ if jaspar:
 
             # Afficher le graphique Altair avec l'image de fond
             st.altair_chart(background_spec)
-                    else: 
+            else: 
             jaspar_id = sequence_consensus_input
             url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
             response = requests.get(url)
