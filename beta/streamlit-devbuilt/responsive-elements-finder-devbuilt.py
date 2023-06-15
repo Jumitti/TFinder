@@ -494,16 +494,38 @@ if jaspar:
             scale = alt.Scale(scheme='category10')
             color_scale = alt.Color("Promoter:N", scale=scale)
 
-            chart = alt.Chart(source).mark_circle().encode(
-                x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-                y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-                color=color_scale,
-                tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-            ).properties(width=600, height=400)
-            
-            st.image(background_image_url, use_column_width=True)
-            st.altair_chart(chart, use_container_width=True)
-        else: 
+            background_spec = {
+                "$schema": "https://vega.github.io/schema/vega/v5.json",
+                "width": 600,
+                "height": 400,
+                "autosize": "none",
+                "background": background_image_url,
+                "padding": 10,
+                "data": [{"name": "data", "values": df.to_dict(orient='records')}],
+                "marks": [
+                    {
+                        "type": "circle",
+                        "from": {"data": "data"},
+                        "encode": {
+                            "enter": {
+                                "x": {"field": "Position (TSS)", "type": "quantitative", "scale": {"zero": False}},
+                                "y": {"field": "Score %", "type": "quantitative", "scale": {"zero": False}},
+                                "fill": {"field": "Promoter", "type": "nominal", "scale": {"scheme": "category10"}},
+                                "tooltip": [
+                                    {"field": "Position (TSS)", "type": "quantitative"},
+                                    {"field": "Score %", "type": "quantitative"},
+                                    {"field": "Sequence", "type": "nominal"},
+                                    {"field": "Promoter", "type": "nominal"}
+                                ]
+                            }
+                        }
+                    }
+                ]
+            }
+
+            # Afficher le graphique Altair avec l'image de fond
+            st.altair_chart(background_spec)
+                    else: 
             jaspar_id = sequence_consensus_input
             url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
             response = requests.get(url)
