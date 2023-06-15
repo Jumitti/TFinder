@@ -485,6 +485,7 @@ if jaspar:
             st.dataframe(df)
             st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
             
+            # Définir la taille du graphique
             chart_width = 600
             chart_height = 400
 
@@ -503,12 +504,7 @@ if jaspar:
             ).properties(width=chart_width, height=chart_height)
 
             # Créer le fond personnalisé avec le texte
-            background = alt.Chart(df).mark_rect(fill='lightgray').encode(
-                x=alt.value(0),
-                y=alt.value(0),
-                width=alt.value(chart_width),
-                height=alt.value(chart_height)
-            )
+            background = alt.Chart(df).mark_rect(fill='lightgray', width=chart_width, height=chart_height)
 
             text = alt.Chart(df).mark_text(
                 text="Responsive Elements Finder by Minniti Julien",
