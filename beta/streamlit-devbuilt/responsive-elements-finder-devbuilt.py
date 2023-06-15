@@ -503,9 +503,12 @@ if jaspar:
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
             ).properties(width=chart_width, height=chart_height)
 
-            # Créer le fond personnalisé avec le texte
-            background = alt.Chart(df).mark_rect(fill='lightgray', width=chart_width, height=chart_height)
+            # Créer le fond transparent
+            background = alt.Chart(df).mark_rect(width=chart_width, height=chart_height).encode(
+                color=alt.value('transparent')
+            )
 
+            # Créer le texte avec la couleur souhaitée
             text = alt.Chart(df).mark_text(
                 text="Responsive Elements Finder by Minniti Julien",
                 fontSize=14,
@@ -517,12 +520,11 @@ if jaspar:
                 y=alt.value(10)
             )
 
-            # Combiner le fond, le texte et le graphique principal
+            # Combiner le fond transparent, le texte et le graphique principal
             combined_chart = background + text + chart
 
             # Afficher le graphique Altair combiné
-            st.altair_chart(combined_chart, use_container_width=True)
-            
+            st.altair_chart(combined_chart, use_container_width=True)            
         else: 
             jaspar_id = sequence_consensus_input
             url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
