@@ -508,10 +508,24 @@ if jaspar:
                 y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
                 color=color_scale,
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-            ).properties(width=600, height=400).configure(background={'fill': background_image_url})
+            ).properties(width=600, height=400)
 
-            # Afficher le graphique Altair
-            st.altair_chart(chart, use_container_width=True)
+            # Créer une couche pour l'image de fond
+            background_layer = alt.Chart(df).mark_image(
+                url=background_image_url,
+                width=600,
+                height=400,
+                clip=True
+            ).properties(
+                width=600,
+                height=400
+            )
+
+            # Combinez le graphique principal et la couche d'arrière-plan
+            combined_chart = background_layer + chart
+
+            # Afficher le graphique Altair combiné
+            st.altair_chart(combined_chart, use_container_width=True)
         else: 
             jaspar_id = sequence_consensus_input
             url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
