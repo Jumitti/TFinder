@@ -524,7 +524,7 @@ if jaspar:
             combined_chart = background + text + chart
 
             # Afficher le graphique Altair combiné
-            st.altair_chart(combined_chart, use_container_width=True)            
+            st.altair_chart(combined_chart, use_container_width=False)            
         else: 
             jaspar_id = sequence_consensus_input
             url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
