@@ -506,13 +506,7 @@ if jaspar:
                 y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
                 color=color_scale,
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-            ).properties(width=600, height=400).configure(background='transparent',
-                text='Responsive Elements Finder by Minniti Julien',
-                color='darkgray',
-                align='center',
-                baseline='middle',
-                fontSize=14
-            )
+            ).properties(width=600, height=400).title('REF')
 
             # Afficher le graphique Altair
             st.altair_chart(chart, use_container_width=True)
