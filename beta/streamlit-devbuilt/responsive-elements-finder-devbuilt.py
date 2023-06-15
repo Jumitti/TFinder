@@ -485,17 +485,9 @@ if jaspar:
             st.dataframe(df)
             st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
             
-            
+            chart_width = 600
+            chart_height = 400
 
-            source = df
-            score_range = source['Score %'].astype(float)
-            ystart = math.floor(score_range.min() - 5)
-            ystop = math.floor(score_range.max() + 5)
-            scale = alt.Scale(scheme='category10')
-            color_scale = alt.Color("Promoter:N", scale=scale)
-
-            background_image_url = "https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/watermark_responsive-elements-finder-by-minniti-ju_editingtools.io.png"
-            
             # Créer le graphique avec Altair
             score_range = df['Score %'].astype(float)
             ystart = math.floor(score_range.min() - 5)
@@ -508,36 +500,33 @@ if jaspar:
                 y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
                 color=color_scale,
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-            ).properties(width=600, height=400)
+            ).properties(width=chart_width, height=chart_height)
 
-            st.markdown(
-                f"""
-                <style>
-                    .background-image-container {{
-                        position: relative;
-                        width: 600px;
-                        height: 400px;
-                        background-image: url("{background_image_url}");
-                        background-size: contain;
-                        background-repeat: no-repeat;
-                        background-position: center;
-                    }}
-                    .chart-container {{
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                    }}
-                </style>
-                <div class="background-image-container">
-                    <div class="chart-container">
-                        {chart.to_html(vega_embed_options={"actions": False})}
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True
+            # Créer le fond personnalisé avec le texte
+            background = alt.Chart(df).mark_rect(fill='lightgray').encode(
+                x=alt.value(0),
+                y=alt.value(0),
+                width=alt.value(chart_width),
+                height=alt.value(chart_height)
             )
+
+            text = alt.Chart(df).mark_text(
+                text="Responsive Elements Finder by Minniti Julien",
+                fontSize=14,
+                align='left',
+                baseline='top',
+                color='darkgray'
+            ).encode(
+                x=alt.value(10),
+                y=alt.value(10)
+            )
+
+            # Combiner le fond, le texte et le graphique principal
+            combined_chart = background + text + chart
+
+            # Afficher le graphique Altair combiné
+            st.altair_chart(combined_chart, use_container_width=True)
+            
         else: 
             jaspar_id = sequence_consensus_input
             url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
