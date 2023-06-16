@@ -508,7 +508,7 @@ if jaspar:
                 tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
             ).properties(width=600, height=400, title='Responsive Elements Finder by Minniti Julien').configure_title(                
                 color='darkgray',
-                align='center',
+                align='right',
                 fontSize=14
             )
 
