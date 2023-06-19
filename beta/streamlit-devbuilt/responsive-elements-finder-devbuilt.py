@@ -118,7 +118,7 @@ def find_promoters(gene_ids, species, upstream, downstream):
 st.title('Responsive Elements Finder')
 
 # Promoter Finder
-st.subheader('Step 1: Promoter Finder')
+st.subheader('Step 1: Promoter/Terminator Finder')
 st.info("If you have a FASTA sequence, go to Step 2")
 
 
@@ -128,11 +128,24 @@ gene_id_entry = st.text_area("Gene ID:", value="PRKN\n5071")
 # Species
 species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
 
-# Upstream/Downstream
-updown_slide = st.slider("Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
-st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
-upstream_entry = -min(updown_slide)
-downstream_entry = max(updown_slide)
+# Upstream/Downstream Promoter
+
+prom_term = st.radio(
+    "Extract:",
+    ('Promoter', 'Terminator'))
+if prom_term == 'Promoter':
+    updown_slide = st.slider("Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
+    st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
+    upstream_entry = -min(updown_slide)
+    downstream_entry = max(updown_slide)
+else:
+    updown_slide = st.slider("Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
+    st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
+    upstream_entry = -min(updown_slide)
+    downstream_entry = max(updown_slide)
+
+# Upstream/Downstream Terminator
+
 
 # Run Promoter Finder
 if st.button("Find promoter (~5sec/gene)"):
