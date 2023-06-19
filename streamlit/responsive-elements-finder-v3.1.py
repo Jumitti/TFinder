@@ -106,7 +106,7 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
                 return sequence
 
             else:
-                # raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
+                raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
     except Exception as e:
         raise Exception(f"Error: {str(e)}")
 
@@ -152,7 +152,7 @@ gene_id_entry = st.text_area("Gene ID:", value="PRKN\n5071")
 # Species
 species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
 
-# Upstream/Downstream
+# Upstream/Downstream Promoter
 prom_term = st.radio(
     "Extract:",
     ('Promoter', 'Terminator'))
@@ -166,6 +166,7 @@ else:
     st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
     upstream_entry = -min(updown_slide)
     downstream_entry = max(updown_slide)
+    
 # Run Promoter Finder
 if st.button("Find promoter (~5sec/gene)"):
     with st.spinner("Finding promoters..."):
