@@ -153,7 +153,6 @@ gene_id_entry = st.text_area("Gene ID:", value="PRKN\n5071")
 species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
 
 # Upstream/Downstream Promoter
-
 prom_term = st.radio(
     "Extract:",
     ('Promoter', 'Terminator'))
@@ -167,9 +166,6 @@ else:
     st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
     upstream_entry = -min(updown_slide)
     downstream_entry = max(updown_slide)
-
-# Upstream/Downstream Terminator
-
 
 # Run Promoter Finder
 if st.button("Find promoter (~5sec/gene)"):
