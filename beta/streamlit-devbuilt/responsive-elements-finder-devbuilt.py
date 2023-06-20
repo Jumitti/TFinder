@@ -5,10 +5,6 @@ import altair as alt
 import math
 import pickle
 
-#Disposition
-
-col1, col2 = st.columns(2)
-
 # Reverse complement
 def reverse_complement(sequence):
     complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
@@ -144,6 +140,10 @@ def find_promoters(gene_ids, species, upstream, downstream):
 
 # Streamlit app
 st.title('Responsive Elements Finder')
+
+#Disposition
+
+col1, col2 = st.columns(2)
 
 # Promoter Finder
 with col1: 
