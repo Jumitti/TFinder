@@ -151,12 +151,12 @@ st.title('Responsive Elements Finder 🔎')
 col1, col2 = st.columns(2)
 
 # Promoter Finder
-with col1: 
-    st.subheader(':red[Step 1:] Promoter/Terminator Finder')
+with col1:
+    st.header('Promoter and Terminator Finder')
     st.info("If you have a FASTA sequence, go to Step 2")
 
 # Gene ID
-    gene_id_entry = st.text_area("Gene ID:", value="PRKN\n5071")
+    gene_id_entry = st.text_area("**:red[Step1.1 ]Gene ID:", value="PRKN\n5071")
 
 # Species
     species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
