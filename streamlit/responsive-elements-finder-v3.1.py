@@ -144,7 +144,6 @@ def find_promoters(gene_ids, species, upstream, downstream):
         raise Exception(f"Error retrieving gene information: {str(e)}")
 
 # Streamlit app
-st.title('Responsive Elements Finder 🔎')
 st.image('https://github.com/Jumitti/Responsive-Elements-Finder/blob/main/img/REF%20logo.png?raw=true')
 
 #Disposition
