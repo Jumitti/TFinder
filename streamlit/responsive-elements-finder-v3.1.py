@@ -144,7 +144,7 @@ def find_promoters(gene_ids, species, upstream, downstream):
         raise Exception(f"Error retrieving gene information: {str(e)}")
 
 # Streamlit app
-st.image('https://github.com/Jumitti/Responsive-Elements-Finder/blob/main/img/REF%20logo.png?raw=true')
+st.title('Responsive Elements Finder 🧬🔎')
 
 #Disposition
 
@@ -192,7 +192,7 @@ with col1:
 
 # Promoter output state
 with col2:
-    st.header(':red[Step 2] Responsive Elements Finder')
+    st.header(':red[Step 2] Binding Sites Finder')
     if prom_term == 'Promoter':
         if 'result_promoter' not in st.session_state:
             st.info("⬇️ If :red[**Step 1**] not used, paste sequences here (FASTA required for multiple sequences).")
