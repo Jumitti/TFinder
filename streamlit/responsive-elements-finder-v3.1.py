@@ -507,27 +507,27 @@ with col2:
 # TSS entry
     if prom_term == 'Promoter':
         if 'upstream_entry' not in st.session_state:
-            entry_tis = st.number_input("🔸 :red[**Step 2.3**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
+            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
             st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
         else:
-            entry_tis = st.number_input("🔸 :red[**Step 2.3**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'])
+            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'])
             st.info("Do not modify if you use Step 1 ")
     else:
         if 'upstream_entry' not in st.session_state:
-            entry_tis = st.number_input("🔸 :red[**Step 2.3**] Gene end at (in bp):", 0, 10000, 0)
+            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, 0)
             st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
         else:
-            entry_tis = st.number_input("🔸 :red[**Step 2.3**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'])
+            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'])
             st.info("Do not modify if you use Step 1 ")
 
 # Threshold
     if jaspar == 'JASPAR_ID':
-        threshold_entry = st.slider("🔸 :red[**Step 2.4**] Score threshold (%)", 0, 100 ,90)
+        threshold_entry = st.slider("🔸 :red[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
     else:
-        threshold_entry = st.slider("🔸 :red[**Step 2.4**] Homology threshold (%)", 0, 100 ,80)
+        threshold_entry = st.slider("🔸 :red[**Step 2.5**] Homology threshold (%)", 0, 100 ,80)
 
 # Run Responsive Elements finder
-    if st.button("🔎 :red[**Step 2.5**] Find responsive elements"):
+    if st.button("🔎 :red[**Step 2.6**] Find responsive elements"):
         with st.spinner("Finding responsive elements..."):
             sequence_consensus_input = entry_sequence
             tis_value = int(entry_tis)
