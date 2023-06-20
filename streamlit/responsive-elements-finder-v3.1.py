@@ -152,7 +152,7 @@ col1, col2 = st.columns(2)
 
 # Promoter Finder
 with col1:
-    st.header('Promoter and Terminator Finder')
+    st.header('Promoter and Terminator Extractor')
     st.info("If you have a FASTA sequence, go to :red[**Step 2**]")
 
 # Gene ID
