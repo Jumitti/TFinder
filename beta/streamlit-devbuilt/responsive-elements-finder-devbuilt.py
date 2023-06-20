@@ -487,7 +487,7 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
     
 # Responsive Elements Finder
 with col2:
-    st.subheader('Step 3: Responsive Elements Finder')
+    st.subheader(':red[Step 3:] Responsive Elements Finder')
 
 # RE entry
     jaspar = st.checkbox('Use JASPAR')
