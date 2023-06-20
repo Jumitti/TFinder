@@ -496,11 +496,10 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
     
 # Responsive Elements Finder
 with col2:
-    st.subheader(':red[Step 3:] Responsive Elements Finder')
 
 # RE entry
-    jaspar = st.checkbox('Use JASPAR')
-    if jaspar:
+    jaspar = st.radio('🔸 :red[**Step 1.3**] Respnsive elements type:', ('Manual sequence','JASPAR_ID'))
+    if jaspar == 'JASPAR_ID':
         entry_sequence = st.text_input("JASPAR ID:", value="MA0106.1")
     else:
         entry_sequence = st.text_input("Responsive element (IUPAC authorized, take more time):", value="ATGCN")
@@ -522,7 +521,7 @@ with col2:
             st.info("Do not modify if you use Step 1 ")
 
 # Threshold
-    if jaspar:
+    if jaspar == 'JASPAR_ID':
         threshold_entry = st.slider("Score threshold (%)", 0, 100 ,90)
     else:
         threshold_entry = st.slider("Homology threshold (%)", 0, 100 ,80)
@@ -534,7 +533,7 @@ with col2:
             tis_value = int(entry_tis)
             threshold = float(threshold_entry)
             try:
-                if jaspar:
+                if jaspar == 'JASPAR_ID':
                     matrices = matrix_extraction(sequence_consensus_input)
                     table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
                 else:
@@ -543,7 +542,7 @@ with col2:
                 st.error(f"Error finding responsive elements: {str(e)}")
 
 # RE output
-if jaspar:
+if jaspar == 'JASPAR_ID':
     if 'table2' in locals():
         if len(table2) > 0:
             jaspar_id = sequence_consensus_input
