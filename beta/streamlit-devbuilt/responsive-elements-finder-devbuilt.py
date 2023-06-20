@@ -194,12 +194,20 @@ with col1:
 with col2:
     st.subheader(':red[Step 2:] Sequence')
     st.info("⬇️ You can paste your sequences here (FASTA required for multiple sequences).")
-    if 'result_promoter' not in st.session_state:
-        result_promoter = st.text_area("Promoter:", value="")
+    if prom_term == ¨Promoter':
+        if 'result_promoter' not in st.session_state:
+            result_promoter = st.text_area("Promoter:", value="")
+        else:
+            result_promoter_text = "\n".join(st.session_state['result_promoter'])
+            result_promoter = st.text_area("Promoter:", value=result_promoter_text)
+            st.info("⬆ Copy: Click in sequence, CTRL+A, CTRL+C")
     else:
-        result_promoter_text = "\n".join(st.session_state['result_promoter'])
-        result_promoter = st.text_area("Promoter:", value=result_promoter_text)
-        st.info("⬆ Copy: Click in sequence, CTRL+A, CTRL+C")
+        if 'result_promoter' not in st.session_state:
+            result_promoter = st.text_area("Terminator:", value="")
+        else:
+            result_promoter_text = "\n".join(st.session_state['result_promoter'])
+            result_promoter = st.text_area("Terminator:", value=result_promoter_text)
+            st.info("⬆ Copy: Click in sequence, CTRL+A, CTRL+C")
 
 # Responsive-Elements-Finder
 
