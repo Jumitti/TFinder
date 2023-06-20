@@ -152,7 +152,7 @@ col1, col2 = st.columns(2)
 
 # Promoter Finder
 with col1:
-    st.header('Promoter and Terminator Extractor')
+    st.header(':red[Step 1] Promoter and Terminator Extractor')
     st.info("If you have a FASTA sequence, go to :red[**Step 2**]")
 
 # Gene ID
@@ -192,7 +192,7 @@ with col1:
 
 # Promoter output state
 with col2:
-    st.header('Responsive Elements Finder')
+    st.header(':red[Step 2] Responsive Elements Finder')
     if prom_term == 'Promoter':
         if 'result_promoter' not in st.session_state:
             st.info("⬇️ If :red[**Step 1**] not used, paste sequences here (FASTA required for multiple sequences).")
