@@ -156,7 +156,7 @@ with col1:
     st.info("If you have a FASTA sequence, go to Step 2")
 
 # Gene ID
-    gene_id_entry = st.text_area("** :red[Step1.1 ] **Gene ID:", value="PRKN\n5071")
+    gene_id_entry = st.text_area('**:red[Step1.1 ]**Gene ID:', value="PRKN\n5071")
 
 # Species
     species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
