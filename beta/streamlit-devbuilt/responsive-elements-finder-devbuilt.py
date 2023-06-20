@@ -488,12 +488,20 @@ with col2:
         entry_sequence = st.text_input("Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
 # TSS entry
-    if 'upstream' not in st.session_state:
-        entry_tis = st.number_input("Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
-        st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
+    if prom_term == 'Promoter':
+        if 'upstream' not in st.session_state:
+            entry_tis = st.number_input("Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
+            st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
+        else:
+            entry_tis = st.number_input("Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream'])
+            st.info("Do not modify if you use Step 1 ")
     else:
-        entry_tis = st.number_input("Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream'])
-        st.info("Do not modify if you use Step 1 ")
+        if 'upstream' not in st.session_state:
+            entry_tis = st.number_input("Gene end at (in bp):", 0, 10000, 0)
+            st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
+        else:
+            entry_tis = st.number_input("Gene end at (in bp):", 0, 10000, st.session_state['upstream'])
+            st.info("Do not modify if you use Step 1 ")
 
 # Threshold
     if jaspar:
