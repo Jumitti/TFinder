@@ -5,6 +5,8 @@ import altair as alt
 import math
 import pickle
 
+st.set_page_config(layout="wide")
+
 # Reverse complement
 def reverse_complement(sequence):
     complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
@@ -129,9 +131,12 @@ def find_promoters(gene_ids, species, upstream, downstream):
             dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
 
             # Append the result to the result_promoter
-            result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
-            st.session_state['result_promoter'] = result_promoter
-            st.session_state['upstream'] = upstream
+            if prom_term == 'Promoter':
+                result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
+                st.session_state['result_promoter'] = result_promoter
+            else:
+                result_promoter.append(f">{gene_name} | {species} | {chraccver} | Gene end (on chromosome): {chrstop}\n{dna_sequence}\n")
+                st.session_state['result_promoter'] = result_promoter
 
         return result_promoter
 
@@ -139,55 +144,71 @@ def find_promoters(gene_ids, species, upstream, downstream):
         raise Exception(f"Error retrieving gene information: {str(e)}")
 
 # Streamlit app
-st.title('Responsive Elements Finder')
+st.title('Responsive Elements Finder 🔎')
+
+#Disposition
+
+col1, col2 = st.columns(2)
 
 # Promoter Finder
-st.subheader('Step 1: Promoter/Terminator Finder')
-st.info("If you have a FASTA sequence, go to Step 2")
-
+with col1:
+    st.header('Promoter and Terminator Finder')
+    st.info("If you have a FASTA sequence, go to :red[**Step 2**]")
 
 # Gene ID
-gene_id_entry = st.text_area("Gene ID:", value="PRKN\n5071")
+    gene_id_entry = st.text_area("🔸 :red[**Step 1.1**] Gene ID:", value="PRKN\n5071")
 
 # Species
-species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
+    species_combobox = st.selectbox("🔸 :red[**Step 1.2**] Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
 
 # Upstream/Downstream Promoter
-prom_term = st.radio(
-    "Extract:",
-    ('Promoter', 'Terminator'))
-if prom_term == 'Promoter':
-    updown_slide = st.slider("Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
-    st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
-    upstream_entry = -min(updown_slide)
-    downstream_entry = max(updown_slide)
-else:
-    updown_slide = st.slider("Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
-    st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
-    upstream_entry = -min(updown_slide)
-    downstream_entry = max(updown_slide)
-    
+    prom_term = st.radio(
+        "🔸 :red[**Step 1.3**] Regulatory region:",
+        ('Promoter', 'Terminator'))
+    if prom_term == 'Promoter':
+        updown_slide = st.slider("🔸 :red[**Step 1.4**] Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
+        st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
+        upstream_entry = -min(updown_slide)
+        downstream_entry = max(updown_slide)
+        st.session_state['upstream_entry'] = upstream_entry
+    else:
+        updown_slide = st.slider("🔸 :red[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
+        st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
+        upstream_entry = -min(updown_slide)
+        downstream_entry = max(updown_slide)
+        st.session_state['upstream_entry'] = upstream_entry
+
 # Run Promoter Finder
-if st.button("Find promoter (~5sec/gene)"):
-    with st.spinner("Finding promoters..."):
-        gene_ids = gene_id_entry.strip().split("\n")
-        upstream = int(upstream_entry)
-        downstream = int(downstream_entry)
-        try:
-            result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
-            st.success("Promoters extraction complete!")
-        except Exception as e:
-            st.error(f"Error finding promoters: {str(e)}")
+    if st.button("🔎 :red[**Step 1.5**] Extract promoter (~5sec/gene)"):
+        with st.spinner("Finding promoters..."):
+            gene_ids = gene_id_entry.strip().split("\n")
+            upstream = int(upstream_entry)
+            downstream = int(downstream_entry)
+            try:
+                result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
+                st.success("Promoters extraction complete!")
+            except Exception as e:
+                st.error(f"Error finding promoters: {str(e)}")
 
 # Promoter output state
-st.subheader('Step 2: Promoters sequence')
-st.info("⬇️ You can paste your sequences here (FASTA required for multiple sequences).")
-if 'result_promoter' not in st.session_state:
-    result_promoter = st.text_area("Promoter:", value="")
-else:
-    result_promoter_text = "\n".join(st.session_state['result_promoter'])
-    result_promoter = st.text_area("Promoter:", value=result_promoter_text)
-    st.info("⬆ Copy: Click in sequence, CTRL+A, CTRL+C")
+with col2:
+    st.header('Responsive Elements Finder')
+    if prom_term == 'Promoter':
+        if 'result_promoter' not in st.session_state:
+            st.info("⬇️ If :red[**Step 1**] not used, paste sequences here (FASTA required for multiple sequences).")
+            result_promoter = st.text_area("🔸 :red[**Step 2**] Promoter:", value="")
+        else:
+            result_promoter_text = "\n".join(st.session_state['result_promoter'])
+            result_promoter = st.text_area("🔸 :red[**Step 2**] Promoter:", value=result_promoter_text)
+            st.info("⬆ Copy: Click in sequence, CTRL+A, CTRL+C")
+    else:
+        if 'result_promoter' not in st.session_state:
+            st.info("⬇️ If :red[**Step 1**] not used, paste sequences here (FASTA required for multiple sequences).")
+            result_promoter = st.text_area("🔸 :red[**Step 2**] Terminator:", value="")
+        else:
+            result_promoter_text = "\n".join(st.session_state['result_promoter'])
+            result_promoter = st.text_area("🔸 :red[**Step 2**] Terminator:", value=result_promoter_text)
+            st.info("⬆ Copy: Click in sequence, CTRL+A, CTRL+C")
 
 # Responsive-Elements-Finder
 
@@ -329,9 +350,14 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
                     table.append(row)
 
     if len(table) > 0:
-        table.sort(key=lambda x: float(x[3]), reverse=True)
-        header = ["Position", "Position (TSS)", "Sequence", "% Homology", "Ref seq", "Promoter"]
-        table.insert(0, header)
+        if prom_term == 'Promoter':
+            table.sort(key=lambda x: float(x[3]), reverse=True)
+            header = ["Position", "Position (TSS)", "Sequence", "% Homology", "Ref seq", "Promoter"]
+            table.insert(0, header)
+        else:
+            table.sort(key=lambda x: float(x[3]), reverse=True)
+            header = ["Position", "Position (Gene end)", "Sequence", "% Homology", "Ref seq", "Promoter"]
+            table.insert(0, header)
     else:
         no_consensus = "No consensus sequence found with the specified threshold."
         
@@ -454,9 +480,14 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
                         table2.append(row)
 
     if len(table2) > 0:
-        table2.sort(key=lambda x: float(x[3]), reverse=True)
-        header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
-        table2.insert(0, header)
+        if prom_term == 'Promoter':
+            table2.sort(key=lambda x: float(x[3]), reverse=True)
+            header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
+            table2.insert(0, header)
+        else:
+            table2.sort(key=lambda x: float(x[3]), reverse=True)
+            header = ["Position", "Position (Gene end)", "Sequence", "Score %", "Promoter"]
+            table2.insert(0, header)
         
     else:
         no_consensus = "No consensus sequence found with the specified threshold."
@@ -464,46 +495,54 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
     return table2
     
 # Responsive Elements Finder
-st.subheader('Step 3: Responsive Elements Finder')
+with col2:
 
 # RE entry
-jaspar = st.checkbox('Use JASPAR')
-if jaspar:
-    entry_sequence = st.text_input("JASPAR ID:", value="MA0106.1")
-else:
-    entry_sequence = st.text_input("Responsive element (IUPAC authorized, take more time):", value="ATGCN")
+    jaspar = st.radio('🔸 :red[**Step 3.1**] Respnsive elements type:', ('Manual sequence','JASPAR_ID'))
+    if jaspar == 'JASPAR_ID':
+        entry_sequence = st.text_input("🔸 :red[**Step 3.2**] JASPAR ID:", value="MA0106.1")
+    else:
+        entry_sequence = st.text_input("🔸 :red[**Step 3.2**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
 # TSS entry
-if 'upstream' not in st.session_state:
-    entry_tis = st.number_input("Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
-    st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
-else:
-    entry_tis = st.number_input("Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream'])
-    st.info("Do not modify if you use Step 1 ")
+    if prom_term == 'Promoter':
+        if 'upstream_entry' not in st.session_state:
+            entry_tis = st.number_input("🔸 :red[**Step 3.3**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
+            st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
+        else:
+            entry_tis = st.number_input("🔸 :red[**Step 3.3**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'])
+            st.info("Do not modify if you use Step 1 ")
+    else:
+        if 'upstream_entry' not in st.session_state:
+            entry_tis = st.number_input("🔸 :red[**Step 3.3**] Gene end at (in bp):", 0, 10000, 0)
+            st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
+        else:
+            entry_tis = st.number_input("🔸 :red[**Step 3.3**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'])
+            st.info("Do not modify if you use Step 1 ")
 
 # Threshold
-if jaspar:
-    threshold_entry = st.slider("Score threshold (%)", 0, 100 ,90)
-else:
-    threshold_entry = st.slider("Homology threshold (%)", 0, 100 ,80)
+    if jaspar == 'JASPAR_ID':
+        threshold_entry = st.slider("🔸 :red[**Step 3.4**] Score threshold (%)", 0, 100 ,90)
+    else:
+        threshold_entry = st.slider("🔸 :red[**Step 3.4**] Homology threshold (%)", 0, 100 ,80)
 
 # Run Responsive Elements finder
-if st.button("Find responsive elements"):
-    with st.spinner("Finding responsive elements..."):
-        sequence_consensus_input = entry_sequence
-        tis_value = int(entry_tis)
-        threshold = float(threshold_entry)
-        try:
-            if jaspar:
-                matrices = matrix_extraction(sequence_consensus_input)
-                table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
-            else:
-                table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
-        except Exception as e:
-            st.error(f"Error finding responsive elements: {str(e)}")
+    if st.button("🔎 :red[**Step 3.5**] Find responsive elements"):
+        with st.spinner("Finding responsive elements..."):
+            sequence_consensus_input = entry_sequence
+            tis_value = int(entry_tis)
+            threshold = float(threshold_entry)
+            try:
+                if jaspar == 'JASPAR_ID':
+                    matrices = matrix_extraction(sequence_consensus_input)
+                    table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
+                else:
+                    table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
+            except Exception as e:
+                st.error(f"Error finding responsive elements: {str(e)}")
 
 # RE output
-if jaspar:
+if jaspar == 'JASPAR_ID':
     if 'table2' in locals():
         if len(table2) > 0:
             jaspar_id = sequence_consensus_input
@@ -524,14 +563,22 @@ if jaspar:
             ystop = math.floor(score_range.max() + 5)
             scale = alt.Scale(scheme='category10')
             color_scale = alt.Color("Promoter:N", scale=scale)
-
-            chart = alt.Chart(source).mark_circle().encode(
-                x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-                y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-                color=color_scale,
-                tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-            ).properties(width=600, height=400)
-
+            
+            if prom_term == 'Promoter':
+                chart = alt.Chart(source).mark_circle().encode(
+                    x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
+                    y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+                    color=color_scale,
+                    tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
+                ).properties(width=600, height=400)
+            else:
+                chart = alt.Chart(source).mark_circle().encode(
+                    x=alt.X('Position (Gene end):Q', axis=alt.Axis(title='Relative position to gene end (bp)'), sort='ascending'),
+                    y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+                    color=color_scale,
+                    tooltip=['Position (Gene end)', 'Score %', 'Sequence', 'Promoter']
+                ).properties(width=600, height=400)
+                                  
             st.altair_chart(chart, use_container_width=True)
         else: 
             jaspar_id = sequence_consensus_input
@@ -559,20 +606,27 @@ else:
             ystop = math.floor(homology_range.max() + 5)
             scale = alt.Scale(scheme='category10')
             color_scale = alt.Color("Promoter:N", scale=scale)
-
-            chart = alt.Chart(source).mark_circle().encode(
-                x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-                y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
-                color=color_scale,
-                tooltip=['Position (TSS)', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
-            ).properties(width=600, height=400)
+            
+            if prom_term == 'Promoter':
+                chart = alt.Chart(source).mark_circle().encode(
+                    x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
+                    y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
+                    color=color_scale,
+                    tooltip=['Position (TSS)', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
+                ).properties(width=600, height=400)
+            else:
+                chart = alt.Chart(source).mark_circle().encode(
+                    x=alt.X('Position (Gene end):Q', axis=alt.Axis(title='Relative position to gene end (bp)'), sort='ascending'),
+                    y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
+                    color=color_scale,
+                    tooltip=['Position (Gene end)', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
+                ).properties(width=600, height=400)
 
             st.altair_chart(chart, use_container_width=True)
         else:
             st.error("No consensus sequence found with the specified threshold.")
     else:
         st.text("")
-
 
 # Help
 st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder) by Minniti Julien")
