@@ -157,7 +157,7 @@ with col1:
 
 # Gene ID
     st.subheader(':red[**Step 1.1**] Gene ID:')
-    gene_id_entry = st.text_area(value="PRKN\n5071")
+    gene_id_entry = st.text_area('', value="PRKN\n5071")
 
 # Species
     species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
