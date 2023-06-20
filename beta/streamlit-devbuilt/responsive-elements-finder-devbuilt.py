@@ -166,20 +166,20 @@ with col1:
         "🔸 :red[**Step 1.3**] Regulatory region:",
         ('Promoter', 'Terminator'))
     if prom_term == 'Promoter':
-        updown_slide = st.slider("Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
+        updown_slide = st.slider("🔸 :red[**Step 1.4**] Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
         st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
         upstream_entry = -min(updown_slide)
         downstream_entry = max(updown_slide)
         st.session_state['upstream_entry'] = upstream_entry
     else:
-        updown_slide = st.slider("Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
+        updown_slide = st.slider("🔸 :red[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
         st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
         upstream_entry = -min(updown_slide)
         downstream_entry = max(updown_slide)
         st.session_state['upstream_entry'] = upstream_entry
 
 # Run Promoter Finder
-    if st.button("🔎 :red[**Step 1.4**] Find promoter (~5sec/gene)"):
+    if st.button("🔎 :red[**Step 1.5**] Extract promoter (~5sec/gene)"):
         with st.spinner("Finding promoters..."):
             gene_ids = gene_id_entry.strip().split("\n")
             upstream = int(upstream_entry)
@@ -498,36 +498,36 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
 with col2:
 
 # RE entry
-    jaspar = st.radio('🔸 :red[**Step 1.3**] Respnsive elements type:', ('Manual sequence','JASPAR_ID'))
+    jaspar = st.radio('🔸 :red[**Step 3.1**] Respnsive elements type:', ('Manual sequence','JASPAR_ID'))
     if jaspar == 'JASPAR_ID':
-        entry_sequence = st.text_input("JASPAR ID:", value="MA0106.1")
+        entry_sequence = st.text_input("🔸 :red[**Step 3.2**] JASPAR ID:", value="MA0106.1")
     else:
-        entry_sequence = st.text_input("Responsive element (IUPAC authorized, take more time):", value="ATGCN")
+        entry_sequence = st.text_input("🔸 :red[**Step 3.2**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
 # TSS entry
     if prom_term == 'Promoter':
         if 'upstream_entry' not in st.session_state:
-            entry_tis = st.number_input("Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
+            entry_tis = st.number_input("🔸 :red[**Step 3.3**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
             st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
         else:
-            entry_tis = st.number_input("Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'])
+            entry_tis = st.number_input("🔸 :red[**Step 3.3**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'])
             st.info("Do not modify if you use Step 1 ")
     else:
         if 'upstream_entry' not in st.session_state:
-            entry_tis = st.number_input("Gene end at (in bp):", 0, 10000, 0)
+            entry_tis = st.number_input("🔸 :red[**Step 3.3**] Gene end at (in bp):", 0, 10000, 0)
             st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
         else:
-            entry_tis = st.number_input("Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'])
+            entry_tis = st.number_input("🔸 :red[**Step 3.3**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'])
             st.info("Do not modify if you use Step 1 ")
 
 # Threshold
     if jaspar == 'JASPAR_ID':
-        threshold_entry = st.slider("Score threshold (%)", 0, 100 ,90)
+        threshold_entry = st.slider("🔸 :red[**Step 3.4**] Score threshold (%)", 0, 100 ,90)
     else:
-        threshold_entry = st.slider("Homology threshold (%)", 0, 100 ,80)
+        threshold_entry = st.slider("🔸 :red[**Step 3.4**] Homology threshold (%)", 0, 100 ,80)
 
 # Run Responsive Elements finder
-    if st.button("Find responsive elements"):
+    if st.button("🔎 :red[**Step 3.5**] Find responsive elements"):
         with st.spinner("Finding responsive elements..."):
             sequence_consensus_input = entry_sequence
             tis_value = int(entry_tis)
