@@ -5,6 +5,10 @@ import altair as alt
 import math
 import pickle
 
+#Disposition
+
+col1, col2 = st.columns(2)
+
 # Reverse complement
 def reverse_complement(sequence):
     complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
@@ -142,52 +146,54 @@ def find_promoters(gene_ids, species, upstream, downstream):
 st.title('Responsive Elements Finder')
 
 # Promoter Finder
-st.subheader('Step 1: Promoter/Terminator Finder')
-st.info("If you have a FASTA sequence, go to Step 2")
+with col1: 
+    st.subheader('Step 1: Promoter/Terminator Finder')
+    st.info("If you have a FASTA sequence, go to Step 2")
 
 
 # Gene ID
-gene_id_entry = st.text_area("Gene ID:", value="PRKN\n5071")
+    gene_id_entry = st.text_area("Gene ID:", value="PRKN\n5071")
 
 # Species
-species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
+    species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
 
 # Upstream/Downstream Promoter
-prom_term = st.radio(
-    "Extract:",
-    ('Promoter', 'Terminator'))
-if prom_term == 'Promoter':
-    updown_slide = st.slider("Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
-    st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
-    upstream_entry = -min(updown_slide)
-    downstream_entry = max(updown_slide)
-else:
-    updown_slide = st.slider("Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
-    st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
-    upstream_entry = -min(updown_slide)
-    downstream_entry = max(updown_slide)
+    prom_term = st.radio(
+        "Extract:",
+        ('Promoter', 'Terminator'))
+    if prom_term == 'Promoter':
+        updown_slide = st.slider("Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
+        st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
+        upstream_entry = -min(updown_slide)
+        downstream_entry = max(updown_slide)
+    else:
+        updown_slide = st.slider("Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
+        st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
+        upstream_entry = -min(updown_slide)
+        downstream_entry = max(updown_slide)
 
 # Run Promoter Finder
-if st.button("Find promoter (~5sec/gene)"):
-    with st.spinner("Finding promoters..."):
-        gene_ids = gene_id_entry.strip().split("\n")
-        upstream = int(upstream_entry)
-        downstream = int(downstream_entry)
-        try:
-            result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
-            st.success("Promoters extraction complete!")
-        except Exception as e:
-            st.error(f"Error finding promoters: {str(e)}")
+    if st.button("Find promoter (~5sec/gene)"):
+        with st.spinner("Finding promoters..."):
+            gene_ids = gene_id_entry.strip().split("\n")
+            upstream = int(upstream_entry)
+            downstream = int(downstream_entry)
+            try:
+                result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
+                st.success("Promoters extraction complete!")
+            except Exception as e:
+                st.error(f"Error finding promoters: {str(e)}")
 
 # Promoter output state
-st.subheader('Step 2: Promoters sequence')
-st.info("⬇️ You can paste your sequences here (FASTA required for multiple sequences).")
-if 'result_promoter' not in st.session_state:
-    result_promoter = st.text_area("Promoter:", value="")
-else:
-    result_promoter_text = "\n".join(st.session_state['result_promoter'])
-    result_promoter = st.text_area("Promoter:", value=result_promoter_text)
-    st.info("⬆ Copy: Click in sequence, CTRL+A, CTRL+C")
+with col2:
+    st.subheader('Step 2: Promoters sequence')
+    st.info("⬇️ You can paste your sequences here (FASTA required for multiple sequences).")
+    if 'result_promoter' not in st.session_state:
+        result_promoter = st.text_area("Promoter:", value="")
+    else:
+        result_promoter_text = "\n".join(st.session_state['result_promoter'])
+        result_promoter = st.text_area("Promoter:", value=result_promoter_text)
+        st.info("⬆ Copy: Click in sequence, CTRL+A, CTRL+C")
 
 # Responsive-Elements-Finder
 
