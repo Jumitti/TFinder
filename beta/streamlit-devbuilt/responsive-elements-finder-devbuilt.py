@@ -171,13 +171,13 @@ with col1:
         st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
         upstream_entry = -min(updown_slide)
         downstream_entry = max(updown_slide)
-        st.session_state['upstream'] = upstream
+        st.session_state['upstream_entry'] = upstream_entry
     else:
         updown_slide = st.slider("Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
         st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
         upstream_entry = -min(updown_slide)
         downstream_entry = max(updown_slide)
-        st.session_state['upstream'] = upstream
+        st.session_state['upstream_entry'] = upstream_entry
 
 # Run Promoter Finder
     if st.button("Find promoter (~5sec/gene)"):
@@ -499,18 +499,18 @@ with col2:
 
 # TSS entry
     if prom_term == 'Promoter':
-        if 'upstream' not in st.session_state:
+        if 'upstream_entry' not in st.session_state:
             entry_tis = st.number_input("Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
             st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
         else:
-            entry_tis = st.number_input("Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream'])
+            entry_tis = st.number_input("Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'])
             st.info("Do not modify if you use Step 1 ")
     else:
-        if 'upstream' not in st.session_state:
+        if 'upstream_entry' not in st.session_state:
             entry_tis = st.number_input("Gene end at (in bp):", 0, 10000, 0)
             st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
         else:
-            entry_tis = st.number_input("Gene end at (in bp):", 0, 10000, st.session_state['upstream'])
+            entry_tis = st.number_input("Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'])
             st.info("Do not modify if you use Step 1 ")
 
 # Threshold
