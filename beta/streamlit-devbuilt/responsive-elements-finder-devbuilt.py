@@ -134,11 +134,9 @@ def find_promoters(gene_ids, species, upstream, downstream):
             if prom_term == 'Promoter':
                 result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
                 st.session_state['result_promoter'] = result_promoter
-                st.session_state['upstream'] = upstream
             else:
                 result_promoter.append(f">{gene_name} | {species} | {chraccver} | Gene end (on chromosome): {chrstop}\n{dna_sequence}\n")
                 st.session_state['result_promoter'] = result_promoter
-                st.session_state['upstream'] = upstream
 
         return result_promoter
 
@@ -173,11 +171,13 @@ with col1:
         st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
         upstream_entry = -min(updown_slide)
         downstream_entry = max(updown_slide)
+        st.session_state['upstream'] = upstream
     else:
         updown_slide = st.slider("Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
         st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
         upstream_entry = -min(updown_slide)
         downstream_entry = max(updown_slide)
+        st.session_state['upstream'] = upstream
 
 # Run Promoter Finder
     if st.button("Find promoter (~5sec/gene)"):
