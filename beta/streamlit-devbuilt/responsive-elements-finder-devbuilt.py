@@ -159,11 +159,11 @@ with col1:
     gene_id_entry = st.text_area("🔸 :red[**Step 1.1**] Gene ID:", value="PRKN\n5071")
 
 # Species
-    species_combobox = st.selectbox("Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
+    species_combobox = st.selectbox("🔸 :red[**Step 1.2**] Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
 
 # Upstream/Downstream Promoter
     prom_term = st.radio(
-        "Extract:",
+        "🔸 :red[**Step 1.3**] Regulatory region:",
         ('Promoter', 'Terminator'))
     if prom_term == 'Promoter':
         updown_slide = st.slider("Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
@@ -179,7 +179,7 @@ with col1:
         st.session_state['upstream_entry'] = upstream_entry
 
 # Run Promoter Finder
-    if st.button("Find promoter (~5sec/gene)"):
+    if st.button("🔎 :red[**Step 1.4**] Find promoter (~5sec/gene)"):
         with st.spinner("Finding promoters..."):
             gene_ids = gene_id_entry.strip().split("\n")
             upstream = int(upstream_entry)
