@@ -144,7 +144,7 @@ def find_promoters(gene_ids, species, upstream, downstream):
         raise Exception(f"Error retrieving gene information: {str(e)}")
 
 # Streamlit app
-st.title('Responsive Elements Finder')
+st.title('Responsive Elements Finder 🔎')
 
 #Disposition
 
@@ -152,9 +152,8 @@ col1, col2 = st.columns(2)
 
 # Promoter Finder
 with col1: 
-    st.subheader('Step 1: Promoter/Terminator Finder')
+    st.subheader(':red[Step 1]: Promoter/Terminator Finder')
     st.info("If you have a FASTA sequence, go to Step 2")
-
 
 # Gene ID
     gene_id_entry = st.text_area("Gene ID:", value="PRKN\n5071")
@@ -620,7 +619,6 @@ else:
             st.error("No consensus sequence found with the specified threshold.")
     else:
         st.text("")
-
 
 # Help
 st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder) by Minniti Julien")
