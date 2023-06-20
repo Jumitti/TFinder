@@ -187,7 +187,7 @@ with col1:
                 st.error(f"Error finding promoters: {str(e)}")
 
 # Promoter output state
-with col2:
+with col1:
     st.subheader('Step 2: Promoters sequence')
     st.info("⬇️ You can paste your sequences here (FASTA required for multiple sequences).")
     if 'result_promoter' not in st.session_state:
