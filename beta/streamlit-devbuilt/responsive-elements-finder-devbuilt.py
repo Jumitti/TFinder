@@ -131,9 +131,14 @@ def find_promoters(gene_ids, species, upstream, downstream):
             dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
 
             # Append the result to the result_promoter
-            result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
-            st.session_state['result_promoter'] = result_promoter
-            st.session_state['upstream'] = upstream
+            if prom_term == 'Promoter':
+                result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
+                st.session_state['result_promoter'] = result_promoter
+                st.session_state['upstream'] = upstream
+            else:
+                result_promoter.append(f">{gene_name} | {species} | {chraccver} | Gene end (on chromosome): {chrstop}\n{dna_sequence}\n")
+                st.session_state['result_promoter'] = result_promoter
+                st.session_state['upstream'] = upstream
 
         return result_promoter
 
