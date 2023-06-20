@@ -194,7 +194,7 @@ with col1:
 with col2:
     st.subheader(':red[Step 2:] Sequence')
     st.info("⬇️ You can paste your sequences here (FASTA required for multiple sequences).")
-    if prom_term == ¨Promoter':
+    if prom_term == 'Promoter':
         if 'result_promoter' not in st.session_state:
             result_promoter = st.text_area("Promoter:", value="")
         else:
