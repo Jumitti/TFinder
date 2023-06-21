@@ -144,7 +144,7 @@ def find_promoters(gene_ids, species, upstream, downstream):
         raise Exception(f"Error retrieving gene information: {str(e)}")
 
 # Streamlit app
-st.title('Responsive Elements Finder 🔎')
+st.title('Responsive Elements Finder 🧬🔎')
 
 #Disposition
 
@@ -152,7 +152,7 @@ col1, col2 = st.columns(2)
 
 # Promoter Finder
 with col1:
-    st.header('Promoter and Terminator Finder')
+    st.header(':red[Step 1] Promoter and Terminator Extractor')
     st.info("If you have a FASTA sequence, go to :red[**Step 2**]")
 
 # Gene ID
@@ -192,22 +192,22 @@ with col1:
 
 # Promoter output state
 with col2:
-    st.header('Responsive Elements Finder')
+    st.header(':red[Step 2] Binding Sites Finder')
     if prom_term == 'Promoter':
         if 'result_promoter' not in st.session_state:
             st.info("⬇️ If :red[**Step 1**] not used, paste sequences here (FASTA required for multiple sequences).")
-            result_promoter = st.text_area("🔸 :red[**Step 2**] Promoter:", value="")
+            result_promoter = st.text_area("🔸 :red[**Step 2.1**] Promoter:", value="")
         else:
             result_promoter_text = "\n".join(st.session_state['result_promoter'])
-            result_promoter = st.text_area("🔸 :red[**Step 2**] Promoter:", value=result_promoter_text)
+            result_promoter = st.text_area("🔸 :red[**Step 2.1**] Promoter:", value=result_promoter_text)
             st.info("⬆ Copy: Click in sequence, CTRL+A, CTRL+C")
     else:
         if 'result_promoter' not in st.session_state:
             st.info("⬇️ If :red[**Step 1**] not used, paste sequences here (FASTA required for multiple sequences).")
-            result_promoter = st.text_area("🔸 :red[**Step 2**] Terminator:", value="")
+            result_promoter = st.text_area("🔸 :red[**Step 2.1**] Terminator:", value="")
         else:
             result_promoter_text = "\n".join(st.session_state['result_promoter'])
-            result_promoter = st.text_area("🔸 :red[**Step 2**] Terminator:", value=result_promoter_text)
+            result_promoter = st.text_area("🔸 :red[**Step 2.1**] Terminator:", value=result_promoter_text)
             st.info("⬆ Copy: Click in sequence, CTRL+A, CTRL+C")
 
 # Responsive-Elements-Finder
@@ -498,36 +498,36 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
 with col2:
 
 # RE entry
-    jaspar = st.radio('🔸 :red[**Step 3.1**] Respnsive elements type:', ('Manual sequence','JASPAR_ID'))
+    jaspar = st.radio('🔸 :red[**Step 2.2**] Respnsive elements type:', ('Manual sequence','JASPAR_ID'))
     if jaspar == 'JASPAR_ID':
-        entry_sequence = st.text_input("🔸 :red[**Step 3.2**] JASPAR ID:", value="MA0106.1")
+        entry_sequence = st.text_input("🔸 :red[**Step 2.3**] JASPAR ID:", value="MA0106.1")
     else:
-        entry_sequence = st.text_input("🔸 :red[**Step 3.2**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
+        entry_sequence = st.text_input("🔸 :red[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
 # TSS entry
     if prom_term == 'Promoter':
         if 'upstream_entry' not in st.session_state:
-            entry_tis = st.number_input("🔸 :red[**Step 3.3**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
+            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
             st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
         else:
-            entry_tis = st.number_input("🔸 :red[**Step 3.3**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'])
+            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'])
             st.info("Do not modify if you use Step 1 ")
     else:
         if 'upstream_entry' not in st.session_state:
-            entry_tis = st.number_input("🔸 :red[**Step 3.3**] Gene end at (in bp):", 0, 10000, 0)
+            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, 0)
             st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
         else:
-            entry_tis = st.number_input("🔸 :red[**Step 3.3**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'])
+            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'])
             st.info("Do not modify if you use Step 1 ")
 
 # Threshold
     if jaspar == 'JASPAR_ID':
-        threshold_entry = st.slider("🔸 :red[**Step 3.4**] Score threshold (%)", 0, 100 ,90)
+        threshold_entry = st.slider("🔸 :red[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
     else:
-        threshold_entry = st.slider("🔸 :red[**Step 3.4**] Homology threshold (%)", 0, 100 ,80)
+        threshold_entry = st.slider("🔸 :red[**Step 2.5**] Homology threshold (%)", 0, 100 ,80)
 
 # Run Responsive Elements finder
-    if st.button("🔎 :red[**Step 3.5**] Find responsive elements"):
+    if st.button("🔎 :red[**Step 2.6**] Find responsive elements"):
         with st.spinner("Finding responsive elements..."):
             sequence_consensus_input = entry_sequence
             tis_value = int(entry_tis)

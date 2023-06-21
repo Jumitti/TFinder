@@ -189,16 +189,16 @@ st.header('Responsive Elements Finder')
 if prom_term == 'Promoter':
     if 'result_promoter' not in st.session_state:
         st.info("⬇️ If :red[**Step 1**] not used, paste sequences here (FASTA required for multiple sequences).")
-        result_promoter = st.text_area("🔸 :red[**Step 2**] Promoter:", value="")
+        result_promoter = st.text_area("🔸 :red[**Step 1.6**] Promoter:", value="")
     else:
         result_promoter_text = "\n".join(st.session_state['result_promoter'])
-        result_promoter = st.text_area("🔸 :red[**Step 2**] Promoter:", value=result_promoter_text)
+        result_promoter = st.text_area("🔸 :red[**Step 1.6**] Promoter:", value=result_promoter_text)
         st.info("⬆ Copy: Click in sequence, CTRL+A, CTRL+C")
 else:
     if 'result_promoter' not in st.session_state:
         st.info("⬇️ If :red[**Step 1**] not used, paste sequences here (FASTA required for multiple sequences).")
-        result_promoter = st.text_area("🔸 :red[**Step 2**] Terminator:", value="")
+        result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value="")
     else:
         result_promoter_text = "\n".join(st.session_state['result_promoter'])
-        result_promoter = st.text_area("🔸 :red[**Step 2**] Terminator:", value=result_promoter_text)
+        result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value=result_promoter_text)
         st.info("⬆ Copy: Click in sequence, CTRL+A, CTRL+C")
