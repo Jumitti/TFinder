@@ -507,18 +507,14 @@ with col2:
 # TSS entry
     if prom_term == 'Promoter':
         if 'upstream_entry' not in st.session_state:
-            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
-            st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
+            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0, help="Distance of TSS or gene end from begin of sequences. Same distance is required for multiple sequences. Leave '0' if you don't know")
         else:
-            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'])
-            st.info("Do not modify if you use Step 1 ")
+            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
     else:
         if 'upstream_entry' not in st.session_state:
-            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, 0)
-            st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
+            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, 0, help="Distance of TSS or gene end from begin of sequences. Same distance is required for multiple sequences. Leave '0' if you don't know")
         else:
-            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'])
-            st.info("Do not modify if you use Step 1 ")
+            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
 
 # Threshold
     if jaspar == 'JASPAR_ID':
