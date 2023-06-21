@@ -115,6 +115,8 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
 
 # Promoter Finder
 def find_promoters(gene_ids, species, upstream, downstream):
+    progress_text = "Operation in progress. Please wait."
+    my_bar = st.progress(0, text=progress_text)
     for percent_complete in range(100):
         my_bar.progress(percent_complete + 1, text=progress_text)
         try:
@@ -180,8 +182,6 @@ else:
 # Run Promoter Finder
 if st.button("🔎 :red[**Step 1.5**] Extract promoter (~5sec/gene)"):
     with st.spinner("Finding promoters..."):
-        progress_text = "Operation in progress. Please wait."
-        my_bar = st.progress(0, text=progress_text)
         gene_ids = gene_id_entry.strip().split("\n")
         upstream = int(upstream_entry)
         downstream = int(downstream_entry)
