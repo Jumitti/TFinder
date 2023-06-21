@@ -583,7 +583,7 @@ else:
     if 'table' in locals():
         if len(table) > 0 :
             st.success("Finding responsive elements done")
-            
+            st.balloons()
             df = pd.DataFrame(table[1:], columns=table[0])
             st.session_state['df'] = df
             st.dataframe(df)
