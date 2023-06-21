@@ -187,7 +187,8 @@ with col1:
             try:
                 result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
                 st.success("Promoters extraction complete!")
-                st.balloons()
+                if balloons:
+                    st.balloons()
             except Exception as e:
                 st.error(f"Error finding promoters: {str(e)}")
 
@@ -538,7 +539,8 @@ if jaspar == 'JASPAR_ID':
             response_data = response.json()
             TF_name = response_data['name']
             st.success(f"Finding responsive elements done for {TF_name}")
-            st.balloons()
+            if balloons:
+                st.balloons()
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
@@ -582,7 +584,8 @@ else:
     if 'table' in locals():
         if len(table) > 0 :
             st.success("Finding responsive elements done")
-            st.balloons()
+            if balloons:
+                st.balloons()
             df = pd.DataFrame(table[1:], columns=table[0])
             st.session_state['df'] = df
             st.dataframe(df)
@@ -672,4 +675,4 @@ with st.sidebar.expander("Responsive Elements Finder"):
     st.write('Note for JASPAR option: Score is normalized to the maximum PWM score of the requested transcription factor. The result is displayed as a percentage')
     st.write('Note without JASPAR option: Homology is calculated between the responsive element in the promoter and the responsive element requested. The calculation uses the Hamming distance, counts the number of differences and gives a percentage score homology.')
 
-ballons = st.sidebar.checkbox('Ballons')
+balloons = st.sidebar.checkbox('Balloons')
