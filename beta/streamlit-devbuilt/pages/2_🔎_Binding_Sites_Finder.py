@@ -153,14 +153,9 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
                     table.append(row)
 
     if len(table) > 0:
-        if prom_term == 'Promoter':
-            table.sort(key=lambda x: float(x[3]), reverse=True)
-            header = ["Position", "Position (TSS)", "Sequence", "% Homology", "Ref seq", "Promoter"]
-            table.insert(0, header)
-        else:
-            table.sort(key=lambda x: float(x[3]), reverse=True)
-            header = ["Position", "Position (Gene end)", "Sequence", "% Homology", "Ref seq", "Promoter"]
-            table.insert(0, header)
+        table.sort(key=lambda x: float(x[3]), reverse=True)
+        header = ["Position", "Position (TSS)", "Sequence", "% Homology", "Ref seq", "Promoter"]
+        table.insert(0, header)
     else:
         no_consensus = "No consensus sequence found with the specified threshold."
         
@@ -283,15 +278,9 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
                         table2.append(row)
 
     if len(table2) > 0:
-        if prom_term == 'Promoter':
-            table2.sort(key=lambda x: float(x[3]), reverse=True)
-            header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
-            table2.insert(0, header)
-        else:
-            table2.sort(key=lambda x: float(x[3]), reverse=True)
-            header = ["Position", "Position (Gene end)", "Sequence", "Score %", "Promoter"]
-            table2.insert(0, header)
-        
+        table2.sort(key=lambda x: float(x[3]), reverse=True)
+        header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
+        table2.insert(0, header)
     else:
         no_consensus = "No consensus sequence found with the specified threshold."
         
@@ -307,20 +296,8 @@ else:
     entry_sequence = st.text_input("🔸 :red[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
 # TSS entry
-if prom_term == 'Promoter':
-    if 'upstream_entry' not in st.session_state:
-        entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
-        st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
-    else:
-        entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'])
-        st.info("Do not modify if you use Step 1 ")
-else:
-    if 'upstream_entry' not in st.session_state:
-        entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, 0)
-        st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
-    else:
-        entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'])
-        st.info("Do not modify if you use Step 1 ")
+entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
+st.info("Distance of TSS or gene end from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
 
 # Threshold
 if jaspar == 'JASPAR_ID':
