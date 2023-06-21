@@ -174,7 +174,7 @@ col1, col2 = st.columns(2)
 # Promoter Finder
 with col1:
     st.header(':red[Step 1] Promoter and Terminator Extractor')
-    st.info("If you have a FASTA sequence, go to :red[**Step 2**]")
+    st.info("💡 If you have a FASTA sequence, go to :red[**Step 2**]")
 
 # Gene ID
     gene_id_entry = st.text_area("🔸 :red[**Step 1.1**] Gene ID:", value="PRKN\n5071")
