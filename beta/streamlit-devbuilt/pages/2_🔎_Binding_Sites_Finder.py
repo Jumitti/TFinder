@@ -59,6 +59,13 @@ result_promoter = st.text_area("🔸 :red[**Step 1.1**] Sequence:", value="Paste
 
 # Responsive-Elements-Finder
 
+# Reverse complement
+def reverse_complement(sequence):
+    complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
+    reverse_sequence = sequence[::-1]
+    complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
+    return complement_sequence
+
 # Generation of all responsive elements
 def generate_variants(sequence):
     variants = []
