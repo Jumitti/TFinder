@@ -665,7 +665,7 @@ with st.sidebar.expander("Video tutorials"):
     st.write("How to use JASPAR option")
     st.video('https://www.youtube.com/watch?v=DH8PBVqa860')
     
-with st.sidebar.expander("Promoter Finder"):
+with st.sidebar.expander("Promoter & Terminator Extractor"):
     st.subheader("Gene ID:")
     st.write("ENTREZ_GENE_ID of NCBI and gene names are allowed.")
     st.write("There is no limit to the number of gene names/ENTREZ_GENE_ID. Add them with a line break (like those displayed by default). You can mix ENTREZ_GENE_ID and gene names as long as they are of the same species.")
@@ -675,11 +675,11 @@ with st.sidebar.expander("Promoter Finder"):
     st.subheader("Upstream/Downstream:")
     st.write("Distance to Transcription Start Site (TSS) in bp.")
     st.image("https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/whatisagene.png")
-    st.subheader("Promoter:")
-    st.write('Use "Find promoter" button or paste your sequences. FASTA format allowed and required for multiple sequences.')
+    st.subheader("Promoter & Terminator:")
+    st.write('Use "Find promoter/extractor" button or paste your sequences. FASTA format allowed and required for multiple sequences.')
     st.write('FASTA format: All sequences must have the TSS at the same distance, otherwise you assume the inconsistency of the positions of found sequences')
     
-with st.sidebar.expander("Responsive Elements Finder"):
+with st.sidebar.expander("Binding Sites Finder"):
     st.subheader("Responsive element:")
     st.write("To use the JASPAR option, check the box and use the JASPAR_ID of your transcription factor.")
     st.write('If you want to use your responsive element, do not check the JASPAR option.')
