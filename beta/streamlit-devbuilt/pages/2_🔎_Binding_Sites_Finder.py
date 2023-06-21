@@ -228,21 +228,48 @@ def matrix_extraction(sequence_consensus_input):
 
 # Transform JASPAR matrix from JASPAR web
 def transform_matrix(matrix):
-    reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
-    complement_matrix = {
-        'A': matrix['T'],
-        'C': matrix['G'],
-        'G': matrix['C'],
-        'T': matrix['A']
-    }
-    reversed_complement_matrix = {base: list(reversed(scores)) for base, scores in complement_matrix.items()}
+    if jaspar == 'JASPAR_ID':
+        reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
+        complement_matrix = {
+            'A': matrix['T'],
+            'C': matrix['G'],
+            'G': matrix['C'],
+            'T': matrix['A']
+        }
+        reversed_complement_matrix = {base: list(reversed(scores)) for base, scores in complement_matrix.items()}
 
-    return {
-        'Original': matrix,
-        'Reversed': reversed_matrix,
-        'Complement': complement_matrix,
-        'Reversed Complement': reversed_complement_matrix
-    }
+        return {
+            'Original': matrix,
+            'Reversed': reversed_matrix,
+            'Complement': complement_matrix,
+            'Reversed Complement': reversed_complement_matrix
+        }
+    else:
+        bases = matrix[0].split()[1:]
+        scores = matrix[1:]
+        matrix_dict = {}
+
+        for score in scores:
+            base_scores = score.split()[1:]
+            base = base_scores[0]
+            base_scores = [int(score) for score in base_scores[1:]]
+            matrix_dict[base] = base_scores
+
+        reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix_dict.items()}
+        complement_matrix = {
+            'A': matrix_dict['T'],
+            'C': matrix_dict['G'],
+            'G': matrix_dict['C'],
+            'T': matrix_dict['A']
+        }
+        reversed_complement_matrix = {base: list(reversed(scores)) for base, scores in complement_matrix.items()}
+
+        return {
+            'Original': matrix_dict,
+            'Reversed': reversed_matrix,
+            'Complement': complement_matrix,
+            'Reversed Complement': reversed_complement_matrix
+        }
 
 # Calculate score with JASPAR
 def calculate_score(sequence, matrix):
