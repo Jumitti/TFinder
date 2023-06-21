@@ -371,7 +371,7 @@ jaspar = st.radio('🔸 :red[**Step 1.2**] Respnsive elements type:', ('Manual s
 if jaspar == 'JASPAR_ID':
     entry_sequence = st.text_input("🔸 :red[**Step 1.3**] JASPAR ID:", value="MA0106.1")
 elif jaspar == 'Matrix':
-    entry_sequence = st.file_uploader("🔸 :red[**Step 1.3**] Upload matrix (.jaspar, .meme, .pfm, .transfac allowed)")
+    uploaded_file = st.file_uploader("🔸 :red[**Step 1.3**] Upload matrix (.jaspar, .meme, .pfm, .transfac allowed)")
 else:
     entry_sequence = st.text_input("🔸 :red[**Step 1.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
