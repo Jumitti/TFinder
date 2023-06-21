@@ -366,20 +366,12 @@ if jaspar == 'JASPAR_ID':
             scale = alt.Scale(scheme='category10')
             color_scale = alt.Color("Promoter:N", scale=scale)
             
-            if prom_term == 'Promoter':
-                chart = alt.Chart(source).mark_circle().encode(
-                    x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-                    y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-                    color=color_scale,
-                    tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-                ).properties(width=600, height=400)
-            else:
-                chart = alt.Chart(source).mark_circle().encode(
-                    x=alt.X('Position (Gene end):Q', axis=alt.Axis(title='Relative position to gene end (bp)'), sort='ascending'),
-                    y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-                    color=color_scale,
-                    tooltip=['Position (Gene end)', 'Score %', 'Sequence', 'Promoter']
-                ).properties(width=600, height=400)
+            chart = alt.Chart(source).mark_circle().encode(
+                x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
+                y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+                color=color_scale,
+                tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
+            ).properties(width=600, height=400)
                                   
             st.altair_chart(chart, use_container_width=True)
         else: 
@@ -409,20 +401,12 @@ else:
             scale = alt.Scale(scheme='category10')
             color_scale = alt.Color("Promoter:N", scale=scale)
             
-            if prom_term == 'Promoter':
-                chart = alt.Chart(source).mark_circle().encode(
-                    x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-                    y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
-                    color=color_scale,
-                    tooltip=['Position (TSS)', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
-                ).properties(width=600, height=400)
-            else:
-                chart = alt.Chart(source).mark_circle().encode(
-                    x=alt.X('Position (Gene end):Q', axis=alt.Axis(title='Relative position to gene end (bp)'), sort='ascending'),
-                    y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
-                    color=color_scale,
-                    tooltip=['Position (Gene end)', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
-                ).properties(width=600, height=400)
+            chart = alt.Chart(source).mark_circle().encode(
+                x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
+                y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
+                color=color_scale,
+                tooltip=['Position (TSS)', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
+            ).properties(width=600, height=400)
 
             st.altair_chart(chart, use_container_width=True)
         else:
