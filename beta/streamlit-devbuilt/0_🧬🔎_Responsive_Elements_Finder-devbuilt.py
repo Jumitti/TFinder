@@ -197,14 +197,14 @@ with col2:
     if prom_term == 'Promoter':
         if 'result_promoter' not in st.session_state:
             st.info("⬇️ If :red[**Step 1**] not used, paste sequences here (FASTA required for multiple sequences).")
-            result_promoter = st.text_area("🔸 :red[**Step 2.1**] Promoter:", value="")
+            result_promoter = st.text_area("🔸 :red[**Step 2.1**] Promoter:", value="If :red[**Step 1**] not used, paste sequences here (FASTA required for multiple sequences).")
         else:
             result_promoter_text = "\n".join(st.session_state['result_promoter'])
             result_promoter = st.text_area("🔸 :red[**Step 2.1**] Promoter:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
     else:
         if 'result_promoter' not in st.session_state:
             st.info("⬇️ If :red[**Step 1**] not used, paste sequences here (FASTA required for multiple sequences).")
-            result_promoter = st.text_area("🔸 :red[**Step 2.1**] Terminator:", value="")
+            result_promoter = st.text_area("🔸 :red[**Step 2.1**] Terminator:", value="If :red[**Step 1**] not used, paste sequences here (FASTA required for multiple sequences).")
         else:
             result_promoter_text = "\n".join(st.session_state['result_promoter'])
             result_promoter = st.text_area("🔸 :red[**Step 2.1**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
