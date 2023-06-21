@@ -4,7 +4,6 @@ import pandas as pd
 import altair as alt
 import math
 import pickle
-from Bio import motifs
 
 st.set_page_config(layout="wide")
 
@@ -227,65 +226,23 @@ def matrix_extraction(sequence_consensus_input):
 
     return transform_matrix(matrix)
 
-# Transform JASPAR matrix from JASPAR web
+# Transform JASPAR matrix
 def transform_matrix(matrix):
-    if jaspar == 'JASPAR_ID':
-        reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
-        complement_matrix = {
-            'A': matrix['T'],
-            'C': matrix['G'],
-            'G': matrix['C'],
-            'T': matrix['A']
-        }
-        reversed_complement_matrix = {base: list(reversed(scores)) for base, scores in complement_matrix.items()}
+    reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
+    complement_matrix = {
+        'A': matrix['T'],
+        'C': matrix['G'],
+        'G': matrix['C'],
+        'T': matrix['A']
+    }
+    reversed_complement_matrix = {base: list(reversed(scores)) for base, scores in complement_matrix.items()}
 
-        return {
-            'Original': matrix,
-            'Reversed': reversed_matrix,
-            'Complement': complement_matrix,
-            'Reversed Complement': reversed_complement_matrix
-        }
-    else:
-        bases = matrix[0].split()[1:]
-        scores = matrix[1:]
-        matrix_dict = {}
-
-        for score in scores:
-            base_scores = score.split()[1:]
-            base = base_scores[0]
-            base_scores = [int(score) for score in base_scores[1:]]
-            matrix_dict[base] = base_scores
-
-        reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix_dict.items()}
-        complement_matrix = {
-            'A': matrix_dict['T'],
-            'C': matrix_dict['G'],
-            'G': matrix_dict['C'],
-            'T': matrix_dict['A']
-        }
-        reversed_complement_matrix = {base: list(reversed(scores)) for base, scores in complement_matrix.items()}
-
-        return {
-            'Original': matrix_dict,
-            'Reversed': reversed_matrix,
-            'Complement': complement_matrix,
-            'Reversed Complement': reversed_complement_matrix
-        }
-
-def extract_matrix_from_jaspar(file_path):
-    matrix = {'A': [], 'C': [], 'G': [], 'T': []}
-    
-    with open(file_path) as file:
-        for line in file:
-            line = line.strip()
-            
-            if line.startswith('A ') or line.startswith('C ') or line.startswith('G ') or line.startswith('T '):
-                base, scores = line.split('  [', 1)
-                scores = scores.strip().rstrip(']')
-                scores = [int(score) for score in scores.split()]
-                matrix[base] = scores
-    
-    return matrix
+    return {
+        'Original': matrix,
+        'Reversed': reversed_matrix,
+        'Complement': complement_matrix,
+        'Reversed Complement': reversed_complement_matrix
+    }
 
 # Calculate score with JASPAR
 def calculate_score(sequence, matrix):
@@ -383,11 +340,9 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
 # Responsive Elements Finder
 
 # RE entry
-jaspar = st.radio('🔸 :red[**Step 1.2**] Respnsive elements type:', ('Manual sequence','JASPAR_ID', 'Matrix'))
+jaspar = st.radio('🔸 :red[**Step 1.2**] Respnsive elements type:', ('Manual sequence','JASPAR_ID'))
 if jaspar == 'JASPAR_ID':
     entry_sequence = st.text_input("🔸 :red[**Step 1.3**] JASPAR ID:", value="MA0106.1")
-elif jaspar == 'Matrix':
-    uploaded_file = st.file_uploader("🔸 :red[**Step 1.3**] Upload matrix (.jaspar, .meme, .pfm, .transfac allowed)")
 else:
     entry_sequence = st.text_input("🔸 :red[**Step 1.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
@@ -403,23 +358,14 @@ else:
 # Run Responsive Elements finder
 if st.button("🔎 :red[**Step 1.6**] Find responsive elements"):
     with st.spinner("Finding responsive elements..."):
+        sequence_consensus_input = entry_sequence
         tis_value = int(entry_tis)
         threshold = float(threshold_entry)
         try:
             if jaspar == 'JASPAR_ID':
-                sequence_consensus_input = entry_sequence
                 matrices = matrix_extraction(sequence_consensus_input)
                 table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
-            elif jaspar == 'Matrix':
-                # Chargement du fichier JASPAR
-                with open(uploaded_file) as handle:
-                    jaspar_data = handle.read()
-                # Extraction de la matrice
-                matrix = motifs.parse(jaspar_data, "jaspar")
-                matrices = transform_matrix(matrix)
-                table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
             else:
-                sequence_consensus_input = entry_sequence
                 table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
         except Exception as e:
             st.error(f"Error finding responsive elements: {str(e)}")
@@ -465,36 +411,6 @@ if jaspar == 'JASPAR_ID':
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
     else:
         st.text("")
-        
-elif jaspar == 'Matrix':
-    if 'table2' in locals():
-        if len(table2) > 0:
-            st.success(f"Finding responsive elements done")
-            df = pd.DataFrame(table2[1:], columns=table2[0])
-            st.session_state['df'] = df
-            st.dataframe(df)
-            st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
-
-            source = df
-            score_range = source['Score %'].astype(float)
-            ystart = math.floor(score_range.min() - 5)
-            ystop = math.floor(score_range.max() + 5)
-            scale = alt.Scale(scheme='category10')
-            color_scale = alt.Color("Promoter:N", scale=scale)
-            
-            chart = alt.Chart(source).mark_circle().encode(
-                x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-                color=color_scale,
-                tooltip=['Relative position', 'Score %', 'Sequence', 'Promoter']
-            ).properties(width=600, height=400)
-                                  
-            st.altair_chart(chart, use_container_width=True)
-        else:
-            st.error(f"No consensus sequence found with the specified threshold")
-    else:
-        st.text("")
-        
 else:
     if 'table' in locals():
         if len(table) > 0 :
