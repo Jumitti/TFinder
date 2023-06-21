@@ -186,7 +186,7 @@ with col1:
             downstream = int(downstream_entry)
             try:
                 result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
-                st.success("Promoters extraction complete!")
+                st.ballons("Promoters extraction complete!")
             except Exception as e:
                 st.error(f"Error finding promoters: {str(e)}")
 
