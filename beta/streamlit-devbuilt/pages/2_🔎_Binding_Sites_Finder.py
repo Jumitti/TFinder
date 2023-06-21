@@ -13,8 +13,7 @@ st.title('Responsive Elements Finder 🧬🔎')
 # Promoter output state
 
 st.header('🔎 Binding Sites Finder')
-result_promoter = st.text_area("🔸 :red[**Step 1.1**] Promoter:", value="")
-st.info("⬆ Paste sequences here (FASTA required for multiple sequences).")
+result_promoter = st.text_area("🔸 :red[**Step 1.1**] Sequence:", value="Paste sequences here (FASTA required for multiple sequences).")
 
 # Responsive-Elements-Finder
 
