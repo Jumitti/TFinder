@@ -179,7 +179,7 @@ with col1:
         st.session_state['upstream_entry'] = upstream_entry
 
 # Run Promoter Finder
-    if st.button("🔎 :red[**Step 1.5**] Extract promoter (~5sec/gene)"):
+    if st.button("🧬 :red[**Step 1.5**] Extract promoter (~5sec/gene)"):
         with st.spinner("Finding promoters..."):
             gene_ids = gene_id_entry.strip().split("\n")
             upstream = int(upstream_entry)
