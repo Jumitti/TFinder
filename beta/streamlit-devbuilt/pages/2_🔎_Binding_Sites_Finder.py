@@ -297,7 +297,7 @@ else:
 
 # TSS entry
 entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
-st.info("Distance of TSS or gene end from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
+st.info("Distance of TSS or gene end from begin of sequences. Same distance is required for multiple sequences. Leave 0 if you don't know")
 
 # Threshold
 if jaspar == 'JASPAR_ID':
