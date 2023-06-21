@@ -671,3 +671,5 @@ with st.sidebar.expander("Responsive Elements Finder"):
     st.write('Eliminates responsive element with homology < threshold or score < threshold')
     st.write('Note for JASPAR option: Score is normalized to the maximum PWM score of the requested transcription factor. The result is displayed as a percentage')
     st.write('Note without JASPAR option: Homology is calculated between the responsive element in the promoter and the responsive element requested. The calculation uses the Hamming distance, counts the number of differences and gives a percentage score homology.')
+
+ballons = st.sidebar.checkbox('Ballons')
