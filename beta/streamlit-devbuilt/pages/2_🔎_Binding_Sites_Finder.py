@@ -298,51 +298,50 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
     return table2
     
 # Responsive Elements Finder
-with col2:
 
 # RE entry
-    jaspar = st.radio('🔸 :red[**Step 2.2**] Respnsive elements type:', ('Manual sequence','JASPAR_ID'))
-    if jaspar == 'JASPAR_ID':
-        entry_sequence = st.text_input("🔸 :red[**Step 2.3**] JASPAR ID:", value="MA0106.1")
-    else:
-        entry_sequence = st.text_input("🔸 :red[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
+jaspar = st.radio('🔸 :red[**Step 2.2**] Respnsive elements type:', ('Manual sequence','JASPAR_ID'))
+if jaspar == 'JASPAR_ID':
+    entry_sequence = st.text_input("🔸 :red[**Step 2.3**] JASPAR ID:", value="MA0106.1")
+else:
+    entry_sequence = st.text_input("🔸 :red[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
 # TSS entry
-    if prom_term == 'Promoter':
-        if 'upstream_entry' not in st.session_state:
-            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
-            st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
-        else:
-            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'])
-            st.info("Do not modify if you use Step 1 ")
+if prom_term == 'Promoter':
+    if 'upstream_entry' not in st.session_state:
+        entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
+        st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
     else:
-        if 'upstream_entry' not in st.session_state:
-            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, 0)
-            st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
-        else:
-            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'])
-            st.info("Do not modify if you use Step 1 ")
+        entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'])
+        st.info("Do not modify if you use Step 1 ")
+else:
+    if 'upstream_entry' not in st.session_state:
+        entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, 0)
+        st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
+    else:
+        entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'])
+        st.info("Do not modify if you use Step 1 ")
 
 # Threshold
-    if jaspar == 'JASPAR_ID':
-        threshold_entry = st.slider("🔸 :red[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
-    else:
-        threshold_entry = st.slider("🔸 :red[**Step 2.5**] Homology threshold (%)", 0, 100 ,80)
+if jaspar == 'JASPAR_ID':
+    threshold_entry = st.slider("🔸 :red[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
+else:
+    threshold_entry = st.slider("🔸 :red[**Step 2.5**] Homology threshold (%)", 0, 100 ,80)
 
 # Run Responsive Elements finder
-    if st.button("🔎 :red[**Step 2.6**] Find responsive elements"):
-        with st.spinner("Finding responsive elements..."):
-            sequence_consensus_input = entry_sequence
-            tis_value = int(entry_tis)
-            threshold = float(threshold_entry)
-            try:
-                if jaspar == 'JASPAR_ID':
-                    matrices = matrix_extraction(sequence_consensus_input)
-                    table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
-                else:
-                    table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
-            except Exception as e:
-                st.error(f"Error finding responsive elements: {str(e)}")
+if st.button("🔎 :red[**Step 2.6**] Find responsive elements"):
+    with st.spinner("Finding responsive elements..."):
+        sequence_consensus_input = entry_sequence
+        tis_value = int(entry_tis)
+        threshold = float(threshold_entry)
+        try:
+            if jaspar == 'JASPAR_ID':
+                matrices = matrix_extraction(sequence_consensus_input)
+                table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
+            else:
+                table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
+        except Exception as e:
+            st.error(f"Error finding responsive elements: {str(e)}")
 
 # RE output
 if jaspar == 'JASPAR_ID':
