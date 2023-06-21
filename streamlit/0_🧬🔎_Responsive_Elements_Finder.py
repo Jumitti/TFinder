@@ -7,6 +7,27 @@ import pickle
 
 st.set_page_config(layout="wide")
 
+# Credit Eastereggs
+st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder) by Minniti Julien")
+
+try:
+    with open("ratings.pkl", "rb") as file:
+        ratings = pickle.load(file)
+except FileNotFoundError:
+    ratings = []
+rating = st.sidebar.slider("Rate it 😊 (1-5 ⭐)", 1, 5, 5)
+submit_button = st.sidebar.button("Submit Rating")
+if submit_button:
+    ratings.append(rating)
+    with open("ratings.pkl", "wb") as file:
+        pickle.dump(ratings, file)
+    st.sidebar.success("Thank you for rating the application!")
+average_rating = sum(ratings) / len(ratings) if ratings else 0
+num_ratings = len(ratings)
+st.sidebar.write(f"Average rating: {average_rating:.2f} ⭐ ({num_ratings} votes)")
+
+balloons = st.sidebar.checkbox('Balloons')
+
 # Reverse complement
 def reverse_complement(sequence):
     complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
@@ -153,7 +174,7 @@ col1, col2 = st.columns(2)
 # Promoter Finder
 with col1:
     st.header(':red[Step 1] Promoter and Terminator Extractor')
-    st.info("If you have a FASTA sequence, go to :red[**Step 2**]")
+    st.info("💡 If you have a FASTA sequence, go to :red[**Step 2**]")
 
 # Gene ID
     gene_id_entry = st.text_area("🔸 :red[**Step 1.1**] Gene ID:", value="PRKN\n5071")
@@ -179,36 +200,48 @@ with col1:
         st.session_state['upstream_entry'] = upstream_entry
 
 # Run Promoter Finder
-    if st.button("🔎 :red[**Step 1.5**] Extract promoter (~5sec/gene)"):
-        with st.spinner("Finding promoters..."):
-            gene_ids = gene_id_entry.strip().split("\n")
-            upstream = int(upstream_entry)
-            downstream = int(downstream_entry)
-            try:
-                result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
-                st.success("Promoters extraction complete!")
-            except Exception as e:
-                st.error(f"Error finding promoters: {str(e)}")
+    if prom_term == 'Promoter':
+        if st.button("🧬 :red[**Step 1.5**] Extract promoter (~5sec/gene)"):
+            with st.spinner("Finding promoters..."):
+                gene_ids = gene_id_entry.strip().split("\n")
+                upstream = int(upstream_entry)
+                downstream = int(downstream_entry)
+                try:
+                    result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
+                    st.success("Promoters extraction complete!")
+                    if balloons:
+                        st.balloons()
+                except Exception as e:
+                    st.error(f"Error finding promoters: {str(e)}")
+    else:
+        if st.button("🧬 :red[**Step 1.5**] Extract terminator (~5sec/gene)"):
+            with st.spinner("Finding terminators..."):
+                gene_ids = gene_id_entry.strip().split("\n")
+                upstream = int(upstream_entry)
+                downstream = int(downstream_entry)
+                try:
+                    result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
+                    st.success("Terminators extraction complete!")
+                    if balloons:
+                        st.balloons()
+                except Exception as e:
+                    st.error(f"Error finding terminators: {str(e)}")
 
 # Promoter output state
 with col2:
     st.header(':red[Step 2] Binding Sites Finder')
     if prom_term == 'Promoter':
         if 'result_promoter' not in st.session_state:
-            st.info("⬇️ If :red[**Step 1**] not used, paste sequences here (FASTA required for multiple sequences).")
-            result_promoter = st.text_area("🔸 :red[**Step 2.1**] Promoter:", value="")
+            result_promoter = st.text_area("🔸 :red[**Step 2.1**] Promoter:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).")
         else:
             result_promoter_text = "\n".join(st.session_state['result_promoter'])
-            result_promoter = st.text_area("🔸 :red[**Step 2.1**] Promoter:", value=result_promoter_text)
-            st.info("⬆ Copy: Click in sequence, CTRL+A, CTRL+C")
+            result_promoter = st.text_area("🔸 :red[**Step 2.1**] Promoter:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
     else:
         if 'result_promoter' not in st.session_state:
-            st.info("⬇️ If :red[**Step 1**] not used, paste sequences here (FASTA required for multiple sequences).")
-            result_promoter = st.text_area("🔸 :red[**Step 2.1**] Terminator:", value="")
+            result_promoter = st.text_area("🔸 :red[**Step 2.1**] Terminator:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).")
         else:
             result_promoter_text = "\n".join(st.session_state['result_promoter'])
-            result_promoter = st.text_area("🔸 :red[**Step 2.1**] Terminator:", value=result_promoter_text)
-            st.info("⬆ Copy: Click in sequence, CTRL+A, CTRL+C")
+            result_promoter = st.text_area("🔸 :red[**Step 2.1**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
 
 # Responsive-Elements-Finder
 
@@ -498,7 +531,7 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
 with col2:
 
 # RE entry
-    jaspar = st.radio('🔸 :red[**Step 2.2**] Respnsive elements type:', ('Manual sequence','JASPAR_ID'))
+    jaspar = st.radio('🔸 :red[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID'))
     if jaspar == 'JASPAR_ID':
         entry_sequence = st.text_input("🔸 :red[**Step 2.3**] JASPAR ID:", value="MA0106.1")
     else:
@@ -506,19 +539,9 @@ with col2:
 
 # TSS entry
     if prom_term == 'Promoter':
-        if 'upstream_entry' not in st.session_state:
-            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
-            st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
-        else:
-            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'])
-            st.info("Do not modify if you use Step 1 ")
+        entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
     else:
-        if 'upstream_entry' not in st.session_state:
-            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, 0)
-            st.info("Distance of TSS from begin of sequences. Same distance is required for multiple sequences. Do not modify if you use Step 1 ")
-        else:
-            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'])
-            st.info("Do not modify if you use Step 1 ")
+        entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
 
 # Threshold
     if jaspar == 'JASPAR_ID':
@@ -551,6 +574,8 @@ if jaspar == 'JASPAR_ID':
             response_data = response.json()
             TF_name = response_data['name']
             st.success(f"Finding responsive elements done for {TF_name}")
+            if balloons:
+                st.balloons()
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
@@ -594,7 +619,8 @@ else:
     if 'table' in locals():
         if len(table) > 0 :
             st.success("Finding responsive elements done")
-            
+            if balloons:
+                st.balloons()
             df = pd.DataFrame(table[1:], columns=table[0])
             st.session_state['df'] = df
             st.dataframe(df)
@@ -628,24 +654,7 @@ else:
     else:
         st.text("")
 
-# Help
-st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder) by Minniti Julien")
-
-try:
-    with open("ratings.pkl", "rb") as file:
-        ratings = pickle.load(file)
-except FileNotFoundError:
-    ratings = []
-rating = st.sidebar.slider("Rate it 😊 (1-5 ⭐)", 1, 5, 5)
-submit_button = st.sidebar.button("Submit Rating")
-if submit_button:
-    ratings.append(rating)
-    with open("ratings.pkl", "wb") as file:
-        pickle.dump(ratings, file)
-    st.sidebar.success("Thank you for rating the application!")
-average_rating = sum(ratings) / len(ratings) if ratings else 0
-num_ratings = len(ratings)
-st.sidebar.write(f"Average rating: {average_rating:.2f} ⭐ ({num_ratings} votes)")
+#Help
 
 st.sidebar.title("Help")
 with st.sidebar.expander("Video tutorials"):
@@ -656,7 +665,7 @@ with st.sidebar.expander("Video tutorials"):
     st.write("How to use JASPAR option")
     st.video('https://www.youtube.com/watch?v=DH8PBVqa860')
     
-with st.sidebar.expander("Promoter Finder"):
+with st.sidebar.expander("Promoter & Terminator Extractor"):
     st.subheader("Gene ID:")
     st.write("ENTREZ_GENE_ID of NCBI and gene names are allowed.")
     st.write("There is no limit to the number of gene names/ENTREZ_GENE_ID. Add them with a line break (like those displayed by default). You can mix ENTREZ_GENE_ID and gene names as long as they are of the same species.")
@@ -666,11 +675,11 @@ with st.sidebar.expander("Promoter Finder"):
     st.subheader("Upstream/Downstream:")
     st.write("Distance to Transcription Start Site (TSS) in bp.")
     st.image("https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/whatisagene.png")
-    st.subheader("Promoter:")
-    st.write('Use "Find promoter" button or paste your sequences. FASTA format allowed and required for multiple sequences.')
+    st.subheader("Promoter & Terminator:")
+    st.write('Use "Find promoter/extractor" button or paste your sequences. FASTA format allowed and required for multiple sequences.')
     st.write('FASTA format: All sequences must have the TSS at the same distance, otherwise you assume the inconsistency of the positions of found sequences')
     
-with st.sidebar.expander("Responsive Elements Finder"):
+with st.sidebar.expander("Binding Sites Finder"):
     st.subheader("Responsive element:")
     st.write("To use the JASPAR option, check the box and use the JASPAR_ID of your transcription factor.")
     st.write('If you want to use your responsive element, do not check the JASPAR option.')
