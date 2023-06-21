@@ -7,6 +7,9 @@ import pickle
 
 st.set_page_config(layout="wide")
 
+# Streamlit app
+st.title('Responsive Elements Finder 🧬🔎')
+
 # Promoter output state
 
 st.header('🔎 Binding Sites Finder')
