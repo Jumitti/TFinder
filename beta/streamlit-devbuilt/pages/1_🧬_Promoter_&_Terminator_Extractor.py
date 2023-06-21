@@ -115,38 +115,34 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
 
 # Promoter Finder
 def find_promoters(gene_ids, species, upstream, downstream):
-    progress_text = "Operation in progress. Please wait."
-    my_bar = st.progress(0, text=progress_text)
-    for percent_complete in range(100):
-        my_bar.progress(percent_complete + 1, text=progress_text)
-        try:
-            result_promoter = []
-            for gene_id in gene_ids:
-                if gene_id.isdigit():
-                    entrez_id = gene_id
-                else:
-                    entrez_id = convert_gene_to_entrez_id(gene_id, species)
+    try:
+        result_promoter = []
+        for gene_id in gene_ids:
+            if gene_id.isdigit():
+                entrez_id = gene_id
+            else:
+                entrez_id = convert_gene_to_entrez_id(gene_id, species)
 
-                gene_info = get_gene_info(entrez_id, species)
-                gene_name = gene_info['name']
-                chraccver = gene_info['genomicinfo'][0]['chraccver']
-                chrstart = gene_info['genomicinfo'][0]['chrstart']
-                chrstop = gene_info['genomicinfo'][0]['chrstop']
+            gene_info = get_gene_info(entrez_id, species)
+            gene_name = gene_info['name']
+            chraccver = gene_info['genomicinfo'][0]['chraccver']
+            chrstart = gene_info['genomicinfo'][0]['chrstart']
+            chrstop = gene_info['genomicinfo'][0]['chrstop']
 
-                dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
+            dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
 
-                # Append the result to the result_promoter
-                if prom_term == 'Promoter':
-                    result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
-                    st.session_state['result_promoter'] = result_promoter
-                else:
-                    result_promoter.append(f">{gene_name} | {species} | {chraccver} | Gene end (on chromosome): {chrstop}\n{dna_sequence}\n")
-                    st.session_state['result_promoter'] = result_promoter
+            # Append the result to the result_promoter
+            if prom_term == 'Promoter':
+                result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
+                st.session_state['result_promoter'] = result_promoter
+            else:
+                result_promoter.append(f">{gene_name} | {species} | {chraccver} | Gene end (on chromosome): {chrstop}\n{dna_sequence}\n")
+                st.session_state['result_promoter'] = result_promoter
 
-            return result_promoter
+        return result_promoter
 
-        except Exception as e:
-            raise Exception(f"Error retrieving gene information: {str(e)}")
+    except Exception as e:
+        raise Exception(f"Error retrieving gene information: {str(e)}")
 
 # Streamlit app
 st.title('Responsive Elements Finder 🧬🔎')
