@@ -7,6 +7,8 @@ import pickle
 
 st.set_page_config(layout="wide")
 
+balloons = st.sidebar.checkbox('Balloons')
+
 # Reverse complement
 def reverse_complement(sequence):
     complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
