@@ -142,12 +142,12 @@ def find_promoters(gene_ids, species, upstream, downstream):
         raise Exception(f"Error retrieving gene information: {str(e)}")
 
 # Streamlit app
-st.title('Responsive Elements Finder 🔎')
+st.title('Responsive Elements Finder 🧬🔎')
 
 #Disposition
 
 # Promoter Finder
-st.header('Promoter and Terminator Finder')
+st.header('🧬 Promoter and Terminator Extractor')
 
 # Gene ID
 gene_id_entry = st.text_area("🔸 :red[**Step 1.1**] Gene ID:", value="PRKN\n5071")
