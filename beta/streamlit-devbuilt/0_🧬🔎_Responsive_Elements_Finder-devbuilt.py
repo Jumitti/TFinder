@@ -540,6 +540,7 @@ if jaspar == 'JASPAR_ID':
             response_data = response.json()
             TF_name = response_data['name']
             st.success(f"Finding responsive elements done for {TF_name}")
+            st.balloons()
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
