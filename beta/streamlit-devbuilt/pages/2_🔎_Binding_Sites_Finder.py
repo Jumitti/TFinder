@@ -4,6 +4,7 @@ import pandas as pd
 import altair as alt
 import math
 import pickle
+from Bio import motifs
 
 st.set_page_config(layout="wide")
 
@@ -410,10 +411,13 @@ if st.button("🔎 :red[**Step 1.6**] Find responsive elements"):
                 matrices = matrix_extraction(sequence_consensus_input)
                 table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
             elif jaspar == 'Matrix':
-                if uploaded_file is not None:
-                    matrix = extract_matrix_from_jaspar(uploaded_file)
-                    matrices = transform_matrix(matrix)
-                    table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
+                # Chargement du fichier JASPAR
+                with open(uploaded_file) as handle:
+                    jaspar_data = handle.read()
+                # Extraction de la matrice
+                matrix = motifs.parse(jaspar_data, "jaspar")
+                matrices = transform_matrix(matrix)
+                table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
             else:
                 sequence_consensus_input = entry_sequence
                 table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
