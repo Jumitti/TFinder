@@ -198,7 +198,7 @@ def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, resu
 
     if len(table) > 0:
         table.sort(key=lambda x: float(x[3]), reverse=True)
-        header = ["Position", "Position (TSS)", "Sequence", "% Homology", "Ref seq", "Promoter"]
+        header = ["Position", "Relative position", "Sequence", "% Homology", "Ref seq", "Promoter"]
         table.insert(0, header)
     else:
         no_consensus = "No consensus sequence found with the specified threshold."
@@ -387,10 +387,10 @@ if jaspar == 'JASPAR_ID':
             color_scale = alt.Color("Promoter:N", scale=scale)
             
             chart = alt.Chart(source).mark_circle().encode(
-                x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
+                x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                 y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
                 color=color_scale,
-                tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
+                tooltip=['Relative position', 'Score %', 'Sequence', 'Promoter']
             ).properties(width=600, height=400)
                                   
             st.altair_chart(chart, use_container_width=True)
@@ -422,10 +422,10 @@ else:
             color_scale = alt.Color("Promoter:N", scale=scale)
             
             chart = alt.Chart(source).mark_circle().encode(
-                x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
+                x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                 y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
                 color=color_scale,
-                tooltip=['Position (TSS)', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
+                tooltip=['Relative position', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
             ).properties(width=600, height=400)
 
             st.altair_chart(chart, use_container_width=True)
