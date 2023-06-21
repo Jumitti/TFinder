@@ -7,7 +7,25 @@ import pickle
 
 st.set_page_config(layout="wide")
 
-balloons = st.sidebar.checkbox('Balloons')
+# Credit Eastereggs
+st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder) by Minniti Julien")
+
+try:
+    with open("ratings.pkl", "rb") as file:
+        ratings = pickle.load(file)
+except FileNotFoundError:
+    ratings = []
+rating = st.sidebar.slider("Rate it 😊 (1-5 ⭐)", 1, 5, 5)
+submit_button = st.sidebar.button("Submit Rating")
+if submit_button:
+    ratings.append(rating)
+    with open("ratings.pkl", "wb") as file:
+        pickle.dump(ratings, file)
+    st.sidebar.success("Thank you for rating the application!")
+    balloons = st.sidebar.checkbox('Balloons')
+average_rating = sum(ratings) / len(ratings) if ratings else 0
+num_ratings = len(ratings)
+st.sidebar.write(f"Average rating: {average_rating:.2f} ⭐ ({num_ratings} votes)")
 
 # Reverse complement
 def reverse_complement(sequence):
@@ -621,24 +639,7 @@ else:
     else:
         st.text("")
 
-# Help
-st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder) by Minniti Julien")
-
-try:
-    with open("ratings.pkl", "rb") as file:
-        ratings = pickle.load(file)
-except FileNotFoundError:
-    ratings = []
-rating = st.sidebar.slider("Rate it 😊 (1-5 ⭐)", 1, 5, 5)
-submit_button = st.sidebar.button("Submit Rating")
-if submit_button:
-    ratings.append(rating)
-    with open("ratings.pkl", "wb") as file:
-        pickle.dump(ratings, file)
-    st.sidebar.success("Thank you for rating the application!")
-average_rating = sum(ratings) / len(ratings) if ratings else 0
-num_ratings = len(ratings)
-st.sidebar.write(f"Average rating: {average_rating:.2f} ⭐ ({num_ratings} votes)")
+#Help
 
 st.sidebar.title("Help")
 with st.sidebar.expander("Video tutorials"):
