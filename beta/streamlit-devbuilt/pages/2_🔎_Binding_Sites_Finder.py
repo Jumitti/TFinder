@@ -299,8 +299,7 @@ else:
     entry_sequence = st.text_input("🔸 :red[**Step 1.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
 # TSS entry
-entry_tis = st.number_input("🔸 :red[**Step 1.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0, help="Distance of TSS or gene end from begin of sequences. Same distance is required for multiple sequences. Leave 0 if you don't know")
-st.info("Distance of TSS or gene end from begin of sequences. Same distance is required for multiple sequences. Leave 0 if you don't know")
+entry_tis = st.number_input("🔸 :red[**Step 1.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0, help="Distance of TSS or gene end from begin of sequences.\nSame distance is required for multiple sequences.\nLeave 0 if you don't know")
 
 # Threshold
 if jaspar == 'JASPAR_ID':
