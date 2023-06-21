@@ -271,6 +271,21 @@ def transform_matrix(matrix):
             'Reversed Complement': reversed_complement_matrix
         }
 
+def extract_matrix_from_jaspar(file_path):
+    matrix = {'A': [], 'C': [], 'G': [], 'T': []}
+    
+    with open(file_path) as file:
+        for line in file:
+            line = line.strip()
+            
+            if line.startswith('A ') or line.startswith('C ') or line.startswith('G ') or line.startswith('T '):
+                base, scores = line.split('  [', 1)
+                scores = scores.strip().rstrip(']')
+                scores = [int(score) for score in scores.split()]
+                matrix[base] = scores
+    
+    return matrix
+
 # Calculate score with JASPAR
 def calculate_score(sequence, matrix):
     score = 0
@@ -396,13 +411,7 @@ if st.button("🔎 :red[**Step 1.6**] Find responsive elements"):
                 table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
             elif jaspar == 'Matrix':
                 if uploaded_file is not None:
-                    # Lecture du contenu du fichier
-                    content = uploaded_file.read().decode("utf-8")
-
-                    # Traitement du contenu pour extraire la matrice
-                    lines = content.strip().split('\n')
-                    matrix_lines = [line for line in lines if line.startswith(('A', 'C', 'G', 'T'))]
-                    matrix = [line.split() for line in matrix_lines]
+                    matrix = extract_matrix_from_jaspar(file_path)
                     matrices = transform_matrix(matrix)
                     table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
             else:
