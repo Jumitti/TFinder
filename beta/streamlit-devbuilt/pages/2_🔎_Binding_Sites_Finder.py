@@ -7,6 +7,48 @@ import pickle
 
 st.set_page_config(layout="wide")
 
+# Credit Eastereggs
+st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder) by Minniti Julien")
+
+balloons = st.sidebar.checkbox('Balloons')
+
+st.sidebar.title("Help")
+with st.sidebar.expander("Video tutorials"):
+    st.write("How to extract promoter and find responsive elements")
+    st.video('https://www.youtube.com/watch?v=lknbKbZCXuo')
+    st.write("How to use FASTA sequences and find responsive elements")
+    st.video('https://www.youtube.com/watch?v=QelVLLuNJqs')
+    st.write("How to use JASPAR option")
+    st.video('https://www.youtube.com/watch?v=DH8PBVqa860')
+    
+with st.sidebar.expander("Promoter Finder"):
+    st.subheader("Gene ID:")
+    st.write("ENTREZ_GENE_ID of NCBI and gene names are allowed.")
+    st.write("There is no limit to the number of gene names/ENTREZ_GENE_ID. Add them with a line break (like those displayed by default). You can mix ENTREZ_GENE_ID and gene names as long as they are of the same species.")
+    st.subheader("Species:")
+    st.write("Human, mouse, rat, drosophila and zebrafish are allowed.")
+    st.write("If you use several ENTREZ_GENE_ID/gene names, make sure you select the correct species.")
+    st.subheader("Upstream/Downstream:")
+    st.write("Distance to Transcription Start Site (TSS) in bp.")
+    st.image("https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/whatisagene.png")
+    st.subheader("Promoter:")
+    st.write('Use "Find promoter" button or paste your sequences. FASTA format allowed and required for multiple sequences.')
+    st.write('FASTA format: All sequences must have the TSS at the same distance, otherwise you assume the inconsistency of the positions of found sequences')
+    
+with st.sidebar.expander("Responsive Elements Finder"):
+    st.subheader("Responsive element:")
+    st.write("To use the JASPAR option, check the box and use the JASPAR_ID of your transcription factor.")
+    st.write('If you want to use your responsive element, do not check the JASPAR option.')
+    st.write('IUPAC allowed')
+    st.image("https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/IUPAC.png")
+    st.subheader("Transcription Start Site (TSS):")
+    st.write('Distance to Transcription Start Site (TSS) in bp')
+    st.write('Note: If you use Step 1 , it will be defined automatically.')
+    st.subheader("Threshold:")
+    st.write('Eliminates responsive element with homology < threshold or score < threshold')
+    st.write('Note for JASPAR option: Score is normalized to the maximum PWM score of the requested transcription factor. The result is displayed as a percentage')
+    st.write('Note without JASPAR option: Homology is calculated between the responsive element in the promoter and the responsive element requested. The calculation uses the Hamming distance, counts the number of differences and gives a percentage score homology.')
+
 # Streamlit app
 st.title('Responsive Elements Finder 🧬🔎')
 
