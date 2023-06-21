@@ -226,7 +226,7 @@ def matrix_extraction(sequence_consensus_input):
 
     return transform_matrix(matrix)
 
-# Transform JASPAR matrix
+# Transform JASPAR matrix from JASPAR web
 def transform_matrix(matrix):
     reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
     complement_matrix = {
@@ -360,14 +360,26 @@ else:
 # Run Responsive Elements finder
 if st.button("🔎 :red[**Step 1.6**] Find responsive elements"):
     with st.spinner("Finding responsive elements..."):
-        sequence_consensus_input = entry_sequence
         tis_value = int(entry_tis)
         threshold = float(threshold_entry)
         try:
             if jaspar == 'JASPAR_ID':
+                sequence_consensus_input = entry_sequence
                 matrices = matrix_extraction(sequence_consensus_input)
                 table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
+            elif jaspar == 'Matrix':
+                if uploaded_file is not None:
+                    # Lecture du contenu du fichier
+                    content = uploaded_file.read().decode("utf-8")
+
+                    # Traitement du contenu pour extraire la matrice
+                    lines = content.strip().split('\n')
+                    matrix_lines = [line for line in lines if line.startswith(('A', 'C', 'G', 'T'))]
+                    matrix = [line.split() for line in matrix_lines]
+                    matrices = transform_matrix(matrix)
+                    table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
             else:
+                sequence_consensus_input = entry_sequence
                 table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
         except Exception as e:
             st.error(f"Error finding responsive elements: {str(e)}")
