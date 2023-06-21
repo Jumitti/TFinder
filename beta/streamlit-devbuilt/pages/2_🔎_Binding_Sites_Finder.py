@@ -323,7 +323,7 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
 
     if len(table2) > 0:
         table2.sort(key=lambda x: float(x[3]), reverse=True)
-        header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
+        header = ["Position", "Relative position", "Sequence", "Score %", "Promoter"]
         table2.insert(0, header)
     else:
         no_consensus = "No consensus sequence found with the specified threshold."
