@@ -22,10 +22,11 @@ if submit_button:
     with open("ratings.pkl", "wb") as file:
         pickle.dump(ratings, file)
     st.sidebar.success("Thank you for rating the application!")
-    balloons = st.sidebar.checkbox('Balloons')
 average_rating = sum(ratings) / len(ratings) if ratings else 0
 num_ratings = len(ratings)
 st.sidebar.write(f"Average rating: {average_rating:.2f} ⭐ ({num_ratings} votes)")
+
+balloons = st.sidebar.checkbox('Balloons')
 
 # Reverse complement
 def reverse_complement(sequence):
