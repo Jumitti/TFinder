@@ -289,24 +289,24 @@ def search_sequence(sequence_consensus_input, threshold, tis_value, result_promo
 # Responsive Elements Finder
 
 # RE entry
-jaspar = st.radio('🔸 :red[**Step 2.2**] Respnsive elements type:', ('Manual sequence','JASPAR_ID'))
+jaspar = st.radio('🔸 :red[**Step 1.2**] Respnsive elements type:', ('Manual sequence','JASPAR_ID'))
 if jaspar == 'JASPAR_ID':
-    entry_sequence = st.text_input("🔸 :red[**Step 2.3**] JASPAR ID:", value="MA0106.1")
+    entry_sequence = st.text_input("🔸 :red[**Step 1.3**] JASPAR ID:", value="MA0106.1")
 else:
-    entry_sequence = st.text_input("🔸 :red[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
+    entry_sequence = st.text_input("🔸 :red[**Step 1.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
 # TSS entry
-entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
+entry_tis = st.number_input("🔸 :red[**Step 1.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, 0)
 st.info("Distance of TSS or gene end from begin of sequences. Same distance is required for multiple sequences. Leave 0 if you don't know")
 
 # Threshold
 if jaspar == 'JASPAR_ID':
-    threshold_entry = st.slider("🔸 :red[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
+    threshold_entry = st.slider("🔸 :red[**Step 1.5**] Score threshold (%)", 0, 100 ,90)
 else:
-    threshold_entry = st.slider("🔸 :red[**Step 2.5**] Homology threshold (%)", 0, 100 ,80)
+    threshold_entry = st.slider("🔸 :red[**Step 1.5**] Homology threshold (%)", 0, 100 ,80)
 
 # Run Responsive Elements finder
-if st.button("🔎 :red[**Step 2.6**] Find responsive elements"):
+if st.button("🔎 :red[**Step 1.6**] Find responsive elements"):
     with st.spinner("Finding responsive elements..."):
         sequence_consensus_input = entry_sequence
         tis_value = int(entry_tis)
