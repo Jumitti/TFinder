@@ -452,6 +452,36 @@ if jaspar == 'JASPAR_ID':
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
     else:
         st.text("")
+        
+elif jaspar == 'Matrix':
+    if 'table2' in locals():
+        if len(table2) > 0:
+            st.success(f"Finding responsive elements done")
+            df = pd.DataFrame(table2[1:], columns=table2[0])
+            st.session_state['df'] = df
+            st.dataframe(df)
+            st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+
+            source = df
+            score_range = source['Score %'].astype(float)
+            ystart = math.floor(score_range.min() - 5)
+            ystop = math.floor(score_range.max() + 5)
+            scale = alt.Scale(scheme='category10')
+            color_scale = alt.Color("Promoter:N", scale=scale)
+            
+            chart = alt.Chart(source).mark_circle().encode(
+                x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+                color=color_scale,
+                tooltip=['Relative position', 'Score %', 'Sequence', 'Promoter']
+            ).properties(width=600, height=400)
+                                  
+            st.altair_chart(chart, use_container_width=True)
+        else:
+            st.error(f"No consensus sequence found with the specified threshold")
+    else:
+        st.text("")
+        
 else:
     if 'table' in locals():
         if len(table) > 0 :
