@@ -48,7 +48,7 @@ tabs = [
 
 option_data = [
    {'icon': "🏠", 'label':HOME},
-   {'icon': "🏠", 'label':ALLINONE},
+   {'icon': "🏠", 'label':ALLINONE}
    {'icon':"💾",'label':PROMTERM}
    
 ]
@@ -91,8 +91,6 @@ if submit_button:
 average_rating = sum(ratings) / len(ratings) if ratings else 0
 num_ratings = len(ratings)
 st.sidebar.write(f"Average rating: {average_rating:.2f} ⭐ ({num_ratings} votes)")
-
-balloons = st.sidebar.checkbox('Balloons')
 
 #Help
 

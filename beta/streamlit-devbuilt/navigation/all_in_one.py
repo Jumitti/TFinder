@@ -187,8 +187,6 @@ def all_in_one_page():
                     try:
                         result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
                         st.success("Promoters extraction complete!")
-                        if balloons:
-                            st.balloons()
                     except Exception as e:
                         st.error(f"Error finding promoters: {str(e)}")
         else:
@@ -200,8 +198,6 @@ def all_in_one_page():
                     try:
                         result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
                         st.success("Terminators extraction complete!")
-                        if balloons:
-                            st.balloons()
                     except Exception as e:
                         st.error(f"Error finding terminators: {str(e)}")
 
@@ -552,8 +548,6 @@ def all_in_one_page():
                 response_data = response.json()
                 TF_name = response_data['name']
                 st.success(f"Finding responsive elements done for {TF_name}")
-                if balloons:
-                    st.balloons()
                 st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
                 df = pd.DataFrame(table2[1:], columns=table2[0])
                 st.session_state['df'] = df
@@ -597,8 +591,6 @@ def all_in_one_page():
         if 'table' in locals():
             if len(table) > 0 :
                 st.success("Finding responsive elements done")
-                if balloons:
-                    st.balloons()
                 df = pd.DataFrame(table[1:], columns=table[0])
                 st.session_state['df'] = df
                 st.dataframe(df)
