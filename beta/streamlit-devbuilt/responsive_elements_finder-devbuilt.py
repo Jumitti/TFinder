@@ -84,6 +84,10 @@ elif chosen_tab == RESOURCE:
     
 elif chosen_tab == CONTACT: 
     contact_page()
+    
+for i in range(6):
+    st.markdown('#')
+st.markdown(footer,unsafe_allow_html=True)
 
 # Credit Eastereggs
 st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder) by Minniti Julien")
