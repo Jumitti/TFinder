@@ -56,7 +56,7 @@ chosen_tab = hc.option_bar(
 if chosen_tab == HOME:
     st.success('Bravo')
     
-elif chosen_tab == PROMTERM
+elif chosen_tab == PROMTERM: 
     prom_term_page()
     
 
