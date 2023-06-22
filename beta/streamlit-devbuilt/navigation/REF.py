@@ -5,7 +5,7 @@ import altair as alt
 import math
 import pickle
 
-def all_in_one_page():
+def REF_page():
     # Reverse complement
     def reverse_complement(sequence):
         complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}

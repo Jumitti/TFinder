@@ -6,8 +6,10 @@ import altair as alt
 import math
 import pickle
 
-from navigation.prom_term import prom_term_page
-from navigation.all_in_one import all_in_one_page
+from navigation.home import home_page
+from navigation.REF import REF_page
+from navigation.resource import resource_page
+from navigation.contact import contact_page
 
 st.set_page_config(
         page_title='REF by Minniti',
@@ -37,19 +39,22 @@ st.markdown("""
 #NavBar
 
 HOME = 'Home'
-ALLINONE = 'All in One'
-PROMTERM = 'PromTerm'
+REF = 'Application'
+RESOURCE = 'Resource'
+CONTACT = 'Contact'
 
 tabs = [
     HOME,
-    ALLINONE,
-    PROMTERM
+    REF,
+    RESOURCE,
+    CONTACT
 ]
 
 option_data = [
    {'icon': "🏠", 'label':HOME},
-   {'icon': "🏠", 'label':ALLINONE},
-   {'icon':"💾",'label':PROMTERM}
+   {'icon': "🖥️", 'label':REF},
+   {'icon':"📄",'label':RESOURCE},
+   {'icon':"📞",'label':CONTACT}
    
 ]
 
@@ -67,11 +72,14 @@ chosen_tab = hc.option_bar(
 if chosen_tab == HOME:
     st.success('Bravo')
 
-elif chosen_tab == ALLINONE: 
-    all_in_one_page()
+elif chosen_tab == REF: 
+    REF_page()
     
-elif chosen_tab == PROMTERM: 
-    prom_term_page()
+elif chosen_tab == RESOURCE: 
+    resource_page()
+    
+elif chosen_tab == CONTACT: 
+    contact_page()
 
 # Credit Eastereggs
 st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder) by Minniti Julien")
