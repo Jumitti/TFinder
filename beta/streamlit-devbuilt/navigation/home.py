@@ -14,34 +14,8 @@ def home_page():
         # st.markdown('### ' + TITLE) 
         st.markdown(f"<h3 style='text-align: center; color: black;'>{TITLE}</h1>", unsafe_allow_html=True)  
         
-        
-        with open('./clock.time', 'r') as f:
-            last_updated_on = f.readlines()[0]
-        
-        st.caption(last_updated_on)    
-        st.image(img)  
-        
         st.markdown('👉 Read our paper here: https://www.biorxiv.org/content/10.1101/2022.12.14.520411v1')    
         
         
         st.markdown(f"<p style='text-align: justify; color: black;'>{Desc.home}</h4>", unsafe_allow_html=True)  
-        
-        
-        # st.write(Desc.home)
-        
-        # st.markdown('---')
-        
-        # st.caption(f'Example usage of the {TITLE}')
-        # video_file = open('./assets/video/video.mp4', 'rb')
-        # video_bytes = video_file.read()
-        # st.video(video_bytes)
-    
-        
-if __name__ == '__main__':
-    t = datetime.datetime.now()
-    with open('./clock.time', 'w') as f:
-        f.write(f'Last updated at {t.time():%H:%M} on {t.date():%Y-%m-%d}\n')
-        print(f'Last updated at {t.time():%H:%M} on {t.date():%Y-%m-%d}\n')
-    
-    
     
