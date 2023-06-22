@@ -7,7 +7,7 @@ def contact_page():
     a.image('https://www.ipmc.cnrs.fr/fichiers/images/photo_1.jpg')
     a.markdown("""<span style="font-size:20px;">University of Pittsburgh, UPMC Hillman Cancer Center, Assembly Building</span>""", unsafe_allow_html=True)
 
-    b.markdown("""<div style="width: 100%"><iframe width="100%" height="700" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11553.660694057211!2d7.0529351!3d43.6187171!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12cc2b06e4c3ff13%3A0x5790dfd8a00e8aac!2sIPMC%20-%20Institut%20de%20Pharmacologie%20Mol%C3%A9culaire%20et%20Cellulaire!5e0!3m2!1sfr!2sfr!4v1687462264098!5m2!1sfr!2sfr" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>"><a href="https://www.maps.ie/distance-area-calculator.html">measure distance on map</a></iframe></div>""", unsafe_allow_html=True)
+    b.markdown("""<div style="width: 100%"><iframe width="100%" height="700" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11553.660694057211!2d7.0529351!3d43.6187171!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12cc2b06e4c3ff13%3A0x5790dfd8a00e8aac!2sIPMC%20-%20Institut%20de%20Pharmacologie%20Mol%C3%A9culaire%20et%20Cellulaire!5e0!3m2!1sfr!2sfr!4v1687462359433!5m2!1sfr!2sfr" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>""", unsafe_allow_html=True)
     # b.write('Hillman Cancer Center, 5051 Centre Avenue Pittsburgh, PA 15213') 
     
     a.markdown('##### If you have any questions or feedback, please feel free to contact us:')
