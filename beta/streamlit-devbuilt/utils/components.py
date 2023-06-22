@@ -106,10 +106,10 @@ icons = """<style>
 </style
 <div class="footer">
         </a>
-        <a href="https://www.instagram.com/osmanbeyoglulab/"><img class="image2" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/132px-Instagram_logo_2016.svg.png"
+        <a href="https://www.instagram.com/random_molecular_modelling/?hl=fr"><img class="image2" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/132px-Instagram_logo_2016.svg.png"
                 alt="github" width="60" height="60">
         </a>
-        <a href="https://github.com/osmanbeyoglulab"><img class="image2" src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
+        <a href="https://github.com/Jumitti"><img class="image2" src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
                 alt="github" width="60" height="60">
 </div>
 """ ## Footer
