@@ -6,8 +6,6 @@ import math
 import pickle
 import time
 
-
-
 # Reverse complement
 def reverse_complement(sequence):
     complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
