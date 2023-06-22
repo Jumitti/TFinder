@@ -1,8 +1,6 @@
 import streamlit as st
 
 def contact_page():
-    st.markdown("<h2 style='text-align: center; color: black;'>Contact Us</h1>", unsafe_allow_html=True)  
-    
     a, b = st.columns([0.8, 1.5])
     a.image('https://www.ipmc.cnrs.fr/fichiers/images/photo_1.jpg')
     a.markdown("""<span style="font-size:20px;">IPMC - Institut de Pharmacologie Moléculaire et Cellulaire</span>""", unsafe_allow_html=True)
