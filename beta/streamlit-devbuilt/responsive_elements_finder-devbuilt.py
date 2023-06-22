@@ -71,7 +71,7 @@ elif chosen_tab == ALLINONE:
     all_in_one_page()
     
 elif chosen_tab == PROMTERM: 
-    promterm_page()
+    prom_term_page()
 
 # Credit Eastereggs
 st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder) by Minniti Julien")
