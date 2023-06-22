@@ -1,12 +1,12 @@
 import streamlit as st
+import hydralit_components as hc
 import requests
 import pandas as pd
 import altair as alt
 import math
 import pickle
 
-from navigation.promoter_terminator import prom_term_page
-import hydralit_components as hc
+
 
 st.set_page_config(layout="wide")
 
