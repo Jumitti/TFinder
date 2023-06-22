@@ -6,9 +6,39 @@ import math
 import pickle
 
 from navigation.promoter_terminator import prom_term_page
-import hydralit_components as hc
-from utils.components import footer_style, footer
-from utils.dataloaders import make_datacore
+from hydralit import HydraApp
+
+# Création d'une application Hydralit
+app = HydraApp(title='Application avec Hydralit')
+
+# Ajout des pages à l'application
+app.add_page("Accueil", "home")
+app.add_page("Page 1", "page1")
+app.add_page("Page 2", "page2")
+app.add_page("Page 3", "page3")
+
+# Fonction pour la page d'accueil
+def home():
+    st.title('Page d\'accueil')
+    # Contenu de la page d'accueil
+
+# Fonction pour la page 1
+def page1():
+    st.title('Page 1')
+    # Contenu de la page 1
+
+# Fonction pour la page 2
+def page2():
+    st.title('Page 2')
+    # Contenu de la page 2
+
+# Fonction pour la page 3
+def page3():
+    st.title('Page 3')
+    # Contenu de la page 3
+
+# Exécution de l'application Hydralit
+app.run()
 
 st.set_page_config(layout="wide")
 
