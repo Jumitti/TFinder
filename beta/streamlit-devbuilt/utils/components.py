@@ -182,7 +182,7 @@ text-align: center;
 <p style="font-size:  13px">© 2023 Osmanbeyoglulab.com. All rights reserved.</p>
 <a href="https://www.ipmc.cnrs.fr/cgi-bin/site.cgi"><img class="image2" src="https://univ-cotedazur.fr/medias/photo/institut-de-pharmacologie-moleculaire-et-cellulaire-ipmc-_1605910798047-jpg"alt="github" width="70" height=50"></a>
 <a href="https://www.cnrs.fr/fr"><img class="image2" src="https://www.cnrs.fr/themes/custom/cnrs/logo.svg"alt="github" width="45" height="45"></a>
-<a href="https://univ-cotedazur.fr/"><img class="image2" src="https://github.com/Jumitti/Responsive-Elements-Finder/blob/main/img/UCA-Logo-2niveaux-CMJN.jpg"alt="github" width="45" height="45"></a>
+<a href="https://univ-cotedazur.fr/"><img class="image2" src="https://upload.wikimedia.org/wikipedia/fr/thumb/f/fa/Logo-univ-nice-cote-dazur.svg/langfr-375px-Logo-univ-nice-cote-dazur.svg.png"alt="github" width="45" height="45"></a>
 </a><a href="https://github.com/osmanbeyoglulab"><img class="image2" src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="github" width="45" height="45"></a>
 <a href="https://www.instagram.com/osmanbeyoglulab/"><img class="image2" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/132px-Instagram_logo_2016.svg.png"alt="github" width="45" height="45"></a>
 </div>
