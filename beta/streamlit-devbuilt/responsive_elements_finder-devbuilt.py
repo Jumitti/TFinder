@@ -59,7 +59,7 @@ option_data = [
    {'icon': "🏠", 'label':HOME},
    {'icon': "🖥️", 'label':REF},
    {'icon':"📄",'label':RESOURCE},
-   {'icon':"📞",'label':CONTACT}
+   {'icon':"✉️",'label':CONTACT}
    
 ]
 
