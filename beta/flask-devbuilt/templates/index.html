@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Responsive Elements Finder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css" />
+    <style>
+		body {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-left: 20px; /* Marge à gauche pour centrer les éléments */
+        }
+		
+        .slider-container {
+            max-width: 400px;
+            margin: 0 auto; /* Pour centrer le slider horizontalement */
+        }
+		
+		.slider-values {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Responsive Elements Finder 🧬🔎</h1>
+
+    <h2>Promoter and Terminator Extractor</h2>
+
+    <form action="{{ url_for('process') }}" method="POST">
+        <div>
+            <label for="gene_id">Gene ID:</label>
+            <textarea name="gene_id" id="gene_id" rows="5" cols="25" placeholder="PRKN&#10;5071"></textarea>
+        </div>
+
+        <div>
+            <label for="species">Species:</label>
+            <select name="species" id="species">
+                <option value="Human">Human</option>
+                <option value="Mouse">Mouse</option>
+                <option value="Rat">Rat</option>
+                <option value="Drosophila">Drosophila</option>
+                <option value="Zebrafish">Zebrafish</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="regulatory_region">Regulatory Region:</label>
+            <input type="radio" name="regulatory_region" value="Promoter" checked> Promoter
+            <input type="radio" name="regulatory_region" value="Terminator"> Terminator
+        </div>
+
+        <div class="slider-container">
+            <label for="range">Upstream/Downstream:</label>
+            <input type="text" name="range" id="range" value="-2000;500" />
+            <div class="slider-values">
+                Upstream: <span id="upstream-value"></span> | Downstream: <span id="downstream-value"></span>
+            </div>
+        </div>
+
+        <div>
+            <input type="submit" value="Extract" />
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                var rangeSlider = $('#range');
+                var upstreamValue = $('#upstream-value');
+                var downstreamValue = $('#downstream-value');
+
+                rangeSlider.ionRangeSlider({
+                    type: 'double',
+                    min: -10000,
+                    max: 10000,
+                    from: -2000,
+                    to: 500,
+                    step: 100,
+                    onStart: function (data) {
+                        upstreamValue.text(data.from);
+                        downstreamValue.text(data.to);
+                    },
+                    onChange: function (data) {
+                        upstreamValue.text(data.from);
+                        downstreamValue.text(data.to);
+                    }
+                });
+            });
+        </script>
+    </form>
+</body>
+</html>
