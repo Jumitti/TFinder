@@ -68,9 +68,8 @@ chosen_tab = hc.option_bar(
     override_theme=over_theme,
     horizontal_orientation=True)
 
-
 if chosen_tab == HOME:
-    st.success('Bravo')
+    home_page()
 
 elif chosen_tab == REF: 
     REF_page()
