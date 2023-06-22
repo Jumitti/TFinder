@@ -176,9 +176,9 @@ position: relative;
 width: 100%;
 left: 0;
 bottom: 0;
-background-color: white;
+background-color: transparent;
 margin-top: auto;
-color: black;
+color: red;
 padding: 24px;
 text-align: center;
 }
