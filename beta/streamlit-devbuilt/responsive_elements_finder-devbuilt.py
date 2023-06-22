@@ -6,6 +6,7 @@ import math
 import pickle
 
 from navigation.promoter_terminator import prom_term_page
+import hydralit
 from hydralit import HydraApp
 
 # Création d'une application Hydralit
