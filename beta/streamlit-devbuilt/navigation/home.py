@@ -7,9 +7,6 @@ TITLE = 'COVID-19db linkage maps of cell surface proteins and transcription fact
 
 
 def home_page():
-
-    from texts.descriptions import Desc
-    img = load_home_image()
     
     _, middle, _ = st.columns([0.1, 1, 0.1])
     
