@@ -3,9 +3,7 @@ from PIL import Image
 import datetime
 
 def home_page():
-    
-    _, middle, _ = st.columns([0.1, 1, 0.1])
-    
-    with middle:
-        st.header('Responsive Elements Finder 🧬🔎')
+    st.header('Responsive Elements Finder 🧬🔎')
+    st.subheader('Abstract')
+    st.text('Lorem ipsum')
     
