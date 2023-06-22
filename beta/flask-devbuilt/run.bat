@@ -1,1 +1,0 @@
-flask --app responsive_elements_finder run
