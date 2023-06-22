@@ -2,12 +2,6 @@ import streamlit as st
 from PIL import Image
 import datetime
 
-import streamlit_analytics
-
-
-def load_home_image():
-    return Image.open('./assets/images/home.png')
-
 TITLE = 'COVID-19db linkage maps of cell surface proteins and transcription factors in immune cells'
 
 
