@@ -11,12 +11,8 @@ def home_page():
     _, middle, _ = st.columns([0.1, 1, 0.1])
     
     with middle:
-        
-        streamlit_analytics.start_tracking()    
         # st.markdown('### ' + TITLE) 
         st.markdown(f"<h3 style='text-align: center; color: black;'>{TITLE}</h1>", unsafe_allow_html=True)  
-        
-        streamlit_analytics.stop_tracking()
         
         
         with open('./clock.time', 'r') as f:
