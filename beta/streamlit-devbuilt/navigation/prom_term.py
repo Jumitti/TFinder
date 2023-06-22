@@ -143,7 +143,7 @@ def find_promoters(gene_ids, species, upstream, downstream):
         raise Exception(f"Error retrieving gene information: {str(e)}")
 
 # Streamlit app
-def promterm_page():
+def prom_term_page():
     st.title('Responsive Elements Finder 🧬🔎')
 
     #Disposition

@@ -6,7 +6,7 @@ import altair as alt
 import math
 import pickle
 
-from navigation.promterm import promterm_page
+from navigation.prom_term import prom_term_page
 from navigation.all_in_one import all_in_one_page
 
 st.set_page_config(
