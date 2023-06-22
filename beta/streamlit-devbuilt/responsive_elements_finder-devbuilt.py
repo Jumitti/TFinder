@@ -6,30 +6,14 @@ import altair as alt
 import math
 import pickle
 
-
+from navigation.promterm import promterm_page
 
 st.set_page_config(layout="wide")
 
-# Credit Eastereggs
-st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder) by Minniti Julien")
+#NavBar
 
-try:
-    with open("ratings.pkl", "rb") as file:
-        ratings = pickle.load(file)
-except FileNotFoundError:
-    ratings = []
-rating = st.sidebar.slider("Rate it 😊 (1-5 ⭐)", 1, 5, 5)
-submit_button = st.sidebar.button("Submit Rating")
-if submit_button:
-    ratings.append(rating)
-    with open("ratings.pkl", "wb") as file:
-        pickle.dump(ratings, file)
-    st.sidebar.success("Thank you for rating the application!")
-average_rating = sum(ratings) / len(ratings) if ratings else 0
-num_ratings = len(ratings)
-st.sidebar.write(f"Average rating: {average_rating:.2f} ⭐ ({num_ratings} votes)")
-
-balloons = st.sidebar.checkbox('Balloons')
+HOME = 'Home'
+PROMTERM = 'PromTerm'
 
 tabs = [
     HOME,
@@ -57,8 +41,28 @@ if chosen_tab == HOME:
     st.success('Bravo')
     
 elif chosen_tab == PROMTERM: 
-    prom_term_page()
-    
+    promterm_page()
+
+# Credit Eastereggs
+st.sidebar.markdown("[Github](https://github.com/Jumitti/Responsive-Elements-Finder) by Minniti Julien")
+
+try:
+    with open("ratings.pkl", "rb") as file:
+        ratings = pickle.load(file)
+except FileNotFoundError:
+    ratings = []
+rating = st.sidebar.slider("Rate it 😊 (1-5 ⭐)", 1, 5, 5)
+submit_button = st.sidebar.button("Submit Rating")
+if submit_button:
+    ratings.append(rating)
+    with open("ratings.pkl", "wb") as file:
+        pickle.dump(ratings, file)
+    st.sidebar.success("Thank you for rating the application!")
+average_rating = sum(ratings) / len(ratings) if ratings else 0
+num_ratings = len(ratings)
+st.sidebar.write(f"Average rating: {average_rating:.2f} ⭐ ({num_ratings} votes)")
+
+balloons = st.sidebar.checkbox('Balloons')
 
 # Reverse complement
 def reverse_complement(sequence):
