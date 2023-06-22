@@ -7,6 +7,8 @@ import pickle
 
 from navigation.promoter_terminator import prom_term_page
 import hydralit_components as hc
+from utils.components import footer_style, footer
+from utils.dataloaders import make_datacore
 
 st.set_page_config(layout="wide")
 
