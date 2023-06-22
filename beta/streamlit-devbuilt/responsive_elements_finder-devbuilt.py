@@ -8,7 +8,30 @@ import pickle
 
 from navigation.promterm import promterm_page
 
-st.set_page_config(layout="wide")
+st.set_page_config(
+        page_title='REF by Minniti',
+        initial_sidebar_state="expanded",
+)
+
+
+max_width_str = f"max-width: {75}%;"
+st.markdown(f"""
+        <style>
+        .appview-container .main .block-container{{{max_width_str}}}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+st.markdown("""
+        <style>
+               .block-container {
+                    padding-top: 0rem;
+                    padding-bottom: 0rem;
+                    
+                }
+        </style>
+        """, unsafe_allow_html=True)
 
 #NavBar
 
