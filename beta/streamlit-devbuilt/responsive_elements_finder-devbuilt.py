@@ -5,6 +5,9 @@ import altair as alt
 import math
 import pickle
 
+from navigation.promoter_terminator import prom_term_page
+import hydralit_components as hc
+
 st.set_page_config(layout="wide")
 
 # Credit Eastereggs
@@ -27,6 +30,35 @@ num_ratings = len(ratings)
 st.sidebar.write(f"Average rating: {average_rating:.2f} ⭐ ({num_ratings} votes)")
 
 balloons = st.sidebar.checkbox('Balloons')
+
+tabs = [
+    HOME,
+    PROMTERM
+]
+
+option_data = [
+   {'icon': "🏠", 'label':HOME},
+   {'icon':"💾",'label':PROMTERM}
+   
+]
+
+over_theme = {'txc_inactive': 'black','menu_background':'white','txc_active':'white','option_active':'red'}
+font_fmt = {'font-class':'h3','font-size':'50%'}
+
+chosen_tab = hc.option_bar(
+    option_definition=option_data,
+    title='',
+    key='PrimaryOptionx',
+    override_theme=over_theme,
+    horizontal_orientation=True)
+
+
+if chosen_tab == HOME:
+    st.success('Bravo')
+    
+elif chosen_tab == PROMTERM
+    prom_term_page()
+    
 
 # Reverse complement
 def reverse_complement(sequence):
