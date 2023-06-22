@@ -6,7 +6,7 @@ import math
 import pickle
 import time
 
-st.set_page_config(layout="wide")
+
 
 # Reverse complement
 def reverse_complement(sequence):
