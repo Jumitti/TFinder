@@ -5,19 +5,13 @@ def pwm_page():
     def calculate_pwm(sequences):
         num_sequences = len(sequences)
         sequence_length = len(sequences[0])
-
-        # Initialiser la matrice PWM avec des zéros
         pwm = np.zeros((4, sequence_length))
-
-        # Compter les occurrences de chaque nucléotide pour chaque position
         for i in range(sequence_length):
             counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
             for sequence in sequences:
                 nucleotide = sequence[i]
                 if nucleotide in counts:
                     counts[nucleotide] += 1
-
-            # Calculer les fréquences relatives des nucléotides
             pwm[0, i] = counts['A'] / num_sequences *100
             pwm[1, i] = counts['T'] / num_sequences *100
             pwm[2, i] = counts['G'] / num_sequences *100
@@ -42,12 +36,11 @@ def pwm_page():
 
         return sequences
 
-    # Streamlit app
     st.title("Calculatrice de PWM")
 
-    fasta_text = st.text_area("Saisir les séquences au format FASTA", height=300)
+    fasta_text = st.text_area("Put FASTA sequences. Same sequence length required ⚠️", height=300)
     
-    if st.button('Generate'):
+    if st.button('Generate PWM'):
         if fasta_text:
             sequences = parse_fasta(fasta_text)
             sequences = [seq.upper() for seq in sequences]
@@ -55,7 +48,8 @@ def pwm_page():
             if len(sequences) > 0:
                 pwm = calculate_pwm(sequences)
 
-                st.header("PWM résultante")
+                st.header("PWM: ")
+                st.info("⬇️ Select and copy")
                 bases = ['A', 'T', 'G', 'C']
                 for i in range(len(pwm)):
                     base_name = bases[i]
@@ -66,7 +60,7 @@ def pwm_page():
                         base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
 
                     base_str += "]"
-                    st.text_area(base_str)
+                    st.write(base_str)
 
             else:
                 st.warning("Aucune séquence valide n'a été trouvée.")
