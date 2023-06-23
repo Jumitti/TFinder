@@ -44,7 +44,7 @@ st.markdown(footer_style, unsafe_allow_html=True) ## Footer
 #NavBar
 
 HOME = 'Home'
-APPLICATION = 'Application'
+APPLICATION = 'Tools/Software'
 RESOURCE = 'Resource'
 CONTACT = 'Contact'
 
