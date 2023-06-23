@@ -11,6 +11,7 @@ from navigation.home import home_page
 from navigation.REF import REF_page
 from navigation.resource import resource_page
 from navigation.contact import contact_page
+import style.css
 
 st.set_page_config(
         page_title='REF by Minniti',
