@@ -559,7 +559,6 @@ def REF_page():
                         sequences.append(current_sequence)
 
                     return sequences
-                matrix_text =""
                 
                 if st.button('Generate PWM'):
                     if fasta_text:
@@ -613,6 +612,7 @@ def REF_page():
                         matrices = matrix_extraction(sequence_consensus_input)
                         table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     elif jaspar == 'Matrix':
+                        st.write(matrix_text)
                         matrix_lines = matrix_text.split('\n')
                         matrix = {}
                         for line in matrix_lines:
