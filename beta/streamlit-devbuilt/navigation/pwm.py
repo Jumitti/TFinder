@@ -57,8 +57,16 @@ def pwm_page():
             pwm = calculate_pwm(sequences)
 
             st.header("PWM résultante")
+            bases = ['A', 'C', 'G', 'T']
             for i in range(len(pwm)):
-                base_name = ['A', 'T', 'G', 'C'][i]
-                st.write(base_name, pwm[i])
+                base_name = bases[i]
+                base_values = pwm[i]
+
+                base_str = base_name + " ["
+                for value in base_values:
+                    base_str += "\t" + str(int(value)) + "\t"
+
+                base_str += "]"
+                st.write(base_str)
         else:
             st.warning("Aucune séquence valide n'a été trouvée.")
