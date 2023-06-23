@@ -37,7 +37,7 @@ st.markdown("""
         </style>
         """, unsafe_allow_html=True)
 
-'''st.markdown(color_style, unsafe_allow_html=True)'''
+st.markdown(color_style, unsafe_allow_html=True)
         
 #Footer
 

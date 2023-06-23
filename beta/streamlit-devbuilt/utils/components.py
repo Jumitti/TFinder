@@ -173,7 +173,7 @@ left: 0;
 bottom: 0;
 background-color: transparent;
 margin-top: auto;
-color: red;
+color: #359AFF;
 padding: 24px;
 text-align: center;
 }
