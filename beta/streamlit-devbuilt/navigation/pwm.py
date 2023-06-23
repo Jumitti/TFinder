@@ -1,6 +1,5 @@
 import streamlit as st
 import numpy as np
-import json
 
 def pwm_page():
     def calculate_pwm(sequences):
@@ -19,10 +18,10 @@ def pwm_page():
                     counts[nucleotide] += 1
 
             # Calculer les fréquences relatives des nucléotides
-            pwm[0, i] = counts['A'] / num_sequences * 100
-            pwm[1, i] = counts['T'] / num_sequences * 100
-            pwm[2, i] = counts['G'] / num_sequences * 100
-            pwm[3, i] = counts['C'] / num_sequences * 100
+            pwm[0, i] = counts['A'] / num_sequences *100
+            pwm[1, i] = counts['T'] / num_sequences *100
+            pwm[2, i] = counts['G'] / num_sequences *100
+            pwm[3, i] = counts['C'] / num_sequences *100
 
         return pwm
 
@@ -56,17 +55,17 @@ def pwm_page():
             pwm = calculate_pwm(sequences)
 
             st.header("PWM résultante")
+            bases = ['A', 'T', 'G', 'C']
+            for i in range(len(pwm)):
+                base_name = bases[i]
+                base_values = pwm[i]
 
-            # Créer un dictionnaire pour stocker les valeurs de la matrice
-            matrix = {
-                'A': list(pwm[0]),
-                'T': list(pwm[1]),
-                'G': list(pwm[2]),
-                'C': list(pwm[3])
-            }
+                base_str = base_name + " ["
+                for value in base_values:
+                    base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
 
-            # Afficher la matrice au format JSON
-            st.json(matrix)
+                base_str += "]"
+                st.write(base_str)
 
         else:
             st.warning("Aucune séquence valide n'a été trouvée.")
