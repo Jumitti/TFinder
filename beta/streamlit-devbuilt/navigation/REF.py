@@ -380,17 +380,6 @@ def REF_page():
 
         return 1 - p_value
         
-    #p-value calcul for JASPAR
-    def calculate_p_value_JASPAR(sequence_length, normalized_score):
-        p_value = 0.0
-        
-        for i in range(sequence_length + 1):
-            p = (math.comb(sequence_length, i) * math.pow(normalized_score / 100, i)
-                 * math.pow((100 - normalized_score) / 100, sequence_length - i))
-            p_value += p
-        
-        return 1 - p_value
-        
     # Extract JASPAR matrix
     def matrix_extraction(sequence_consensus_input):
         jaspar_id = sequence_consensus_input
@@ -498,8 +487,6 @@ def REF_page():
 
                         sequence_with_context = ''.join(sequence_parts)
                         tis_position = position - tis_value
-                        
-                        p_value = calculate_p_value_JASPAR(len(seq), normalized_score)
 
                         if normalized_score >= threshold:
                             row = [str(position).ljust(8),
