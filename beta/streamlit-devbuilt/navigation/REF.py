@@ -411,6 +411,23 @@ def REF_page():
             'Complement': complement_matrix,
             'Reversed Complement': reversed_complement_matrix
         }
+    #Transform manual matrix
+        def transform_matrix_manual(matrix):
+        reversed_matrix = {base: [round(score, 3) for score in reversed(scores)] for base, scores in matrix.items()}
+        complement_matrix = {
+            'A': [round(score, 3) for score in matrix['T']],
+            'C': [round(score, 3) for score in matrix['G']],
+            'G': [round(score, 3) for score in matrix['C']],
+            'T': [round(score, 3) for score in matrix['A']]
+        }
+        reversed_complement_matrix = {base: [round(score, 3) for score in reversed(scores)] for base, scores in complement_matrix.items()}
+
+        return {
+            'Original': matrix,
+            'Reversed': reversed_matrix,
+            'Complement': complement_matrix,
+            'Reversed Complement': reversed_complement_matrix
+        }
 
     # Calculate score with JASPAR
     def calculate_score(sequence, matrix):
@@ -546,7 +563,7 @@ def REF_page():
                         matrices = matrix_extraction(sequence_consensus_input)
                         table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
                     elif jaspar == 'Matrix':
-                        matrices = transform_matrix(matrix)
+                        matrices = transform_matrix_manual(matrix)
                         table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
                     else:
                         sequence_consensus_input = entry_sequence
