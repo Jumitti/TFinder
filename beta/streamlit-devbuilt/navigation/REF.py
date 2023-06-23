@@ -526,7 +526,6 @@ def REF_page():
                 matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]")
             else:
                 fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", help='Put FASTA sequences. Same sequence length required ⚠️')
-                matrix_text = []
                 def calculate_pwm(sequences):
                     num_sequences = len(sequences)
                     sequence_length = len(sequences[0])
@@ -580,8 +579,7 @@ def REF_page():
                             base_str += "]\n"
                             pwm_text += base_str
 
-                        matrix_output = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use')
-                        matrix_text.append(pwm_text)
+                        matrix_text = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use')
 
                     else:
                         st.warning("You forget FASTA sequences :)")
