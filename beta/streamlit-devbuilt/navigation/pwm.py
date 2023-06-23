@@ -18,7 +18,7 @@ def pwm_page():
 
     # Conversion au format JSON
     json_matrix = json.dumps(matrix_data, indent=4)
-    st.write(json_matrix)
+    st.write(json_matrix, 'json')
 
     # Affichage du résultat
     st.code(json_matrix, language='json')
