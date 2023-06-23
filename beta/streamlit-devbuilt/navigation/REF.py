@@ -428,6 +428,8 @@ def REF_page():
             'Complement': complement_matrix,
             'Reversed Complement': reversed_complement_matrix
         }
+        st.write(matrix)
+        st.write(reverse_matrix)
 
     # Calculate score with JASPAR
     def calculate_score(sequence, matrix):
