@@ -412,7 +412,7 @@ def REF_page():
             'Reversed Complement': reversed_complement_matrix
         }
     #Transform manual matrix
-        def transform_matrix_manual(matrix):
+    def transform_matrix_manual(matrix):
         reversed_matrix = {base: [round(score, 3) for score in reversed(scores)] for base, scores in matrix.items()}
         complement_matrix = {
             'A': [round(score, 3) for score in matrix['T']],
