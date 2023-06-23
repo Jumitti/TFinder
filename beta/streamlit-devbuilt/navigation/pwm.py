@@ -1,5 +1,6 @@
 import streamlit as st
 import numpy as np
+import json
 
 def pwm_page():
     def calculate_pwm(sequences):
@@ -56,7 +57,7 @@ def pwm_page():
 
             st.header("PWM résultante")
 
-            # Afficher la matrice au format souhaité
+            # Créer un dictionnaire pour stocker les valeurs de la matrice
             matrix = {
                 'A': list(pwm[0]),
                 'T': list(pwm[1]),
@@ -64,10 +65,8 @@ def pwm_page():
                 'C': list(pwm[3])
             }
 
-            for base, values in matrix.items():
-                st.write(base + ":")
-                st.write(values)
+            # Afficher la matrice au format JSON
+            st.json(matrix)
 
         else:
             st.warning("Aucune séquence valide n'a été trouvée.")
-
