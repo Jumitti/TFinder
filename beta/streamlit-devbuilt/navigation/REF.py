@@ -378,7 +378,7 @@ def REF_page():
                 * (homology_percentage / 100) ** i * ((100 - homology_percentage) / 100) ** (sequence_length - i)
             p_value += p
 
-        return 1 - p_value
+        return 1 - p_value 
 
     # Extract JASPAR matrix
     def matrix_extraction(sequence_consensus_input):
