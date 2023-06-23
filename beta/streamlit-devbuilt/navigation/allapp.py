@@ -15,8 +15,8 @@ from navigation.prom_extractor import prom_extractor_page
 
 AIO = 'All in One'
 PROM = 'Promoter Extractor'
-REF = 'REF'
-PWM = 'PWM'
+REF = 'Binding Sites Finder'
+PWM = 'PWM Generator'
 
 tabs = [
     AIO,
