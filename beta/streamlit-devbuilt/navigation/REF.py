@@ -423,7 +423,7 @@ def REF_page():
                 score += base_score[i]
         return score
 
-    # Find with JASPAR
+    # Find with JASPAR and manual matrix
     def search_sequence(threshold, tis_value, result_promoter, matrices):
         global table2
         table2 = []
@@ -500,11 +500,11 @@ def REF_page():
 
         if len(table2) > 0:
             if prom_term == 'Promoter':
-                table2.sort(key=lambda x: float(x[3]), reverse=False)
+                table2.sort(key=lambda x: float(x[3]), reverse=True)
                 header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
                 table2.insert(0, header)
             else:
-                table2.sort(key=lambda x: float(x[3]), reverse=False)
+                table2.sort(key=lambda x: float(x[3]), reverse=True)
                 header = ["Position", "Position (Gene end)", "Sequence", "Score %", "Promoter"]
                 table2.insert(0, header)
             
