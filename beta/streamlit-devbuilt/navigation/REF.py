@@ -499,11 +499,11 @@ def REF_page():
         if len(table2) > 0:
             if prom_term == 'Promoter':
                 table2.sort(key=lambda x: float(x[3]), reverse=False)
-                header = ["Position", "Position (TSS)", "Sequence", "p-value", "Score %", "Promoter"]
+                header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
                 table2.insert(0, header)
             else:
                 table2.sort(key=lambda x: float(x[3]), reverse=False)
-                header = ["Position", "Position (Gene end)", "Sequence", "p-value", "Score %", "Promoter"]
+                header = ["Position", "Position (Gene end)", "Sequence", "Score %", "Promoter"]
                 table2.insert(0, header)
             
         else:
