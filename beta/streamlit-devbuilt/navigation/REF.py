@@ -148,7 +148,7 @@ def REF_page():
 
     # Promoter Finder
     with col1:
-        st.markdown('<h1 style="color: #E67D39;">[Step 1] Promoter and Terminator Extractor</h1>', unsafe_allow_html=True)
+        st.header(':red[Step 1] Promoter and Terminator Extractor')
         st.info("💡 If you have a FASTA sequence, go to :red[**Step 2**]")
 
     # Gene ID
@@ -200,7 +200,7 @@ def REF_page():
 
     # Promoter output state
     with col2:
-        st.header(':E67D39[Step 2] Binding Sites Finder')
+        st.header(':red[Step 2] Binding Sites Finder')
         if prom_term == 'Promoter':
             if 'result_promoter' not in st.session_state:
                 result_promoter = st.text_area("🔸 :red[**Step 2.1**] Promoter:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).")
