@@ -1,0 +1,19 @@
+/* Changer la couleur des boutons */
+.stButton>button {
+  background-color: blue;
+}
+
+/* Changer la couleur des curseurs */
+.stSlider>div>div {
+  background-color: blue !important;
+}
+
+/* Changer la couleur des boîtes de sélection */
+.stCheckbox>div>div:nth-child(2) {
+  background-color: blue !important;
+}
+
+/* Changer la couleur des boîtes d'options */
+.stRadio>div>div:nth-child(2) {
+  background-color: blue !important;
+}
