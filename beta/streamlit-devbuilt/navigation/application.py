@@ -6,11 +6,7 @@ import altair as alt
 import math
 import pickle
 
-from utils.components import footer_style, footer
-from navigation.home import home_page
 from navigation.REF import REF_page
-from navigation.resource import resource_page
-from navigation.contact import contact_page
 from navigation.pwm import pwm_page
 
 def application_page():
