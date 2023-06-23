@@ -14,9 +14,7 @@ from navigation.contact import contact_page
 
 st.set_page_config(
         page_title='REF by Minniti',
-        initial_sidebar_state="expanded",
-        base="light",
-        primaryColor="#359aff"
+        initial_sidebar_state="expanded"
 )
 
 
