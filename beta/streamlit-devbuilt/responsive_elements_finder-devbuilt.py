@@ -40,7 +40,7 @@ st.markdown("""
 #Footer
 
 st.markdown(footer_style, unsafe_allow_html=True) ## Footer
-st.markdown(color_style, unsafe_allow_html=True)
+st.markdown('<link href="style.css" rel="stylesheet">', unsafe_allow_html=True)
 
 #NavBar
 
