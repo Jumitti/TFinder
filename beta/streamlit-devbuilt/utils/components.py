@@ -199,13 +199,8 @@ footer_style = """
 
 color_style = """
     <style>
-
-    .stSlider>div>div {
-      background-color: blue !important;
-    }
-
-    .stRadio>div>div:nth-child(2) {
-      color: blue !important;
+    :root {
+      --primary-color: blue;
     }
     </style>
 """
