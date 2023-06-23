@@ -12,11 +12,11 @@ def pwm_page():
             for i, base in enumerate(sequence):
                 if base == 'A':
                     base_counts[0][i] += 1
-                elif base == 'C':
+                elif base == 'T':
                     base_counts[1][i] += 1
                 elif base == 'G':
                     base_counts[2][i] += 1
-                elif base == 'T':
+                elif base == 'C':
                     base_counts[3][i] += 1
 
         # Normalize the counts to frequencies
@@ -57,6 +57,8 @@ def pwm_page():
             pwm = calculate_pwm(sequences)
 
             st.header("PWM résultante")
-            st.text(pwm)
+            for i in range(len(pwm)):
+                base_name = ['A', 'T', 'G', 'C'][i]
+                st.write(base_name, pwm[i])
         else:
             st.warning("Aucune séquence valide n'a été trouvée.")
