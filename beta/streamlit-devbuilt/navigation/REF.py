@@ -543,6 +543,10 @@ def REF_page():
                 threshold = float(threshold_entry)
                 try:
                     if jaspar == 'JASPAR_ID':
+                        sequence_consensus_input = entry_sequence
+                        matrices = matrix_extraction(sequence_consensus_input)
+                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                    elif jaspar == 'Matrix':
                         matrix_lines = matrix_str.strip().split('\n')
                         matrix_data = {}
                         for line in matrix_lines:
