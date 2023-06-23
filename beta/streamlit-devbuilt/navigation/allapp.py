@@ -55,7 +55,7 @@ def allapp_page():
     elif page == PWM: 
         pwm_page()
         
-    for i in range(6):
+    for i in range(4):
         st.markdown('#')
         
 
