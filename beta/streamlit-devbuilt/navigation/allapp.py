@@ -38,7 +38,6 @@ def allapp_page():
     page = hc.option_bar(
         option_definition=option_data,
         title='',
-        key='PrimaryOptionx',
         override_theme=over_theme,
         horizontal_orientation=True)
 
