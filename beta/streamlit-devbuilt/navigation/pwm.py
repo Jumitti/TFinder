@@ -47,25 +47,23 @@ def pwm_page():
 
     fasta_text = st.text_area("Saisir les séquences au format FASTA", height=300)
 
-    if fasta_text:
-        sequences = parse_fasta(fasta_text)
-        sequences = [seq.upper() for seq in sequences]
+    if st.button("Créer la matrice"):
+        if fasta_text:
+            sequences = parse_fasta(fasta_text)
+            sequences = [seq.upper() for seq in sequences]
 
-        if len(sequences) > 0:
-            pwm = calculate_pwm(sequences)
+            if len(sequences) > 0:
+                pwm = calculate_pwm(sequences)
 
-            st.header("PWM résultante")
-            bases = ['A', 'T', 'G', 'C']
-            for i in range(len(pwm)):
-                base_name = bases[i]
-                base_values = pwm[i]
+                st.header("PWM résultante")
+                bases = ['A', 'T', 'G', 'C']
+                pwm_data = {}
+                for i in range(len(pwm)):
+                    base_name = bases[i]
+                    base_values = pwm[i]
+                    pwm_data[base_name] = base_values.tolist()
 
-                base_str = base_name + " ["
-                for value in base_values:
-                    base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+                st.json(pwm_data)
 
-                base_str += "]"
-                st.write(base_str)
-
-        else:
-            st.warning("Aucune séquence valide n'a été trouvée.")
+            else:
+                st.warning("Aucune séquence valide n'a été trouvée.")
