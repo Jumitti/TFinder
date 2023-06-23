@@ -18,10 +18,10 @@ def pwm_page():
                     counts[nucleotide] += 1
 
             # Calculer les fréquences relatives des nucléotides
-            pwm[0, i] = counts['A'] / num_sequences
-            pwm[1, i] = counts['T'] / num_sequences
-            pwm[2, i] = counts['G'] / num_sequences
-            pwm[3, i] = counts['C'] / num_sequences
+            pwm[0, i] = counts['A'] / num_sequences *100
+            pwm[1, i] = counts['T'] / num_sequences *100
+            pwm[2, i] = counts['G'] / num_sequences *100
+            pwm[3, i] = counts['C'] / num_sequences *100
 
         return pwm
 
@@ -62,7 +62,7 @@ def pwm_page():
 
                 base_str = base_name + " ["
                 for value in base_values:
-                    base_str += "\t" + format(value, ".3f") + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+                    base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
 
                 base_str += "]"
                 st.write(base_str)
