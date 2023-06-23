@@ -51,7 +51,6 @@ def pwm_page():
                 st.subheader("PWM: ")
                 st.info("⬇️ Select and copy")
                 bases = ['A', 'T', 'G', 'C']
-                base_str_f=[]
                 for i in range(len(pwm)):
                     base_name = bases[i]
                     base_values = pwm[i]
@@ -60,9 +59,10 @@ def pwm_page():
                     for value in base_values:
                         base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
 
-                    base_str += "]"
-                    base_str_f = base_str
-                    st.text_area(base_str_f)
+                    base_str += "]\n"
+                    pwm_text += base_str
+
+                st.text_area("PWM résultante", value=pwm_text)
 
             else:
                 st.warning("You forget FASTA sequences :)")
