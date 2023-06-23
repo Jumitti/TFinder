@@ -6,7 +6,7 @@ import altair as alt
 import math
 import pickle
 
-from utils.components import footer_style, footer
+from utils.components import footer_style, footer, color_style
 from navigation.home import home_page
 from navigation.REF import REF_page
 from navigation.resource import resource_page
@@ -36,10 +36,11 @@ st.markdown("""
                 }
         </style>
         """, unsafe_allow_html=True)
-        
+
 #Footer
 
 st.markdown(footer_style, unsafe_allow_html=True) ## Footer
+st.markdown(color_style, unsafe_allow_html=True)
 
 #NavBar
 
