@@ -316,7 +316,7 @@ def BSF_page():
     elif jaspar == 'Matrix':
         matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'))
         if matrix_type == 'With PWM':
-            matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]")
+            matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]", help="Only PWM generated with our tools are allowed")
         else:
             fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", help='Put FASTA sequences. Same sequence length required ⚠️')
             def calculate_pwm(sequences):
@@ -372,7 +372,7 @@ def BSF_page():
                         base_str += "]\n"
                         pwm_text += base_str
 
-                    matrix_text = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use', key="non_editable_text")
+                    matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Dont't modify.", key="non_editable_text")
 
                 else:
                     st.warning("You forget FASTA sequences :)")
