@@ -583,11 +583,12 @@ def REF_page():
                                 pwm_text += base_str
 
                             matrix_output = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use')
-                            matrix_text.append(matrix_output) 
+                            matrix_text.append(pwm_text) 
+                            
+                        matrix_text = "\n".join(st.text_area("PWM:", value=pwm_text, help='Select and copy for later use')
 
                         else:
                             st.warning("You forget FASTA sequences :)")
-
               
         else:
             entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
