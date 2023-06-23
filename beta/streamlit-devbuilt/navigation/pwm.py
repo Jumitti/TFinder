@@ -36,7 +36,7 @@ def pwm_page():
 
         return sequences
 
-    st.title("Calculatrice de PWM")
+    st.title("PWM generator")
 
     fasta_text = st.text_area("Put FASTA sequences. Same sequence length required ⚠️", height=300)
     
