@@ -62,13 +62,10 @@ def pwm_page():
 
                 base_str = base_name + " ["
                 for value in base_values:
-                    base_str += "\t" + str(int(value)) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
-
+                    base_str += "\t" + format(value, ".3f") + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
 
                 base_str += "]"
                 st.write(base_str)
-                
-                pwm_matrix = calculate_pwm(sequences)
-                st.write(pwm_matrix)
+
         else:
             st.warning("Aucune séquence valide n'a été trouvée.")
