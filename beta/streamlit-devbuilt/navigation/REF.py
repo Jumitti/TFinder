@@ -570,7 +570,6 @@ def REF_page():
                         if len(sequences) > 0:
                             pwm = calculate_pwm(sequences)
                             bases = ['A', 'T', 'G', 'C']
-                            pwm_text = ""
                             for i in range(len(pwm)):
                                 base_name = bases[i]
                                 base_values = pwm[i]
@@ -583,7 +582,7 @@ def REF_page():
                                 pwm_text += base_str
 
                             matrix_output = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use')
-                            matrix_text.append(pwm_text) 
+                            matrix_text.append(pwm_text)
 
                         else:
                             st.warning("You forget FASTA sequences :)")
