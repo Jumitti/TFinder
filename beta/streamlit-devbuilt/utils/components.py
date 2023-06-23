@@ -196,3 +196,23 @@ footer_style = """
         footer {visibility: hidden;}
     </style>
 """
+
+color_style = """
+    <style>
+    .stButton>button {
+      background-color: blue;
+    }
+
+    .stSlider>div>div {
+      background-color: blue !important;
+    }
+
+    .stCheckbox>div>div:nth-child(2) {
+      background-color: blue !important;
+    }
+
+    .stRadio>div>div:nth-child(2) {
+      background-color: blue !important;
+    }
+    </style>
+"""

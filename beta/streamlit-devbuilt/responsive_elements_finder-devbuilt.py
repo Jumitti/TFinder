@@ -6,7 +6,7 @@ import altair as alt
 import math
 import pickle
 
-from utils.components import footer_style, footer
+from utils.components import footer_style, footer, color_style
 from navigation.home import home_page
 from navigation.REF import REF_page
 from navigation.resource import resource_page
@@ -38,16 +38,7 @@ st.markdown("""
         </style>
         """, unsafe_allow_html=True)
 
-def load_custom_css():
-    with open('style.css', 'r') as f:
-        css = f.read()
-    return f'<style>{css}</style>'
-
-# Charger le CSS personnalisé
-custom_css = load_custom_css()
-
-# Afficher le CSS personnalisé avec Streamlit
-st.markdown(custom_css, unsafe_allow_html=True)
+st.markdown(color_style, unsafe_allow_html=True)
         
 #Footer
 
