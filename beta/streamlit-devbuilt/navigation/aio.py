@@ -580,7 +580,6 @@ def aio_page():
                             pwm_text += base_str
 
                         matrix_text = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use', key="non_editable_text")
-                        st.markdown(f"<div contenteditable='false'>{pwm_text}</div>", unsafe_allow_html=True)
 
                     else:
                         st.warning("You forget FASTA sequences :)")
