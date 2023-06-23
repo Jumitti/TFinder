@@ -557,9 +557,8 @@ def REF_page():
                                 values = values.replace(']', '').split()
                                 values = [float(value) for value in values]
                                 matrix[key.strip()] = values
-                        st.write('Matrix', matrix)
                         matrices = transform_matrix(matrix)
-                        st.write(matrices)
+                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     else:
                         sequence_consensus_input = entry_sequence
                         table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
