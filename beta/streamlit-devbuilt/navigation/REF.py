@@ -4,7 +4,6 @@ import pandas as pd
 import altair as alt
 import math
 import pickle
-from scipy.stats import hypergeom
 
 def REF_page():
     # Reverse complement
@@ -386,7 +385,7 @@ def REF_page():
         p_value = 0.0
 
         for i in range(sequence_length + 1):
-            p = hypergeom.sf(i - 1, sequence_length, sequence_length * normalized_score / 100, sequence_length)
+            p = math.comb(sequence_length, i) * ((normalized_score / 100) ** i) * (((100 - normalized_score) / 100) ** (sequence_length - i))
             p_value += p
 
         return p_value
