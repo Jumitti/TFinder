@@ -12,7 +12,9 @@ from navigation.REF import REF_page
 from navigation.resource import resource_page
 from navigation.contact import contact_page
 
-st.set_config_file(config_file="config.toml")
+[theme]
+base="light"
+primaryColor="#359aff"
 
 st.set_page_config(
         page_title='REF by Minniti',
