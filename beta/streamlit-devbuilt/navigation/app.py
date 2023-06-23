@@ -54,4 +54,7 @@ def application_page():
     elif chosen_tab == PWM: 
         st.succes('PWM')
         
+    for i in range(6):
+        st.markdown('#')
+        
 
