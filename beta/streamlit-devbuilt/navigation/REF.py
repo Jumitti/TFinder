@@ -4,6 +4,7 @@ import pandas as pd
 import altair as alt
 import math
 import pickle
+import numpy as np
 
 def REF_page():
     # Reverse complement
@@ -413,14 +414,9 @@ def REF_page():
         }
     #Transform manual matrix
     def transform_matrix_manual(matrix):
-        reversed_matrix = {base: [score if score == 0 else round(100 - score, 3) for score in reversed(scores)] for base, scores in matrix.items()}
-        complement_matrix = {
-            'A': [score if score == 0 else round(100 - score, 3) for score in matrix['T']],
-            'C': [score if score == 0 else round(100 - score, 3) for score in matrix['G']],
-            'G': [score if score == 0 else round(100 - score, 3) for score in matrix['C']],
-            'T': [score if score == 0 else round(100 - score, 3) for score in matrix['A']]
-        }
-        reversed_complement_matrix = {base: [score if score == 0 else round(100 - score, 3) for score in reversed(scores)] for base, scores in complement_matrix.items()}
+        reversed_matrix = np.flip(matrix, axis=1)
+        complement_matrix = np.flipud(matrix)
+        reversed_complement_matrix = np.flip(complement_matrix, axis=1)
 
         return {
             'Original': matrix,
@@ -563,19 +559,22 @@ def REF_page():
                         matrices = matrix_extraction(sequence_consensus_input)
                         table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
                     elif jaspar == 'Matrix':
-                        matrix = {}
-                        lines = matrix_str.strip().split('\n')
-                        for line in lines:
-                            parts = line.split()
-                            base = parts[0]
-                            scores = [float(score) for score in parts[1:]]
-                            matrix[base] = scores
-                        transformed_matrix = transform_matrix_manual(matrix)
+                        matrix_lines = matrix_str.strip().split('\n')
+                        matrix_data = []
+                        for line in matrix_lines:
+                            parts = line.split('[')
+                            base = parts[0].strip()
+                            scores = [float(score.strip()) for score in parts[1].replace(']', '').split()]
+                            matrix_data.append(scores)
 
+                        matrix_array = np.array(matrix_data)
+                        
+                        transformed_matrix = transform_matrix_manual(matrix_array)
+                        
                         for matrix_name, matrix_values in transformed_matrix.items():
                             st.write(matrix_name)
-                            for base, scores in matrix_values.items():
-                                st.write(base, scores)
+                            for i, base in enumerate(['A', 'T', 'G', 'C']):
+                                st.write(base, matrix_values[i])
                             st.write('\n')
                             
                         table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
