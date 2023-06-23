@@ -37,7 +37,7 @@ st.markdown("""
         </style>
         """, unsafe_allow_html=True)
 
-st.markdown(color_style, unsafe_allow_html=True)
+'''st.markdown(color_style, unsafe_allow_html=True)'''
         
 #Footer
 
@@ -65,7 +65,7 @@ option_data = [
    
 ]
 
-over_theme = {'txc_inactive': 'black','menu_background':'white','txc_active':'white','option_active':'red'}
+over_theme = {'txc_inactive': 'black','menu_background':'white','txc_active':'white','option_active':'359AFF'}
 font_fmt = {'font-class':'h3','font-size':'50%'}
 
 chosen_tab = hc.option_bar(
