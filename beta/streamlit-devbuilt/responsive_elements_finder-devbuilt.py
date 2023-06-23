@@ -71,8 +71,7 @@ chosen_tab = hc.option_bar(
     title='',
     key='PrimaryOptionx',
     override_theme=over_theme,
-    horizontal_orientation=True,
-    fmt=font_fmt)
+    horizontal_orientation=True)
 
 if chosen_tab == HOME:
     home_page()
