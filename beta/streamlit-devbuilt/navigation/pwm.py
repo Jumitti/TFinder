@@ -64,7 +64,8 @@ def pwm_page():
 
                 base_str = base_name + " ["
                 for value in base_values:
-                    base_str += "\t" + str(int(value)) + "\t"
+                    base_str += "\t" + str(int(value)) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+
 
                 base_str += "]"
                 st.write(base_str)
