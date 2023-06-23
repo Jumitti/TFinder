@@ -560,33 +560,32 @@ def REF_page():
                         sequences.append(current_sequence)
 
                     return sequences
-                
-                if st.button('Generate PWM'):
-                    if fasta_text:
-                        sequences = parse_fasta(fasta_text)
-                        sequences = [seq.upper() for seq in sequences]
+                    
+                if fasta_text:
+                    sequences = parse_fasta(fasta_text)
+                    sequences = [seq.upper() for seq in sequences]
 
-                        if len(sequences) > 0:
-                            pwm = calculate_pwm(sequences)
-                            bases = ['A', 'T', 'G', 'C']
-                            pwm_text = ""
-                            for i in range(len(pwm)):
-                                base_name = bases[i]
-                                base_values = pwm[i]
+                    if len(sequences) > 0:
+                        pwm = calculate_pwm(sequences)
+                        bases = ['A', 'T', 'G', 'C']
+                        pwm_text = ""
+                        for i in range(len(pwm)):
+                            base_name = bases[i]
+                            base_values = pwm[i]
 
-                                base_str = base_name + " ["
-                                for value in base_values:
-                                    base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+                            base_str = base_name + " ["
+                            for value in base_values:
+                                base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
 
-                                base_str += "]\n"
-                                pwm_text += base_str
+                            base_str += "]\n"
+                            pwm_text += base_str
 
-                            matrix_output = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use')
-                            matrix_text.append(pwm_text)
-                            st.session_state['matrix_text'] = matrix_text
+                        matrix_output = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use')
+                        matrix_text.append(pwm_text)
+                        st.session_state['matrix_text'] = matrix_text
 
-                        else:
-                            st.warning("You forget FASTA sequences :)")
+                    else:
+                        st.warning("You forget FASTA sequences :)")
               
         else:
             entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
