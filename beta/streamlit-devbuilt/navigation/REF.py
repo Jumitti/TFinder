@@ -571,7 +571,7 @@ def REF_page():
                         
                         matrices = transform_matrix_manual(matrix_array)
                         
-                        for matrix_name, matrix_values in transformed_matrix.items():
+                        for matrix_name, matrix_values in matrices.items():
                             st.write(matrix_name)
                             for i, base in enumerate(['A', 'T', 'G', 'C']):
                                 st.write(base, matrix_values[i])
