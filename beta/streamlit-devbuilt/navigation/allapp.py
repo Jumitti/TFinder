@@ -43,13 +43,13 @@ def allapp_page():
         horizontal_orientation=True)
 
     if chosen_tab == AIO:
-        st.succes('REF')
+        st.succes('AIO')
 
     elif chosen_tab == PROM: 
         st.succes('PROM')
 
     elif chosen_tab == REF: 
-        st.succes('REF'
+        st.succes('REF')
         
     elif chosen_tab == PWM: 
         st.succes('PWM')
