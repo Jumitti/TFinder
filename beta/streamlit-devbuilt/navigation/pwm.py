@@ -3,29 +3,29 @@ import numpy as np
 
 def pwm_page():
     def calculate_pwm(sequences):
-    num_sequences = len(sequences)
-    sequence_length = len(sequences[0])
+        num_sequences = len(sequences)
+        sequence_length = len(sequences[0])
 
-    # Initialiser la matrice PWM avec des zéros
-    pwm = np.zeros((4, sequence_length))
+        # Initialiser la matrice PWM avec des zéros
+        pwm = np.zeros((4, sequence_length))
 
-    # Compter les occurrences de chaque nucléotide pour chaque position
-    for i in range(sequence_length):
-        counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
-        for sequence in sequences:
-            nucleotide = sequence[i]
-            if nucleotide in counts:
-                counts[nucleotide] += 1
+        # Compter les occurrences de chaque nucléotide pour chaque position
+        for i in range(sequence_length):
+            counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
+            for sequence in sequences:
+                nucleotide = sequence[i]
+                if nucleotide in counts:
+                    counts[nucleotide] += 1
 
-        # Calculer les fréquences relatives des nucléotides
-        total_count = sum(counts.values())
-        if total_count > 0:
-            pwm[0, i] = counts['A'] / total_count
-            pwm[1, i] = counts['T'] / total_count
-            pwm[2, i] = counts['C'] / total_count
-            pwm[3, i] = counts['G'] / total_count
+            # Calculer les fréquences relatives des nucléotides
+            total_count = sum(counts.values())
+            if total_count > 0:
+                pwm[0, i] = counts['A'] / total_count
+                pwm[1, i] = counts['T'] / total_count
+                pwm[2, i] = counts['C'] / total_count
+                pwm[3, i] = counts['G'] / total_count
 
-    return pwm
+        return pwm
 
     def parse_fasta(fasta_text):
         sequences = []
