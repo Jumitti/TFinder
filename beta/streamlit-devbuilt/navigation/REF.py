@@ -583,7 +583,7 @@ def REF_page():
                                 pwm_text += base_str
 
                             matrix_output = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use')
-                            matrix_text.append(pwm_text) 
+                            matrix_text.append(matrix_output) 
 
                         else:
                             st.warning("You forget FASTA sequences :)")
