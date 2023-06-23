@@ -618,17 +618,31 @@ def REF_page():
                         matrices = matrix_extraction(sequence_consensus_input)
                         table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     elif jaspar == 'Matrix':
-                        matrix_lines = matrix_text.split('\n')
-                        matrix = {}
-                        for line in matrix_lines:
-                            line = line.strip()
-                            if line:
-                                key, values = line.split('[', 1)
-                                values = values.replace(']', '').split()
-                                values = [float(value) for value in values]
-                                matrix[key.strip()] = values
-                        matrices = transform_matrix(matrix)
-                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                        if 'matrix_text' not in st.session_state:
+                                matrix_lines = matrix_text.split('\n')
+                                matrix = {}
+                                for line in matrix_lines:
+                                    line = line.strip()
+                                    if line:
+                                        key, values = line.split('[', 1)
+                                        values = values.replace(']', '').split()
+                                        values = [float(value) for value in values]
+                                        matrix[key.strip()] = values
+                                matrices = transform_matrix(matrix)
+                                table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                        else:
+                            result_matrix_text = "\n".join(st.session_state['matrix_text'])
+                            matrix_lines = result_matrix_text.split('\n')
+                                matrix = {}
+                                for line in matrix_lines:
+                                    line = line.strip()
+                                    if line:
+                                        key, values = line.split('[', 1)
+                                        values = values.replace(']', '').split()
+                                        values = [float(value) for value in values]
+                                        matrix[key.strip()] = values
+                                matrices = transform_matrix(matrix)
+                                table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     else:
                         sequence_consensus_input = entry_sequence
                         table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
