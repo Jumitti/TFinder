@@ -9,32 +9,32 @@ import pickle
 from navigation.REF import REF_page
 from navigation.pwm import pwm_page
 
+#NavBar
+
+AIO = 'All in One'
+PROM = 'Promoter Extractor'
+REF = 'REF'
+PWM = 'PWM'
+
+tabs = [
+    AIO,
+    PROM,
+    REF,
+    PWM
+]
+
+option_data = [
+   {'icon': "🏠", 'label':AIO},
+   {'icon': "🖥️", 'label':PROM},
+   {'icon': "🖥️", 'label':REF},
+   {'icon':"📑",'label':PWM}
+   
+]
+
+over_theme = {'txc_inactive': 'black','menu_background':'#ECECEC','txc_active':'white','option_active':'#fab947'}
+font_fmt = {'font-class':'h3','font-size':'50%'}
+
 def allapp_page():
-    #NavBar
-
-    AIO = 'All in One'
-    PROM = 'Promoter Extractor'
-    REF = 'REF'
-    PWM = 'PWM'
-
-    tabs = [
-        AIO,
-        PROM,
-        REF,
-        PWM
-    ]
-
-    option_data = [
-       {'icon': "🏠", 'label':AIO},
-       {'icon': "🖥️", 'label':PROM},
-       {'icon': "🖥️", 'label':REF},
-       {'icon':"📑",'label':PWM}
-       
-    ]
-
-    over_theme = {'txc_inactive': 'black','menu_background':'#ECECEC','txc_active':'white','option_active':'#fab947'}
-    font_fmt = {'font-class':'h3','font-size':'50%'}
-
     page = hc.option_bar(
         option_definition=option_data,
         title='',
