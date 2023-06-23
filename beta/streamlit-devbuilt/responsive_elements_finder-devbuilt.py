@@ -37,6 +37,17 @@ st.markdown("""
                 }
         </style>
         """, unsafe_allow_html=True)
+
+def load_custom_css():
+    with open('style.css', 'r') as f:
+        css = f.read()
+    return f'<style>{css}</style>'
+
+# Charger le CSS personnalisé
+custom_css = load_custom_css()
+
+# Afficher le CSS personnalisé avec Streamlit
+st.markdown(custom_css, unsafe_allow_html=True)
         
 #Footer
 
@@ -148,13 +159,3 @@ with st.sidebar.expander("Binding Sites Finder"):
     st.write('Note for JASPAR option: Score is normalized to the maximum PWM score of the requested transcription factor. The result is displayed as a percentage')
     st.write('Note without JASPAR option: Homology is calculated between the responsive element in the promoter and the responsive element requested. The calculation uses the Hamming distance, counts the number of differences and gives a percentage score homology.')
     
-if __name__ == '__main__':
-    # Charger le contenu CSS personnalisé
-    with open('style.css', 'r') as file:
-        css = file.read()
-
-    # Afficher le contenu CSS personnalisé
-    st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
-
-    # Appeler votre fonction principale
-    main()
