@@ -615,20 +615,6 @@ def REF_page():
                         matrices = matrix_extraction(sequence_consensus_input)
                         table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     elif jaspar == 'Matrix':
-                        if matrix_type = 'With FASTA sequences':
-                            matrix_text = "\n".join(matrix_output)
-                            matrix_lines = matrix_text.split('\n')
-                            matrix = {}
-                            for line in matrix_lines:
-                                line = line.strip()
-                                if line:
-                                    key, values = line.split('[', 1)
-                                    values = values.replace(']', '').split()
-                                    values = [float(value) for value in values]
-                                    matrix[key.strip()] = values
-                            matrices = transform_matrix(matrix)
-                            table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-                        else: 
                         matrix_lines = matrix_text.split('\n')
                         matrix = {}
                         for line in matrix_lines:
