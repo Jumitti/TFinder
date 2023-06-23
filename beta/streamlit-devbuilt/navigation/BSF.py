@@ -316,118 +316,117 @@ def BSF_page():
         return table2
         
     # Responsive Elements Finder
-    with col2:
 
     # RE entry
-        jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','Matrix'))
-        if jaspar == 'JASPAR_ID':
-            entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1")
-        elif jaspar == 'Matrix':
-            matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'))
-            if matrix_type == 'With PWM':
-                matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]")
-            else:
-                fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", help='Put FASTA sequences. Same sequence length required ⚠️')
-                def calculate_pwm(sequences):
-                    num_sequences = len(sequences)
-                    sequence_length = len(sequences[0])
-                    pwm = np.zeros((4, sequence_length))
-                    for i in range(sequence_length):
-                        counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
-                        for sequence in sequences:
-                            nucleotide = sequence[i]
-                            if nucleotide in counts:
-                                counts[nucleotide] += 1
-                        pwm[0, i] = counts['A'] / num_sequences *100
-                        pwm[1, i] = counts['T'] / num_sequences *100
-                        pwm[2, i] = counts['G'] / num_sequences *100
-                        pwm[3, i] = counts['C'] / num_sequences *100
+    jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','Matrix'))
+    if jaspar == 'JASPAR_ID':
+        entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1")
+    elif jaspar == 'Matrix':
+        matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'))
+        if matrix_type == 'With PWM':
+            matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]")
+        else:
+            fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", help='Put FASTA sequences. Same sequence length required ⚠️')
+            def calculate_pwm(sequences):
+                num_sequences = len(sequences)
+                sequence_length = len(sequences[0])
+                pwm = np.zeros((4, sequence_length))
+                for i in range(sequence_length):
+                    counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
+                    for sequence in sequences:
+                        nucleotide = sequence[i]
+                        if nucleotide in counts:
+                            counts[nucleotide] += 1
+                    pwm[0, i] = counts['A'] / num_sequences *100
+                    pwm[1, i] = counts['T'] / num_sequences *100
+                    pwm[2, i] = counts['G'] / num_sequences *100
+                    pwm[3, i] = counts['C'] / num_sequences *100
 
-                    return pwm
+                return pwm
 
-                def parse_fasta(fasta_text):
-                    sequences = []
-                    current_sequence = ""
+            def parse_fasta(fasta_text):
+                sequences = []
+                current_sequence = ""
 
-                    for line in fasta_text.splitlines():
-                        if line.startswith(">"):
-                            if current_sequence:
-                                sequences.append(current_sequence)
-                            current_sequence = ""
-                        else:
-                            current_sequence += line
-
-                    if current_sequence:
-                        sequences.append(current_sequence)
-
-                    return sequences
-                    
-                if fasta_text:
-                    sequences = parse_fasta(fasta_text)
-                    sequences = [seq.upper() for seq in sequences]
-
-                    if len(sequences) > 0:
-                        pwm = calculate_pwm(sequences)
-                        bases = ['A', 'T', 'G', 'C']
-                        pwm_text = ""
-                        for i in range(len(pwm)):
-                            base_name = bases[i]
-                            base_values = pwm[i]
-
-                            base_str = base_name + " ["
-                            for value in base_values:
-                                base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
-
-                            base_str += "]\n"
-                            pwm_text += base_str
-
-                        matrix_text = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use', key="non_editable_text")
-
+                for line in fasta_text.splitlines():
+                    if line.startswith(">"):
+                        if current_sequence:
+                            sequences.append(current_sequence)
+                        current_sequence = ""
                     else:
-                        st.warning("You forget FASTA sequences :)")
-              
-        else:
-            entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
+                        current_sequence += line
 
-    # TSS entry
-        if prom_term == 'Promoter':
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
-        else:
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
+                if current_sequence:
+                    sequences.append(current_sequence)
 
-    # Threshold
-        if jaspar == 'JASPAR_ID':
-            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
-        else:
-            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Homology threshold (%)", 0, 100 ,80)
+                return sequences
+                
+            if fasta_text:
+                sequences = parse_fasta(fasta_text)
+                sequences = [seq.upper() for seq in sequences]
 
-    # Run Responsive Elements finder
-        if st.button("🔎 :orange[**Step 2.6**] Find responsive elements"):
-            with st.spinner("Finding responsive elements..."):
-                tis_value = int(entry_tis)
-                threshold = float(threshold_entry)
-                try:
-                    if jaspar == 'JASPAR_ID':
-                        sequence_consensus_input = entry_sequence
-                        matrices = matrix_extraction(sequence_consensus_input)
-                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-                    elif jaspar == 'Matrix':
-                        matrix_lines = matrix_text.split('\n')
-                        matrix = {}
-                        for line in matrix_lines:
-                            line = line.strip()
-                            if line:
-                                key, values = line.split('[', 1)
-                                values = values.replace(']', '').split()
-                                values = [float(value) for value in values]
-                                matrix[key.strip()] = values
-                        matrices = transform_matrix(matrix)
-                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-                    else:
-                        sequence_consensus_input = entry_sequence
-                        table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
-                except Exception as e:
-                    st.error(f"Error finding responsive elements: {str(e)}")
+                if len(sequences) > 0:
+                    pwm = calculate_pwm(sequences)
+                    bases = ['A', 'T', 'G', 'C']
+                    pwm_text = ""
+                    for i in range(len(pwm)):
+                        base_name = bases[i]
+                        base_values = pwm[i]
+
+                        base_str = base_name + " ["
+                        for value in base_values:
+                            base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+
+                        base_str += "]\n"
+                        pwm_text += base_str
+
+                    matrix_text = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use', key="non_editable_text")
+
+                else:
+                    st.warning("You forget FASTA sequences :)")
+          
+    else:
+        entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
+
+# TSS entry
+    if prom_term == 'Promoter':
+        entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
+    else:
+        entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
+
+# Threshold
+    if jaspar == 'JASPAR_ID':
+        threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
+    else:
+        threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Homology threshold (%)", 0, 100 ,80)
+
+# Run Responsive Elements finder
+    if st.button("🔎 :orange[**Step 2.6**] Find responsive elements"):
+        with st.spinner("Finding responsive elements..."):
+            tis_value = int(entry_tis)
+            threshold = float(threshold_entry)
+            try:
+                if jaspar == 'JASPAR_ID':
+                    sequence_consensus_input = entry_sequence
+                    matrices = matrix_extraction(sequence_consensus_input)
+                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                elif jaspar == 'Matrix':
+                    matrix_lines = matrix_text.split('\n')
+                    matrix = {}
+                    for line in matrix_lines:
+                        line = line.strip()
+                        if line:
+                            key, values = line.split('[', 1)
+                            values = values.replace(']', '').split()
+                            values = [float(value) for value in values]
+                            matrix[key.strip()] = values
+                    matrices = transform_matrix(matrix)
+                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                else:
+                    sequence_consensus_input = entry_sequence
+                    table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
+            except Exception as e:
+                st.error(f"Error finding responsive elements: {str(e)}")
 
     # RE output
     if jaspar == 'JASPAR_ID':
