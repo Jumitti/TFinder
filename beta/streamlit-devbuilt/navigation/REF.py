@@ -540,7 +540,7 @@ def REF_page():
 
             # Max score per matrix
             max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-
+            st.write(max_score)
             # Promoter input type
             lines = result_promoter
             promoters = []
