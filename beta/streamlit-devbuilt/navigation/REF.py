@@ -565,7 +565,7 @@ def REF_page():
                         matrices = matrix_extraction(sequence_consensus_input)
                         table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
                     elif jaspar == 'Matrix':
-                        matrix = entry_sequence
+                        matrix = str(entry_sequence)
                         matrices = transform_matrix_manual(matrix)
                         table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
                     else:
