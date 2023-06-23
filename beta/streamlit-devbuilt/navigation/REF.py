@@ -549,15 +549,17 @@ def REF_page():
                         table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     elif jaspar == 'Matrix':
                         matrix_lines = matrix_text.split('\n')
-                        matrix_data = {}
+                        matrix = {}
                         for line in matrix_lines:
                             line = line.strip()
                             if line:
                                 key, values = line.split('[', 1)
                                 values = values.replace(']', '').split()
                                 values = [float(value) for value in values]
-                                matrix_data[key.strip()] = values
-                        st.write(matrix_data)
+                                matrix[key.strip()] = values
+                        st.write('Matrix', matrix)
+                        matrices = transform_matrix(matrix)
+                        st.write(matrices)
                     else:
                         sequence_consensus_input = entry_sequence
                         table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
