@@ -582,8 +582,7 @@ def REF_page():
                                 base_str += "]\n"
                                 pwm_text += base_str
 
-                            matrix_output = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use')
-                            matrix_text.append(pwm_text) 
+                            matrix_text = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use')
                             
 
                         else:
