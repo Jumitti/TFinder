@@ -580,8 +580,9 @@ def REF_page():
                                 base_str += "]\n"
                                 pwm_text += base_str
 
-                            matrix_text = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use')
-
+                            matrix_output = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use')
+                
+                    matrix_text = matrix_output
                         else:
                             st.warning("You forget FASTA sequences :)")
 
@@ -612,7 +613,6 @@ def REF_page():
                         matrices = matrix_extraction(sequence_consensus_input)
                         table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     elif jaspar == 'Matrix':
-                        st.write(matrix_text)
                         matrix_lines = matrix_text.split('\n')
                         matrix = {}
                         for line in matrix_lines:
