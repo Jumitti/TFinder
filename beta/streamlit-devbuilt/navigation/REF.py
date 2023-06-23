@@ -523,6 +523,102 @@ def REF_page():
             no_consensus = "No consensus sequence found with the specified threshold."
             
         return table2
+    
+    #Find RE with manual Matrix
+    def search_sequence_manual(threshold, tis_value, result_promoter, matrices):
+        global table2
+        table2 = []
+
+        def calculate_score(sequence, matrix):
+            score = 0.0
+            for i, base in enumerate(sequence):
+                score += matrix[base][i]
+            return score
+
+        for matrix_name, matrix in matrices.items():
+            seq_length = len(matrix['A'])
+
+            # Max score per matrix
+            max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+
+            # Promoter input type
+            lines = result_promoter
+            promoters = []
+
+            first_line = lines
+            if first_line.startswith(("A", "T", "C", "G")):
+                shortened_promoter_name = "n.d."
+                promoter_region = lines
+                promoters.append((shortened_promoter_name, promoter_region))
+            else:
+                lines = result_promoter.split("\n")
+                i = 0
+                while i < len(lines):
+                    line = lines[i]
+                    if line.startswith(">"):
+                        promoter_name = line[1:]
+                        shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
+                        promoter_region = lines[i + 1]
+                        promoters.append((shortened_promoter_name, promoter_region))
+                        i += 2
+                    else:
+                        i += 1
+
+            # REF
+            for shortened_promoter_name, promoter_region in promoters:
+                found_positions = []
+                total_promoter = len(promoters)
+
+                for i in range(len(promoter_region) - seq_length + 1):
+                    seq = promoter_region[i:i + seq_length]
+                    score = calculate_score(seq, matrix)
+                    normalized_score = (score / max_score) * 100
+                    position = int(i)
+
+                    found_positions.append((position, seq, normalized_score))
+
+                # Sort positions in descending order of score percentage
+                found_positions.sort(key=lambda x: x[1], reverse=True)
+
+                # Creating a results table
+                if len(found_positions) > 0:
+                    for position, seq, normalized_score in found_positions:
+                        start_position = max(0, position - 3)
+                        end_position = min(len(promoter_region), position + len(seq) + 3)
+                        sequence_with_context = promoter_region[start_position:end_position]
+
+                        sequence_parts = []
+                        for j in range(start_position, end_position):
+                            if j < position or j >= position + len(seq):
+                                sequence_parts.append(sequence_with_context[j - start_position].lower())
+                            else:
+                                sequence_parts.append(sequence_with_context[j - start_position].upper())
+
+                        sequence_with_context = ''.join(sequence_parts)
+                        tis_position = position - tis_value
+
+                        if normalized_score >= threshold:
+                            row = [str(position).ljust(8),
+                                   str(tis_position).ljust(15),
+                                   sequence_with_context,
+                                   "{:.1f}".format(normalized_score).ljust(12),
+                                   shortened_promoter_name]
+                            table2.append(row)
+
+        if len(table2) > 0:
+            if prom_term == 'Promoter':
+                table2.sort(key=lambda x: float(x[3]), reverse=False)
+                header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
+                table2.insert(0, header)
+            else:
+                table2.sort(key=lambda x: float(x[3]), reverse=False)
+                header = ["Position", "Position (Gene end)", "Sequence", "Score %", "Promoter"]
+                table2.insert(0, header)
+
+        else:
+            no_consensus = "No consensus sequence found with the specified threshold."
+
+        return table2
         
     # Responsive Elements Finder
     with col2:
@@ -571,7 +667,7 @@ def REF_page():
                         
                         matrices = transform_matrix_manual(matrix_array)
                             
-                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                        table2 = search_sequence_manual(threshold, tis_value, result_promoter, matrices)
                     else:
                         sequence_consensus_input = entry_sequence
                         table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
