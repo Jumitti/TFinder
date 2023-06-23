@@ -19,7 +19,3 @@ def pwm_page():
 
         # Affichage du résultat
         st.code(json_matrix, language='json')
-
-# Streamlit app
-st.title("Calculatrice de PWM")
-pwm_page()
