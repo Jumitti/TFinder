@@ -515,9 +515,11 @@ def REF_page():
     with col2:
 
     # RE entry
-        jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID'))
+        jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','Matrix'))
         if jaspar == 'JASPAR_ID':
             entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1")
+        elif jaspar == 'Matrix':
+            entry_sequence = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="MA0106.1")
         else:
             entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
