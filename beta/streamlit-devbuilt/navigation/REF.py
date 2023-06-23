@@ -538,17 +538,18 @@ def REF_page():
     # Run Responsive Elements finder
         if st.button("🔎 :orange[**Step 2.6**] Find responsive elements"):
             with st.spinner("Finding responsive elements..."):
-                sequence_consensus_input = entry_sequence
                 tis_value = int(entry_tis)
                 threshold = float(threshold_entry)
                 try:
                     if jaspar == 'JASPAR_ID':
+                        sequence_consensus_input = entry_sequence
                         matrices = matrix_extraction(sequence_consensus_input)
                         table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
                     elif jaspar == 'Matrix':
                         matrices = transform_matrix(matrix)
                         table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
                     else:
+                        sequence_consensus_input = entry_sequence
                         table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
                 except Exception as e:
                     st.error(f"Error finding responsive elements: {str(e)}")
