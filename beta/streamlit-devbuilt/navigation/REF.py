@@ -385,11 +385,12 @@ def REF_page():
         p_value = 0.0
         
         for i in range(sequence_length + 1):
-            p = (math.comb(sequence_length, i) * (normalized_score / 100) ** i
-                 * ((100 - normalized_score) / 100) ** (sequence_length - i))
+            p = (math.comb(sequence_length, i) * math.pow(normalized_score / 100, i)
+                 * math.pow((100 - normalized_score) / 100, sequence_length - i))
             p_value += p
         
-        return 1 - p_value
+        return min(1, p_value)
+
 
 
     # Extract JASPAR matrix
