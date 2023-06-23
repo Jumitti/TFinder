@@ -12,6 +12,8 @@ from navigation.REF import REF_page
 from navigation.resource import resource_page
 from navigation.contact import contact_page
 
+st.markdown('<link href="style.css" rel="stylesheet">', unsafe_allow_html=True)
+
 st.set_page_config(
         page_title='REF by Minniti',
         initial_sidebar_state="expanded"
@@ -40,7 +42,6 @@ st.markdown("""
 #Footer
 
 st.markdown(footer_style, unsafe_allow_html=True) ## Footer
-st.markdown('<link href="style.css" rel="stylesheet">', unsafe_allow_html=True)
 
 #NavBar
 
