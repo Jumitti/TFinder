@@ -8,6 +8,8 @@ import pickle
 
 from navigation.aio import aio_page
 from navigation.pwm import pwm_page
+from navigation.BSF import BSF_page
+from navigation.prom_extractor import prom_extractor_page
 
 #NavBar
 
@@ -45,10 +47,10 @@ def allapp_page():
         aio_page()
 
     elif page == PROM: 
-        st.succes('PROM')
+        prom_extractor_page()
 
     elif page == REF: 
-        st.succes('REF')
+        BSF_page()
         
     elif page == PWM: 
         pwm_page()
