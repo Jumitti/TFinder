@@ -6,7 +6,7 @@ import altair as alt
 import math
 import pickle
 
-from navigation.REF import REF_page
+from navigation.aio import aio_page
 from navigation.pwm import pwm_page
 
 #NavBar
@@ -42,7 +42,7 @@ def allapp_page():
         horizontal_orientation=True)
 
     if page == AIO:
-        st.succes('AIO')
+        aio_page()
 
     elif page == PROM: 
         st.succes('PROM')
@@ -51,7 +51,7 @@ def allapp_page():
         st.succes('REF')
         
     elif page == PWM: 
-        st.succes('PWM')
+        pwm_page()
         
     for i in range(6):
         st.markdown('#')

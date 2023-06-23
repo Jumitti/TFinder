@@ -7,7 +7,7 @@ import pickle
 import numpy as np
 import json
 
-def REF_page():
+def aio_page():
     # Reverse complement
     def reverse_complement(sequence):
         complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
