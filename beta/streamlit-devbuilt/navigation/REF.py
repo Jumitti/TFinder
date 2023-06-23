@@ -357,11 +357,11 @@ def REF_page():
 
         if len(table) > 0:
             if prom_term == 'Promoter':
-                table.sort(key=lambda x: float(x[3]), reverse=True)
+                table.sort(key=lambda x: float(x[3]), reverse=False)
                 header = ["Position", "Position (TSS)", "Sequence", "p-value","% Homology", "Ref seq", "Promoter"]
                 table.insert(0, header)
             else:
-                table.sort(key=lambda x: float(x[3]), reverse=True)
+                table.sort(key=lambda x: float(x[3]), reverse=False)
                 header = ["Position", "Position (Gene end)", "Sequence", "p-value", "% Homology", "Ref seq", "Promoter"]
                 table.insert(0, header)
         else:
