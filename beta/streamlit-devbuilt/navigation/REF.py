@@ -369,7 +369,19 @@ def REF_page():
             
         return table
     
-    #p-value calcul
+    #p-value calcul for manual sequence
+    def calculate_p_value(sequence_length, mismatches, best_homology_percentage):
+        p_value = 0.0
+
+        for i in range(mismatches, sequence_length + 1):
+            p = (math.factorial(sequence_length) / (math.factorial(i) * math.factorial(sequence_length - i))) \
+                * (best_homology_percentage / 100) ** i * ((100 - best_homology_percentage) / 100) ** (sequence_length - i)
+            p_value += p
+
+        return 1 - p_value
+        
+    #p-value calcul for JASPAR
+    '''
     def calculate_p_value(sequence_length, mismatches, homology_percentage):
         p_value = 0.0
 
@@ -378,7 +390,7 @@ def REF_page():
                 * (homology_percentage / 100) ** i * ((100 - homology_percentage) / 100) ** (sequence_length - i)
             p_value += p
 
-        return 1 - p_value 
+        return 1 - p_value '''
 
     # Extract JASPAR matrix
     def matrix_extraction(sequence_consensus_input):
