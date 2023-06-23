@@ -147,25 +147,43 @@ def BSF_page():
 
                     sequence_with_context = ''.join(sequence_parts)
                     tis_position = position - tis_value
+                    
+                    p_value = calculate_p_value(len(variant), mismatches, best_homology_percentage)
 
                     if best_homology_percentage >= threshold:
                         row = [str(position).ljust(8),
                                str(tis_position).ljust(15),
-                               sequence_with_context,
+                               sequence_with_context,"{:.2e}".format(p_value),
                                "{:.1f}".format(best_homology_percentage).ljust(12),
                                variant,
                                shortened_promoter_name]
                         table.append(row)
 
         if len(table) > 0:
-            table.sort(key=lambda x: float(x[3]), reverse=True)
-            header = ["Position", "Relative position", "Sequence", "% Homology", "Ref seq", "Promoter"]
-            table.insert(0, header)
+            if prom_term == 'Promoter':
+                table.sort(key=lambda x: float(x[3]), reverse=False)
+                header = ["Position", "Position (TSS)", "Sequence", "p-value","% Homology", "Ref seq", "Promoter"]
+                table.insert(0, header)
+            else:
+                table.sort(key=lambda x: float(x[3]), reverse=False)
+                header = ["Position", "Position (Gene end)", "Sequence", "p-value", "% Homology", "Ref seq", "Promoter"]
+                table.insert(0, header)
         else:
             no_consensus = "No consensus sequence found with the specified threshold."
             
         return table
+    
+    #p-value calcul for manual sequence
+    def calculate_p_value(sequence_length, mismatches, best_homology_percentage):
+        p_value = 0.0
 
+        for i in range(mismatches, sequence_length + 1):
+            p = (math.factorial(sequence_length) / (math.factorial(i) * math.factorial(sequence_length - i))) \
+                * (best_homology_percentage / 100) ** i * ((100 - best_homology_percentage) / 100) ** (sequence_length - i)
+            p_value += p
+
+        return 1 - p_value
+        
     # Extract JASPAR matrix
     def matrix_extraction(sequence_consensus_input):
         jaspar_id = sequence_consensus_input
@@ -207,8 +225,8 @@ def BSF_page():
                 score += base_score[i]
         return score
 
-    # Find with JASPAR
-    def search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices):
+    # Find with JASPAR and manual matrix
+    def search_sequence(threshold, tis_value, result_promoter, matrices):
         global table2
         table2 = []
         
@@ -283,46 +301,133 @@ def BSF_page():
                             table2.append(row)
 
         if len(table2) > 0:
-            table2.sort(key=lambda x: float(x[3]), reverse=True)
-            header = ["Position", "Relative position", "Sequence", "Score %", "Promoter"]
-            table2.insert(0, header)
+            if prom_term == 'Promoter':
+                table2.sort(key=lambda x: float(x[3]), reverse=True)
+                header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
+                table2.insert(0, header)
+            else:
+                table2.sort(key=lambda x: float(x[3]), reverse=True)
+                header = ["Position", "Position (Gene end)", "Sequence", "Score %", "Promoter"]
+                table2.insert(0, header)
+            
         else:
             no_consensus = "No consensus sequence found with the specified threshold."
             
         return table2
         
     # Responsive Elements Finder
+    with col2:
 
     # RE entry
-    jaspar = st.radio('🔸 :red[**Step 1.2**] Respnsive elements type:', ('Manual sequence','JASPAR_ID'))
-    if jaspar == 'JASPAR_ID':
-        entry_sequence = st.text_input("🔸 :red[**Step 1.3**] JASPAR ID:", value="MA0106.1")
-    else:
-        entry_sequence = st.text_input("🔸 :red[**Step 1.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
+        jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','Matrix'))
+        if jaspar == 'JASPAR_ID':
+            entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1")
+        elif jaspar == 'Matrix':
+            matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'))
+            if matrix_type == 'With PWM':
+                matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]")
+            else:
+                fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", help='Put FASTA sequences. Same sequence length required ⚠️')
+                def calculate_pwm(sequences):
+                    num_sequences = len(sequences)
+                    sequence_length = len(sequences[0])
+                    pwm = np.zeros((4, sequence_length))
+                    for i in range(sequence_length):
+                        counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
+                        for sequence in sequences:
+                            nucleotide = sequence[i]
+                            if nucleotide in counts:
+                                counts[nucleotide] += 1
+                        pwm[0, i] = counts['A'] / num_sequences *100
+                        pwm[1, i] = counts['T'] / num_sequences *100
+                        pwm[2, i] = counts['G'] / num_sequences *100
+                        pwm[3, i] = counts['C'] / num_sequences *100
+
+                    return pwm
+
+                def parse_fasta(fasta_text):
+                    sequences = []
+                    current_sequence = ""
+
+                    for line in fasta_text.splitlines():
+                        if line.startswith(">"):
+                            if current_sequence:
+                                sequences.append(current_sequence)
+                            current_sequence = ""
+                        else:
+                            current_sequence += line
+
+                    if current_sequence:
+                        sequences.append(current_sequence)
+
+                    return sequences
+                    
+                if fasta_text:
+                    sequences = parse_fasta(fasta_text)
+                    sequences = [seq.upper() for seq in sequences]
+
+                    if len(sequences) > 0:
+                        pwm = calculate_pwm(sequences)
+                        bases = ['A', 'T', 'G', 'C']
+                        pwm_text = ""
+                        for i in range(len(pwm)):
+                            base_name = bases[i]
+                            base_values = pwm[i]
+
+                            base_str = base_name + " ["
+                            for value in base_values:
+                                base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+
+                            base_str += "]\n"
+                            pwm_text += base_str
+
+                        matrix_text = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use', key="non_editable_text")
+
+                    else:
+                        st.warning("You forget FASTA sequences :)")
+              
+        else:
+            entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
     # TSS entry
-    entry_tis = st.number_input("🔸 :red[**Step 1.4**] Relative position to TSS or Gene End (in bp):", 0, 10000, 0, help="Distance of TSS or gene end from begin of sequences. Same distance is required for multiple sequences. Leave '0' if you don't know")
+        if prom_term == 'Promoter':
+            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
+        else:
+            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
 
     # Threshold
-    if jaspar == 'JASPAR_ID':
-        threshold_entry = st.slider("🔸 :red[**Step 1.5**] Score threshold (%)", 0, 100 ,90)
-    else:
-        threshold_entry = st.slider("🔸 :red[**Step 1.5**] Homology threshold (%)", 0, 100 ,80)
+        if jaspar == 'JASPAR_ID':
+            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
+        else:
+            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Homology threshold (%)", 0, 100 ,80)
 
     # Run Responsive Elements finder
-    if st.button("🔎 :red[**Step 1.6**] Find responsive elements"):
-        with st.spinner("Finding responsive elements..."):
-            sequence_consensus_input = entry_sequence
-            tis_value = int(entry_tis)
-            threshold = float(threshold_entry)
-            try:
-                if jaspar == 'JASPAR_ID':
-                    matrices = matrix_extraction(sequence_consensus_input)
-                    table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
-                else:
-                    table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
-            except Exception as e:
-                st.error(f"Error finding responsive elements: {str(e)}")
+        if st.button("🔎 :orange[**Step 2.6**] Find responsive elements"):
+            with st.spinner("Finding responsive elements..."):
+                tis_value = int(entry_tis)
+                threshold = float(threshold_entry)
+                try:
+                    if jaspar == 'JASPAR_ID':
+                        sequence_consensus_input = entry_sequence
+                        matrices = matrix_extraction(sequence_consensus_input)
+                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                    elif jaspar == 'Matrix':
+                        matrix_lines = matrix_text.split('\n')
+                        matrix = {}
+                        for line in matrix_lines:
+                            line = line.strip()
+                            if line:
+                                key, values = line.split('[', 1)
+                                values = values.replace(']', '').split()
+                                values = [float(value) for value in values]
+                                matrix[key.strip()] = values
+                        matrices = transform_matrix(matrix)
+                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                    else:
+                        sequence_consensus_input = entry_sequence
+                        table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
+                except Exception as e:
+                    st.error(f"Error finding responsive elements: {str(e)}")
 
     # RE output
     if jaspar == 'JASPAR_ID':
@@ -342,17 +447,25 @@ def BSF_page():
 
                 source = df
                 score_range = source['Score %'].astype(float)
-                ystart = math.floor(score_range.min() - 5)
-                ystop = math.floor(score_range.max() + 5)
+                ystart = math.floor(score_range.min() - 2)
+                ystop = math.floor(score_range.max() + 2)
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Promoter:N", scale=scale)
                 
-                chart = alt.Chart(source).mark_circle().encode(
-                    x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                    y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-                    color=color_scale,
-                    tooltip=['Relative position', 'Score %', 'Sequence', 'Promoter']
-                ).properties(width=600, height=400)
+                if prom_term == 'Promoter':
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
+                        y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=color_scale,
+                        tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
+                    ).properties(width=600, height=400)
+                else:
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Position (Gene end):Q', axis=alt.Axis(title='Relative position to gene end (bp)'), sort='ascending'),
+                        y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=color_scale,
+                        tooltip=['Position (Gene end)', 'Score %', 'Sequence', 'Promoter']
+                    ).properties(width=600, height=400)
                                       
                 st.altair_chart(chart, use_container_width=True)
             else: 
@@ -365,11 +478,46 @@ def BSF_page():
                 st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
         else:
             st.text("")
+    if jaspar == 'Matrix':
+        if 'table2' in locals():
+            if len(table2) > 0:
+                st.success(f"Finding responsive elements done")
+                df = pd.DataFrame(table2[1:], columns=table2[0])
+                st.session_state['df'] = df
+                st.dataframe(df)
+                st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+
+                source = df
+                score_range = source['Score %'].astype(float)
+                ystart = math.floor(score_range.min() - 2)
+                ystop = math.floor(score_range.max() + 2)
+                scale = alt.Scale(scheme='category10')
+                color_scale = alt.Color("Promoter:N", scale=scale)
+                
+                if prom_term == 'Promoter':
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
+                        y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=color_scale,
+                        tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
+                    ).properties(width=600, height=400)
+                else:
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Position (Gene end):Q', axis=alt.Axis(title='Relative position to gene end (bp)'), sort='ascending'),
+                        y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=color_scale,
+                        tooltip=['Position (Gene end)', 'Score %', 'Sequence', 'Promoter']
+                    ).properties(width=600, height=400)
+                                      
+                st.altair_chart(chart, use_container_width=True)
+            else:
+                st.error(f"No consensus sequence found with the specified threshold")
+        else:
+            st.text("")        
     else:
         if 'table' in locals():
             if len(table) > 0 :
                 st.success("Finding responsive elements done")
-                
                 df = pd.DataFrame(table[1:], columns=table[0])
                 st.session_state['df'] = df
                 st.dataframe(df)
@@ -377,17 +525,25 @@ def BSF_page():
 
                 source = df
                 homology_range = source['% Homology'].astype(float)
-                ystart = math.floor(homology_range.min() - 5)
-                ystop = math.floor(homology_range.max() + 5)
+                ystart = math.floor(homology_range.min() - 2)
+                ystop = math.floor(homology_range.max() + 2)
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Promoter:N", scale=scale)
                 
-                chart = alt.Chart(source).mark_circle().encode(
-                    x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                    y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
-                    color=color_scale,
-                    tooltip=['Relative position', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
-                ).properties(width=600, height=400)
+                if prom_term == 'Promoter':
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
+                        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=color_scale,
+                        tooltip=['Position (TSS)', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
+                    ).properties(width=600, height=400)
+                else:
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Position (Gene end):Q', axis=alt.Axis(title='Relative position to gene end (bp)'), sort='ascending'),
+                        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=color_scale,
+                        tooltip=['Position (Gene end)', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
+                    ).properties(width=600, height=400)
 
                 st.altair_chart(chart, use_container_width=True)
             else:
