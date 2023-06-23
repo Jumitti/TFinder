@@ -26,15 +26,6 @@ st.markdown(f"""
         """,
         unsafe_allow_html=True,
     )
-    
-st.markdown("""
-    <style>
-    :root {
-        --primary-color: blue;
-    }
-    </style>
-    """, unsafe_allow_html=True) 
-
 
 st.markdown("""
         <style>
