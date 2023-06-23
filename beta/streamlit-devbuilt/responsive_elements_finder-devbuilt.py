@@ -10,7 +10,7 @@ from utils.components import footer_style, footer
 from navigation.home import home_page
 from navigation.resource import resource_page
 from navigation.contact import contact_page
-from navigation.app import application_page
+from navigation.REF import REF_page
 
 st.set_page_config(
         page_title='REF by Minniti',
@@ -45,7 +45,6 @@ st.markdown(footer_style, unsafe_allow_html=True) ## Footer
 
 HOME = 'Home'
 APPLICATION = 'Application'
-PWM = 'PWM'
 RESOURCE = 'Resource'
 CONTACT = 'Contact'
 
@@ -59,7 +58,6 @@ tabs = [
 option_data = [
    {'icon': "🏠", 'label':HOME},
    {'icon': "🖥️", 'label':APPLICATION},
-   {'icon': "🖥️", 'label':PWM},
    {'icon':"📑",'label':RESOURCE},
    {'icon':"✉️",'label':CONTACT}
    
