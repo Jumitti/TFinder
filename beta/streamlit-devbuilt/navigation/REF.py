@@ -645,8 +645,8 @@ def REF_page():
 
                 source = df
                 score_range = source['Score %'].astype(float)
-                ystart = math.floor(score_range.min() - 5)
-                ystop = math.floor(score_range.max() + 5)
+                ystart = math.floor(score_range.min() - 2)
+                ystop = math.floor(score_range.max() + 2)
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Promoter:N", scale=scale)
                 
@@ -687,8 +687,8 @@ def REF_page():
 
                 source = df
                 score_range = source['Score %'].astype(float)
-                ystart = math.floor(score_range.min() - 5)
-                ystop = math.floor(score_range.max() + 5)
+                ystart = math.floor(score_range.min() - 2)
+                ystop = math.floor(score_range.max() + 2)
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Promoter:N", scale=scale)
                 
@@ -723,8 +723,8 @@ def REF_page():
 
                 source = df
                 homology_range = source['% Homology'].astype(float)
-                ystart = math.floor(homology_range.min() - 5)
-                ystop = math.floor(homology_range.max() + 5)
+                ystart = math.floor(homology_range.min() - 2)
+                ystop = math.floor(homology_range.max() + 2)
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Promoter:N", scale=scale)
                 
