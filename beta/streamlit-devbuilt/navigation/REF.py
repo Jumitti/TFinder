@@ -413,14 +413,14 @@ def REF_page():
         }
     #Transform manual matrix
     def transform_matrix_manual(matrix):
-        reversed_matrix = {base: [round(score, 3) for score in reversed(scores)] for base, scores in matrix.items()}
+        reversed_matrix = {base: [score if score == 0 else round(100 - score, 3) for score in reversed(scores)] for base, scores in matrix.items()}
         complement_matrix = {
-            'A': [round(score, 3) for score in matrix['T']],
-            'C': [round(score, 3) for score in matrix['G']],
-            'G': [round(score, 3) for score in matrix['C']],
-            'T': [round(score, 3) for score in matrix['A']]
+            'A': [score if score == 0 else round(100 - score, 3) for score in matrix['T']],
+            'C': [score if score == 0 else round(100 - score, 3) for score in matrix['G']],
+            'G': [score if score == 0 else round(100 - score, 3) for score in matrix['C']],
+            'T': [score if score == 0 else round(100 - score, 3) for score in matrix['A']]
         }
-        reversed_complement_matrix = {base: [round(score, 3) for score in reversed(scores)] for base, scores in complement_matrix.items()}
+        reversed_complement_matrix = {base: [score if score == 0 else round(100 - score, 3) for score in reversed(scores)] for base, scores in complement_matrix.items()}
 
         return {
             'Original': matrix,
@@ -428,8 +428,6 @@ def REF_page():
             'Complement': complement_matrix,
             'Reversed Complement': reversed_complement_matrix
         }
-        st.write(matrix)
-        st.write(reverse_matrix)
 
     # Calculate score with JASPAR
     def calculate_score(sequence, matrix):
@@ -566,7 +564,14 @@ def REF_page():
                         table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
                     elif jaspar == 'Matrix':
                         matrix = str(entry_sequence)
-                        matrices = transform_matrix_manual(matrix)
+                        transformed_matrix = transform_matrix_manual(matrix)
+
+                        for matrix_name, matrix_values in transformed_matrix.items():
+                            st.write(matrix_name)
+                            for base, scores in matrix_values.items():
+                                st.write(base, scores)
+                            st.write('\n')
+                            
                         table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
                     else:
                         sequence_consensus_input = entry_sequence
