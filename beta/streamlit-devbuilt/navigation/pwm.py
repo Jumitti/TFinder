@@ -66,7 +66,7 @@ def pwm_page():
                         base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
 
                     base_str += "]"
-                    st.write(base_str)
+                    st.text_area(base_str)
 
             else:
                 st.warning("Aucune séquence valide n'a été trouvée.")
