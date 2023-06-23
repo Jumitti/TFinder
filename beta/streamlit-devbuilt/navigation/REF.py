@@ -569,7 +569,7 @@ def REF_page():
 
                         matrices = transform_matrix(matrix_array)
                             
-                        table2 = search_sequence_manual(threshold, tis_value, result_promoter, matrices)
+                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     else:
                         sequence_consensus_input = entry_sequence
                         table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
