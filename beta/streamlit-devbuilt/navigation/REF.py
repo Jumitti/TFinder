@@ -435,7 +435,7 @@ def REF_page():
         return score
 
     # Find with JASPAR
-    def search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices):
+    def search_sequence(threshold, tis_value, result_promoter, matrices):
         global table2
         table2 = []
         
@@ -557,7 +557,7 @@ def REF_page():
                     if jaspar == 'JASPAR_ID':
                         sequence_consensus_input = entry_sequence
                         matrices = matrix_extraction(sequence_consensus_input)
-                        table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
+                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     elif jaspar == 'Matrix':
                         matrix_lines = matrix_str.strip().split('\n')
                         matrix_data = []
@@ -569,7 +569,7 @@ def REF_page():
 
                         matrix_array = np.array(matrix_data)
                         
-                        transformed_matrix = transform_matrix_manual(matrix_array)
+                        matrices = transform_matrix_manual(matrix_array)
                         
                         for matrix_name, matrix_values in transformed_matrix.items():
                             st.write(matrix_name)
@@ -577,7 +577,7 @@ def REF_page():
                                 st.write(base, matrix_values[i])
                             st.write('\n')
                             
-                        table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
+                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     else:
                         sequence_consensus_input = entry_sequence
                         table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
