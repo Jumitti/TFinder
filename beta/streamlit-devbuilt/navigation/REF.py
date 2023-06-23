@@ -550,7 +550,7 @@ def REF_page():
                     elif jaspar == 'Matrix':
                         matrix_python = eval(entry_sequence)
                         matrix_json = json.dumps(matrix_python, indent=4)
-                        st.write(matrix_json)
+                        st.code(matrix_json, language='json')
                     else:
                         sequence_consensus_input = entry_sequence
                         table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
