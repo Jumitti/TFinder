@@ -203,8 +203,8 @@ color_style = """
       background-color: blue;
     }
 
-    .stSlider>div>div {
-      color: #359AFF !important;
+    .stSlider>div>div>.noUi-handle {
+    background-color: #359AFF !important;
     }
 
     .stCheckbox>div>div:nth-child(2) {
