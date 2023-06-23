@@ -69,6 +69,6 @@ def pwm_page():
                 st.write(base_str)
                 
                 pwm_matrix = calculate_pwm(sequences)
-                print(pwm_matrix)
+                st.write(pwm_matrix)
         else:
             st.warning("Aucune séquence valide n'a été trouvée.")
