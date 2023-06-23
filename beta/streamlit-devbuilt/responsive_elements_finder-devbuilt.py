@@ -11,6 +11,7 @@ from navigation.home import home_page
 from navigation.REF import REF_page
 from navigation.resource import resource_page
 from navigation.contact import contact_page
+from navigation.pwm import pwm_page
 
 st.set_page_config(
         page_title='REF by Minniti',
@@ -51,6 +52,7 @@ CONTACT = 'Contact'
 tabs = [
     HOME,
     REF,
+    PWM,
     RESOURCE,
     CONTACT
 ]
@@ -58,6 +60,7 @@ tabs = [
 option_data = [
    {'icon': "🏠", 'label':HOME},
    {'icon': "🖥️", 'label':REF},
+   {'icon': "🖥️", 'label':PWM},
    {'icon':"📑",'label':RESOURCE},
    {'icon':"✉️",'label':CONTACT}
    
@@ -78,6 +81,9 @@ if chosen_tab == HOME:
 
 elif chosen_tab == REF: 
     REF_page()
+
+elif chosen_tab == PWM: 
+    pwm_page()
     
 elif chosen_tab == RESOURCE: 
     resource_page()
