@@ -35,23 +35,23 @@ def allapp_page():
     over_theme = {'txc_inactive': 'black','menu_background':'#ECECEC','txc_active':'white','option_active':'#fab947'}
     font_fmt = {'font-class':'h3','font-size':'50%'}
 
-    chosen_tab = hc.option_bar(
+    page = hc.option_bar(
         option_definition=option_data,
         title='',
         key='PrimaryOptionx',
         override_theme=over_theme,
         horizontal_orientation=True)
 
-    if chosen_tab == AIO:
+    if page == AIO:
         st.succes('AIO')
 
-    elif chosen_tab == PROM: 
+    elif page == PROM: 
         st.succes('PROM')
 
-    elif chosen_tab == REF: 
+    elif page == REF: 
         st.succes('REF')
         
-    elif chosen_tab == PWM: 
+    elif page == PWM: 
         st.succes('PWM')
         
     for i in range(6):
