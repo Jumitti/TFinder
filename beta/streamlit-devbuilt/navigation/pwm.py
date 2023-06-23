@@ -48,7 +48,7 @@ def pwm_page():
             if len(sequences) > 0:
                 pwm = calculate_pwm(sequences)
 
-                st.header("PWM: ")
+                st.subheader("PWM: ")
                 st.info("⬇️ Select and copy")
                 bases = ['A', 'T', 'G', 'C']
                 base_str_f=[]
@@ -62,7 +62,6 @@ def pwm_page():
 
                     base_str += "]"
                     base_str_f = base_str
-                    st.write(base_str_f)
 
             else:
-                st.warning("Aucune séquence valide n'a été trouvée.")
+                st.warning("You forget FASTA sequences :)")
