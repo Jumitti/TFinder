@@ -83,7 +83,7 @@ def REF_page():
                     return sequence
 
                 else:
-                    raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
+                    raise Exception(f"An error occurorange while retrieving the DNA sequence: {response.status_code}")
             else:
                 if chrstop > chrstart:
                     start = chrstop - upstream
@@ -107,7 +107,7 @@ def REF_page():
                     return sequence
 
                 else:
-                    raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
+                    raise Exception(f"An error occurorange while retrieving the DNA sequence: {response.status_code}")
         except Exception as e:
             raise Exception(f"Error: {str(e)}")
 
@@ -148,27 +148,27 @@ def REF_page():
 
     # Promoter Finder
     with col1:
-        st.header(':red[Step 1] Promoter and Terminator Extractor')
-        st.info("💡 If you have a FASTA sequence, go to :red[**Step 2**]")
+        st.header(':orange[Step 1] Promoter and Terminator Extractor')
+        st.info("💡 If you have a FASTA sequence, go to :orange[**Step 2**]")
 
     # Gene ID
-        gene_id_entry = st.text_area("🔸 :red[**Step 1.1**] Gene ID:", value="PRKN\n5071")
+        gene_id_entry = st.text_area("🔸 :orange[**Step 1.1**] Gene ID:", value="PRKN\n5071")
 
     # Species
-        species_combobox = st.selectbox("🔸 :red[**Step 1.2**] Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
+        species_combobox = st.selectbox("🔸 :orange[**Step 1.2**] Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
 
     # Upstream/Downstream Promoter
         prom_term = st.radio(
-            "🔸 :red[**Step 1.3**] Regulatory region:",
+            "🔸 :orange[**Step 1.3**] Regulatory region:",
             ('Promoter', 'Terminator'))
         if prom_term == 'Promoter':
-            updown_slide = st.slider("🔸 :red[**Step 1.4**] Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
+            updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
             st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
             st.session_state['upstream_entry'] = upstream_entry
         else:
-            updown_slide = st.slider("🔸 :red[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
+            updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
             st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
@@ -176,7 +176,7 @@ def REF_page():
 
     # Run Promoter Finder
         if prom_term == 'Promoter':
-            if st.button("🧬 :red[**Step 1.5**] Extract promoter (~5sec/gene)"):
+            if st.button("🧬 :orange[**Step 1.5**] Extract promoter (~5sec/gene)"):
                 with st.spinner("Finding promoters..."):
                     gene_ids = gene_id_entry.strip().split("\n")
                     upstream = int(upstream_entry)
@@ -187,7 +187,7 @@ def REF_page():
                     except Exception as e:
                         st.error(f"Error finding promoters: {str(e)}")
         else:
-            if st.button("🧬 :red[**Step 1.5**] Extract terminator (~5sec/gene)"):
+            if st.button("🧬 :orange[**Step 1.5**] Extract terminator (~5sec/gene)"):
                 with st.spinner("Finding terminators..."):
                     gene_ids = gene_id_entry.strip().split("\n")
                     upstream = int(upstream_entry)
@@ -200,19 +200,19 @@ def REF_page():
 
     # Promoter output state
     with col2:
-        st.header(':red[Step 2] Binding Sites Finder')
+        st.header(':orange[Step 2] Binding Sites Finder')
         if prom_term == 'Promoter':
             if 'result_promoter' not in st.session_state:
-                result_promoter = st.text_area("🔸 :red[**Step 2.1**] Promoter:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).")
+                result_promoter = st.text_area("🔸 :orange[**Step 2.1**] Promoter:", value="If Step 1 not used, paste sequences here (FASTA requiorange for multiple sequences).")
             else:
                 result_promoter_text = "\n".join(st.session_state['result_promoter'])
-                result_promoter = st.text_area("🔸 :red[**Step 2.1**] Promoter:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
+                result_promoter = st.text_area("🔸 :orange[**Step 2.1**] Promoter:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
         else:
             if 'result_promoter' not in st.session_state:
-                result_promoter = st.text_area("🔸 :red[**Step 2.1**] Terminator:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).")
+                result_promoter = st.text_area("🔸 :orange[**Step 2.1**] Terminator:", value="If Step 1 not used, paste sequences here (FASTA requiorange for multiple sequences).")
             else:
                 result_promoter_text = "\n".join(st.session_state['result_promoter'])
-                result_promoter = st.text_area("🔸 :red[**Step 2.1**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
+                result_promoter = st.text_area("🔸 :orange[**Step 2.1**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
 
     # Responsive-Elements-Finder
 
@@ -515,26 +515,26 @@ def REF_page():
     with col2:
 
     # RE entry
-        jaspar = st.radio('🔸 :red[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID'))
+        jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID'))
         if jaspar == 'JASPAR_ID':
-            entry_sequence = st.text_input("🔸 :red[**Step 2.3**] JASPAR ID:", value="MA0106.1")
+            entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1")
         else:
-            entry_sequence = st.text_input("🔸 :red[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
+            entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
     # TSS entry
         if prom_term == 'Promoter':
-            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
+            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
         else:
-            entry_tis = st.number_input("🔸 :red[**Step 2.4**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
+            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
 
     # Threshold
         if jaspar == 'JASPAR_ID':
-            threshold_entry = st.slider("🔸 :red[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
+            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
         else:
-            threshold_entry = st.slider("🔸 :red[**Step 2.5**] Homology threshold (%)", 0, 100 ,80)
+            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Homology threshold (%)", 0, 100 ,80)
 
     # Run Responsive Elements finder
-        if st.button("🔎 :red[**Step 2.6**] Find responsive elements"):
+        if st.button("🔎 :orange[**Step 2.6**] Find responsive elements"):
             with st.spinner("Finding responsive elements..."):
                 sequence_consensus_input = entry_sequence
                 tis_value = int(entry_tis)
