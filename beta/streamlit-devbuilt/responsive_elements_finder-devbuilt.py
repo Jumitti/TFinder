@@ -46,6 +46,7 @@ st.markdown(footer_style, unsafe_allow_html=True) ## Footer
 
 HOME = 'Home'
 REF = 'Application'
+PWM = 'PWM'
 RESOURCE = 'Resource'
 CONTACT = 'Contact'
 
