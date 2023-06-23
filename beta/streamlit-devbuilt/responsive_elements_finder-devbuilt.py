@@ -80,9 +80,6 @@ if chosen_tab == HOME:
 
 elif chosen_tab == APPLICATION: 
     application_page()
-
-elif chosen_tab == PWM: 
-    pwm_page()
     
 elif chosen_tab == RESOURCE: 
     resource_page()
