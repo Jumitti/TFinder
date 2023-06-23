@@ -10,4 +10,5 @@ def contact_page():
     
     a.markdown('##### If you have any questions or feedback, please feel free to contact us:')
     a.markdown("""<span style="font-size:18px;">Minniti Julien<br>PhD and Software developer<br>✉️ minniti@ipmc.cnrs.fr</span>""", unsafe_allow_html=True)
-    a.markdown("""<span style="font-size:18px;">Duplan Eric & Alves da Costa Cristine<br>XXX<br>✉️ XXX@XXX</span>""", unsafe_allow_html=True)
+    a.markdown("""<span style="font-size:18px;">Duplan Eric<br>Poste<br>✉️ duplan@ipmc.cnrs.fr</span>""", unsafe_allow_html=True)
+    a.markdown("""<span style="font-size:18px;">Alves da Costa Cristine<br>Poste<br>✉️ XXX@XXX</span>""", unsafe_allow_html=True)
