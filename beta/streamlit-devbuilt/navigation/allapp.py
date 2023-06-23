@@ -26,10 +26,10 @@ tabs = [
 ]
 
 option_data = [
-   {'icon': "🏠", 'label':AIO},
-   {'icon': "🖥️", 'label':PROM},
-   {'icon': "🖥️", 'label':REF},
-   {'icon':"📑",'label':PWM}
+   {'icon': "🧬🔎🧮", 'label':AIO},
+   {'icon': "🧬", 'label':PROM},
+   {'icon': "🔎", 'label':REF},
+   {'icon':"🧮",'label':PWM}
    
 ]
 
