@@ -52,5 +52,6 @@ def application_page():
         st.succes('REF'
         
     elif chosen_tab == PWM: 
-        pwm_page()
+        st.succes('PWM')
+        
 
