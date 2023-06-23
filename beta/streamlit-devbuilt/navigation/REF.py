@@ -5,6 +5,7 @@ import altair as alt
 import math
 import pickle
 import numpy as np
+import json
 
 def REF_page():
     # Reverse complement
@@ -389,7 +390,6 @@ def REF_page():
         if response.status_code == 200:
             response_data = response.json()
             matrix = response_data['pfm']
-            st.write(matrix)
         else:
             messagebox.showerror("Erreur", f"Erreur lors de la récupération de la matrice de fréquence : {response.status_code}")
             return
@@ -521,7 +521,7 @@ def REF_page():
         if jaspar == 'JASPAR_ID':
             entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1")
         elif jaspar == 'Matrix':
-            matrix_str = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]")
+            entry_sequence = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]")
         else:
             entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
@@ -548,19 +548,9 @@ def REF_page():
                         matrices = matrix_extraction(sequence_consensus_input)
                         table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     elif jaspar == 'Matrix':
-                        matrix_lines = matrix_str.strip().split('\n')
-                        matrix_data = {}
-                        for line in matrix_lines:
-                            parts = line.split('[')
-                            base = parts[0].strip()
-                            scores = [float(score.strip()) for score in parts[1].replace(']', '').split()]
-                            matrix_data[base] = scores
-
-                        matrix_array = np.array([matrix_data['A'], matrix_data['C'], matrix_data['G'], matrix_data['T']])
-
-                        matrices = transform_matrix(matrix_array)
-                            
-                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                        matrix_python = eval(entry_sequence)
+                        matrix_json = json.dumps(matrix_python, indent=4)
+                        st.write(matrix_json)
                     else:
                         sequence_consensus_input = entry_sequence
                         table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
