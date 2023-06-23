@@ -79,7 +79,7 @@ if chosen_tab == HOME:
     home_page()
 
 elif chosen_tab == APPLICATION: 
-    application_page()
+    application_page() 
     
 elif chosen_tab == RESOURCE: 
     resource_page()
