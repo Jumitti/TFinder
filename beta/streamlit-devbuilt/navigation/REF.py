@@ -343,11 +343,13 @@ def REF_page():
 
                     sequence_with_context = ''.join(sequence_parts)
                     tis_position = position - tis_value
+                    
+                    p_value = calculate_p_value(len(variant), mismatches, best_homology_percentage)
 
                     if best_homology_percentage >= threshold:
                         row = [str(position).ljust(8),
                                str(tis_position).ljust(15),
-                               sequence_with_context,
+                               sequence_with_context,"{:.2e}".format(p_value),
                                "{:.1f}".format(best_homology_percentage).ljust(12),
                                variant,
                                shortened_promoter_name]
@@ -356,16 +358,27 @@ def REF_page():
         if len(table) > 0:
             if prom_term == 'Promoter':
                 table.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Position (TSS)", "Sequence", "% Homology", "Ref seq", "Promoter"]
+                header = ["Position", "Position (TSS)", "Sequence", "p-value","% Homology", "Ref seq", "Promoter"]
                 table.insert(0, header)
             else:
                 table.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Position (Gene end)", "Sequence", "% Homology", "Ref seq", "Promoter"]
+                header = ["Position", "Position (Gene end)", "Sequence", "p-value", "% Homology", "Ref seq", "Promoter"]
                 table.insert(0, header)
         else:
             no_consensus = "No consensus sequence found with the specified threshold."
             
         return table
+    
+    #p-value calcul
+    def calculate_p_value(sequence_length, mismatches, homology_percentage):
+        p_value = 0.0
+
+        for i in range(mismatches, sequence_length + 1):
+            p = (math.factorial(sequence_length) / (math.factorial(i) * math.factorial(sequence_length - i))) \
+                * (homology_percentage / 100) ** i * ((100 - homology_percentage) / 100) ** (sequence_length - i)
+            p_value += p
+
+        return p_value
 
     # Extract JASPAR matrix
     def matrix_extraction(sequence_consensus_input):
