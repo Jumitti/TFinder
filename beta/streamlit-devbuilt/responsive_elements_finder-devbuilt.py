@@ -85,7 +85,7 @@ elif chosen_tab == RESOURCE:
 elif chosen_tab == CONTACT: 
     contact_page()
     
-for i in range(6):
+for i in range(4):
     st.markdown('#')
 st.markdown(footer,unsafe_allow_html=True)
 
