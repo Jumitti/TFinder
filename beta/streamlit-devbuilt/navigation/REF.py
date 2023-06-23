@@ -602,7 +602,7 @@ def REF_page():
                 st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
         else:
             st.text("")
-     if jaspar == 'Matrix':
+    if jaspar == 'Matrix':
         if 'table2' in locals():
             if len(table2) > 0:
                 st.success(f"Finding responsive elements done")
