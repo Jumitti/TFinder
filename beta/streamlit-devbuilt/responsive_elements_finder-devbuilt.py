@@ -17,6 +17,14 @@ st.set_page_config(
         initial_sidebar_state="expanded"
 )
 
+st.markdown("""
+    <style>
+    :root {
+        --primary-color: blue;
+    }
+    </style>
+    """, unsafe_allow_html=True) 
+
 max_width_str = f"max-width: {75}%;"
 st.markdown(f"""
         <style>
@@ -34,15 +42,7 @@ st.markdown("""
                     
                 }
         </style>
-        """, unsafe_allow_html=True)
-
-st.markdown("""
-    <style>
-    :root {
-        --primary-color: blue;
-    }
-    </style>
-    """, unsafe_allow_html=True)        
+        """, unsafe_allow_html=True)       
 
 #Footer
 
