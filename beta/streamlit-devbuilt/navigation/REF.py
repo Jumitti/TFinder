@@ -389,6 +389,7 @@ def REF_page():
         if response.status_code == 200:
             response_data = response.json()
             matrix = response_data['pfm']
+            st.write(matrix)
         else:
             messagebox.showerror("Erreur", f"Erreur lors de la récupération de la matrice de fréquence : {response.status_code}")
             return
