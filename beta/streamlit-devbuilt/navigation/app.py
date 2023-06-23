@@ -43,7 +43,7 @@ def application_page():
         horizontal_orientation=True)
 
     if chosen_tab == AIO:
-        REF_page()
+        st.succes('REF')
 
     elif chosen_tab == PROM: 
         st.succes('PROM')
