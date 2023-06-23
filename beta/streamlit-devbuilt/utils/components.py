@@ -204,7 +204,7 @@ color_style = """
     }
 
     .stSlider>div>div {
-      background-color: blue !important;
+      color: #359AFF !important;
     }
 
     .stCheckbox>div>div:nth-child(2) {
