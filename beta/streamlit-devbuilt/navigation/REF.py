@@ -569,6 +569,7 @@ def REF_page():
                             pwm = calculate_pwm(sequences)
                             bases = ['A', 'T', 'G', 'C']
                             pwm_text = ""
+                            matrix_text = ""
                             for i in range(len(pwm)):
                                 base_name = bases[i]
                                 base_values = pwm[i]
