@@ -184,8 +184,6 @@ def prom_extractor_page():
                 try:
                     result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
                     st.success("Promoters extraction complete!")
-                    if balloons:
-                        st.balloons()
                 except Exception as e:
                     st.error(f"Error finding promoters: {str(e)}")
     else:
@@ -197,8 +195,6 @@ def prom_extractor_page():
                 try:
                     result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
                     st.success("Terminators extraction complete!")
-                    if balloons:
-                        st.balloons()
                 except Exception as e:
                     st.error(f"Error finding terminators: {str(e)}")
 
