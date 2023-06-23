@@ -36,7 +36,7 @@ def pwm_page():
 
         return sequences
 
-    st.title("PWM generator")
+    st.subheader("PWM generator")
 
     fasta_text = st.text_area("Put FASTA sequences. Same sequence length required ⚠️", height=300)
     
@@ -51,16 +51,13 @@ def pwm_page():
                 st.header("PWM: ")
                 st.info("⬇️ Select and copy")
                 bases = ['A', 'T', 'G', 'C']
+                pwm_data = {}
                 for i in range(len(pwm)):
                     base_name = bases[i]
                     base_values = pwm[i]
+                    pwm_data[base_name] = base_values.tolist()
 
-                    base_str = base_name + " ["
-                    for value in base_values:
-                        base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
-
-                    base_str += "]"
-                    st.write(base_str)
+                st.text_area("PWM:", value=str(pwm_data))
 
             else:
-                st.warning("Aucune séquence valide n'a été trouvée.")
+                st.warning("Put FASTA sequences please :)")
