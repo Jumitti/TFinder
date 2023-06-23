@@ -17,6 +17,16 @@ st.set_page_config(
         initial_sidebar_state="expanded"
 )
 
+max_width_str = f"max-width: {75}%;"
+
+st.markdown(f"""
+        <style>
+        .appview-container .main .block-container{{{max_width_str}}}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    
 st.markdown("""
     <style>
     :root {
@@ -25,14 +35,6 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True) 
 
-max_width_str = f"max-width: {75}%;"
-st.markdown(f"""
-        <style>
-        .appview-container .main .block-container{{{max_width_str}}}
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
 
 st.markdown("""
         <style>
