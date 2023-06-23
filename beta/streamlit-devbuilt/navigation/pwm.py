@@ -18,12 +18,10 @@ def pwm_page():
                     counts[nucleotide] += 1
 
             # Calculer les fréquences relatives des nucléotides
-            total_count = sum(counts.values())
-            if total_count > 0:
-                pwm[0, i] = counts['A'] / total_count
-                pwm[1, i] = counts['T'] / total_count
-                pwm[2, i] = counts['C'] / total_count
-                pwm[3, i] = counts['G'] / total_count
+            pwm[0, i] = counts['A'] / num_sequences
+            pwm[1, i] = counts['T'] / num_sequences
+            pwm[2, i] = counts['C'] / num_sequences
+            pwm[3, i] = counts['G'] / num_sequences
 
         return pwm
 
