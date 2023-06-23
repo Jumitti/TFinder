@@ -491,7 +491,7 @@ def REF_page():
                         if normalized_score >= threshold:
                             row = [str(position).ljust(8),
                                    str(tis_position).ljust(15),
-                                   sequence_with_context,"{:.2e}".format(p_value),
+                                   sequence_with_context,
                                    "{:.1f}".format(normalized_score).ljust(12),
                                    shortened_promoter_name]
                             table2.append(row)
