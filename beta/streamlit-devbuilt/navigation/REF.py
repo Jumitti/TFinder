@@ -559,6 +559,7 @@ def REF_page():
                         sequences.append(current_sequence)
 
                     return sequences
+                matrix_text =""
                 
                 if st.button('Generate PWM'):
                     if fasta_text:
