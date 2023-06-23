@@ -9,7 +9,7 @@ import pickle
 from navigation.REF import REF_page
 from navigation.pwm import pwm_page
 
-def application_page():
+def allapp_page():
     #NavBar
 
     AIO = 'All in One'

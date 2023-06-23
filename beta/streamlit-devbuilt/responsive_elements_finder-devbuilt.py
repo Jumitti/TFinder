@@ -11,7 +11,7 @@ from navigation.home import home_page
 from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.REF import REF_page
-from navigation.app import application_page
+from navigation.allapp import allapp_page
 
 st.set_page_config(
         page_title='REF by Minniti',
@@ -78,7 +78,7 @@ if chosen_tab == HOME:
     home_page()
 
 elif chosen_tab == APPLICATION: 
-    application_page() 
+    allapp_page() 
     
 elif chosen_tab == RESOURCE: 
     resource_page()
