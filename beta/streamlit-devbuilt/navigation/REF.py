@@ -412,18 +412,6 @@ def REF_page():
             'Complement': complement_matrix,
             'Reversed Complement': reversed_complement_matrix
         }
-    #Transform manual matrix
-    def transform_matrix_manual(matrix):
-        reversed_matrix = np.flip(matrix, axis=1)
-        complement_matrix = np.flipud(matrix)
-        reversed_complement_matrix = np.flip(complement_matrix, axis=1)
-
-        return {
-            'Original': matrix,
-            'Reversed': reversed_matrix,
-            'Complement': complement_matrix,
-            'Reversed Complement': reversed_complement_matrix
-        }
 
     # Calculate score with JASPAR
     def calculate_score(sequence, matrix):
@@ -523,102 +511,6 @@ def REF_page():
             no_consensus = "No consensus sequence found with the specified threshold."
             
         return table2
-    
-    #Find RE with manual Matrix
-    def search_sequence_manual(threshold, tis_value, result_promoter, matrices):
-        global table2
-        table2 = []
-
-        def calculate_score(sequence, matrix):
-            score = 0.0
-            for i, base in enumerate(sequence):
-                score += matrix[base][i]
-            return score
-
-        for matrix_name, matrix in matrices.items():
-            seq_length = len(matrix['A'])
-
-            # Max score per matrix
-            max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-            st.write(max_score)
-            # Promoter input type
-            lines = result_promoter
-            promoters = []
-
-            first_line = lines
-            if first_line.startswith(("A", "T", "C", "G")):
-                shortened_promoter_name = "n.d."
-                promoter_region = lines
-                promoters.append((shortened_promoter_name, promoter_region))
-            else:
-                lines = result_promoter.split("\n")
-                i = 0
-                while i < len(lines):
-                    line = lines[i]
-                    if line.startswith(">"):
-                        promoter_name = line[1:]
-                        shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
-                        promoter_region = lines[i + 1]
-                        promoters.append((shortened_promoter_name, promoter_region))
-                        i += 2
-                    else:
-                        i += 1
-
-            # REF
-            for shortened_promoter_name, promoter_region in promoters:
-                found_positions = []
-                total_promoter = len(promoters)
-
-                for i in range(len(promoter_region) - seq_length + 1):
-                    seq = promoter_region[i:i + seq_length]
-                    score = calculate_score(seq, matrix)
-                    normalized_score = (score / max_score) * 100
-                    position = int(i)
-
-                    found_positions.append((position, seq, normalized_score))
-
-                # Sort positions in descending order of score percentage
-                found_positions.sort(key=lambda x: x[1], reverse=True)
-
-                # Creating a results table
-                if len(found_positions) > 0:
-                    for position, seq, normalized_score in found_positions:
-                        start_position = max(0, position - 3)
-                        end_position = min(len(promoter_region), position + len(seq) + 3)
-                        sequence_with_context = promoter_region[start_position:end_position]
-
-                        sequence_parts = []
-                        for j in range(start_position, end_position):
-                            if j < position or j >= position + len(seq):
-                                sequence_parts.append(sequence_with_context[j - start_position].lower())
-                            else:
-                                sequence_parts.append(sequence_with_context[j - start_position].upper())
-
-                        sequence_with_context = ''.join(sequence_parts)
-                        tis_position = position - tis_value
-
-                        if normalized_score >= threshold:
-                            row = [str(position).ljust(8),
-                                   str(tis_position).ljust(15),
-                                   sequence_with_context,
-                                   "{:.1f}".format(normalized_score).ljust(12),
-                                   shortened_promoter_name]
-                            table2.append(row)
-
-        if len(table2) > 0:
-            if prom_term == 'Promoter':
-                table2.sort(key=lambda x: float(x[3]), reverse=False)
-                header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
-                table2.insert(0, header)
-            else:
-                table2.sort(key=lambda x: float(x[3]), reverse=False)
-                header = ["Position", "Position (Gene end)", "Sequence", "Score %", "Promoter"]
-                table2.insert(0, header)
-
-        else:
-            no_consensus = "No consensus sequence found with the specified threshold."
-
-        return table2
         
     # Responsive Elements Finder
     with col2:
@@ -651,21 +543,27 @@ def REF_page():
                 threshold = float(threshold_entry)
                 try:
                     if jaspar == 'JASPAR_ID':
-                        sequence_consensus_input = entry_sequence
-                        matrices = matrix_extraction(sequence_consensus_input)
-                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-                    elif jaspar == 'Matrix':
                         matrix_lines = matrix_str.strip().split('\n')
-                        matrix_data = []
+                        matrix_data = {}
                         for line in matrix_lines:
                             parts = line.split('[')
                             base = parts[0].strip()
                             scores = [float(score.strip()) for score in parts[1].replace(']', '').split()]
-                            matrix_data.append(scores)
+                            matrix_data[base] = scores
 
-                        matrix_array = np.array(matrix_data)
-                        
-                        matrices = transform_matrix_manual(matrix_array)
+                        matrix_array = np.array([matrix_data['A'], matrix_data['C'], matrix_data['G'], matrix_data['T']])
+
+                        # Define the transformation function
+                        def transform_matrix(matrix):
+                            transformed_matrix = {
+                                'A': [matrix[0][4], matrix[0][7], matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3], matrix[0][5], matrix[0][6], matrix[0][8]],
+                                'C': [matrix[1][3], matrix[1][7], matrix[1][8], matrix[1][1], matrix[1][0], matrix[1][2], matrix[1][4], matrix[1][5], matrix[1][6]],
+                                'G': [matrix[2][0], matrix[2][1], matrix[2][2], matrix[2][7], matrix[2][6], matrix[2][8], matrix[2][3], matrix[2][4], matrix[2][5]],
+                                'T': [matrix[3][0], matrix[3][1], matrix[3][2], matrix[3][5], matrix[3][7], matrix[3][8], matrix[3][3], matrix[3][4], matrix[3][6]]
+                            }
+                            return transformed_matrix
+
+                        matrices = transform_matrix(matrix_array)
                             
                         table2 = search_sequence_manual(threshold, tis_value, result_promoter, matrices)
                     else:
