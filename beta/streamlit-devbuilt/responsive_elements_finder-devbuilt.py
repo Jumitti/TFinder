@@ -10,7 +10,6 @@ from utils.components import footer_style, footer
 from navigation.home import home_page
 from navigation.resource import resource_page
 from navigation.contact import contact_page
-from navigation.REF import REF_page
 from navigation.allapp import allapp_page
 
 st.set_page_config(
