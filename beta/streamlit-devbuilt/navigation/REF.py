@@ -521,7 +521,7 @@ def REF_page():
         if jaspar == 'JASPAR_ID':
             entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1")
         elif jaspar == 'Matrix':
-            entry_sequence = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]")
+            matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]")
         else:
             entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
@@ -548,9 +548,16 @@ def REF_page():
                         matrices = matrix_extraction(sequence_consensus_input)
                         table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     elif jaspar == 'Matrix':
-                        matrix_python = eval(entry_sequence)
-                        matrix_json = json.dumps(matrix_python, indent=4)
-                        st.code(matrix_json, language='json')
+                        matrix_lines = matrix_text.split('\n')
+                        matrix_data = {}
+                        for line in matrix_lines:
+                            line = line.strip()
+                            if line:
+                                key, values = line.split('[', 1)
+                                values = values.replace(']', '').split()
+                                values = [float(value) for value in values]
+                                matrix_data[key.strip()] = values
+                        st.write(matrix_data)
                     else:
                         sequence_consensus_input = entry_sequence
                         table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
