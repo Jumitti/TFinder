@@ -45,7 +45,7 @@ st.markdown(footer_style, unsafe_allow_html=True) ## Footer
 
 HOME = 'Home'
 APPLICATION = 'Tools/Software'
-RESOURCE = 'Resource'
+RESOURCE = 'Resources'
 CONTACT = 'Contact'
 
 tabs = [
