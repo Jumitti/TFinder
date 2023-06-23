@@ -538,7 +538,7 @@ def REF_page():
         if jaspar == 'JASPAR_ID':
             entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1")
         elif jaspar == 'Matrix':
-            matrix = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]")
+            entry_sequence = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]")
         else:
             entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
@@ -565,6 +565,7 @@ def REF_page():
                         matrices = matrix_extraction(sequence_consensus_input)
                         table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
                     elif jaspar == 'Matrix':
+                        matrix = entry_sequence
                         matrices = transform_matrix_manual(matrix)
                         table2 = search_sequence(sequence_consensus_input, threshold, tis_value, result_promoter, matrices)
                     else:
