@@ -62,6 +62,7 @@ def pwm_page():
 
                     base_str += "]"
                     base_str_f = base_str
+                    st.text_area(base_str_f)
 
             else:
                 st.warning("You forget FASTA sequences :)")
