@@ -525,73 +525,7 @@ def REF_page():
             if matrix_type == 'With PWM':
                 matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]")
             else:
-                fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", help='Put FASTA sequences. Same sequence length required ⚠️')
-                matrix_text = []
-                def calculate_pwm(sequences):
-                    num_sequences = len(sequences)
-                    sequence_length = len(sequences[0])
-                    pwm = np.zeros((4, sequence_length))
-                    for i in range(sequence_length):
-                        counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
-                        for sequence in sequences:
-                            nucleotide = sequence[i]
-                            if nucleotide in counts:
-                                counts[nucleotide] += 1
-                        pwm[0, i] = counts['A'] / num_sequences *100
-                        pwm[1, i] = counts['T'] / num_sequences *100
-                        pwm[2, i] = counts['G'] / num_sequences *100
-                        pwm[3, i] = counts['C'] / num_sequences *100
-
-                    return pwm
-
-                def parse_fasta(fasta_text):
-                    sequences = []
-                    current_sequence = ""
-
-                    for line in fasta_text.splitlines():
-                        if line.startswith(">"):
-                            if current_sequence:
-                                sequences.append(current_sequence)
-                            current_sequence = ""
-                        else:
-                            current_sequence += line
-
-                    if current_sequence:
-                        sequences.append(current_sequence)
-
-                    return sequences
-                
-                matrix_text = []
-                
-                if st.button('Generate PWM'):
-                    if fasta_text:
-                        sequences = parse_fasta(fasta_text)
-                        sequences = [seq.upper() for seq in sequences]
-
-                        if len(sequences) > 0:
-                            pwm = calculate_pwm(sequences)
-                            bases = ['A', 'T', 'G', 'C']
-                            pwm_text = ""
-                            for i in range(len(pwm)):
-                                base_name = bases[i]
-                                base_values = pwm[i]
-
-                                base_str = base_name + " ["
-                                for value in base_values:
-                                    base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
-
-                                base_str += "]\n"
-                                pwm_text += base_str
-
-                            matrix_output = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use')
-                            matrix_text.append(pwm_text)
-                            
-                            st.session_state['matrix_text'] = matrix_text
-                            
-
-                        else:
-                            st.warning("You forget FASTA sequences :)")
-              
+                fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", help='Put FASTA sequences. Same sequence length required ⚠️')              
         else:
             entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
@@ -618,31 +552,93 @@ def REF_page():
                         matrices = matrix_extraction(sequence_consensus_input)
                         table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     elif jaspar == 'Matrix':
-                        if 'matrix_text' not in st.session_state:
-                                matrix_lines = matrix_text.split('\n')
-                                matrix = {}
-                                for line in matrix_lines:
-                                    line = line.strip()
-                                    if line:
-                                        key, values = line.split('[', 1)
-                                        values = values.replace(']', '').split()
-                                        values = [float(value) for value in values]
-                                        matrix[key.strip()] = values
-                                matrices = transform_matrix(matrix)
-                                table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                        if matrix_type == 'With PWM':
+                            matrix_lines = matrix_text.split('\n')
+                            matrix = {}
+                            for line in matrix_lines:
+                                line = line.strip()
+                                if line:
+                                    key, values = line.split('[', 1)
+                                    values = values.replace(']', '').split()
+                                    values = [float(value) for value in values]
+                                    matrix[key.strip()] = values
+                            matrices = transform_matrix(matrix)
+                            table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                         else:
-                            result_matrix_text = "\n".join(st.session_state['matrix_text'])
-                            matrix_lines = result_matrix_text.split('\n')
-                                matrix = {}
-                                for line in matrix_lines:
-                                    line = line.strip()
-                                    if line:
-                                        key, values = line.split('[', 1)
-                                        values = values.replace(']', '').split()
-                                        values = [float(value) for value in values]
-                                        matrix[key.strip()] = values
-                                matrices = transform_matrix(matrix)
-                                table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                            matrix_text = []
+                            def calculate_pwm(sequences):
+                                num_sequences = len(sequences)
+                                sequence_length = len(sequences[0])
+                                pwm = np.zeros((4, sequence_length))
+                                for i in range(sequence_length):
+                                    counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
+                                    for sequence in sequences:
+                                        nucleotide = sequence[i]
+                                        if nucleotide in counts:
+                                            counts[nucleotide] += 1
+                                    pwm[0, i] = counts['A'] / num_sequences *100
+                                    pwm[1, i] = counts['T'] / num_sequences *100
+                                    pwm[2, i] = counts['G'] / num_sequences *100
+                                    pwm[3, i] = counts['C'] / num_sequences *100
+
+                                return pwm
+
+                            def parse_fasta(fasta_text):
+                                sequences = []
+                                current_sequence = ""
+
+                                for line in fasta_text.splitlines():
+                                    if line.startswith(">"):
+                                        if current_sequence:
+                                            sequences.append(current_sequence)
+                                        current_sequence = ""
+                                    else:
+                                        current_sequence += line
+
+                                if current_sequence:
+                                    sequences.append(current_sequence)
+
+                                return sequences
+                            
+                            matrix_text = []
+                            
+                            if st.button('Generate PWM'):
+                                if fasta_text:
+                                    sequences = parse_fasta(fasta_text)
+                                    sequences = [seq.upper() for seq in sequences]
+
+                                    if len(sequences) > 0:
+                                        pwm = calculate_pwm(sequences)
+                                        bases = ['A', 'T', 'G', 'C']
+                                        pwm_text = ""
+                                        for i in range(len(pwm)):
+                                            base_name = bases[i]
+                                            base_values = pwm[i]
+
+                                            base_str = base_name + " ["
+                                            for value in base_values:
+                                                base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+
+                                            base_str += "]\n"
+                                            pwm_text += base_str
+
+                                        matrix_text = st.text_area("PWM:", value=pwm_text, help='Select and copy for later use')
+                                        matrix_text.append(pwm_text)
+                                        
+                                        matrix_lines = matrix_text.split('\n')
+                                        matrix = {}
+                                        for line in matrix_lines:
+                                            line = line.strip()
+                                            if line:
+                                                key, values = line.split('[', 1)
+                                                values = values.replace(']', '').split()
+                                                values = [float(value) for value in values]
+                                                matrix[key.strip()] = values
+                                        matrices = transform_matrix(matrix)
+                                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+
+                                    else:
+                                        st.warning("You forget FASTA sequences :)")
                     else:
                         sequence_consensus_input = entry_sequence
                         table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
