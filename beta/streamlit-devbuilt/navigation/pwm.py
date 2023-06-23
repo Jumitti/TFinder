@@ -55,7 +55,7 @@ def pwm_page():
             pwm = calculate_pwm(sequences)
 
             st.header("PWM résultante")
-            bases = ['A', 'C', 'G', 'T']
+            bases = ['A', 'T', 'G', 'C']
             for i in range(len(pwm)):
                 base_name = bases[i]
                 base_values = pwm[i]
