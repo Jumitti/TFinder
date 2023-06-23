@@ -143,13 +143,8 @@ def prom_extractor_page():
         except Exception as e:
             raise Exception(f"Error retrieving gene information: {str(e)}")
 
-    # Streamlit app
-    st.title('Responsive Elements Finder 🧬🔎')
-
-    #Disposition
-
     # Promoter Finder
-    st.header('🧬 Promoter and Terminator Extractor')
+    st.subheader('🧬 Promoter and Terminator Extractor')
 
     # Gene ID
     gene_id_entry = st.text_area("🔸 :red[**Step 1.1**] Gene ID:", value="PRKN\n5071")

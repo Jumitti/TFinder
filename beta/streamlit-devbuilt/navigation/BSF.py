@@ -10,7 +10,7 @@ import json
 def BSF_page():
     # Promoter output state
 
-    st.header('🔎 Binding Sites Finder')
+    st.subheader('🔎 Binding Sites Finder')
     result_promoter = st.text_area("🔸 :red[**Step 1.1**] Sequence:", value="Paste sequences here (FASTA required for multiple sequences).")
 
     # Responsive-Elements-Finder
