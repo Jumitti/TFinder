@@ -4,6 +4,8 @@ import pandas as pd
 import altair as alt
 import math
 import pickle
+import numpy as np
+import json
 
 def BSF_page():
     # Promoter output state
