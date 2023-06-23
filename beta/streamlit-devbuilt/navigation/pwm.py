@@ -51,6 +51,7 @@ def pwm_page():
                 st.subheader("PWM: ")
                 st.info("⬇️ Select and copy")
                 bases = ['A', 'T', 'G', 'C']
+                pwm_text = ""
                 for i in range(len(pwm)):
                     base_name = bases[i]
                     base_values = pwm[i]
