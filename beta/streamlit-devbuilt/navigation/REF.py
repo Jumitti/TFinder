@@ -148,7 +148,7 @@ def REF_page():
 
     # Promoter Finder
     with col1:
-        st.header(':E67D39[Step 1] Promoter and Terminator Extractor')
+        st.markdown('<h1 style="color: #E67D39;">[Step 1] Promoter and Terminator Extractor</h1>', unsafe_allow_html=True)
         st.info("💡 If you have a FASTA sequence, go to :red[**Step 2**]")
 
     # Gene ID
