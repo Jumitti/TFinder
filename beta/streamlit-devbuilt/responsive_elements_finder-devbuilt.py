@@ -6,7 +6,7 @@ import altair as alt
 import math
 import pickle
 
-from utils.components import footer_style, footer, color_style
+from utils.components import footer_style, footer
 from navigation.home import home_page
 from navigation.REF import REF_page
 from navigation.resource import resource_page
@@ -16,7 +16,6 @@ st.set_page_config(
         page_title='REF by Minniti',
         initial_sidebar_state="expanded"
 )
-
 
 max_width_str = f"max-width: {75}%;"
 st.markdown(f"""
@@ -36,8 +35,15 @@ st.markdown("""
                 }
         </style>
         """, unsafe_allow_html=True)
-        
-st.markdown('<link href="style.css" rel="stylesheet">', unsafe_allow_html=True)
+
+st.markdown("""
+    <style>
+    :root {
+        --primary-color: blue;
+    }
+    </style>
+    """, unsafe_allow_html=True)        
+
 #Footer
 
 st.markdown(footer_style, unsafe_allow_html=True) ## Footer
