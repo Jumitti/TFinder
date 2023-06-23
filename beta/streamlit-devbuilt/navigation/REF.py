@@ -561,7 +561,7 @@ def REF_page():
                     return sequences
                 
                 matrix_text = []
-                
+                pmw_text = ""
                 if st.button('Generate PWM'):
                     if fasta_text:
                         sequences = parse_fasta(fasta_text)
