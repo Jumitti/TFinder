@@ -570,12 +570,6 @@ def REF_page():
                         matrix_array = np.array(matrix_data)
                         
                         matrices = transform_matrix_manual(matrix_array)
-                        
-                        for matrix_name, matrix_values in matrices.items():
-                            st.write(matrix_name)
-                            for i, base in enumerate(['A', 'T', 'G', 'C']):
-                                st.write(base, matrix_values[i])
-                            st.write('\n')
                             
                         table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     else:
