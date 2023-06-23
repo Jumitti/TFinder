@@ -160,14 +160,9 @@ def BSF_page():
                         table.append(row)
 
         if len(table) > 0:
-            if prom_term == 'Promoter':
-                table.sort(key=lambda x: float(x[3]), reverse=False)
-                header = ["Position", "Position (TSS)", "Sequence", "p-value","% Homology", "Ref seq", "Promoter"]
-                table.insert(0, header)
-            else:
-                table.sort(key=lambda x: float(x[3]), reverse=False)
-                header = ["Position", "Position (Gene end)", "Sequence", "p-value", "% Homology", "Ref seq", "Promoter"]
-                table.insert(0, header)
+            table.sort(key=lambda x: float(x[3]), reverse=False)
+            header = ["Position", "Relative position", "Sequence", "p-value","% Homology", "Ref seq", "Promoter"]
+            table.insert(0, header)
         else:
             no_consensus = "No consensus sequence found with the specified threshold."
             
@@ -301,14 +296,9 @@ def BSF_page():
                             table2.append(row)
 
         if len(table2) > 0:
-            if prom_term == 'Promoter':
-                table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
-                table2.insert(0, header)
-            else:
-                table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Position (Gene end)", "Sequence", "Score %", "Promoter"]
-                table2.insert(0, header)
+            table2.sort(key=lambda x: float(x[3]), reverse=True)
+            header = ["Position", "Relative position", "Sequence", "Score %", "Promoter"]
+            table2.insert(0, header)
             
         else:
             no_consensus = "No consensus sequence found with the specified threshold."
@@ -389,10 +379,7 @@ def BSF_page():
         entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
 
 # TSS entry
-    if prom_term == 'Promoter':
-        entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
-    else:
-        entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
+    entry_tis = st.number_input("🔸 :red[**Step 1.4**] Relative position to TSS or Gene End (in bp):", 0, 10000, 0, help="Distance of TSS or gene end from begin of sequences. Same distance is required for multiple sequences. Leave '0' if you don't know")
 
 # Threshold
     if jaspar == 'JASPAR_ID':
@@ -451,20 +438,12 @@ def BSF_page():
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Promoter:N", scale=scale)
                 
-                if prom_term == 'Promoter':
-                    chart = alt.Chart(source).mark_circle().encode(
-                        x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-                        y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-                        color=color_scale,
-                        tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-                    ).properties(width=600, height=400)
-                else:
-                    chart = alt.Chart(source).mark_circle().encode(
-                        x=alt.X('Position (Gene end):Q', axis=alt.Axis(title='Relative position to gene end (bp)'), sort='ascending'),
-                        y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-                        color=color_scale,
-                        tooltip=['Position (Gene end)', 'Score %', 'Sequence', 'Promoter']
-                    ).properties(width=600, height=400)
+                chart = alt.Chart(source).mark_circle().encode(
+                    x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                    y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+                    color=color_scale,
+                    tooltip=['Relative position', 'Score %', 'Sequence', 'Promoter']
+                ).properties(width=600, height=400)
                                       
                 st.altair_chart(chart, use_container_width=True)
             else: 
@@ -493,20 +472,12 @@ def BSF_page():
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Promoter:N", scale=scale)
                 
-                if prom_term == 'Promoter':
-                    chart = alt.Chart(source).mark_circle().encode(
-                        x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-                        y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-                        color=color_scale,
-                        tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-                    ).properties(width=600, height=400)
-                else:
-                    chart = alt.Chart(source).mark_circle().encode(
-                        x=alt.X('Position (Gene end):Q', axis=alt.Axis(title='Relative position to gene end (bp)'), sort='ascending'),
-                        y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-                        color=color_scale,
-                        tooltip=['Position (Gene end)', 'Score %', 'Sequence', 'Promoter']
-                    ).properties(width=600, height=400)
+                chart = alt.Chart(source).mark_circle().encode(
+                    x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                    y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+                    color=color_scale,
+                    tooltip=['Relative position', 'Score %', 'Sequence', 'Promoter']
+                ).properties(width=600, height=400)
                                       
                 st.altair_chart(chart, use_container_width=True)
             else:
@@ -529,20 +500,12 @@ def BSF_page():
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Promoter:N", scale=scale)
                 
-                if prom_term == 'Promoter':
-                    chart = alt.Chart(source).mark_circle().encode(
-                        x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-                        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
-                        color=color_scale,
-                        tooltip=['Position (TSS)', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
-                    ).properties(width=600, height=400)
-                else:
-                    chart = alt.Chart(source).mark_circle().encode(
-                        x=alt.X('Position (Gene end):Q', axis=alt.Axis(title='Relative position to gene end (bp)'), sort='ascending'),
-                        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
-                        color=color_scale,
-                        tooltip=['Position (Gene end)', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
-                    ).properties(width=600, height=400)
+                chart = alt.Chart(source).mark_circle().encode(
+                    x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                    y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
+                    color=color_scale,
+                    tooltip=['Relative position', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
+                ).properties(width=600, height=400)
 
                 st.altair_chart(chart, use_container_width=True)
             else:
