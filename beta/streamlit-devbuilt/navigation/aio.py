@@ -583,6 +583,34 @@ def aio_page():
 
                     else:
                         st.warning("You forget FASTA sequences :)")
+                        
+                def create_web_logo(sequences):
+                    matrix = logomaker.alignment_to_matrix(sequences)
+                    logo = logomaker.Logo(matrix)
+
+                    return logo
+
+                # Entrée des séquences
+                sequences_text = fasta_text
+                sequences = []
+                current_sequence = ""
+                for line in sequences_text.splitlines():
+                    line = line.strip()
+                    if line.startswith(">"):
+                        if current_sequence:
+                            sequences.append(current_sequence)
+                        current_sequence = ""
+                    else:
+                        current_sequence += line
+
+                if current_sequence:
+                    sequences.append(current_sequence)
+
+                if sequences:
+                    logo = create_web_logo(sequences)
+                    st.pyplot(logo.fig)
+                else:
+                    st.warning("Aucune séquence trouvée. Veuillez saisir des séquences FASTA valides.")
               
         else:
             entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
