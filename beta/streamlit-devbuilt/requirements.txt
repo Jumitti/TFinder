@@ -11,3 +11,4 @@ pymed
 plotly
 hydralit_components
 weblogo
+ghostscript
