@@ -87,7 +87,7 @@ def pwm_page():
                 return logo
 
             # Entrée des séquences
-            sequences_text = st.text_area("Saisissez les séquences FASTA", height=200)
+            sequences_text = fasta_text
 
             if st.button("Générer le WebLogo"):
                 sequences = []
