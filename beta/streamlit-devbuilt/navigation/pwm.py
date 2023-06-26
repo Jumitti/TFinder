@@ -1,11 +1,6 @@
 import streamlit as st
-from weblogo import *
-import json
-from Bio import SeqIO
-from io import StringIO
-import requests
-from PIL import Image
-from io import BytesIO
+
+
 
 def pwm_page():
     def calculate_pwm(sequences):
@@ -81,28 +76,5 @@ def pwm_page():
                 
             else:
                 st.warning("You forget FASTA sequences :)")
-
-            # URL de l'API WebLogo2
-            url = 'https://weblogo.berkeley.edu/logo.cgi'
-
-            # Données de la requête
-            data = {
-                'sequence': '\n'.join(fasta_text),
-                'format': 'PNG',
-                # Autres paramètres personnalisables
-            }
-
-            # Envoi de la requête
-            response = requests.post(url, data=data)
-
-            # Vérification de la réponse
-            if response.status_code == 200:
-                # Conversion de la réponse en image PIL
-                st.write(response)
-                image = Image.open(BytesIO(response.content), format='PNG')
-                # Affichage de l'image avec st.image
-                st.image(image, caption='WebLogo2 généré avec succès.')
-            else:
-                st.error('Erreur lors de la génération du WebLogo2.')
 
 
