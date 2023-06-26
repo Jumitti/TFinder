@@ -82,33 +82,55 @@ def pwm_page():
                 
             else:
                 st.warning("You forget FASTA sequences :)")
-            # Matrice de séquences
-            matrix = {
-                "G": [32.0, 28.0, 0.0, 8.0, 1.0, 0.0, 44.0, 0.0, 44.0, 38.0, 0.0, 9.0, 9.0, 21.0, 11.0, 13.0, 17.0, 23.0, 20.0],
-                "T": [8.0, 6.0, 9.0, 1.0, 0.0, 0.0, 0.0, 44.0, 0.0, 6.0, 0.0, 4.0, 5.0, 4.0, 2.0, 0.0, 2.0, 5.0, 2.0],
-                "A": [0.0, 8.0, 19.0, 0.0, 43.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 17.0, 6.0, 13.0, 20.0, 12.0, 13.0, 10.0, 13.0],
-                "C": [4.0, 2.0, 16.0, 35.0, 0.0, 44.0, 0.0, 0.0, 0.0, 0.0, 44.0, 14.0, 24.0, 6.0, 11.0, 19.0, 12.0, 6.0, 9.0]
-            }
 
-            # Création des données du logo à partir de la matrice de séquences
-            data = LogoData.from_counts("example", matrix)
+            # Fonction pour convertir les séquences FASTA en une matrice
+            def fasta_to_matrix(fasta_text):
+                matrix = {}
 
-            # Options de configuration du logo
-            options = LogoOptions()
-            options.logo_title = "Example Logo"
-            options.show_errorbars = False
+                # Analyse des séquences FASTA
+                records = SeqIO.parse(fasta_text, "fasta")
+                for record in records:
+                    sequence = str(record.seq)
+                    matrix[record.id] = list(sequence)
 
-            # Format du logo
-            format1 = LogoFormat(data, options)
+                return matrix
 
-            # Chemin de sortie du fichier PDF
-            output_path = "logo.pdf"
+            # Lecture des séquences FASTA depuis un fichier ou une zone de texte
+            fasta_file = st.file_uploader("Sélectionnez un fichier FASTA", type=["fasta"])
+            fasta_text = st.text_area("Saisissez les séquences FASTA")
 
-            # Génération du logo au format PDF
-            with open(output_path, "wb") as output_file:
-                pdf_formatter(data, format1, output_file)
+            # Vérification de la présence des séquences FASTA
+            if fasta_file is not None:
+                # Lecture des séquences FASTA depuis le fichier
+                matrix = fasta_to_matrix(fasta_file)
+            elif fasta_text != "":
+                # Lecture des séquences FASTA depuis la zone de texte
+                matrix = fasta_to_matrix(fasta_text)
+            else:
+                st.warning("Veuillez charger un fichier FASTA ou saisir les séquences FASTA.")
 
-            # Affichage du logo dans Streamlit
-            st.image(output_path)
+            # Génération du logo Web si la matrice de séquences est disponible
+            if "matrix" in locals():
+                # Création des données du logo à partir de la matrice de séquences
+                data = LogoData.from_counts(matrix)
+
+                # Options de configuration du logo
+                options = LogoOptions()
+                options.logo_title = "Logo Web"
+                options.show_errorbars = False
+
+                # Format du logo
+                format = LogoFormat(data, options)
+
+                # Chemin de sortie du fichier PDF
+                output_path = "logo.pdf"
+
+                # Génération du logo au format PDF
+                with open(output_path, "wb") as output_file:
+                    pdf_formatter(data, format, output_file)
+
+                # Affichage du logo dans Streamlit
+                st.image(output_path)
+
 
 
