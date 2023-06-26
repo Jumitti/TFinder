@@ -52,7 +52,12 @@ def pwm_page():
     
     def generate_weblogo(sequences):
         seqs = SeqIO.parse(StringIO(sequences), 'fasta')
-        data = LogoData.from_seqs(seqs)
+        seq_list = list(seqs)
+        if len(seq_list) == 0 or len(seq_list[0]) == 0:
+            st.warning("No sequences found in the input")
+            return
+
+        data = LogoData.from_seqs(seq_list)
 
         options = LogoOptions()
         options.title = "WebLogo"
