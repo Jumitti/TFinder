@@ -110,7 +110,7 @@ def pwm_page():
                         st.write(e)
 
             # Utilisation de la fonction create_web_logo
-            sequences_text = st.text_input("Coller les séquences FASTA")
+            sequences_text = fasta_text
             if sequences_text:
                 # Analyse les séquences FASTA
                 sequences = list(SeqIO.parse(sequences_text.splitlines(), "fasta"))
