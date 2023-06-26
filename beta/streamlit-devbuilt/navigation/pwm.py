@@ -99,8 +99,8 @@ def pwm_page():
             options.color_scheme = classic
 
             # Génération du logo Web
-            format = LogoFormat(data, options)
-            png = png_formatter(data, format)
+            format_web = LogoFormat(data, options)
+            png = png_formatter(data, format_web)
 
             # Affichage du logo Web
             st.image(png, use_column_width=True)
