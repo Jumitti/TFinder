@@ -8,8 +8,6 @@ from PIL import Image
 from io import BytesIO
 from weblogo import LogoData, LogoFormat, LogoOptions, pdf_formatter
 
-from pyweblogo import LogoData, LogoFormat, LogoOptions, png_formatter
-
 
 def pwm_page():
     def calculate_pwm(sequences):
@@ -85,34 +83,4 @@ def pwm_page():
                 
             else:
                 st.warning("You forget FASTA sequences :)")
-                
-            def create_web_logo(sequences):
-                output_file = "logo.png"
-
-                # Crée un fichier temporaire pour stocker les séquences FASTA
-                with tempfile.NamedTemporaryFile(suffix=".fasta", delete=False) as temp_file:
-                    # Écrit les séquences FASTA dans le fichier temporaire
-                    SeqIO.write(sequences, temp_file.name, "fasta")
-                    temp_file.flush()
-
-                    # Commande pour exécuter WebLogo en ligne de commande
-                    command = f"weblogo -f {temp_file.name} -o {output_file} -F png"
-
-                    try:
-                        # Exécute la commande en utilisant subprocess
-                        subprocess.run(command, shell=True, check=True)
-
-                        # Affiche le logo Web
-                        st.image(output_file)
-
-                    except subprocess.CalledProcessError as e:
-                        st.error("Une erreur s'est produite lors de la génération du logo.")
-                        st.write(e)
-
-            # Utilisation de la fonction create_web_logo
-            sequences_text = fasta_text
-            if sequences_text:
-                # Analyse les séquences FASTA
-                sequences = list(SeqIO.parse(StringIO(sequences_text), "fasta"))
-                create_web_logo(sequences)
 
