@@ -77,8 +77,7 @@ def pwm_page():
                 
             else:
                 st.warning("You forget FASTA sequences :)")
-            
-            sequences = []
+                
             for line in fasta_text.splitlines():
                 if line.startswith(">"):
                     if sequences:
