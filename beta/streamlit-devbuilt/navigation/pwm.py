@@ -87,8 +87,11 @@ def pwm_page():
             def fasta_to_matrix(fasta_text):
                 matrix = {}
 
+                # Création d'un objet fichier virtuel à partir de la chaîne de texte FASTA
+                fasta_file = StringIO(fasta_text)
+
                 # Analyse des séquences FASTA
-                records = SeqIO.parse(fasta_text, "fasta")
+                records = SeqIO.parse(fasta_file, "fasta")
                 for record in records:
                     sequence = str(record.seq)
                     matrix[record.id] = list(sequence)
