@@ -591,7 +591,6 @@ def aio_page():
 
                     return logo
 
-                # Entrée des séquences
                 sequences_text = fasta_text
                 sequences = []
                 current_sequence = ""
@@ -610,8 +609,6 @@ def aio_page():
                 if sequences:
                     logo = create_web_logo(sequences)
                     st.pyplot(logo.fig)
-                else:
-                    st.warning("Aucune séquence trouvée. Veuillez saisir des séquences FASTA valides.")
               
         else:
             entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")

@@ -9,7 +9,6 @@ def pwm_page():
         sequence_length = len(sequences[0])
         num_sequences = len(sequences)
         
-        # Vérifier que toutes les séquences ont la même longueur
         for sequence in sequences[1:]:
             if len(sequence) != sequence_length:
                 st.warning("Sequence lengths are not consistent.")
@@ -103,6 +102,3 @@ def pwm_page():
             if sequences:
                 logo = create_web_logo(sequences)
                 st.pyplot(logo.fig)
-            else:
-                st.warning("Aucune séquence trouvée. Veuillez saisir des séquences FASTA valides.")
-
