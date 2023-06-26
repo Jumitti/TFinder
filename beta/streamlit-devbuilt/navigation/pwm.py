@@ -84,8 +84,7 @@ def pwm_page():
                 logo = logomaker.Logo(matrix)
 
                 return logo
-
-            # Entrée des séquences
+            
             sequences_text = fasta_text
             sequences = []
             current_sequence = ""
