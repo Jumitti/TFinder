@@ -98,6 +98,9 @@ def pwm_page():
 
                 return matrix
 
+            # Lecture des séquences FASTA depuis une zone de texte
+            fasta_text = st.text_area("Saisissez les séquences FASTA")
+
             # Vérification de la présence des séquences FASTA
             if fasta_text != "":
                 # Conversion des séquences FASTA en une matrice
@@ -111,7 +114,7 @@ def pwm_page():
                 sequences = ["".join(matrix[key]) for key in matrix]
 
                 # Création des données du logo à partir des séquences
-                data = LogoData.from_seqs(sequences)
+                data = LogoData.from_counts(matrix)
 
                 # Options de configuration du logo
                 options = LogoOptions()
