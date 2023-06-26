@@ -538,7 +538,7 @@ def aio_page():
                 # Parcourir les lignes à partir de la deuxième ligne
                 for line in lines[1:]:
                     # Extraire les valeurs numériques de la ligne
-                    row_values = [float(value) for value in line.split("[")[1].split()]
+                    row_values = [float(value) for value in line.split("[")[1].split() if value != ']']
 
                     # Ajouter les valeurs à la liste
                     values.append(row_values)
