@@ -88,25 +88,23 @@ def pwm_page():
 
             # Entrée des séquences
             sequences_text = fasta_text
-
-            if st.button("Générer le WebLogo"):
-                sequences = []
-                current_sequence = ""
-                for line in sequences_text.splitlines():
-                    line = line.strip()
-                    if line.startswith(">"):
-                        if current_sequence:
-                            sequences.append(current_sequence)
-                        current_sequence = ""
-                    else:
-                        current_sequence += line
-
-                if current_sequence:
-                    sequences.append(current_sequence)
-
-                if sequences:
-                    logo = create_web_logo(sequences)
-                    st.pyplot(logo.fig)
+            sequences = []
+            current_sequence = ""
+            for line in sequences_text.splitlines():
+                line = line.strip()
+                if line.startswith(">"):
+                    if current_sequence:
+                        sequences.append(current_sequence)
+                    current_sequence = ""
                 else:
-                    st.warning("Aucune séquence trouvée. Veuillez saisir des séquences FASTA valides.")
+                    current_sequence += line
+
+            if current_sequence:
+                sequences.append(current_sequence)
+
+            if sequences:
+                logo = create_web_logo(sequences)
+                st.pyplot(logo.fig)
+            else:
+                st.warning("Aucune séquence trouvée. Veuillez saisir des séquences FASTA valides.")
 
