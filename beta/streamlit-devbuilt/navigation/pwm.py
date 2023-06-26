@@ -78,7 +78,7 @@ def pwm_page():
         seq_list = list(seqs)
         if len(seq_list) == 0 or len(seq_list[0]) == 0:
             st.warning("No sequences found in the input")
-            return
+            return None
 
         counts = [[seq.seq.count(nuc) for nuc in seq.seq] for seq in seq_list]
         data = LogoData.from_counts(seq_list[0].alphabet, counts)
@@ -124,7 +124,10 @@ def pwm_page():
             
             fasta_text = convert_json_to_fasta(json_text)
             weblogo1 = generate_weblogo(fasta_text)
-            st.image(weblogo1, use_column_width=True)
+            if weblogo1 is not None:
+                st.image(weblogo1, use_column_width=True)
+            else:
+                st.warning("Failed to generate weblogo")
 
 
 
