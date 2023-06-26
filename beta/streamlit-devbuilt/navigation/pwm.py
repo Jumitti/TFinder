@@ -1,11 +1,8 @@
 import streamlit as st
 import numpy as np
 from weblogo import *
-from Bio import motifs
-from Bio.SeqRecord import SeqRecord
 from Bio.Seq import Seq
-import matplotlib.pyplot as plt
-from io import StringIO
+from weblogo import *
 
 def pwm_page():
     def calculate_pwm(sequences):
@@ -46,73 +43,35 @@ def pwm_page():
 
     fasta_text = st.text_area("Put FASTA sequences. Same sequence length required ⚠️", height=300)
     
-    # Fonction pour convertir les séquences au format FASTA en objet Bio.motifs.Motif
-    def parse_sequences(sequences):
-        records = []
+    def generate_weblogo(weblogo):
+        # Convertir les séquences en format Seq de BioPython
+        seqs = [Seq(seq) for seq in weblogo]
 
-        current_sequence_name = None
-        current_sequence_instances = []
+        # Créer l'objet LogoOptions
+        options = LogoOptions()
+        options.logo_title = "WebLogo"
+        options.color_scheme = classic
 
-        for line in sequences:
-            if line.startswith(">"):
-                if current_sequence_name is not None:
-                    current_sequence = motifs.create(current_sequence_instances, alphabet=motifs.IUPAC.unambiguous_dna, name=current_sequence_name)
-                    records.append(current_sequence)
-                    current_sequence_instances = []
-                current_sequence_name = line[1:]
-            else:
-                current_sequence_instances.append(line)
+        # Créer l'objet LogoData
+        data = LogoData.from_seqs(seqs)
 
-        if current_sequence_name is not None:
-            current_sequence = motifs.create(current_sequence_instances, alphabet=motifs.IUPAC.unambiguous_dna, name=current_sequence_name)
-            records.append(current_sequence)
+        # Générer le weblogo
+        format = LogoFormat(data, options)
+        png = png_print_formatter(data, format)
 
-        return records
-        
-    # Fonction pour générer le weblogo à partir des motifs
-    def generate_weblogo(motifs):
-        m = motifs.combine(motifs)
-        handle = StringIO()
-        motifs.write(m, handle, format='jaspar')
-        handle.seek(0)
-
-        logo = motifs.read(handle, format='jaspar')
-        logo.format = 'png'
-
-        return logo
+        return png
 
     if st.button('Generate PWM'):
         if fasta_text:
             
-            # Votre input de séquences
-            sequences_input = [
-                '>p53',
-                'CTGCCGGAGGA',
-                '>PS1',
-                'AGGCCGGAGGC',
-                '>PS2',
-                'TCGCCGGAGAC',
-                '>CCNA2',
-                'CCGCCGGAGCG',
-                '>CCNB1',
-                'AGGCCGGATCG'
-            ]
-            
             sequences = parse_fasta(fasta_text)
             sequences = [seq.upper() for seq in sequences]
             
-            # Conversion des séquences en objets Motif
-            sequences_weblogo = parse_sequences(fasta_text)
+            weblogo = fasta_text.splitlines()
             
-            # Génération du weblogo
-            weblogo = generate_weblogo(sequences_weblogo)
-            
-            # Affichage du weblogo
-            plt.figure(figsize=(6, 3))
-            weblogo.plot(ax=plt.gca(), ic_scale=False)
-            plt.xticks([])
-            plt.yticks([])
-            plt.show()
+            if weblogo:
+                weblogo1 = generate_weblogo(weblogo)
+                st.image(weblogo1, use_column_width=True)
 
             if len(sequences) > 0:
                 pwm = calculate_pwm(sequences)
@@ -134,8 +93,6 @@ def pwm_page():
 
                 st.text_area("PWM résultante", value=pwm_text)
                 
-                
-
             else:
                 st.warning("You forget FASTA sequences :)")
 
