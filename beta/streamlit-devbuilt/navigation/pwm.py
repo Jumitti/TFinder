@@ -8,6 +8,8 @@ from PIL import Image
 from io import BytesIO
 from weblogo import LogoData, LogoFormat, LogoOptions, pdf_formatter
 
+import logomaker
+
 
 def pwm_page():
     def calculate_pwm(sequences):
