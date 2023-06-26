@@ -528,7 +528,8 @@ def aio_page():
                 lines = matrix_text.strip().split('\n')
                 values = []
                 for line in lines:
-                    values.append([float(val) for val in line.strip().split()[1:]])
+                    parts = line.strip().split()
+                    values.append([float(val) for val in parts[1:] if val != '['])
 
                 # Créer une matrice numpy à partir des valeurs
                 matrix = np.array(values)
