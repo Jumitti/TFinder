@@ -1,6 +1,12 @@
 import streamlit as st
-
-
+from weblogo import *
+import json
+from Bio import SeqIO
+from io import StringIO
+import requests
+from PIL import Image
+from io import BytesIO
+from weblogo import LogoData, LogoFormat, LogoOptions, pdf_formatter
 
 def pwm_page():
     def calculate_pwm(sequences):
@@ -76,5 +82,33 @@ def pwm_page():
                 
             else:
                 st.warning("You forget FASTA sequences :)")
+            # Matrice de séquences
+            matrix = {
+                "G": [32.0, 28.0, 0.0, 8.0, 1.0, 0.0, 44.0, 0.0, 44.0, 38.0, 0.0, 9.0, 9.0, 21.0, 11.0, 13.0, 17.0, 23.0, 20.0],
+                "T": [8.0, 6.0, 9.0, 1.0, 0.0, 0.0, 0.0, 44.0, 0.0, 6.0, 0.0, 4.0, 5.0, 4.0, 2.0, 0.0, 2.0, 5.0, 2.0],
+                "A": [0.0, 8.0, 19.0, 0.0, 43.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 17.0, 6.0, 13.0, 20.0, 12.0, 13.0, 10.0, 13.0],
+                "C": [4.0, 2.0, 16.0, 35.0, 0.0, 44.0, 0.0, 0.0, 0.0, 0.0, 44.0, 14.0, 24.0, 6.0, 11.0, 19.0, 12.0, 6.0, 9.0]
+            }
+
+            # Création des données du logo à partir de la matrice de séquences
+            data = LogoData.from_counts("example", matrix)
+
+            # Options de configuration du logo
+            options = LogoOptions()
+            options.logo_title = "Example Logo"
+            options.show_errorbars = False
+
+            # Format du logo
+            format = LogoFormat(data, options)
+
+            # Chemin de sortie du fichier PDF
+            output_path = "logo.pdf"
+
+            # Génération du logo au format PDF
+            with open(output_path, "wb") as output_file:
+                pdf_formatter(data, format, output_file)
+
+            # Affichage du logo dans Streamlit
+            st.image(output_path)
 
 
