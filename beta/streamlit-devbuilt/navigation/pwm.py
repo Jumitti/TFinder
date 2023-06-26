@@ -1,8 +1,6 @@
 import streamlit as st
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon
-
+from weblogo import *
 def pwm_page():
     def calculate_pwm(sequences):
         num_sequences = len(sequences)
@@ -66,37 +64,17 @@ def pwm_page():
                     pwm_text += base_str
 
                 st.text_area("PWM résultante", value=pwm_text)
-
-                # Créer le logo de séquence en utilisant Matplotlib
-                fig, ax = plt.subplots()
-                logo_heights = np.sum(pwm, axis=0)
-                for i, base in enumerate(bases):
-                    heights = pwm[i]
-                    y_start = np.sum(logo_heights[:i])
-                    for j, height in enumerate(heights):
-                        if np.isfinite(height):
-                            rect = Polygon(
-                                np.array(
-                                    [
-                                        [j, y_start],
-                                        [j + 1, y_start],
-                                        [j + 1, y_start + height],
-                                        [j, y_start + height],
-                                    ]
-                                ),
-                                facecolor=base,
-                                edgecolor="black",
-                            )
-                            ax.add_patch(rect)
-
-                ax.set_xlim(0, len(sequences[0]))
-                ax.set_ylim(0, np.sum(logo_heights))
-                ax.set_xticks(np.arange(len(sequences[0])) + 0.5)
-                ax.set_xticklabels(range(1, len(sequences[0]) + 1))
-                ax.set_ylabel("Bits")
-                ax.set_title("Sequence Logo")
-
-                st.pyplot(fig)
+                
+                
 
             else:
                 st.warning("You forget FASTA sequences :)")
+            
+            fin = open(fasta_text)
+            seqs = read_seq_data(fin)
+            logodata = LogoData.from_seqs(seqs)
+            logooptions = LogoOptions()
+            logooptions.title = "A Logo Title"
+            logoformat = LogoFormat(logodata, logooptions)
+            eps = eps_formatter(logodata, logoformat)
+            st.image(eps)
