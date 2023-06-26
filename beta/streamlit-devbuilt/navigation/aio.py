@@ -525,11 +525,12 @@ def aio_page():
             matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'))
             if matrix_type == 'With PWM':
                 matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]", help="Only PWM generated with our tools are allowed")
+                # Analyser la matrice pour extraire les valeurs
                 lines = matrix_text.strip().split('\n')
                 values = []
                 for line in lines:
-                    parts = line.strip().split()
-                    values.append([float(val) for val in parts[1:] if val != '['])
+                    parts = re.findall(r"[-+]?\d*\.\d+|\d+", line)
+                    values.append([float(val) for val in parts])
 
                 # Créer une matrice numpy à partir des valeurs
                 matrix = np.array(values)
