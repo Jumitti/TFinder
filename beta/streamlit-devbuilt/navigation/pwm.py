@@ -49,49 +49,6 @@ def pwm_page():
     st.subheader("🧮 PWM generator")
 
     fasta_text = st.text_area("Put FASTA sequences. Same sequence length required ⚠️", height=300)
-    
-    json_text = st.text_area("Enter sequence matrix in JSON format", height=300)
-
-    def convert_json_to_fasta(json_text):
-        try:
-            matrix = json.loads(json_text)
-            nucleotides = list(matrix.keys())
-            seq_len = len(matrix[nucleotides[0]])
-
-            seq_list = []
-            for i in range(seq_len):
-                seq = ""
-                for nuc in nucleotides:
-                    seq += nuc * int(matrix[nuc][i])
-                seq_record = SeqRecord.SeqRecord(Seq.Seq(seq), id=str(i))
-                seq_list.append(seq_record)
-
-            fasta_text = StringIO()
-            SeqIO.write(seq_list, fasta_text, "fasta")
-            return fasta_text.getvalue()
-        except Exception as e:
-            st.warning("Invalid JSON format")
-            return ""
-
-    def generate_weblogo(fasta_text):
-        seqs = SeqIO.parse(StringIO(fasta_text), 'fasta')
-        seq_list = list(seqs)
-        if len(seq_list) == 0 or len(seq_list[0]) == 0:
-            st.warning("No sequences found in the input")
-            return None
-
-        counts = [[seq.seq.count(nuc) for nuc in seq.seq] for seq in seq_list]
-        data = LogoData.from_counts(seq_list[0].alphabet, counts)
-
-        options = LogoOptions()
-        options.title = "WebLogo"
-        options.fineprint = "Logo generated using Biopython and weblogo"
-        options.color_scheme = classic
-
-        format = LogoFormat(data, options)
-        png = png_formatter(data, format)
-
-        return png
 
     if st.button('Generate PWM'):
         if fasta_text:
@@ -121,13 +78,6 @@ def pwm_page():
                 
             else:
                 st.warning("You forget FASTA sequences :)")
-            
-            fasta_text = convert_json_to_fasta(json_text)
-            weblogo1 = generate_weblogo(fasta_text)
-            if weblogo1 is not None:
-                st.image(weblogo1, use_column_width=True)
-            else:
-                st.warning("Failed to generate weblogo")
 
 
 
