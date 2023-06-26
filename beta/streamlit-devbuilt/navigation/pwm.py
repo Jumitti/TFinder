@@ -79,4 +79,34 @@ def pwm_page():
                 
             else:
                 st.warning("You forget FASTA sequences :)")
+            
+            def create_web_logo(sequences):
+                matrix = logomaker.alignment_to_matrix(sequences)
+                logo = logomaker.Logo(matrix)
+
+                return logo
+
+            # Entrée des séquences
+            sequences_text = st.text_area("Saisissez les séquences FASTA", height=200)
+
+            if st.button("Générer le WebLogo"):
+                sequences = []
+                current_sequence = ""
+                for line in sequences_text.splitlines():
+                    line = line.strip()
+                    if line.startswith(">"):
+                        if current_sequence:
+                            sequences.append(current_sequence)
+                        current_sequence = ""
+                    else:
+                        current_sequence += line
+
+                if current_sequence:
+                    sequences.append(current_sequence)
+
+                if sequences:
+                    logo = create_web_logo(sequences)
+                    st.pyplot(logo.fig)
+                else:
+                    st.warning("Aucune séquence trouvée. Veuillez saisir des séquences FASTA valides.")
 
