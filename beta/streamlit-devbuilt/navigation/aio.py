@@ -525,6 +525,19 @@ def aio_page():
             matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'))
             if matrix_type == 'With PWM':
                 matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]", help="Only PWM generated with our tools are allowed")
+                lines = matrix_text.strip().split('\n')
+                values = []
+                for line in lines:
+                    values.append([float(val) for val in line.strip().split()[1:]])
+
+                # Créer une matrice numpy à partir des valeurs
+                matrix = np.array(values)
+
+                # Créer le WebLogo à partir de la matrice
+                logo = logomaker.Logo(matrix)
+
+                # Afficher le WebLogo
+                st.pyplot(logo.fig)
             else:
                 fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", help='Put FASTA sequences. Same sequence length required ⚠️')
                 def calculate_pwm(sequences):
