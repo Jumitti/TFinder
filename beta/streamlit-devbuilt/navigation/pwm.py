@@ -47,17 +47,18 @@ def pwm_page():
     # Fonction pour convertir les séquences au format FASTA en objet Bio.motifs.Motif
     def parse_sequences(sequences):
         records = []
-        current_sequence = ""
+
+        current_sequence = None
 
         for line in sequences:
             if line.startswith(">"):
-                if current_sequence:
+                if current_sequence is not None:
                     records.append(current_sequence)
                 current_sequence = motifs.create([line[1:]])
             else:
                 current_sequence.add_instance(line)
 
-        if current_sequence:
+        if current_sequence is not None:
             records.append(current_sequence)
 
         return records
