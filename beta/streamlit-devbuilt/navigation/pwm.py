@@ -45,11 +45,11 @@ def pwm_page():
     fasta_text = st.text_area("Put FASTA sequences. Same sequence length required ⚠️", height=300)
     
     # Fonction pour convertir les séquences au format FASTA en objet Bio.motifs.Motif
-    def parse_sequences(sequences_weblogo):
+    def parse_sequences(sequences):
         records = []
         current_sequence = ""
 
-        for line in sequences.splitlines():
+        for line in sequences:
             if line.startswith(">"):
                 if current_sequence:
                     records.append(current_sequence)
@@ -65,7 +65,7 @@ def pwm_page():
     # Fonction pour générer le weblogo à partir des motifs
     def generate_weblogo(motifs):
         m = motifs.combine(motifs)
-        handle = StringIO.StringIO()
+        handle = StringIO()
         motifs.write(m, handle, format='jaspar')
         handle.seek(0)
 
@@ -78,16 +78,18 @@ def pwm_page():
         if fasta_text:
             
             # Votre input de séquences
-            sequences_input = '''>p53
-            CTGCCGGAGGA
-            >PS1
-            AGGCCGGAGGC
-            >PS2
-            TCGCCGGAGAC
-            >CCNA2
-            CCGCCGGAGCG
-            >CCNB1
-            AGGCCGGATCG'''
+            sequences_input = [
+                '>p53',
+                'CTGCCGGAGGA',
+                '>PS1',
+                'AGGCCGGAGGC',
+                '>PS2',
+                'TCGCCGGAGAC',
+                '>CCNA2',
+                'CCGCCGGAGCG',
+                '>CCNB1',
+                'AGGCCGGATCG'
+            ]
             
             sequences = parse_fasta(fasta_text)
             sequences = [seq.upper() for seq in sequences]
