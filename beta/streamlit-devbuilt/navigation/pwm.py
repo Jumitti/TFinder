@@ -7,8 +7,9 @@ import requests
 from PIL import Image
 from io import BytesIO
 from weblogo import LogoData, LogoFormat, LogoOptions, pdf_formatter
-import corebio
-import os
+
+import subprocess
+import tempfile
 
 def pwm_page():
     def calculate_pwm(sequences):
@@ -84,63 +85,34 @@ def pwm_page():
                 
             else:
                 st.warning("You forget FASTA sequences :)")
-
-            def create_web_logo(output_file=None, out_format=None, title=None, units='probability',
-                                alphabet=corebio.seq.unambiguous_protein_alphabet):
-                fasta_input = st.text_input("Séquences (format FASTA)", "")
-
-                if fasta_input == "":
-                    st.warning("Veuillez entrer les séquences au format FASTA")
-                    return
-
-                sequences = []
-                current_sequence = ""
-                current_header = ""
-
-                for line in fasta_input.splitlines():
-                    if line.startswith(">"):
-                        if current_sequence != "":
-                            sequences.append((current_header, current_sequence))
-                        current_header = line[1:]
-                        current_sequence = ""
-                    else:
-                        current_sequence += line
-
-                if current_sequence != "":
-                    sequences.append((current_header, current_sequence))
-
-                if out_format is None:
-                    extension = os.path.splitext(output_file)[1] if output_file is not None else ''
-                    out_format = extension[1:] if extension else 'png'
-
-                seqs = corebio.seq.SeqList([corebio.seq.Seq(s, alphabet) for _, s in sequences], alphabet)
-                seqs.alphabet = alphabet
-                data = weblogolib.LogoData.from_seqs(seqs)
-                options = weblogolib.LogoOptions()
-                if title is not None:
-                    options.logo_title = title
-                options.unit_name = units
-                options.show_fineprint = False
                 
-                if out_format == 'png':
-                    options.resolution = 400.0
-                
-                format = weblogolib.LogoFormat(data, options)
-                
-                formatters = {
-                    'png': weblogolib.png_formatter,
-                    'svg': weblogolib.svg_formatter
-                }
-                
-                image = formatters[out_format](data, format)
-                if output_file is None:
-                    return image
-                
-                with open(output_file, 'wb') as fout:
-                    fout.write(image)
+            def create_web_logo(sequences):
+                output_file = "logo.png"
+
+                # Crée un fichier temporaire pour stocker les séquences FASTA
+                with tempfile.NamedTemporaryFile(suffix=".fasta", delete=False) as temp_file:
+                    # Écrit les séquences FASTA dans le fichier temporaire
+                    SeqIO.write(sequences, temp_file.name, "fasta")
+                    temp_file.flush()
+
+                    # Commande pour exécuter WebLogo en ligne de commande
+                    command = f"weblogo -f {temp_file.name} -o {output_file} -F png"
+
+                    try:
+                        # Exécute la commande en utilisant subprocess
+                        subprocess.run(command, shell=True, check=True)
+
+                        # Affiche le logo Web
+                        st.image(output_file)
+
+                    except subprocess.CalledProcessError as e:
+                        st.error("Une erreur s'est produite lors de la génération du logo.")
+                        st.write(e)
 
             # Utilisation de la fonction create_web_logo
-            create_web_logo()
-
-
+            sequences_text = st.text_input("Coller les séquences FASTA")
+            if sequences_text:
+                # Analyse les séquences FASTA
+                sequences = list(SeqIO.parse(sequences_text.splitlines(), "fasta"))
+                create_web_logo(sequences)
 
