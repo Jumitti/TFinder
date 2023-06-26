@@ -120,14 +120,14 @@ def pwm_page():
                 options.show_errorbars = False
 
                 # Format du logo
-                format = LogoFormat(data, options)
+                format1 = LogoFormat(data, options)
 
                 # Chemin de sortie du fichier PDF
                 output_path = "logo.pdf"
 
                 # Génération du logo au format PDF
                 with open(output_path, "wb") as output_file:
-                    pdf_formatter(data, format, output_file)
+                    pdf_formatter(data, format1, output_file)
 
                 # Affichage du logo dans Streamlit
                 st.image(output_path)
