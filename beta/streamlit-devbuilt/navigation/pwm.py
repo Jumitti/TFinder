@@ -1,12 +1,6 @@
 import streamlit as st
-from weblogo import *
 import json
-from Bio import SeqIO
-from io import StringIO
-import requests
-from PIL import Image
-from io import BytesIO
-from weblogo import LogoData, LogoFormat, LogoOptions, pdf_formatter
+
 
 import logomaker
 
