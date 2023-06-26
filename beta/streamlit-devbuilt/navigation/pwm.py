@@ -84,7 +84,6 @@ def pwm_page():
                 st.warning("You forget FASTA sequences :)")
 
             # Fonction pour convertir les séquences FASTA en une matrice
-            # Fonction pour convertir les séquences FASTA en une matrice
             def fasta_to_matrix(fasta_text):
                 matrix = {}
 
@@ -108,26 +107,27 @@ def pwm_page():
 
             # Génération du logo Web si la matrice de séquences est disponible
             if "matrix" in locals():
-                # Conversion de la matrice en counts
-                counts = {key: [matrix[key].count(base) for base in "ACGT"] for key in matrix}
+                # Conversion de la matrice en une liste de séquences
+                sequences = ["".join(matrix[key]) for key in matrix]
 
-                # Création des données du logo à partir des counts
-                data = LogoData.from_counts(counts)
+                # Création des données du logo à partir des séquences
+                data = LogoData.from_seqs(sequences)
 
                 # Options de configuration du logo
                 options = LogoOptions()
-                options.logo_title = "Logo Web"
+                options.title = "Logo Web"
                 options.show_errorbars = False
 
                 # Format du logo
-                format1 = LogoFormat(data, options)
+                format = LogoFormat(data, options)
 
                 # Chemin de sortie du fichier PDF
-                output_path = "logo.pdf"
+                output_path = "logo.png"
 
-                # Génération du logo au format PDF
+                # Génération du logo au format PNG
                 with open(output_path, "wb") as output_file:
-                    pdf_formatter(data, format1, output_file)
+                    output_format = format.formatter(format, format)
+                    output_format.write(output_file)
 
                 # Affichage du logo dans Streamlit
                 st.image(output_path)
