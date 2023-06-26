@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 from weblogo import *
-from Bio import motifs
+from Bio import motifs, Alphabet
 import matplotlib.pyplot as plt
 from io import StringIO
 
