@@ -1,7 +1,8 @@
 import streamlit as st
 import numpy as np
-from Bio import SeqIO
 from weblogo import *
+from Bio import SeqIO
+from io import StringIO
 
 def pwm_page():
     def calculate_pwm(sequences):
@@ -48,6 +49,20 @@ def pwm_page():
     st.subheader("🧮 PWM generator")
 
     fasta_text = st.text_area("Put FASTA sequences. Same sequence length required ⚠️", height=300)
+    
+    def generate_weblogo(sequences):
+        seqs = SeqIO.parse(StringIO(sequences), 'fasta')
+        data = LogoData.from_seqs(seqs)
+
+        options = LogoOptions()
+        options.title = "WebLogo"
+        options.fineprint = "Logo generated using Biopython and weblogo"
+        options.color_scheme = classic
+
+        format = LogoFormat(data, options)
+        png = png_formatter(data, format)
+
+        return png
 
     if st.button('Generate PWM'):
         if fasta_text:
@@ -78,32 +93,8 @@ def pwm_page():
             else:
                 st.warning("You forget FASTA sequences :)")
             
-            sequences = []
-            for line in fasta_text.splitlines():
-                if line.startswith(">"):
-                    if sequences:
-                        sequences.append(current_sequence)
-                    current_sequence = ""
-                else:
-                    current_sequence += line
-            if current_sequence:
-                sequences.append(current_sequence)
-
-            # Création de l'objet LogoData à partir des séquences
-            data = LogoData.from_seqs(sequences)
-
-            # Configuration des options du logo Web
-            options = LogoOptions()
-            options.title = "WebLogo"
-            options.fineprint = "Logo generated using Biopython and weblogo"
-            options.color_scheme = classic
-
-            # Génération du logo Web
-            format_web = LogoFormat(data, options)
-            png = png_formatter(data, format_web)
-
-            # Affichage du logo Web
-            st.image(png, use_column_width=True)
+            weblogo1 = generate_weblogo(fasta_text)
+            st.image(weblogo1, use_column_width=True)
 
 
 
