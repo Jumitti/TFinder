@@ -1,6 +1,6 @@
 import streamlit as st
-import numpy as np
 from weblogo import *
+import json
 from Bio import SeqIO
 from io import StringIO
 
@@ -50,8 +50,27 @@ def pwm_page():
 
     fasta_text = st.text_area("Put FASTA sequences. Same sequence length required ⚠️", height=300)
     
-    def generate_weblogo(sequences):
-        seqs = SeqIO.parse(StringIO(sequences), 'fasta')
+    json_text = st.text_area("Enter sequence matrix in JSON format", height=300)
+
+    def convert_json_to_fasta(json_text):
+        try:
+            matrix = json.loads(json_text)
+            nucleotides = list(matrix.keys())
+            seq_len = len(matrix[nucleotides[0]])
+
+            fasta_text = ""
+            for i in range(seq_len):
+                seq = ""
+                for nuc in nucleotides:
+                    seq += nuc * int(matrix[nuc][i])
+                fasta_text += f">{i}\n{seq}\n"
+            return fasta_text
+        except Exception as e:
+            st.warning("Invalid JSON format")
+            return ""
+
+    def generate_weblogo(fasta_text):
+        seqs = SeqIO.parse(StringIO(fasta_text), 'fasta')
         seq_list = list(seqs)
         if len(seq_list) == 0 or len(seq_list[0]) == 0:
             st.warning("No sequences found in the input")
@@ -69,6 +88,12 @@ def pwm_page():
         png = png_formatter(data, format)
 
         return png
+
+    if st.button('Generate PWM'):
+        if json_text:
+            fasta_text = convert_json_to_fasta(json_text)
+            weblogo1 = generate_weblogo(fasta_text)
+            st.image(weblogo1, use_column_width=True)
 
     if st.button('Generate PWM'):
         if fasta_text:
@@ -98,9 +123,6 @@ def pwm_page():
                 
             else:
                 st.warning("You forget FASTA sequences :)")
-            
-            weblogo1 = generate_weblogo(fasta_text)
-            st.image(weblogo1, use_column_width=True)
 
 
 
