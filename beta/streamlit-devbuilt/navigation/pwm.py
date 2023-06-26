@@ -95,7 +95,7 @@ def pwm_page():
             sequences = [seq.upper() for seq in sequences]
             
             # Conversion des séquences en objets Motif
-            sequences_weblogo = parse_sequences(sequences_input)
+            sequences_weblogo = parse_sequences(fasta_text)
             
             # Génération du weblogo
             weblogo = generate_weblogo(sequences_weblogo)
