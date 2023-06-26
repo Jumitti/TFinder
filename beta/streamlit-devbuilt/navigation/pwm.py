@@ -57,7 +57,8 @@ def pwm_page():
             st.warning("No sequences found in the input")
             return
 
-        data = LogoData.from_seqs(seq_list)
+        counts = [seq.counts() for seq in seq_list]
+        data = LogoData.from_counts(seq_list[0].alphabet, counts)
 
         options = LogoOptions()
         options.title = "WebLogo"
