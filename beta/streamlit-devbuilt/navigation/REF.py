@@ -530,6 +530,8 @@ def REF_page():
     # Threshold
         if jaspar == 'JASPAR_ID':
             threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
+        if jaspar == 'Matrix':
+            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
         else:
             threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Homology threshold (%)", 0, 100 ,80)
 
