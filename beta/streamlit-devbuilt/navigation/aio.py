@@ -527,23 +527,24 @@ def aio_page():
             matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'))
             if matrix_type == 'With PWM':
                 matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]", help="Only PWM generated with our tools are allowed")
-                lines = matrix_text.strip().split('\n')
+                lines = matrix_text.strip().split("\n")
+
+                # Extraire les bases (colonnes) à partir de la première ligne
+                bases = [base.strip() for base in lines[0].split("[")[1:]]
+
+                # Créer une liste pour stocker les valeurs de la matrice
                 values = []
-                for line in lines:
-                    parts = re.findall(r"[-+]?\d*\.\d+|\d+", line)
-                    values.append([float(val) for val in parts])
 
-                # Créer une matrice numpy à partir des valeurs
-                matrix = np.array(values)
+                # Parcourir les lignes à partir de la deuxième ligne
+                for line in lines[1:]:
+                    # Extraire les valeurs numériques de la ligne
+                    row_values = [float(value) for value in line.split("[")[1].split()]
 
-                # Convertir la matrice en DataFrame Pandas
-                df = pd.DataFrame(matrix, columns=['A', 'C', 'G', 'T'])
+                    # Ajouter les valeurs à la liste
+                    values.append(row_values)
 
-                # Créer le WebLogo à partir du DataFrame
-                logo = logomaker.Logo(df)
-
-                # Afficher le WebLogo
-                st.pyplot(logo.fig)
+                # Créer un DataFrame Pandas à partir des valeurs avec les bases en tant que colonnes
+                df = pd.DataFrame(np.array(values).T, columns=bases)
             else:
                 fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", help='Put FASTA sequences. Same sequence length required ⚠️')
                 def calculate_pwm(sequences):
