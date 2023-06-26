@@ -70,8 +70,8 @@ def pwm_page():
             else:
                 st.warning("You forget FASTA sequences :)")
             
-            seqs = read_seq_data(fasta_text)
-            logodata = LogoData.from_seqs(seqs)
+            
+            logodata = LogoData.from_seqs(fasta_text)
             logooptions = LogoOptions()
             logooptions.title = "A Logo Title"
             logoformat = LogoFormat(logodata, logooptions)
