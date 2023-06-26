@@ -96,14 +96,7 @@ def pwm_page():
                 return matrix
 
             # Lecture des séquences FASTA depuis un fichier ou une zone de texte
-            fasta_file = st.file_uploader("Sélectionnez un fichier FASTA", type=["fasta"])
-            fasta_text = st.text_area("Saisissez les séquences FASTA")
-
-            # Vérification de la présence des séquences FASTA
-            if fasta_file is not None:
-                # Lecture des séquences FASTA depuis le fichier
-                matrix = fasta_to_matrix(fasta_file)
-            elif fasta_text != "":
+            if fasta_text != "":
                 # Lecture des séquences FASTA depuis la zone de texte
                 matrix = fasta_to_matrix(fasta_text)
             else:
@@ -120,14 +113,14 @@ def pwm_page():
                 options.show_errorbars = False
 
                 # Format du logo
-                format = LogoFormat(data, options)
+                format1 = LogoFormat(data, options)
 
                 # Chemin de sortie du fichier PDF
                 output_path = "logo.pdf"
 
                 # Génération du logo au format PDF
                 with open(output_path, "wb") as output_file:
-                    pdf_formatter(data, format, output_file)
+                    pdf_formatter(data, format1, output_file)
 
                 # Affichage du logo dans Streamlit
                 st.image(output_path)
