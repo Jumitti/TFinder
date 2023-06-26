@@ -84,6 +84,7 @@ def pwm_page():
                 st.warning("You forget FASTA sequences :)")
 
             # Fonction pour convertir les séquences FASTA en une matrice
+            # Fonction pour convertir les séquences FASTA en une matrice
             def fasta_to_matrix(fasta_text):
                 matrix = {}
 
@@ -98,17 +99,23 @@ def pwm_page():
 
                 return matrix
 
-            # Lecture des séquences FASTA depuis un fichier ou une zone de texte
+            # Lecture des séquences FASTA depuis une zone de texte
+            fasta_text = st.text_area("Saisissez les séquences FASTA")
+
+            # Vérification de la présence des séquences FASTA
             if fasta_text != "":
-                # Lecture des séquences FASTA depuis la zone de texte
+                # Conversion des séquences FASTA en une matrice
                 matrix = fasta_to_matrix(fasta_text)
             else:
-                st.warning("Veuillez charger un fichier FASTA ou saisir les séquences FASTA.")
+                st.warning("Veuillez saisir les séquences FASTA.")
 
             # Génération du logo Web si la matrice de séquences est disponible
             if "matrix" in locals():
-                # Création des données du logo à partir de la matrice de séquences
-                data = LogoData.from_counts(matrix)
+                # Conversion de la matrice en counts
+                counts = {key: [matrix[key].count(base) for base in "ACGT"] for key in matrix}
+
+                # Création des données du logo à partir des counts
+                data = LogoData.from_counts(counts)
 
                 # Options de configuration du logo
                 options = LogoOptions()
@@ -116,14 +123,14 @@ def pwm_page():
                 options.show_errorbars = False
 
                 # Format du logo
-                format1 = LogoFormat(data, options)
+                format = LogoFormat(data, options)
 
                 # Chemin de sortie du fichier PDF
                 output_path = "logo.pdf"
 
                 # Génération du logo au format PDF
                 with open(output_path, "wb") as output_file:
-                    pdf_formatter(data, format1, output_file)
+                    pdf_formatter(data, format, output_file)
 
                 # Affichage du logo dans Streamlit
                 st.image(output_path)
