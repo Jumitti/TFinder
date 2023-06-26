@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
-import weblogo
+import matplotlib.pyplot as plt
+from matplotlib.patches import Polygon
 
 def pwm_page():
     def calculate_pwm(sequences):
@@ -66,22 +67,38 @@ def pwm_page():
 
                 st.text_area("PWM résultante", value=pwm_text)
 
-                # Créer une instance de la classe LogoData en fournissant la PWM
-                logo_data = weblogo.LogoData.from_counts("ACGT", pwm)
+                # Créer le logo de séquence en utilisant Matplotlib
+                fig, ax = plt.subplots()
+                logo_heights = np.sum(pwm, axis=0)
+                for i, base in enumerate(bases):
+                    heights = pwm[i]
+                    y_start = np.sum(logo_heights[:i])
+                    for j, height in enumerate(heights):
+                        if np.isfinite(height):
+                            rect = Polygon(
+                                np.array(
+                                    [
+                                        [j, y_start],
+                                        [j + 1, y_start],
+                                        [j + 1, y_start + height],
+                                        [j, y_start + height],
+                                    ]
+                                ),
+                                facecolor=base,
+                                edgecolor="black",
+                            )
+                            ax.add_patch(rect)
 
-                # Configurer les options du logo
-                logo_options = weblogo.LogoOptions()
-                logo_options.title = "Sequence Logo"
+                ax.set_xlim(0, len(sequences[0]))
+                ax.set_ylim(0, np.sum(logo_heights))
+                ax.set_xticks(np.arange(len(sequences[0])) + 0.5)
+                ax.set_xticklabels(range(1, len(sequences[0]) + 1))
+                ax.set_ylabel("Bits")
+                ax.set_title("Sequence Logo")
 
-                # Créer le format du logo
-                logo_format = weblogo.LogoFormat(logo_data, logo_options)
-
-                # Générer le logo au format SVG
-                svg_logo = logo_format.create_logo(format="svg")
-
-                # Afficher le logo
-                st.subheader("Sequence Logo:")
-                st.image(svg_logo, format="svg", use_column_width=True)
+                st.pyplot(fig)
 
             else:
                 st.warning("You forget FASTA sequences :)")
+
+pwm_page()
