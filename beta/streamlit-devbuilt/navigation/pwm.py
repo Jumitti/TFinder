@@ -100,5 +100,3 @@ def pwm_page():
 
             else:
                 st.warning("You forget FASTA sequences :)")
-
-pwm_page()
