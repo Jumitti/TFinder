@@ -10,3 +10,4 @@ streamlit-analytics
 pymed
 plotly
 hydralit_components
+weblogo
