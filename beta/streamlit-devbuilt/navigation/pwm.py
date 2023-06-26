@@ -7,7 +7,6 @@ import requests
 from PIL import Image
 from io import BytesIO
 from weblogo import LogoData, LogoFormat, LogoOptions, pdf_formatter
-import weblogolib
 import corebio
 import os
 
