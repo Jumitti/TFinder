@@ -7,6 +7,9 @@ import requests
 from PIL import Image
 from io import BytesIO
 from weblogo import LogoData, LogoFormat, LogoOptions, pdf_formatter
+import weblogolib
+import corebio
+import os
 
 def pwm_page():
     def calculate_pwm(sequences):
@@ -83,54 +86,62 @@ def pwm_page():
             else:
                 st.warning("You forget FASTA sequences :)")
 
-            # Fonction pour convertir les séquences FASTA en une matrice
-            def fasta_to_matrix(fasta_text):
-                matrix = {}
+            def create_web_logo(output_file=None, out_format=None, title=None, units='probability',
+                                alphabet=corebio.seq.unambiguous_protein_alphabet):
+                fasta_input = st.text_input("Séquences (format FASTA)", "")
 
-                # Création d'un objet fichier virtuel à partir de la chaîne de texte FASTA
-                fasta_file = StringIO(fasta_text)
+                if fasta_input == "":
+                    st.warning("Veuillez entrer les séquences au format FASTA")
+                    return
 
-                # Analyse des séquences FASTA
-                records = SeqIO.parse(fasta_file, "fasta")
-                for record in records:
-                    sequence = str(record.seq)
-                    matrix[record.id] = list(sequence)
+                sequences = []
+                current_sequence = ""
+                current_header = ""
 
-                return matrix
+                for line in fasta_input.splitlines():
+                    if line.startswith(">"):
+                        if current_sequence != "":
+                            sequences.append((current_header, current_sequence))
+                        current_header = line[1:]
+                        current_sequence = ""
+                    else:
+                        current_sequence += line
 
-            # Vérification de la présence des séquences FASTA
-            if fasta_text != "":
-                # Conversion des séquences FASTA en une matrice
-                matrix = fasta_to_matrix(fasta_text)
-            else:
-                st.warning("Veuillez saisir les séquences FASTA.")
+                if current_sequence != "":
+                    sequences.append((current_header, current_sequence))
 
-            # Génération du logo Web si la matrice de séquences est disponible
-            if "matrix" in locals():
-                # Conversion de la matrice en une liste de séquences
-                sequences = ["".join(matrix[key]) for key in matrix]
+                if out_format is None:
+                    extension = os.path.splitext(output_file)[1] if output_file is not None else ''
+                    out_format = extension[1:] if extension else 'png'
 
-                # Création des données du logo à partir des séquences
-                data = LogoData.from_counts(matrix)
+                seqs = corebio.seq.SeqList([corebio.seq.Seq(s, alphabet) for _, s in sequences], alphabet)
+                seqs.alphabet = alphabet
+                data = weblogolib.LogoData.from_seqs(seqs)
+                options = weblogolib.LogoOptions()
+                if title is not None:
+                    options.logo_title = title
+                options.unit_name = units
+                options.show_fineprint = False
+                
+                if out_format == 'png':
+                    options.resolution = 400.0
+                
+                format = weblogolib.LogoFormat(data, options)
+                
+                formatters = {
+                    'png': weblogolib.png_formatter,
+                    'svg': weblogolib.svg_formatter
+                }
+                
+                image = formatters[out_format](data, format)
+                if output_file is None:
+                    return image
+                
+                with open(output_file, 'wb') as fout:
+                    fout.write(image)
 
-                # Options de configuration du logo
-                options = LogoOptions()
-                options.title = "Logo Web"
-                options.show_errorbars = False
-
-                # Format du logo
-                format_weblogo = LogoFormat(data, options)
-
-                # Chemin de sortie du fichier PDF
-                output_path = "logo.png"
-
-                # Génération du logo au format PNG
-                with open(output_path, "wb") as output_file:
-                    output_format = format_weblogo.formatter(format_weblogo, format_weblogo)
-                    output_format.write(output_file)
-
-                # Affichage du logo dans Streamlit
-                st.image(output_path)
+            # Utilisation de la fonction create_web_logo
+            create_web_logo()
 
 
 
