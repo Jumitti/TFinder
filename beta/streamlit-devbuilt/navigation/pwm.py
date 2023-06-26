@@ -6,8 +6,15 @@ from weblogo import *
 
 def pwm_page():
     def calculate_pwm(sequences):
-        num_sequences = len(sequences)
         sequence_length = len(sequences[0])
+        num_sequences = len(sequences)
+        
+        # Vérifier que toutes les séquences ont la même longueur
+        for sequence in sequences[1:]:
+            if len(sequence) != sequence_length:
+                st.warning("Sequence lengths are not consistent.")
+                return None
+        
         pwm = np.zeros((4, sequence_length))
         for i in range(sequence_length):
             counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
@@ -15,10 +22,10 @@ def pwm_page():
                 nucleotide = sequence[i]
                 if nucleotide in counts:
                     counts[nucleotide] += 1
-            pwm[0, i] = counts['A'] / num_sequences *100
-            pwm[1, i] = counts['T'] / num_sequences *100
-            pwm[2, i] = counts['G'] / num_sequences *100
-            pwm[3, i] = counts['C'] / num_sequences *100
+            pwm[0, i] = counts['A'] / num_sequences * 100
+            pwm[1, i] = counts['T'] / num_sequences * 100
+            pwm[2, i] = counts['G'] / num_sequences * 100
+            pwm[3, i] = counts['C'] / num_sequences * 100
 
         return pwm
 
@@ -68,10 +75,6 @@ def pwm_page():
             sequences = [seq.upper() for seq in sequences]
             
             weblogo = fasta_text.splitlines()
-            
-            if weblogo:
-                weblogo1 = generate_weblogo(weblogo)
-                st.image(weblogo1, use_column_width=True)
 
             if len(sequences) > 0:
                 pwm = calculate_pwm(sequences)
@@ -95,6 +98,10 @@ def pwm_page():
                 
             else:
                 st.warning("You forget FASTA sequences :)")
+            
+            if weblogo:
+                weblogo1 = generate_weblogo(weblogo)
+                st.image(weblogo1, use_column_width=True)
 
 
 
