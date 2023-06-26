@@ -12,4 +12,3 @@ plotly
 hydralit_components
 weblogo
 Bio
-pyweblogo
