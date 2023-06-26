@@ -90,12 +90,6 @@ def pwm_page():
         return png
 
     if st.button('Generate PWM'):
-        if json_text:
-            fasta_text = convert_json_to_fasta(json_text)
-            weblogo1 = generate_weblogo(fasta_text)
-            st.image(weblogo1, use_column_width=True)
-
-    if st.button('Generate PWM'):
         if fasta_text:
             
             sequences = parse_fasta(fasta_text)
@@ -123,6 +117,10 @@ def pwm_page():
                 
             else:
                 st.warning("You forget FASTA sequences :)")
+            
+            fasta_text = convert_json_to_fasta(json_text)
+            weblogo1 = generate_weblogo(fasta_text)
+            st.image(weblogo1, use_column_width=True)
 
 
 
