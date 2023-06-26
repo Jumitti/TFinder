@@ -67,7 +67,7 @@ def pwm_page():
             sequences = parse_fasta(fasta_text)
             sequences = [seq.upper() for seq in sequences]
             
-            weblogo = fasta_text.splitlines()
+            weblogo = parse_fasta(fasta_text)
             
             if weblogo:
                 weblogo1 = generate_weblogo(weblogo)
