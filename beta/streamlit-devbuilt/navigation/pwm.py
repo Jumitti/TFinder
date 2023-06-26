@@ -48,17 +48,21 @@ def pwm_page():
     def parse_sequences(sequences):
         records = []
 
-        current_sequence = None
+        current_sequence_name = None
+        current_sequence_instances = []
 
         for line in sequences:
             if line.startswith(">"):
-                if current_sequence is not None:
+                if current_sequence_name is not None:
+                    current_sequence = motifs.create(current_sequence_instances, alphabet=motifs.IUPAC.unambiguous_dna, name=current_sequence_name)
                     records.append(current_sequence)
-                current_sequence = motifs.create([line[1:]])
+                    current_sequence_instances = []
+                current_sequence_name = line[1:]
             else:
-                current_sequence.add_instance(line)
+                current_sequence_instances.append(line)
 
-        if current_sequence is not None:
+        if current_sequence_name is not None:
+            current_sequence = motifs.create(current_sequence_instances, alphabet=motifs.IUPAC.unambiguous_dna, name=current_sequence_name)
             records.append(current_sequence)
 
         return records
