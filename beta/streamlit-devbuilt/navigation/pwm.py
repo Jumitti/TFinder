@@ -70,7 +70,7 @@ def pwm_page():
             else:
                 st.warning("You forget FASTA sequences :)")
             
-            output_filename = output_filename + ".fa"
+            output_filename = 'WebLogo' + ".fa"
 
             # Écrire le contenu dans un fichier texte au format FASTA
             with open(output_filename, "w") as file:
