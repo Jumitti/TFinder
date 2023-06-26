@@ -98,6 +98,7 @@ def pwm_page():
             # Vérification de la réponse
             if response.status_code == 200:
                 # Conversion de la réponse en image PIL
+                st.write(response)
                 image = Image.open(BytesIO(response.content), format='PNG')
                 # Affichage de l'image avec st.image
                 st.image(image, caption='WebLogo2 généré avec succès.')
