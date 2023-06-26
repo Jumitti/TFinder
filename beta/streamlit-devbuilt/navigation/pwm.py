@@ -98,9 +98,6 @@ def pwm_page():
 
                 return matrix
 
-            # Lecture des séquences FASTA depuis une zone de texte
-            fasta_text = st.text_area("Saisissez les séquences FASTA")
-
             # Vérification de la présence des séquences FASTA
             if fasta_text != "":
                 # Conversion des séquences FASTA en une matrice
