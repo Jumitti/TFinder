@@ -3,6 +3,7 @@ from weblogo import *
 import json
 from Bio import SeqIO
 from io import StringIO
+import requests
 
 def pwm_page():
     def calculate_pwm(sequences):
@@ -78,6 +79,28 @@ def pwm_page():
                 
             else:
                 st.warning("You forget FASTA sequences :)")
+
+            # URL de l'API WebLogo2
+            url = 'https://weblogo.berkeley.edu/logo.cgi'
+
+            # Données de la requête
+            data = {
+                'sequence': '\n'.join(fasta_text),
+                'format': 'PNG',
+                # Autres paramètres personnalisables
+            }
+
+            # Envoi de la requête
+            response = requests.post(url, data=data)
+
+            # Vérification de la réponse
+            if response.status_code == 200:
+                # Sauvegarde de l'image du weblogo
+                with open('weblogo.png', 'wb') as file:
+                    file.write(response.content)
+                st.write('WebLogo2 généré avec succès.')
+            else:
+                st.write('Erreur lors de la génération du WebLogo2.')
 
 
 
