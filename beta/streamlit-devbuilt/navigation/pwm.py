@@ -57,7 +57,7 @@ def pwm_page():
 
         # Générer le weblogo
         format = LogoFormat(data, options)
-        png = png_print_formatter(data, format)
+        png = png_formatter(data, format)
 
         return png
 
