@@ -1,7 +1,9 @@
 import streamlit as st
 import numpy as np
 from weblogo import *
-from Bio import motifs, Alphabet
+from Bio import motifs
+from Bio.SeqRecord import SeqRecord
+from Bio.Seq import Seq
 import matplotlib.pyplot as plt
 from io import StringIO
 
