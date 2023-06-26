@@ -1,7 +1,6 @@
 import streamlit as st
 import numpy as np
-from weblogo import *
-from Bio.Seq import Seq
+from Bio import SeqIO
 from weblogo import *
 
 def pwm_page():
@@ -49,24 +48,6 @@ def pwm_page():
     st.subheader("🧮 PWM generator")
 
     fasta_text = st.text_area("Put FASTA sequences. Same sequence length required ⚠️", height=300)
-    
-    def generate_weblogo(weblogo):
-        # Convertir les séquences en format Seq de BioPython
-        seqs = [Seq(seq) for seq in weblogo]
-
-        # Créer l'objet LogoOptions
-        options = LogoOptions()
-        options.logo_title = "WebLogo"
-        options.color_scheme = classic
-
-        # Créer l'objet LogoData
-        data = LogoData.from_seqs(seqs)
-
-        # Générer le weblogo
-        format = LogoFormat(data, options)
-        png = png_formatter(data, format)
-
-        return png
 
     if st.button('Generate PWM'):
         if fasta_text:
@@ -98,10 +79,34 @@ def pwm_page():
                 
             else:
                 st.warning("You forget FASTA sequences :)")
-            
-            if weblogo:
-                weblogo1 = generate_weblogo(weblogo)
-                st.image(weblogo1, use_column_width=True)
+
+            # Analyse des séquences FASTA
+            sequences = []
+            for line in fasta_text.splitlines():
+                if line.startswith(">"):
+                    if sequences:
+                        sequences.append(current_sequence)
+                    current_sequence = ""
+                else:
+                    current_sequence += line
+            if current_sequence:
+                sequences.append(current_sequence)
+
+            # Création de l'objet LogoData à partir des séquences
+            data = LogoData.from_seqs(sequences)
+
+            # Configuration des options du logo Web
+            options = LogoOptions()
+            options.title = "WebLogo"
+            options.fineprint = "Logo generated using Biopython and weblogo"
+            options.color_scheme = classic
+
+            # Génération du logo Web
+            format = LogoFormat(data, options)
+            png = png_formatter(data, format)
+
+            # Affichage du logo Web
+            st.image(png, use_column_width=True)
 
 
 
