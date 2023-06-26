@@ -3,7 +3,7 @@ import numpy as np
 from weblogo import *
 from Bio import motifs
 import matplotlib.pyplot as plt
-import StringIO
+from io import StringIO
 
 def pwm_page():
     def calculate_pwm(sequences):
