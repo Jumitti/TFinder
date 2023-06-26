@@ -8,8 +8,8 @@ from PIL import Image
 from io import BytesIO
 from weblogo import LogoData, LogoFormat, LogoOptions, pdf_formatter
 
-import subprocess
-import tempfile
+from pyweblogo import LogoData, LogoFormat, LogoOptions, png_formatter
+
 
 def pwm_page():
     def calculate_pwm(sequences):
