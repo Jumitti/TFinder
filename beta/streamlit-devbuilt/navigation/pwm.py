@@ -76,9 +76,12 @@ def pwm_page():
                 # Créer le format du logo
                 logo_format = weblogo.LogoFormat(logo_data, logo_options)
 
+                # Générer le logo au format SVG
+                svg_logo = logo_format.create_logo(format="svg")
+
                 # Afficher le logo
                 st.subheader("Sequence Logo:")
-                st.image(logo_format.png(), use_column_width=True)
+                st.image(svg_logo, format="svg", use_column_width=True)
 
             else:
                 st.warning("You forget FASTA sequences :)")
