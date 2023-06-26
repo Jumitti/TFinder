@@ -1,23 +1,23 @@
 import streamlit as st
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon
+from weblogo import LogoData, LogoFormat, LogoOptions
+from io import StringIO
 
 def pwm_page():
     def calculate_pwm(sequences):
         num_sequences = len(sequences)
         sequence_length = len(sequences[0])
-        pwm = np.zeros((4, sequence_length))
+        pwm = [[0, 0, 0, 0] for _ in range(sequence_length)]
+
         for i in range(sequence_length):
             counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
             for sequence in sequences:
                 nucleotide = sequence[i]
                 if nucleotide in counts:
                     counts[nucleotide] += 1
-            pwm[0, i] = counts['A'] / num_sequences *100
-            pwm[1, i] = counts['T'] / num_sequences *100
-            pwm[2, i] = counts['G'] / num_sequences *100
-            pwm[3, i] = counts['C'] / num_sequences *100
+            pwm[i][0] = counts['A'] / num_sequences
+            pwm[i][1] = counts['T'] / num_sequences
+            pwm[i][2] = counts['G'] / num_sequences
+            pwm[i][3] = counts['C'] / num_sequences
 
         return pwm
 
@@ -60,43 +60,21 @@ def pwm_page():
 
                     base_str = base_name + " ["
                     for value in base_values:
-                        base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+                        base_str += "\t" + format(value) + "\t" if value != 0 else "\t" + "NA" + "\t"
 
                     base_str += "]\n"
                     pwm_text += base_str
 
                 st.text_area("PWM résultante", value=pwm_text)
 
-                # Créer le logo de séquence en utilisant Matplotlib
-                fig, ax = plt.subplots()
-                logo_heights = np.sum(pwm, axis=0)
-                for i, base in enumerate(bases):
-                    heights = pwm[i]
-                    y_start = np.sum(logo_heights[:i])
-                    for j, height in enumerate(heights):
-                        if np.isfinite(height):
-                            rect = Polygon(
-                                np.array(
-                                    [
-                                        [j, y_start],
-                                        [j + 1, y_start],
-                                        [j + 1, y_start + height],
-                                        [j, y_start + height],
-                                    ]
-                                ),
-                                facecolor=base,
-                                edgecolor="black",
-                            )
-                            ax.add_patch(rect)
+                # Générer le logo de séquence avec weblogo
+                pwm_data = LogoData.from_counts("ACGT", pwm)
+                format_options = LogoFormat(pwm_data, LogoOptions())
+                logo_format = StringIO()
+                format_options.write(logo_format, "png")
+                logo_format.seek(0)
 
-                ax.set_xlim(0, len(sequences[0]))
-                ax.set_ylim(0, np.sum(logo_heights))
-                ax.set_xticks(np.arange(len(sequences[0])) + 0.5)
-                ax.set_xticklabels(range(1, len(sequences[0]) + 1))
-                ax.set_ylabel("Bits")
-                ax.set_title("Sequence Logo")
-
-                st.pyplot(fig)
+                st.image(logo_format, use_column_width=True)
 
             else:
                 st.warning("You forget FASTA sequences :)")
