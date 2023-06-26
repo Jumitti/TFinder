@@ -113,6 +113,6 @@ def pwm_page():
             sequences_text = fasta_text
             if sequences_text:
                 # Analyse les séquences FASTA
-                sequences = list(SeqIO.parse(sequences_text, "fasta"))
+                sequences = list(SeqIO.parse(StringIO(sequences_text), "fasta"))
                 create_web_logo(sequences)
 
