@@ -58,13 +58,17 @@ def pwm_page():
             nucleotides = list(matrix.keys())
             seq_len = len(matrix[nucleotides[0]])
 
-            fasta_text = ""
+            seq_list = []
             for i in range(seq_len):
                 seq = ""
                 for nuc in nucleotides:
                     seq += nuc * int(matrix[nuc][i])
-                fasta_text += f">{i}\n{seq}\n"
-            return fasta_text
+                seq_record = SeqRecord.SeqRecord(Seq.Seq(seq), id=str(i))
+                seq_list.append(seq_record)
+
+            fasta_text = StringIO()
+            SeqIO.write(seq_list, fasta_text, "fasta")
+            return fasta_text.getvalue()
         except Exception as e:
             st.warning("Invalid JSON format")
             return ""
@@ -76,7 +80,7 @@ def pwm_page():
             st.warning("No sequences found in the input")
             return
 
-        counts = [seq.counts() for seq in seq_list]
+        counts = [[seq.seq.count(nuc) for nuc in seq.seq] for seq in seq_list]
         data = LogoData.from_counts(seq_list[0].alphabet, counts)
 
         options = LogoOptions()
