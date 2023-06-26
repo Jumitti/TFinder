@@ -4,6 +4,8 @@ import json
 from Bio import SeqIO
 from io import StringIO
 import requests
+from PIL import Image
+from io import BytesIO
 
 def pwm_page():
     def calculate_pwm(sequences):
@@ -95,12 +97,11 @@ def pwm_page():
 
             # Vérification de la réponse
             if response.status_code == 200:
-                # Sauvegarde de l'image du weblogo
-                with open('weblogo.png', 'wb') as file:
-                    file.write(response.content)
-                st.write('WebLogo2 généré avec succès.')
+                # Conversion de la réponse en image PIL
+                image = Image.open(BytesIO(response.content))
+                # Affichage de l'image avec st.image
+                st.image(image, caption='WebLogo2 généré avec succès.')
             else:
-                st.write('Erreur lors de la génération du WebLogo2.')
-
+                st.error('Erreur lors de la génération du WebLogo2.')
 
 
