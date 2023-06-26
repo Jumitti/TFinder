@@ -711,6 +711,7 @@ def aio_page():
         if 'table2' in locals():
             if len(table2) > 0:
                 st.success(f"Finding responsive elements done")
+                st.pyplot(logo.fig)
                 df = pd.DataFrame(table2[1:], columns=table2[0])
                 st.session_state['df'] = df
                 st.dataframe(df)
