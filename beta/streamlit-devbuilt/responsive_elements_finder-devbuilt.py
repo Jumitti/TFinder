@@ -8,9 +8,9 @@ import pickle
 
 from utils.components import footer_style, footer
 from navigation.home import home_page
-from navigation.REF import REF_page
 from navigation.resource import resource_page
 from navigation.contact import contact_page
+from navigation.allapp import allapp_page
 
 st.set_page_config(
         page_title='REF by Minniti',
@@ -44,20 +44,20 @@ st.markdown(footer_style, unsafe_allow_html=True) ## Footer
 #NavBar
 
 HOME = 'Home'
-REF = 'Application'
-RESOURCE = 'Resource'
+APPLICATION = 'Tools/Software'
+RESOURCE = 'Resources'
 CONTACT = 'Contact'
 
 tabs = [
     HOME,
-    REF,
+    APPLICATION,
     RESOURCE,
     CONTACT
 ]
 
 option_data = [
    {'icon': "🏠", 'label':HOME},
-   {'icon': "🖥️", 'label':REF},
+   {'icon': "🖥️", 'label':APPLICATION},
    {'icon':"📑",'label':RESOURCE},
    {'icon':"✉️",'label':CONTACT}
    
@@ -76,8 +76,8 @@ chosen_tab = hc.option_bar(
 if chosen_tab == HOME:
     home_page()
 
-elif chosen_tab == REF: 
-    REF_page()
+elif chosen_tab == APPLICATION: 
+    allapp_page() 
     
 elif chosen_tab == RESOURCE: 
     resource_page()
@@ -85,7 +85,7 @@ elif chosen_tab == RESOURCE:
 elif chosen_tab == CONTACT: 
     contact_page()
     
-for i in range(6):
+for i in range(4):
     st.markdown('#')
 st.markdown(footer,unsafe_allow_html=True)
 
