@@ -8,6 +8,8 @@ import numpy as np
 import json
 import logomaker
 
+import re
+
 def aio_page():
     # Reverse complement
     def reverse_complement(sequence):
