@@ -1,7 +1,6 @@
 import streamlit as st
 import numpy as np
 from weblogo import *
-import ghostscript
 
 def pwm_page():
     def calculate_pwm(sequences):
