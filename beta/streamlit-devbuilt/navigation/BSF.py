@@ -16,31 +16,6 @@ def BSF_page():
 
     # Responsive-Elements-Finder
 
-    # Reverse complement
-    def reverse_complement(sequence):
-        complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
-        reverse_sequence = sequence[::-1]
-        complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
-        return complement_sequence
-
-    # Generation of all responsive elements
-    def generate_variants(sequence):
-        variants = []
-
-        # Original sequence
-        variants.append(sequence)
-
-        # Reverse sequence
-        variants.append(sequence[::-1])
-
-        # Complementary sequence
-        complement_sequence = "".join(reverse_complement(base) for base in sequence)
-        variants.append(complement_sequence)
-        complement_mirror_sequence = complement_sequence[::-1]
-        variants.append(complement_mirror_sequence)
-
-        return variants
-
     # Responsive Elements Finder (consensus sequence)
     def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter):
         global table
@@ -499,10 +474,7 @@ def BSF_page():
     entry_tis = st.number_input("🔸 :red[**Step 1.4**] Relative position to TSS or Gene End (in bp):", 0, 10000, 0, help="Distance of TSS or gene end from begin of sequences. Same distance is required for multiple sequences. Leave '0' if you don't know")
 
 # Threshold
-    if jaspar == 'JASPAR_ID':
-        threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
-    else:
-        threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Homology threshold (%)", 0, 100 ,80)
+    threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
 
 # Run Responsive Elements finder
     if st.button("🔎 :orange[**Step 2.6**] Find responsive elements"):
