@@ -158,6 +158,6 @@ data = {
     "JASPAR": [jaspar_status]
 }
 
-df = pd.DataFrame(data, index=["Status"])
+df = pd.DataFrame(data, index=["Servers status"])
 
 st.sidebar.table(df)
