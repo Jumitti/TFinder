@@ -106,9 +106,6 @@ icons = """<style>
 </style
 <div class="footer">
         </a>
-        <a href="https://www.instagram.com/random_molecular_modelling/?hl=fr"><img class="image2" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/132px-Instagram_logo_2016.svg.png"
-                alt="github" width="60" height="60">
-        </a>
         <a href="https://github.com/Jumitti"><img class="image2" src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
                 alt="github" width="60" height="60">
 </div>
@@ -184,8 +181,6 @@ text-align: center;
 <a href="https://www.cnrs.fr/fr"><img class="image2" src="https://www.cnrs.fr/themes/custom/cnrs/logo.svg"alt="github" width="70" height="70"></a>
 <a href="https://univ-cotedazur.fr/"><img class="image2" src="https://www6.inrae.fr/var/internet6_national_consortium_biocontrole/storage/images/les-membres/annuaire-des-membres-du-consortium-biocontrole/universite-cote-d-azur/39475-1-fre-FR/Universite-Cote-d-Azur_inra_image.png"alt="github" width="70" height="70"></a>
 </a><a href="https://github.com/Jumitti"><img class="image2" src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="github" width="70" height="70"></a>
-<a href="https://www.instagram.com/random_molecular_modelling/?hl=fr"><img class="image2" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/132px-Instagram_logo_2016.svg.png"alt="github" width="70" height="70"></a>
-</div>
 """
 
 # """        """
