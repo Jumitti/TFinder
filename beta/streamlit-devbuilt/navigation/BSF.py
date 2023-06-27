@@ -6,6 +6,7 @@ import math
 import pickle
 import numpy as np
 import json
+import logomaker
 
 def BSF_page():
     # Promoter output state
