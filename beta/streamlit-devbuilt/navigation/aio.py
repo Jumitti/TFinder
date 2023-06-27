@@ -612,7 +612,123 @@ def aio_page():
                     st.pyplot(logo.fig)
               
         else:
-            entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
+            IUPAC = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized):", value="ATGCN")
+            
+            # IUPAC code
+            def generate_iupac_variants(sequence):
+                iupac_codes = {
+                    "R": ["A", "G"],
+                    "Y": ["C", "T"],
+                    "M": ["A", "C"],
+                    "K": ["G", "T"],
+                    "W": ["A", "T"],
+                    "S": ["C", "G"],
+                    "B": ["C", "G", "T"],
+                    "D": ["A", "G", "T"],
+                    "H": ["A", "C", "T"],
+                    "V": ["A", "C", "G"],
+                    "N": ["A", "C", "G", "T"]
+                }
+
+                sequences = [sequence]
+                for i, base in enumerate(sequence):
+                    if base.upper() in iupac_codes:
+                        new_sequences = []
+                        for seq in sequences:
+                            for alternative in iupac_codes[base.upper()]:
+                                new_sequence = seq[:i] + alternative + seq[i + 1:]
+                                new_sequences.append(new_sequence)
+                        sequences = new_sequences
+
+                return sequences
+               
+            sequences = generate_iupac_variants(IUPAC)
+            fasta_text = ""
+            for i, seq in enumerate(sequences):
+                fasta_text += f">seq{i + 1}\n{seq}\n"
+                
+            def calculate_pwm(sequences):
+                num_sequences = len(sequences)
+                sequence_length = len(sequences[0])
+                pwm = np.zeros((4, sequence_length))
+                for i in range(sequence_length):
+                    counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
+                    for sequence in sequences:
+                        nucleotide = sequence[i]
+                        if nucleotide in counts:
+                            counts[nucleotide] += 1
+                    pwm[0, i] = counts['A'] / num_sequences *100
+                    pwm[1, i] = counts['T'] / num_sequences *100
+                    pwm[2, i] = counts['G'] / num_sequences *100
+                    pwm[3, i] = counts['C'] / num_sequences *100
+
+                return pwm
+
+            def parse_fasta(fasta_text):
+                sequences = []
+                current_sequence = ""
+
+                for line in fasta_text.splitlines():
+                    if line.startswith(">"):
+                        if current_sequence:
+                            sequences.append(current_sequence)
+                        current_sequence = ""
+                    else:
+                        current_sequence += line
+
+                if current_sequence:
+                    sequences.append(current_sequence)
+
+                return sequences
+                
+            if fasta_text:
+                sequences = parse_fasta(fasta_text)
+                sequences = [seq.upper() for seq in sequences]
+
+                if len(sequences) > 0:
+                    pwm = calculate_pwm(sequences)
+                    bases = ['A', 'T', 'G', 'C']
+                    pwm_text = ""
+                    for i in range(len(pwm)):
+                        base_name = bases[i]
+                        base_values = pwm[i]
+
+                        base_str = base_name + " ["
+                        for value in base_values:
+                            base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+
+                        base_str += "]\n"
+                        pwm_text += base_str
+
+                    matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Dont't modify.", key="non_editable_text")
+
+                else:
+                    st.warning("You forget FASTA sequences :)")
+                
+                def create_web_logo(sequences):
+                    matrix = logomaker.alignment_to_matrix(sequences)
+                    logo = logomaker.Logo(matrix, color_scheme = 'classic')
+
+                    return logo
+
+                sequences_text = fasta_text
+                sequences = []
+                current_sequence = ""
+                for line in sequences_text.splitlines():
+                    line = line.strip()
+                    if line.startswith(">"):
+                        if current_sequence:
+                            sequences.append(current_sequence)
+                        current_sequence = ""
+                    else:
+                        current_sequence += line
+
+                if current_sequence:
+                    sequences.append(current_sequence)
+
+                if sequences:
+                    logo = create_web_logo(sequences)
+                    st.pyplot(logo.fig)
 
     # TSS entry
         if prom_term == 'Promoter':
@@ -621,12 +737,7 @@ def aio_page():
             entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
 
     # Threshold
-        if jaspar == 'JASPAR_ID':
-            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
-        if jaspar == 'Matrix':
-            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
-        else:
-            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Homology threshold (%)", 0, 100 ,80)
+        threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
 
     # Run Responsive Elements finder
         if st.button("🔎 :orange[**Step 2.6**] Find responsive elements"):
@@ -638,7 +749,7 @@ def aio_page():
                         sequence_consensus_input = entry_sequence
                         matrices = matrix_extraction(sequence_consensus_input)
                         table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-                    elif jaspar == 'Matrix':
+                    else:
                         matrix_lines = matrix_text.split('\n')
                         matrix = {}
                         for line in matrix_lines:
@@ -649,10 +760,7 @@ def aio_page():
                                 values = [float(value) for value in values]
                                 matrix[key.strip()] = values
                         matrices = transform_matrix(matrix)
-                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-                    else:
-                        sequence_consensus_input = entry_sequence
-                        table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
+                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)             
                 except Exception as e:
                     st.error(f"Error finding responsive elements: {str(e)}")
 
@@ -704,7 +812,7 @@ def aio_page():
                 st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
         else:
             st.text("")
-    if jaspar == 'Matrix':
+    else:
         if 'table2' in locals():
             if len(table2) > 0:
                 st.success(f"Finding responsive elements done")
@@ -738,41 +846,5 @@ def aio_page():
                 st.altair_chart(chart, use_container_width=True)
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
-        else:
-            st.text("")        
-    else:
-        if 'table' in locals():
-            if len(table) > 0 :
-                st.success("Finding responsive elements done")
-                df = pd.DataFrame(table[1:], columns=table[0])
-                st.session_state['df'] = df
-                st.dataframe(df)
-                st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
-
-                source = df
-                homology_range = source['% Homology'].astype(float)
-                ystart = math.floor(homology_range.min() - 2)
-                ystop = math.floor(homology_range.max() + 2)
-                scale = alt.Scale(scheme='category10')
-                color_scale = alt.Color("Promoter:N", scale=scale)
-                
-                if prom_term == 'Promoter':
-                    chart = alt.Chart(source).mark_circle().encode(
-                        x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-                        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
-                        color=color_scale,
-                        tooltip=['Position (TSS)', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
-                    ).properties(width=600, height=400)
-                else:
-                    chart = alt.Chart(source).mark_circle().encode(
-                        x=alt.X('Position (Gene end):Q', axis=alt.Axis(title='Relative position to gene end (bp)'), sort='ascending'),
-                        y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
-                        color=color_scale,
-                        tooltip=['Position (Gene end)', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
-                    ).properties(width=600, height=400)
-
-                st.altair_chart(chart, use_container_width=True)
-            else:
-                st.error("No consensus sequence found with the specified threshold.")
         else:
             st.text("")
