@@ -13,121 +13,6 @@ def BSF_page():
 
     st.subheader('🔎 Binding Sites Finder')
     result_promoter = st.text_area("🔸 :red[**Step 1.1**] Sequence:", value="Paste sequences here (FASTA required for multiple sequences).")
-
-    # Responsive-Elements-Finder
-
-    # Responsive Elements Finder (consensus sequence)
-    def find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter):
-        global table
-        table = []
-        
-        # Transform with IUPAC code
-        sequence_consensus = generate_iupac_variants(sequence_consensus_input)
-
-        # Promoter input type
-        lines = result_promoter
-        promoters = []
-
-        first_line = lines
-        if first_line.startswith(("A", "T", "C", "G")):
-            shortened_promoter_name = "n.d."
-            promoter_region = lines
-            promoters.append((shortened_promoter_name, promoter_region))
-        else:
-            lines = result_promoter.split("\n")
-            i = 0
-            while i < len(lines):
-                line = lines[i]
-                if line.startswith(">"):
-                    promoter_name = line[1:]
-                    shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
-                    promoter_region = lines[i + 1]
-                    promoters.append((shortened_promoter_name, promoter_region))
-                    i += 2
-                else:
-                    i += 1
-
-        # REF
-        for shortened_promoter_name, promoter_region in promoters:
-
-            found_positions = []
-
-            for consensus in sequence_consensus:
-                variants = generate_variants(consensus)
-                for variant in variants:
-
-                    variant_length = len(variant)
-
-                    for i in range(len(promoter_region) - variant_length + 1):
-                        sequence = promoter_region[i:i + variant_length]
-
-                        mismatches = sum(a != b for a, b in zip(sequence, variant))  # Mismatches
-
-                        homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
-
-                        # Find best homology sequence
-                        better_homology = False
-                        for position, _, _, _, best_homology_percentage in found_positions:
-                            if abs(i - position) < 1 and homology_percentage <= best_homology_percentage:
-                                better_homology = True
-                                break
-
-                        if not better_homology:
-
-                            best_homology_percentage = (variant_length - mismatches) / variant_length * 100  # % Homology
-
-                            found_positions.append((i, sequence, variant, mismatches, best_homology_percentage))
-
-            # Sort positions in descending order of homology percentage
-            found_positions.sort(key=lambda x: x[4], reverse=True)
-
-            # Creating a results table
-            if len(found_positions) > 0:
-                for position, sequence, variant, mismatches, best_homology_percentage in found_positions:
-                    start_position = max(0, position - 3)
-                    end_position = min(len(promoter_region), position + len(sequence) + 3)
-                    sequence_with_context = promoter_region[start_position:end_position]
-
-                    sequence_parts = []
-                    for j in range(start_position, end_position):
-                        if j < position or j >= position + len(sequence):
-                            sequence_parts.append(sequence_with_context[j - start_position].lower())
-                        else:
-                            sequence_parts.append(sequence_with_context[j - start_position].upper())
-
-                    sequence_with_context = ''.join(sequence_parts)
-                    tis_position = position - tis_value
-                    
-                    p_value = calculate_p_value(len(variant), mismatches, best_homology_percentage)
-
-                    if best_homology_percentage >= threshold:
-                        row = [str(position).ljust(8),
-                               str(tis_position).ljust(15),
-                               sequence_with_context,"{:.2e}".format(p_value),
-                               "{:.1f}".format(best_homology_percentage).ljust(12),
-                               variant,
-                               shortened_promoter_name]
-                        table.append(row)
-
-        if len(table) > 0:
-            table.sort(key=lambda x: float(x[3]), reverse=False)
-            header = ["Position", "Relative position", "Sequence", "p-value","% Homology", "Ref seq", "Promoter"]
-            table.insert(0, header)
-        else:
-            no_consensus = "No consensus sequence found with the specified threshold."
-            
-        return table
-    
-    #p-value calcul for manual sequence
-    def calculate_p_value(sequence_length, mismatches, best_homology_percentage):
-        p_value = 0.0
-
-        for i in range(mismatches, sequence_length + 1):
-            p = (math.factorial(sequence_length) / (math.factorial(i) * math.factorial(sequence_length - i))) \
-                * (best_homology_percentage / 100) ** i * ((100 - best_homology_percentage) / 100) ** (sequence_length - i)
-            p_value += p
-
-        return 1 - p_value
         
     # Extract JASPAR matrix
     def matrix_extraction(sequence_consensus_input):
@@ -170,7 +55,7 @@ def BSF_page():
                 score += base_score[i]
         return score
 
-    # Find with JASPAR and manual matrix
+    # Find sequence in promoter
     def search_sequence(threshold, tis_value, result_promoter, matrices):
         global table2
         table2 = []
@@ -254,8 +139,6 @@ def BSF_page():
             no_consensus = "No consensus sequence found with the specified threshold."
             
         return table2
-        
-    # Responsive Elements Finder
 
     # RE entry
     jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','Matrix'))
