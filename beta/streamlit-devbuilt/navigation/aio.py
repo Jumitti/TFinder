@@ -521,6 +521,7 @@ def aio_page():
         jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','Matrix'))
         if jaspar == 'JASPAR_ID':
             entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1")
+            st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
         elif jaspar == 'Matrix':
             matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'))
             if matrix_type == 'With PWM':
@@ -665,7 +666,6 @@ def aio_page():
                 response_data = response.json()
                 TF_name = response_data['name']
                 st.success(f"Finding responsive elements done for {TF_name}")
-                st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
                 df = pd.DataFrame(table2[1:], columns=table2[0])
                 st.session_state['df'] = df
                 st.dataframe(df)
@@ -708,7 +708,6 @@ def aio_page():
         if 'table2' in locals():
             if len(table2) > 0:
                 st.success(f"Finding responsive elements done")
-                st.pyplot(logo.fig)
                 df = pd.DataFrame(table2[1:], columns=table2[0])
                 st.session_state['df'] = df
                 st.dataframe(df)
