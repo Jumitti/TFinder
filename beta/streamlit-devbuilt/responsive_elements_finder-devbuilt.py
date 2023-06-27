@@ -154,11 +154,13 @@ ncbi_status = "✅" if response.status_code == 200 else "❌"
 jaspar_status = "✅" if response1.status_code == 200 else "❌"
 
 data = {
-    "Status": [ncbi_status, jaspar_status],
-    "": ["NCBI", "JASPAR"]
-    
+    "NCBI": [ncbi_status],
+    "JASPAR": [jaspar_status]
 }
 
 df = pd.DataFrame(data)
+
+df = df.T  # Transpose the DataFrame
+df.columns = ["Status"]
 
 st.sidebar.table(df)
