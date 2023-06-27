@@ -352,7 +352,7 @@ def BSF_page():
                 
                 def create_web_logo(sequences):
                     matrix = logomaker.alignment_to_matrix(sequences)
-                    logo = logomaker.Logo(matrix)
+                    logo = logomaker.Logo(matrix, color_scheme = 'classic')
 
                     return logo
 
@@ -376,7 +376,7 @@ def BSF_page():
                     st.pyplot(logo.fig)
           
     else:
-        IUPAC = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized, take more time):", value="ATGCN")
+        IUPAC = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized):", value="ATGCN")
         
         # IUPAC code
         def generate_iupac_variants(sequence):
