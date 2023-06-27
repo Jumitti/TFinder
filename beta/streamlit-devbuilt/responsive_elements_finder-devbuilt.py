@@ -154,8 +154,9 @@ ncbi_status = "✅" if response.status_code == 200 else "❌"
 jaspar_status = "✅" if response1.status_code == 200 else "❌"
 
 data = {
-    "": ["NCBI", "JASPAR"],
-    "Status": [ncbi_status, jaspar_status]
+    "Status": [ncbi_status, jaspar_status],
+    "": ["NCBI", "JASPAR"]
+    
 }
 
 df = pd.DataFrame(data)
