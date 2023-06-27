@@ -527,8 +527,17 @@ def BSF_page():
                     matrices = transform_matrix(matrix)
                     table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                 else:
-                    sequence_consensus_input = entry_sequence
-                    table = find_sequence_consensus(sequence_consensus_input, threshold, tis_value, result_promoter)                
+                    matrix_lines = matrix_text.split('\n')
+                    matrix = {}
+                    for line in matrix_lines:
+                        line = line.strip()
+                        if line:
+                            key, values = line.split('[', 1)
+                            values = values.replace(']', '').split()
+                            values = [float(value) for value in values]
+                            matrix[key.strip()] = values
+                    matrices = transform_matrix(matrix)
+                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
 
@@ -573,7 +582,7 @@ def BSF_page():
                 st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
         else:
             st.text("")
-    if jaspar == 'Matrix':
+    else:
         if 'table2' in locals():
             if len(table2) > 0:
                 st.success(f"Finding responsive elements done")
@@ -599,33 +608,5 @@ def BSF_page():
                 st.altair_chart(chart, use_container_width=True)
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
-        else:
-            st.text("")        
-    else:
-        if 'table' in locals():
-            if len(table) > 0 :
-                st.success("Finding responsive elements done")
-                df = pd.DataFrame(table[1:], columns=table[0])
-                st.session_state['df'] = df
-                st.dataframe(df)
-                st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
-
-                source = df
-                homology_range = source['% Homology'].astype(float)
-                ystart = math.floor(homology_range.min() - 2)
-                ystop = math.floor(homology_range.max() + 2)
-                scale = alt.Scale(scheme='category10')
-                color_scale = alt.Color("Promoter:N", scale=scale)
-                
-                chart = alt.Chart(source).mark_circle().encode(
-                    x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                    y=alt.Y('% Homology:Q', axis=alt.Axis(title='Homology %'), scale=alt.Scale(domain=[ystart, ystop])),
-                    color=color_scale,
-                    tooltip=['Relative position', '% Homology', 'Sequence', 'Ref seq', 'Promoter']
-                ).properties(width=600, height=400)
-
-                st.altair_chart(chart, use_container_width=True)
-            else:
-                st.error("No consensus sequence found with the specified threshold.")
         else:
             st.text("")
