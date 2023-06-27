@@ -481,7 +481,8 @@ def BSF_page():
                 logo = logomaker.Logo(matrix)
 
                 # Appliquer la palette de couleurs personnalisée
-                logo.style_color_scheme(color_scheme=color_palette)
+                for col, nt in zip(logo.colors, logo.alphabet):
+                    col.update({nt: color_palette.get(nt, "gray")})
 
                 return logo
 
