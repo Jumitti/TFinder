@@ -65,6 +65,13 @@ def BSF_page():
                         new_sequence = seq[:i] + alternative + seq[i + 1:]
                         new_sequences.append(new_sequence)
                 sequences = new_sequences
+        
+        st.write("Séquences générées :")
+        fasta_output = ""
+        for i, seq in enumerate(sequences):
+            fasta_output += f">seq{i + 1}\n{seq}\n"
+
+        st.text_area("Séquences au format FASTA :", fasta_output)
 
         return sequences
 
