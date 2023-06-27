@@ -149,15 +149,15 @@ url = 'https://www.ncbi.nlm.nih.gov/gene/'
 url1 = 'https://jaspar.genereg.net/search?q=&collection=all&tax_group=all&tax_id=all&type=all&class=all&family=all&version=all'
 response = requests.get(url)
 response1 = requests.get(url1)
-if response.status_code == 200 and response1.status_code == 200:
-    st.sidebar.success("✅ NCBI servers are UP and reachable.")
-    st.sidebar.success("✅ JASPAR servers are UP and reachable.")
-elif response.status_code == 200 and response1.status_code != 200:
-    st.sidebar.success("✅ NCBI servers are UP and reachable.")
-    st.sidebar.error("❌ JASPAR servers are DOWN.")
-elif response.status_code != 200 and response1.status_code == 200:
-    st.sidebar.error("❌ NCBI servers are DOWN.")
-    st.sidebar.success("✅ JASPAR servers are UP and reachable.")
-else:
-    st.sidebar.error("❌ NCBI servers are DOWN.")
-    st.sidebar.error("❌ JASPAR servers are DOWN.")
+
+ncbi_status = "✅" if response.status_code == 200 else "❌"
+jaspar_status = "✅" if response1.status_code == 200 else "❌"
+
+data = {
+    "": ["NCBI", "JASPAR"],
+    "Status": [ncbi_status, jaspar_status]
+}
+
+df = pd.DataFrame(data)
+
+st.sidebar.table(df)
