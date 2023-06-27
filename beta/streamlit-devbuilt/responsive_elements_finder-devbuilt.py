@@ -146,13 +146,8 @@ with st.sidebar.expander("Binding Sites Finder"):
     st.write('Note without JASPAR option: Homology is calculated between the responsive element in the promoter and the responsive element requested. The calculation uses the Hamming distance, counts the number of differences and gives a percentage score homology.')
 
 url = 'https://www.ncbi.nlm.nih.gov/gene/'
-
-try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            st.sidebar.success("NCBI servers is UP and reachable.")
-        else:
-            st.sidebar.error("NCBI servers is DOWN.")
-    except requests.ConnectionError:
-        st.sidebar.error("Impossible de se connecter au site NCBI Gene.")
-    
+response = requests.get(url)
+if response.status_code == 200:
+    st.sidebar.success("NCBI servers is UP and reachable.")
+else:
+    st.sidebar.error("NCBI servers is DOWN.")
