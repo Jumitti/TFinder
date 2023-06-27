@@ -469,9 +469,19 @@ def BSF_page():
             else:
                 st.warning("You forget FASTA sequences :)")
             
+            color_palette = {
+                "A": "green",
+                "T": "blue",
+                "G": "red",
+                "C": "orange"
+            }
+
             def create_web_logo(sequences):
                 matrix = logomaker.alignment_to_matrix(sequences)
                 logo = logomaker.Logo(matrix)
+
+                # Appliquer la palette de couleurs personnalisée
+                logo.style_color_scheme(color_scheme=color_palette)
 
                 return logo
 
