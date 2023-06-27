@@ -152,10 +152,10 @@ response1 = requests.get(url1)
 if response.status_code == 200 and response1.status_code == 200:
     st.sidebar.success("✅ NCBI servers are UP and reachable.")
     st.sidebar.success("✅ JASPAR servers are UP and reachable.")
-elif if response.status_code == 200 and response1.status_code != 200:
+elif response.status_code == 200 and response1.status_code != 200:
     st.sidebar.success("✅ NCBI servers are UP and reachable.")
     st.sidebar.error("❌ JASPAR servers are DOWN.")
-elif if response.status_code != 200 and response1.status_code == 200:
+elif response.status_code != 200 and response1.status_code == 200:
     st.sidebar.error("❌ NCBI servers are DOWN.")
     st.sidebar.success("✅ JASPAR servers are UP and reachable.")
 else:
