@@ -737,7 +737,7 @@ def aio_page():
             entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", 0, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
 
     # Threshold
-        if jaspar not None:
+        if jaspar:
             threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
 
     # Run Responsive Elements finder
