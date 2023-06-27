@@ -158,9 +158,6 @@ data = {
     "JASPAR": [jaspar_status]
 }
 
-df = pd.DataFrame(data)
-
-df = df.T  # Transpose the DataFrame
-df.columns = ["Status"]
+df = pd.DataFrame(data, index=["Status"])
 
 st.sidebar.table(df)
