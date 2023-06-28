@@ -146,7 +146,7 @@ with st.sidebar.expander("Binding Sites Finder"):
     st.write('Note without JASPAR option: Homology is calculated between the responsive element in the promoter and the responsive element requested. The calculation uses the Hamming distance, counts the number of differences and gives a percentage score homology.')
 
 url = 'https://www.ncbi.nlm.nih.gov/gene/'
-url1 = 'https://jaspar.genereg.net/search?q=&collection=all&tax_group=all&tax_id=all&type=all&class=all&family=all&version=all'
+url1 = 'https://jaspar.genereg.net/api/v1/matrix/'
 response = requests.get(url)
 response1 = requests.get(url1)
 
