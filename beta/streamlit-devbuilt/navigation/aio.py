@@ -302,7 +302,7 @@ def aio_page():
                 for i in range(len(promoter_region) - seq_length + 1):
                     seq = promoter_region[i:i + seq_length]
                     score = calculate_score(seq, matrix)
-                    normalized_score = (score / max_score)
+                    normalized_score = (score / max_score) * 100
                     position = int(i)
 
                     found_positions.append((position, seq, normalized_score))
@@ -574,7 +574,7 @@ def aio_page():
 
     # Threshold
         if jaspar:
-            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0, 1 ,0.9)
+            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
 
     # Run Responsive Elements finder
         if st.button("🔎 :orange[**Step 2.6**] Find responsive elements"):
