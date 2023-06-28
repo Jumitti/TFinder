@@ -167,10 +167,7 @@ def aio_page():
         if prom_term == 'Promoter':
             updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
             st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
-            if min(updown_slide) < 0:
-                upstream_entry = -min(updown_slide)
-            else :
-                upstream_entry = min(updown_slide)
+            upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
             st.session_state['upstream_entry'] = upstream_entry
         else:
