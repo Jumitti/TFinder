@@ -145,7 +145,7 @@ with st.sidebar.expander("Binding Sites Finder"):
     st.write('Note for JASPAR option: Score is normalized to the maximum PWM score of the requested transcription factor. The result is displayed as a percentage')
     st.write('Note without JASPAR option: Homology is calculated between the responsive element in the promoter and the responsive element requested. The calculation uses the Hamming distance, counts the number of differences and gives a percentage score homology.')
 
-url = 'https://www.ncbi.nlm.nih.gov/gene/'
+url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term=nos2[Gene%20Name]+AND+human[Organism]&retmode=json&rettype=xml'
 url1 = 'https://jaspar.genereg.net/api/v1/matrix/'
 response = requests.get(url)
 response1 = requests.get(url1)
