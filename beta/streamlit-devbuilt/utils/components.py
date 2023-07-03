@@ -196,7 +196,8 @@ text-align: center;
 }
 </style>
 <div class="footer">
-<p style="font-size:  13px">© 2023 Minniti Julien. All rights reserved.</p>
+<p style="font-size:  13px">Copyright (c) 2023 Minniti Julien.</p>
+<p style="font-size: 13px">This software is distributed under an MIT licence. Please consult the LICENSE file for more details.</p>
 <a href="https://www.ipmc.cnrs.fr/cgi-bin/site.cgi"><img class="image2" src="https://www.ipmc.cnrs.fr/fichiers/images/logo_ipmc.jpg"alt="github" width="80" height=57"></a>
 <a href="https://www.cnrs.fr/fr"><img class="image2" src="https://www.cnrs.fr/themes/custom/cnrs/logo.svg"alt="github" width="70" height="70"></a>
 <a href="https://univ-cotedazur.fr/"><img class="image2" src="https://www6.inrae.fr/var/internet6_national_consortium_biocontrole/storage/images/les-membres/annuaire-des-membres-du-consortium-biocontrole/universite-cote-d-azur/39475-1-fre-FR/Universite-Cote-d-Azur_inra_image.png"alt="github" width="70" height="70"></a>
