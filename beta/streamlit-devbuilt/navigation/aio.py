@@ -594,7 +594,7 @@ def aio_page():
 
     # Threshold
         if jaspar:
-            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0.0, 1.0 ,0.95)
+            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0.0, 1.0 ,0.95) 
 
     # Run Responsive Elements finder
         if st.button("🔎 :orange[**Step 2.6**] Find responsive elements"):
