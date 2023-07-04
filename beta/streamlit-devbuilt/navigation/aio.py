@@ -644,25 +644,26 @@ def aio_page():
                             table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
                     except Exception as e:
                         st.error(f"Error finding responsive elements: {str(e)}")
-
+    # Disposition Output
+    st.divider()
+    col1output, col2output = st.columns(2)
     # RE output
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
             if len(table2) > 0:
-                st.divider()
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
                 response = requests.get(url)
                 response_data = response.json()
                 TF_name = response_data['name']
                 st.success(f"Finding responsive elements done for {TF_name}")
-                with col1:
+                with col1output:
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
                     st.dataframe(df)
                     st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
                 
-                with col2:
+                with col2output:
                     source = df
                     score_range = source['Score %'].astype(float)
                     ystart = score_range.min() - 0.05
@@ -699,15 +700,14 @@ def aio_page():
     else:
         if 'table2' in locals():
             if len(table2) > 0:
-                st.divider()
                 st.success(f"Finding responsive elements done")
-                with col1:
+                with col1output:
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
                     st.dataframe(df)
                     st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
                 
-                with col2:
+                with col2output:
                     source = df
                     score_range = source['Score %'].astype(float)
                     ystart = score_range.min() - 0.05
