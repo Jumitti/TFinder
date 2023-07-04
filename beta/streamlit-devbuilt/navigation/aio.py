@@ -644,13 +644,14 @@ def aio_page():
                             table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
                     except Exception as e:
                         st.error(f"Error finding responsive elements: {str(e)}")
-    # Disposition Output
-    st.divider()
-    col1output, col2output = st.columns(2)
+    
     # RE output
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
             if len(table2) > 0:
+                # Disposition Output
+                st.divider()
+                col1output, col2output = st.columns(2)
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
                 response = requests.get(url)
@@ -700,6 +701,9 @@ def aio_page():
     else:
         if 'table2' in locals():
             if len(table2) > 0:
+                # Disposition Output
+                st.divider()
+                col1output, col2output = st.columns(2)
                 st.success(f"Finding responsive elements done")
                 with col1output:
                     df = pd.DataFrame(table2[1:], columns=table2[0])
