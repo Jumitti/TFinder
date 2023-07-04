@@ -423,8 +423,8 @@ def BSF_page():
 
                 source = df
                 score_range = source['Score %'].astype(float)
-                ystart = math.floor(score_range.min() - 0.1)
-                ystop = math.floor(score_range.max() + 0.1)
+                ystart = score_range.min() - 0.05
+                ystop = score_range.max() + 0.05
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Promoter:N", scale=scale)
                 
@@ -457,8 +457,8 @@ def BSF_page():
 
                 source = df
                 score_range = source['Score %'].astype(float)
-                ystart = math.floor(score_range.min() - 0.1)
-                ystop = math.floor(score_range.max() + 0.1)
+                ystart = score_range.min() - 0.05
+                ystop = score_range.max() + 0.05
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Promoter:N", scale=scale)
                 
