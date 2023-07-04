@@ -649,13 +649,13 @@ def aio_page():
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
             if len(table2) > 0:
+                jaspar_id = sequence_consensus_input
+                url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
+                response = requests.get(url)
+                response_data = response.json()
+                TF_name = response_data['name']
+                st.success(f"Finding responsive elements done for {TF_name}")
                 with col1:
-                    jaspar_id = sequence_consensus_input
-                    url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
-                    response = requests.get(url)
-                    response_data = response.json()
-                    TF_name = response_data['name']
-                    st.success(f"Finding responsive elements done for {TF_name}")
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
                     st.dataframe(df)
@@ -698,8 +698,8 @@ def aio_page():
     else:
         if 'table2' in locals():
             if len(table2) > 0:
+                st.success(f"Finding responsive elements done")
                 with col1:
-                    st.success(f"Finding responsive elements done")
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
                     st.dataframe(df)
