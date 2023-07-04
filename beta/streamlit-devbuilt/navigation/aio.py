@@ -597,7 +597,7 @@ def aio_page():
             threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0.0, 1.0 ,0.95, step= 0.05) 
 
     # Run Responsive Elements finder
-        if st.button("🔎 :orange[**Step 2.6**] Find responsive elements"):
+        if result_promoter.startswith(("A", "T", "G", "C", ">")):
             with st.spinner("Finding responsive elements..."):
                 tis_value = int(entry_tis)
                 threshold = float(threshold_entry)
@@ -617,9 +617,33 @@ def aio_page():
                                 values = [float(value) for value in values]
                                 matrix[key.strip()] = values
                         matrices = transform_matrix(matrix)
-                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)             
+                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
                 except Exception as e:
                     st.error(f"Error finding responsive elements: {str(e)}")
+        else:
+            if st.button("🔎 :orange[**Step 2.6**] Find responsive elements"):
+                with st.spinner("Finding responsive elements..."):
+                    tis_value = int(entry_tis)
+                    threshold = float(threshold_entry)
+                    try:
+                        if jaspar == 'JASPAR_ID':
+                            sequence_consensus_input = entry_sequence
+                            matrices = matrix_extraction(sequence_consensus_input)
+                            table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                        else:
+                            matrix_lines = matrix_text.split('\n')
+                            matrix = {}
+                            for line in matrix_lines:
+                                line = line.strip()
+                                if line:
+                                    key, values = line.split('[', 1)
+                                    values = values.replace(']', '').split()
+                                    values = [float(value) for value in values]
+                                    matrix[key.strip()] = values
+                            matrices = transform_matrix(matrix)
+                            table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
+                    except Exception as e:
+                        st.error(f"Error finding responsive elements: {str(e)}")
 
     # RE output
     if jaspar == 'JASPAR_ID':
