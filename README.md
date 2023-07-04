@@ -17,7 +17,7 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 - Win 7 : ❌ (use [REF StreamLit](https://responsive-elements-finder2.streamlit.app/))
 - Win 10/11 : ✅
 - Linux/MacOS : Not tested
-- WebUI ✨ : [REF StreamLit](https://responsive-elements-finder2.streamlit.app/)
+- WebUI ✨ : [REF StreamLit](https://responsive-elements-finder2.streamlit.app/) 
 
 ## Functions
 ### Promoter Finder (requires internet connection)
