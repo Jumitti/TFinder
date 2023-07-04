@@ -351,7 +351,7 @@ def aio_page():
                             row = [str(position).ljust(8),
                                    str(tis_position).ljust(15),
                                    sequence_with_context,
-                                   "{:.1f}".format(normalized_score).ljust(12),
+                                   "{:.3f}".format(normalized_score).ljust(12),
                                    shortened_promoter_name]
                             table2.append(row)
 
