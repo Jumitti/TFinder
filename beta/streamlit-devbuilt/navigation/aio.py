@@ -678,14 +678,14 @@ def aio_page():
                             y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
                             tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-                        ).properties(width=800, height=600)
+                        ).properties(width=600, height=500)
                     else:
                         chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Position (Gene end):Q', axis=alt.Axis(title='Relative position to gene end (bp)'), sort='ascending'),
                             y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
                             tooltip=['Position (Gene end)', 'Score %', 'Sequence', 'Promoter']
-                        ).properties(width=800, height=600)
+                        ).properties(width=600, height=500)
                                           
                     st.altair_chart(chart, use_container_width=True)
             else: 
@@ -725,14 +725,14 @@ def aio_page():
                             y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
                             tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-                        ).properties(width=800, height=600)
+                        ).properties(width=600, height=500)
                     else:
                         chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Position (Gene end):Q', axis=alt.Axis(title='Relative position to gene end (bp)'), sort='ascending'),
                             y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
                             tooltip=['Position (Gene end)', 'Score %', 'Sequence', 'Promoter']
-                        ).properties(width=800, height=600)
+                        ).properties(width=600, height=500)
                                           
                     st.altair_chart(chart, use_container_width=True)
             else:
