@@ -382,7 +382,7 @@ def BSF_page():
             threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0.0, 1.0 ,0.95, step= 0.05)
 
 # Run Responsive Elements finder
-    if result_promoter = 'Paste sequences here (FASTA required for multiple sequences).':
+    if result_promoter.startswith(("A", "T", "G", "C", ">")):
         if st.button("🔎 :orange[**Step 2.6**] Find responsive elements"):
             with st.spinner("Finding responsive elements..."):
                 tis_value = int(entry_tis)
