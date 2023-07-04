@@ -513,10 +513,10 @@ def aio_page():
                         nucleotide = sequence[i]
                         if nucleotide in counts:
                             counts[nucleotide] += 1
-                    pwm[0, i] = counts['A'] / num_sequences *100
-                    pwm[1, i] = counts['T'] / num_sequences *100
-                    pwm[2, i] = counts['G'] / num_sequences *100
-                    pwm[3, i] = counts['C'] / num_sequences *100
+                    pwm[0, i] = counts['A'] / num_sequences
+                    pwm[1, i] = counts['T'] / num_sequences
+                    pwm[2, i] = counts['G'] / num_sequences
+                    pwm[3, i] = counts['C'] / num_sequences
 
                 return pwm
 

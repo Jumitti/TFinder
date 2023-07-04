@@ -300,10 +300,10 @@ def BSF_page():
                     nucleotide = sequence[i]
                     if nucleotide in counts:
                         counts[nucleotide] += 1
-                pwm[0, i] = counts['A'] / num_sequences *100
-                pwm[1, i] = counts['T'] / num_sequences *100
-                pwm[2, i] = counts['G'] / num_sequences *100
-                pwm[3, i] = counts['C'] / num_sequences *100
+                pwm[0, i] = counts['A'] / num_sequences
+                pwm[1, i] = counts['T'] / num_sequences
+                pwm[2, i] = counts['G'] / num_sequences
+                pwm[3, i] = counts['C'] / num_sequences
 
             return pwm
 
@@ -379,7 +379,7 @@ def BSF_page():
 
 # Threshold
     if jaspar:
-            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0, 100 ,90)
+            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0.0, 1.0 ,0.95, step= 0.05)
 
 # Run Responsive Elements finder
     if st.button("🔎 :orange[**Step 2.6**] Find responsive elements"):
