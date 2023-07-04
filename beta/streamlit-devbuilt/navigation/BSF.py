@@ -146,7 +146,7 @@ def BSF_page():
                             row = [str(position).ljust(8),
                                    str(tis_position).ljust(15),
                                    sequence_with_context,
-                                   "{:.1f}".format(normalized_score).ljust(12),
+                                   "{:.3f}".format(normalized_score).ljust(12),
                                    shortened_promoter_name]
                             table2.append(row)
 
@@ -423,8 +423,8 @@ def BSF_page():
 
                 source = df
                 score_range = source['Score %'].astype(float)
-                ystart = math.floor(score_range.min() - 2)
-                ystop = math.floor(score_range.max() + 2)
+                ystart = math.floor(score_range.min() - 0.1)
+                ystop = math.floor(score_range.max() + 0.1)
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Promoter:N", scale=scale)
                 
@@ -457,8 +457,8 @@ def BSF_page():
 
                 source = df
                 score_range = source['Score %'].astype(float)
-                ystart = math.floor(score_range.min() - 2)
-                ystop = math.floor(score_range.max() + 2)
+                ystart = math.floor(score_range.min() - 0.1)
+                ystop = math.floor(score_range.max() + 0.1)
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Promoter:N", scale=scale)
                 
