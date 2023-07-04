@@ -639,7 +639,7 @@ def aio_page():
                 source = df
                 score_range = source['Score %'].astype(float)
                 ystart = math.floor(score_range.min() - 0.2 )
-                st.write(ystart)
+                st.success(ystart)
                 ystop = math.floor(score_range.max() + (10/100))
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Promoter:N", scale=scale)
