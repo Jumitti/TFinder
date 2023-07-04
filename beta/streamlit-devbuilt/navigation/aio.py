@@ -651,13 +651,13 @@ def aio_page():
             if len(table2) > 0:
                 # Disposition Output
                 st.divider()
-                col1output, col2output = st.columns(2)
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
                 response = requests.get(url)
                 response_data = response.json()
                 TF_name = response_data['name']
                 st.success(f"Finding responsive elements done for {TF_name}")
+                col1output, col2output = st.columns(2)
                 with col1output:
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
@@ -703,8 +703,8 @@ def aio_page():
             if len(table2) > 0:
                 # Disposition Output
                 st.divider()
-                col1output, col2output = st.columns(2)
                 st.success(f"Finding responsive elements done")
+                col1output, col2output = st.columns(2)
                 with col1output:
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
