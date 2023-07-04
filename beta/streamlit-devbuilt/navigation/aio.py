@@ -649,6 +649,7 @@ def aio_page():
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
             if len(table2) > 0:
+                st.divider()
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
                 response = requests.get(url)
@@ -698,6 +699,7 @@ def aio_page():
     else:
         if 'table2' in locals():
             if len(table2) > 0:
+                st.divider()
                 st.success(f"Finding responsive elements done")
                 with col1:
                     df = pd.DataFrame(table2[1:], columns=table2[0])
