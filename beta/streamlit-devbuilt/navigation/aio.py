@@ -638,8 +638,8 @@ def aio_page():
 
                 source = df
                 score_range = source['Score %'].astype(float)
-                ystart = math.floor(score_range.min() - 0.2 )
-                ystop = math.floor(score_range.max() + 0.2 )
+                ystart = score_range.min() - 0.05
+                ystop = score_range.max() + 0.05
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Promoter:N", scale=scale)
                 
@@ -680,9 +680,9 @@ def aio_page():
 
                 source = df
                 score_range = source['Score %'].astype(float)
-                ystart = score_range.min() - 0.1
+                ystart = score_range.min() - 0.05
                 st.success(ystart)
-                ystop = score_range.max() + 0.1
+                ystop = score_range.max() + 0.05
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Promoter:N", scale=scale)
                 
