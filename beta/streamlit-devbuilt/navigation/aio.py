@@ -322,7 +322,7 @@ def aio_page():
                 for i in range(len(promoter_region) - seq_length + 1):
                     seq = promoter_region[i:i + seq_length]
                     score = calculate_score(seq, matrix)
-                    normalized_score = math.log(score / max_score)
+                    normalized_score = (score / max_score)
                     position = int(i)
 
                     found_positions.append((position, seq, normalized_score))
