@@ -88,6 +88,7 @@ def BSF_page():
             min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
             if min_score == 0:
                 min_score = 0.0001
+            st.success(min_score)
 
             # Promoter input type
             lines = result_promoter
