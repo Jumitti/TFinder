@@ -142,17 +142,19 @@ def BSF_page():
                     score = calculate_score(seq, matrix)
                     normalized_score = (score - min_score)/(max_score - min_score)
                     position = int(i)
-
-                    found_positions.append((position, seq, normalized_score))
                     
                     p_value = (random_scores >= normalized_score).sum() / num_random_seqs
+
+                    found_positions.append((position, seq, normalized_score, p_value))
+                    
+                    
 
                 # Sort positions in descending order of score percentage
                 found_positions.sort(key=lambda x: x[1], reverse=True)
 
                 # Creating a results table
                 if len(found_positions) > 0:
-                    for position, seq, normalized_score in found_positions:
+                    for position, seq, normalized_score, p_value in found_positions:
                         start_position = max(0, position - 3)
                         end_position = min(len(promoter_region), position + len(seq) + 3)
                         sequence_with_context = promoter_region[start_position:end_position]
