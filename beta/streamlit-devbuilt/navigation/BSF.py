@@ -115,10 +115,10 @@ def BSF_page():
                 total_promoter = len(promoters)
                 
                 length = len(promoter_region)
-                count_a = sequence.count('A')
-                count_t = sequence.count('T')
-                count_g = sequence.count('G')
-                count_c = sequence.count('C')
+                count_a = promoter_region.count('A')
+                count_t = promoter_region.count('T')
+                count_g = promoter_region.count('G')
+                count_c = promoter_region.count('C')
 
                 percentage_a = (count_a / length)
                 percentage_t = (count_t / length)
