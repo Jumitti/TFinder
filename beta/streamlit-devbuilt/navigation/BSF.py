@@ -144,7 +144,7 @@ def BSF_page():
                     found_positions.append((position, seq, normalized_score))
                     
                     motif_score = normalized_score  # Remplacer par votre score de motif
-                    motif_length = len(seq_lenght)  # Remplacer par la longueur de votre motif
+                    motif_length = len(seq_length)  # Remplacer par la longueur de votre motif
                     num_random_seqs = 100  # Nombre de séquences aléatoires à générer
                     probabilities = [0.275, 0.225, 0.225, 0.275]  # Probabilités des nucléotides
                     p_value = calculate_p_value(motif_score, motif_length, num_random_seqs, probabilities)
