@@ -132,8 +132,6 @@ def BSF_page():
                     random_score = calculate_score(random_sequence, matrix)  # Remplacer cette fonction par votre calcul de score de motif
                     normalized_random_score = (random_score - min_score)/(max_score - min_score)
                     random_scores.append(normalized_random_score)
-
-                random_scores = np.array(normalized_random_score)
                 
 
 
