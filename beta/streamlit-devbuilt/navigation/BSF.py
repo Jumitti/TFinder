@@ -126,7 +126,19 @@ def BSF_page():
                 random_scores = []
                 motif_length = seq_length  # Remplacer par la longueur de votre motif
                 num_random_seqs = 100000  # Nombre de séquences aléatoires à générer
-                probabilities = [0.275, 0.225, 0.225, 0.275]  # Probabilités des nucléotides
+                
+                count_a = promoter_region.count('A')
+                count_t = promoter_region.count('T')
+                count_g = promoter_region.count('G')
+                count_c = promoter_region.count('C')
+
+                percentage_a = count_a / length_prom
+                percentage_t = count_t / length_prom
+                percentage_g = count_g / length_prom
+                percentage_c = count_c / length_prom
+                
+                probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]  # Probabilités des nucléotides
+                
                 for _ in range(num_random_seqs):
                     random_sequence = generate_random_sequence(motif_length, probabilities)
                     random_score = calculate_score(random_sequence, matrix)  # Remplacer cette fonction par votre calcul de score de motif
