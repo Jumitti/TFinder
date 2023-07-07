@@ -166,7 +166,7 @@ def BSF_page():
 
         if len(table2) > 0:
             table2.sort(key=lambda x: float(x[3]), reverse=True)
-            header = ["Position", "Relative position", "Sequence", "Score %", "Promoter"]
+            header = ["Position", "Relative position", "Sequence", "Score %", "Weight", "Promoter"]
             table2.insert(0, header)
             
         else:
