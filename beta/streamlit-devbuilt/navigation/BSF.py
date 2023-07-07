@@ -116,6 +116,7 @@ def BSF_page():
             for shortened_promoter_name, promoter_region in promoters:
                 found_positions = []
                 total_promoter = len(promoters)
+                length_prom = len(promoter_region)
 
                 def generate_random_sequence(length, probabilities):
                     nucleotides = ['A', 'C', 'G', 'T']
@@ -146,7 +147,7 @@ def BSF_page():
                     
                     motif_score = normalized_score  # Remplacer par votre score de motif
                     motif_length = seq_length  # Remplacer par la longueur de votre motif
-                    num_random_seqs = len(promoter_region)/seq_length  # Nombre de séquences aléatoires à générer
+                    num_random_seqs = length_prom/seq_length  # Nombre de séquences aléatoires à générer
                     probabilities = [0.275, 0.225, 0.225, 0.275]  # Probabilités des nucléotides
                     p_value = calculate_p_value(motif_score, motif_length, num_random_seqs, probabilities)
 
