@@ -148,6 +148,8 @@ def BSF_page():
                     motif_score = normalized_score  # Remplacer par votre score de motif
                     motif_length = seq_length  # Remplacer par la longueur de votre motif
                     num_random_seqs = math.ceil(length_prom / seq_length)  # Nombre de séquences aléatoires à générer
+                    st.success(length_prom)
+                    st.success(seq_length)
                     probabilities = [0.275, 0.225, 0.225, 0.275]  # Probabilités des nucléotides
                     p_value = calculate_p_value(motif_score, motif_length, num_random_seqs, probabilities)
 
