@@ -144,6 +144,8 @@ def BSF_page():
                     position = int(i)
                     
                     p_value = (random_scores >= normalized_score).sum() / num_random_seqs
+                    pvaluesum = (random_scores >= normalized_score).sum()
+                    st.success(pvaluesum)
 
                     found_positions.append((position, seq, normalized_score, p_value))
                     
@@ -173,7 +175,7 @@ def BSF_page():
                             row = [str(position).ljust(8),
                                    str(tis_position).ljust(15),
                                    sequence_with_context,
-                                   "{:.6f}".format(normalized_score).ljust(12), "{:.24e}".format(p_value).ljust(12),
+                                   "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
                                    shortened_promoter_name]
                             table2.append(row)
 
