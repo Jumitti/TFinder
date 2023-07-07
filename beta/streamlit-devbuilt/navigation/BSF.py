@@ -132,7 +132,7 @@ def BSF_page():
                         random_scores.append(random_score)
 
                     random_scores = np.array(normalized__random_score)
-                    p_value = (random_scores >= motif_score).sum() / num_random_seqs
+                    p_value = (random_scores > motif_score).sum() / num_random_seqs
 
                     return p_value
 
