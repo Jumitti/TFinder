@@ -147,7 +147,7 @@ def BSF_page():
                             row = [str(position).ljust(8),
                                    str(tis_position).ljust(15),
                                    sequence_with_context,
-                                   "{:.3f}".format(normalized_score).ljust(12),
+                                   "{:.6f}".format(normalized_score).ljust(12),
                                    shortened_promoter_name]
                             table2.append(row)
 
