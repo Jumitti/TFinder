@@ -113,11 +113,22 @@ def BSF_page():
             for shortened_promoter_name, promoter_region in promoters:
                 found_positions = []
                 total_promoter = len(promoters)
+                length = len(sequence)
+                count_a = sequence.count('A')
+                count_t = sequence.count('T')
+                count_g = sequence.count('G')
+                count_c = sequence.count('C')
+
+                percentage_a = (count_a / length)
+                percentage_t = (count_t / length)
+                percentage_g = (count_g / length)
+                percentage_c = (count_c / length)
+                background = percentage_a + percentage_c + percentage_g + percentage_t
 
                 for i in range(len(promoter_region) - seq_length + 1):
                     seq = promoter_region[i:i + seq_length]
-                    score = calculate_score(seq, matrix)
-                    normalized_score = (score / max_score)
+                    score = calculate_score(seq, matrix)                    
+                    normalized_score = (score / background)
                     position = int(i)
 
                     found_positions.append((position, seq, normalized_score))
