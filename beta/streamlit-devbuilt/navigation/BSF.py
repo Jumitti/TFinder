@@ -113,7 +113,8 @@ def BSF_page():
             for shortened_promoter_name, promoter_region in promoters:
                 found_positions = []
                 total_promoter = len(promoters)
-                length = len(sequence)
+                
+                length = len(promoter_region)
                 count_a = sequence.count('A')
                 count_t = sequence.count('T')
                 count_g = sequence.count('G')
