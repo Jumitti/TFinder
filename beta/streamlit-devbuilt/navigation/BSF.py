@@ -146,7 +146,7 @@ def BSF_page():
                     
                     motif_score = normalized_score  # Remplacer par votre score de motif
                     motif_length = seq_length  # Remplacer par la longueur de votre motif
-                    num_random_seqs = 1000  # Nombre de séquences aléatoires à générer
+                    num_random_seqs = 50  # Nombre de séquences aléatoires à générer
                     probabilities = [0.275, 0.225, 0.225, 0.275]  # Probabilités des nucléotides
                     p_value = calculate_p_value(motif_score, motif_length, num_random_seqs, probabilities)
 
@@ -174,7 +174,7 @@ def BSF_page():
                             row = [str(position).ljust(8),
                                    str(tis_position).ljust(15),
                                    sequence_with_context,
-                                   "{:.6f}".format(normalized_score).ljust(12), "{:.12f}".format(p_value).ljust(12),
+                                   "{:.6f}".format(normalized_score).ljust(12), "{:.12e}".format(p_value).ljust(12),
                                    shortened_promoter_name]
                             table2.append(row)
 
