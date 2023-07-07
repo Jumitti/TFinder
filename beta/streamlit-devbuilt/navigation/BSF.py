@@ -133,7 +133,7 @@ def BSF_page():
                     normalized_random_score = (random_score - min_score)/(max_score - min_score)
                     random_scores.append(normalized_random_score)
 
-                random_scores = np.array(normalized_random_score)
+                random_scores = np.array(random_scores)
                 
 
 
