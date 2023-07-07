@@ -122,19 +122,19 @@ def BSF_page():
                     nucleotides = ['A', 'C', 'G', 'T']
                     sequence = random.choices(nucleotides, probabilities, k=length)
                     return ''.join(sequence)
+                    
+                random_scores = []
+                motif_length = seq_length  # Remplacer par la longueur de votre motif
+                num_random_seqs = math.ceil(length_prom / seq_length)  # Nombre de séquences aléatoires à générer
+                probabilities = [0.275, 0.225, 0.225, 0.275]  # Probabilités des nucléotides
+                for _ in range(num_random_seqs):
+                    random_sequence = generate_random_sequence(motif_length, probabilities)
+                    random_score = calculate_score(random_sequence, matrix)  # Remplacer cette fonction par votre calcul de score de motif
+                    normalized__random_score = (random_score - min_score)/(max_score - min_score)
+                    random_scores.append(random_score)
 
-                def calculate_p_value(motif_score, motif_length, num_random_seqs, probabilities):
-                    random_scores = []
-                    for _ in range(num_random_seqs):
-                        random_sequence = generate_random_sequence(motif_length, probabilities)
-                        random_score = calculate_score(random_sequence, matrix)  # Remplacer cette fonction par votre calcul de score de motif
-                        normalized__random_score = (random_score - min_score)/(max_score - min_score)
-                        random_scores.append(random_score)
-
-                    random_scores = np.array(normalized__random_score)
-                    p_value = (random_scores > motif_score).sum() / num_random_seqs
-
-                    return p_value
+                random_scores = np.array(normalized__random_score)
+                
 
 
                 for i in range(len(promoter_region) - seq_length + 1):
@@ -146,10 +146,7 @@ def BSF_page():
                     found_positions.append((position, seq, normalized_score))
                     
                     motif_score = normalized_score  # Remplacer par votre score de motif
-                    motif_length = seq_length  # Remplacer par la longueur de votre motif
-                    num_random_seqs = math.ceil(length_prom / seq_length)  # Nombre de séquences aléatoires à générer
-                    probabilities = [0.275, 0.225, 0.225, 0.275]  # Probabilités des nucléotides
-                    p_value = calculate_p_value(motif_score, motif_length, num_random_seqs, probabilities)
+                    p_value = (random_scores > motif_score).sum() / num_random_seqs
 
                 # Sort positions in descending order of score percentage
                 found_positions.sort(key=lambda x: x[1], reverse=True)
