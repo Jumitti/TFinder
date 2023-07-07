@@ -117,24 +117,11 @@ def BSF_page():
             for shortened_promoter_name, promoter_region in promoters:
                 found_positions = []
                 total_promoter = len(promoters)
-                
-                length = len(promoter_region)
-                count_a = promoter_region.count('A')
-                count_t = promoter_region.count('T')
-                count_g = promoter_region.count('G')
-                count_c = promoter_region.count('C')
-
-                percentage_a = (count_a / length)
-                percentage_t = (count_t / length)
-                percentage_g = (count_g / length)
-                percentage_c = (count_c / length)
-                background = percentage_a + percentage_c + percentage_g + percentage_t
 
                 for i in range(len(promoter_region) - seq_length + 1):
                     seq = promoter_region[i:i + seq_length]
-                    score = calculate_score(seq, matrix)                    
-                    weight = math.log(score / background)
-                    normalized_score = ((score - 0)/(max_score - 0))
+                    score = calculate_score(seq, matrix)
+                    normalized_score = (score - min_score)/(max_score - min_score)
                     position = int(i)
 
                     found_positions.append((position, seq, normalized_score))
@@ -163,13 +150,13 @@ def BSF_page():
                             row = [str(position).ljust(8),
                                    str(tis_position).ljust(15),
                                    sequence_with_context,
-                                   "{:.3f}".format(normalized_score).ljust(12),"{:.3f}".format(weight).ljust(12),
+                                   "{:.3f}".format(normalized_score).ljust(12),
                                    shortened_promoter_name]
                             table2.append(row)
 
         if len(table2) > 0:
             table2.sort(key=lambda x: float(x[3]), reverse=True)
-            header = ["Position", "Relative position", "Sequence", "Score %", "Weight", "Promoter"]
+            header = ["Position", "Relative position", "Sequence", "Score %", "Promoter"]
             table2.insert(0, header)
             
         else:
