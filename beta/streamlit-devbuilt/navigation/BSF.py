@@ -28,6 +28,8 @@ import numpy as np
 import json
 import logomaker
 
+import random
+
 def BSF_page():
     # Promoter output state
 
@@ -115,6 +117,24 @@ def BSF_page():
                 found_positions = []
                 total_promoter = len(promoters)
 
+                def generate_random_sequence(length, probabilities):
+                    nucleotides = ['A', 'C', 'G', 'T']
+                    sequence = random.choices(nucleotides, probabilities, k=length)
+                    return ''.join(sequence)
+
+                def calculate_p_value(motif_score, motif_length, num_random_seqs, probabilities):
+                    random_scores = []
+                    for _ in range(num_random_seqs):
+                        random_sequence = generate_random_sequence(motif_length, probabilities)
+                        random_score = calculate_motif_score(random_sequence)  # Remplacer cette fonction par votre calcul de score de motif
+                        random_scores.append(random_score)
+
+                    random_scores = np.array(random_scores)
+                    p_value = (random_scores >= motif_score).sum() / num_random_seqs
+
+                    return p_value
+
+
                 for i in range(len(promoter_region) - seq_length + 1):
                     seq = promoter_region[i:i + seq_length]
                     score = calculate_score(seq, matrix)
@@ -122,6 +142,12 @@ def BSF_page():
                     position = int(i)
 
                     found_positions.append((position, seq, normalized_score))
+                    
+                    motif_score = normalized_score  # Remplacer par votre score de motif
+                    motif_length = len(seq_lenght)  # Remplacer par la longueur de votre motif
+                    num_random_seqs = 100  # Nombre de séquences aléatoires à générer
+                    probabilities = [0.275, 0.225, 0.225, 0.275]  # Probabilités des nucléotides
+                    p_value = calculate_p_value(motif_score, motif_length, num_random_seqs, probabilities)
 
                 # Sort positions in descending order of score percentage
                 found_positions.sort(key=lambda x: x[1], reverse=True)
