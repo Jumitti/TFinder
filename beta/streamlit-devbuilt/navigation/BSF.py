@@ -85,6 +85,7 @@ def BSF_page():
 
             # Max score per matrix
             max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+            min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
 
             # Promoter input type
             lines = result_promoter
@@ -129,7 +130,8 @@ def BSF_page():
                 for i in range(len(promoter_region) - seq_length + 1):
                     seq = promoter_region[i:i + seq_length]
                     score = calculate_score(seq, matrix)                    
-                    normalized_score = math.log(score / background)
+                    weight = math.log(score / background)
+                    normalized_score = ((weight - min_score)/(max_score-min_score))
                     position = int(i)
 
                     found_positions.append((position, seq, normalized_score))
@@ -158,7 +160,7 @@ def BSF_page():
                             row = [str(position).ljust(8),
                                    str(tis_position).ljust(15),
                                    sequence_with_context,
-                                   "{:.3f}".format(normalized_score).ljust(12),
+                                   "{:.3f}".format(normalized_score).ljust(12),"{:.3f}".format(weight).ljust(12),
                                    shortened_promoter_name]
                             table2.append(row)
 
