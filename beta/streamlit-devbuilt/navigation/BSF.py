@@ -145,8 +145,7 @@ def BSF_page():
 
                     found_positions.append((position, seq, normalized_score))
                     
-                    motif_score = normalized_score  # Remplacer par votre score de motif
-                    p_value = (random_scores >= motif_score).sum() / num_random_seqs
+                    p_value = (random_scores >= normalized_score).sum() / num_random_seqs
 
                 # Sort positions in descending order of score percentage
                 found_positions.sort(key=lambda x: x[1], reverse=True)
