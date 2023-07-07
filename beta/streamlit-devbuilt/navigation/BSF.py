@@ -173,13 +173,13 @@ def BSF_page():
                             row = [str(position).ljust(8),
                                    str(tis_position).ljust(15),
                                    sequence_with_context,
-                                   "{:.6f}".format(normalized_score).ljust(12),
+                                   "{:.6f}".format(normalized_score).ljust(12), "{:.12f}".format(p_value).ljust(12),
                                    shortened_promoter_name]
                             table2.append(row)
 
         if len(table2) > 0:
             table2.sort(key=lambda x: float(x[3]), reverse=True)
-            header = ["Position", "Relative position", "Sequence", "Score %", "Promoter"]
+            header = ["Position", "Relative position", "Sequence", "Score %", "p-value", "Promoter"]
             table2.insert(0, header)
             
         else:
