@@ -129,7 +129,7 @@ def BSF_page():
                 for i in range(len(promoter_region) - seq_length + 1):
                     seq = promoter_region[i:i + seq_length]
                     score = calculate_score(seq, matrix)                    
-                    normalized_score = (score / background)
+                    normalized_score = math.log(score / background)
                     position = int(i)
 
                     found_positions.append((position, seq, normalized_score))
