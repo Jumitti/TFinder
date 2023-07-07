@@ -144,8 +144,6 @@ def BSF_page():
                     position = int(i)
                     
                     p_value = (random_scores >= normalized_score).sum() / num_random_seqs
-                    pvaluesum = (random_scores >= normalized_score).sum()
-                    st.success(pvaluesum)
 
                     found_positions.append((position, seq, normalized_score, p_value))
                     
