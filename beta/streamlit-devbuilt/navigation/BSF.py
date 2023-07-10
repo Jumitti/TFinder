@@ -104,40 +104,40 @@ def BSF_page():
                     i += 2
                 else:
                     i += 1
-        
-        for matrix_name, matrix in matrices.items():
+
+        # REF
+        for shortened_promoter_name, promoter_region in promoters:
+            found_positions = []
+            length_prom = len(promoter_region)
+
+            def generate_random_sequence(length, probabilities):
+                nucleotides = ['A', 'C', 'G', 'T']
+                sequence = random.choices(nucleotides, probabilities, k=length)
+                return ''.join(sequence)
+                
+            random_scores = []
+            motif_length = seq_length
+            num_random_seqs = 100000
+            
+            count_a = promoter_region.count('A')
+            count_t = promoter_region.count('T')
+            count_g = promoter_region.count('G')
+            count_c = promoter_region.count('C')
+
+            percentage_a = count_a / length_prom
+            percentage_t = count_t / length_prom
+            percentage_g = count_g / length_prom
+            percentage_c = count_c / length_prom
+            
+            probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]  # Probabilités des nucléotides
+            
+            for matrix_name, matrix in matrices.items():
             seq_length = len(matrix['A'])
 
             # Max score per matrix
             max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
             min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-
-            # REF
-            for shortened_promoter_name, promoter_region in promoters:
-                found_positions = []
-                length_prom = len(promoter_region)
-
-                def generate_random_sequence(length, probabilities):
-                    nucleotides = ['A', 'C', 'G', 'T']
-                    sequence = random.choices(nucleotides, probabilities, k=length)
-                    return ''.join(sequence)
-                    
-                random_scores = []
-                motif_length = seq_length
-                num_random_seqs = 100000
-                
-                count_a = promoter_region.count('A')
-                count_t = promoter_region.count('T')
-                count_g = promoter_region.count('G')
-                count_c = promoter_region.count('C')
-
-                percentage_a = count_a / length_prom
-                percentage_t = count_t / length_prom
-                percentage_g = count_g / length_prom
-                percentage_c = count_c / length_prom
-                
-                probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]  # Probabilités des nucléotides
-                
+            
                 for _ in range(num_random_seqs):
                     random_sequence = generate_random_sequence(motif_length, probabilities)
                     random_score = calculate_score(random_sequence, matrix)  # Remplacer cette fonction par votre calcul de score de motif
@@ -145,8 +145,6 @@ def BSF_page():
                     random_scores.append(normalized_random_score)
 
                 random_scores = np.array(random_scores)
-                
-
 
                 for i in range(len(promoter_region) - seq_length + 1):
                     seq = promoter_region[i:i + seq_length]
