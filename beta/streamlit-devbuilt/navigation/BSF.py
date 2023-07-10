@@ -104,39 +104,46 @@ def BSF_page():
                     i += 2
                 else:
                     i += 1
+        
+        for matrix_name, matrix in matrices.items():
+            seq_length = len(matrix['A'])
 
-        # REF
-        for shortened_promoter_name, promoter_region in promoters:
-            found_positions = []
-            length_prom = len(promoter_region)
+            # Max score per matrix
+            max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+            min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
 
-            def generate_random_sequence(length, probabilities):
-                nucleotides = ['A', 'C', 'G', 'T']
-                sequence = random.choices(nucleotides, probabilities, k=length)
-                return ''.join(sequence)
-            
-            count_a = promoter_region.count('A')
-            count_t = promoter_region.count('T')
-            count_g = promoter_region.count('G')
-            count_c = promoter_region.count('C')
+            # REF
+            for shortened_promoter_name, promoter_region in promoters:
+                found_positions = []
+                length_prom = len(promoter_region)
 
-            percentage_a = count_a / length_prom
-            percentage_t = count_t / length_prom
-            percentage_g = count_g / length_prom
-            percentage_c = count_c / length_prom
-            
-            probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
-            
-            for matrix_name, matrix in matrices.items():
-                seq_length = len(matrix['A'])
-                motif_length = seq_length
+                def generate_random_sequence(length, probabilities):
+                    nucleotides = ['A', 'C', 'G', 'T']
+                    sequence = random.choices(nucleotides, probabilities, k=length)
+                    return ''.join(sequence)
+                    
                 random_scores = []
                 num_random_seqs = 100000
+                
+                count_a = promoter_region.count('A')
+                count_t = promoter_region.count('T')
+                count_g = promoter_region.count('G')
+                count_c = promoter_region.count('C')
 
-                # Max score per matrix
-                max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-                min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-            
+                percentage_a = count_a / length_prom
+                percentage_t = count_t / length_prom
+                percentage_g = count_g / length_prom
+                percentage_c = count_c / length_prom
+                
+                probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
+                
+                for matrix_name, matrix in matrices.items():
+                    seq_length = len(matrix['A'])
+
+                    # Max score per matrix
+                    max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                    min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                
                 for _ in range(num_random_seqs):
                     random_sequence = generate_random_sequence(motif_length, probabilities)
                     random_score = calculate_score(random_sequence, matrix)
