@@ -82,6 +82,29 @@ def BSF_page():
         global table2
         table2 = []
         
+        # Promoter input type
+        lines = result_promoter
+        promoters = []
+
+        first_line = lines
+        if first_line.startswith(("A", "T", "C", "G")):
+            shortened_promoter_name = "n.d."
+            promoter_region = lines
+            promoters.append((shortened_promoter_name, promoter_region))
+        else:
+            lines = result_promoter.split("\n")
+            i = 0
+            while i < len(lines):
+                line = lines[i]
+                if line.startswith(">"):
+                    promoter_name = line[1:]
+                    shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
+                    promoter_region = lines[i + 1]
+                    promoters.append((shortened_promoter_name, promoter_region))
+                    i += 2
+                else:
+                    i += 1
+        
         for matrix_name, matrix in matrices.items():
             seq_length = len(matrix['A'])
 
@@ -89,33 +112,9 @@ def BSF_page():
             max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
             min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
 
-            # Promoter input type
-            lines = result_promoter
-            promoters = []
-
-            first_line = lines
-            if first_line.startswith(("A", "T", "C", "G")):
-                shortened_promoter_name = "n.d."
-                promoter_region = lines
-                promoters.append((shortened_promoter_name, promoter_region))
-            else:
-                lines = result_promoter.split("\n")
-                i = 0
-                while i < len(lines):
-                    line = lines[i]
-                    if line.startswith(">"):
-                        promoter_name = line[1:]
-                        shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
-                        promoter_region = lines[i + 1]
-                        promoters.append((shortened_promoter_name, promoter_region))
-                        i += 2
-                    else:
-                        i += 1
-
             # REF
             for shortened_promoter_name, promoter_region in promoters:
                 found_positions = []
-                total_promoter = len(promoters)
                 length_prom = len(promoter_region)
 
                 def generate_random_sequence(length, probabilities):
@@ -124,8 +123,8 @@ def BSF_page():
                     return ''.join(sequence)
                     
                 random_scores = []
-                motif_length = seq_length  # Remplacer par la longueur de votre motif
-                num_random_seqs = 100000  # Nombre de séquences aléatoires à générer
+                motif_length = seq_length
+                num_random_seqs = 100000
                 
                 count_a = promoter_region.count('A')
                 count_t = promoter_region.count('T')
