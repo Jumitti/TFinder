@@ -138,13 +138,6 @@ def BSF_page():
                 
                 probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
                 
-                for matrix_name, matrix in matrices.items():
-                    seq_length = len(matrix['A'])
-
-                    # Max score per matrix
-                    max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-                    min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-                
                 for _ in range(num_random_seqs):
                     random_sequence = generate_random_sequence(motif_length, probabilities)
                     random_score = calculate_score(random_sequence, matrix)
