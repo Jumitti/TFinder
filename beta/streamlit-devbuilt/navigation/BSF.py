@@ -114,9 +114,6 @@ def BSF_page():
                 nucleotides = ['A', 'C', 'G', 'T']
                 sequence = random.choices(nucleotides, probabilities, k=length)
                 return ''.join(sequence)
-                
-            random_scores = []
-            num_random_seqs = 100000
             
             count_a = promoter_region.count('A')
             count_t = promoter_region.count('T')
@@ -133,6 +130,8 @@ def BSF_page():
             for matrix_name, matrix in matrices.items():
                 seq_length = len(matrix['A'])
                 motif_length = seq_length
+                random_scores = []
+                num_random_seqs = 100000
 
                 # Max score per matrix
                 max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
