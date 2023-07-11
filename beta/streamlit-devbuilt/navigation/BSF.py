@@ -117,34 +117,35 @@ def BSF_page():
                 found_positions = []
                 length_prom = len(promoter_region)
 
-                def generate_random_sequence(length, probabilities):
-                    nucleotides = ['A', 'C', 'G', 'T']
-                    sequence = random.choices(nucleotides, probabilities, k=length)
-                    return ''.join(sequence)
+                if calc_pvalue :
+                    def generate_random_sequence(length, probabilities):
+                        nucleotides = ['A', 'C', 'G', 'T']
+                        sequence = random.choices(nucleotides, probabilities, k=length)
+                        return ''.join(sequence)
+                     
+                    random_scores = []
+                    motif_length = seq_length
+                    num_random_seqs = 100000
                     
-                random_scores = []
-                motif_length = seq_length
-                num_random_seqs = 100000
-                
-                count_a = promoter_region.count('A')
-                count_t = promoter_region.count('T')
-                count_g = promoter_region.count('G')
-                count_c = promoter_region.count('C')
+                    count_a = promoter_region.count('A')
+                    count_t = promoter_region.count('T')
+                    count_g = promoter_region.count('G')
+                    count_c = promoter_region.count('C')
 
-                percentage_a = count_a / length_prom
-                percentage_t = count_t / length_prom
-                percentage_g = count_g / length_prom
-                percentage_c = count_c / length_prom
-                
-                probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
-                
-                for _ in range(num_random_seqs):
-                    random_sequence = generate_random_sequence(motif_length, probabilities)
-                    random_score = calculate_score(random_sequence, matrix)
-                    normalized_random_score = (random_score - min_score)/(max_score - min_score)
-                    random_scores.append(normalized_random_score)
+                    percentage_a = count_a / length_prom
+                    percentage_t = count_t / length_prom
+                    percentage_g = count_g / length_prom
+                    percentage_c = count_c / length_prom
+                    
+                    probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
+                    
+                    for _ in range(num_random_seqs):
+                        random_sequence = generate_random_sequence(motif_length, probabilities)
+                        random_score = calculate_score(random_sequence, matrix)
+                        normalized_random_score = (random_score - min_score)/(max_score - min_score)
+                        random_scores.append(normalized_random_score)
 
-                random_scores = np.array(random_scores)
+                    random_scores = np.array(random_scores)
 
                 for i in range(len(promoter_region) - seq_length + 1):
                     seq = promoter_region[i:i + seq_length]
@@ -152,9 +153,12 @@ def BSF_page():
                     normalized_score = (score - min_score)/(max_score - min_score)
                     position = int(i)
                     
-                    p_value = (random_scores >= normalized_score).sum() / num_random_seqs
+                    if calc_pvalue : 
+                        p_value = (random_scores >= normalized_score).sum() / num_random_seqs
 
-                    found_positions.append((position, seq, normalized_score, p_value))
+                        found_positions.append((position, seq, normalized_score, p_value))
+                    else :
+                        found_positions.append((position, seq, normalized_score))
                     
                 # Sort positions in descending order of score percentage
                 found_positions.sort(key=lambda x: x[1], reverse=True)
@@ -175,19 +179,32 @@ def BSF_page():
 
                         sequence_with_context = ''.join(sequence_parts)
                         tis_position = position - tis_value
-
+                        
                         if normalized_score >= threshold:
-                            row = [str(position).ljust(8),
-                                   str(tis_position).ljust(15),
-                                   sequence_with_context,
-                                   "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
-                                   shortened_promoter_name]
-                            table2.append(row)
+                            if calc_pvalue :
+                                row = [str(position).ljust(8),
+                                       str(tis_position).ljust(15),
+                                       sequence_with_context,
+                                       "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
+                                       shortened_promoter_name]
+                                table2.append(row)
+                            else: 
+                                row = [str(position).ljust(8),
+                                       str(tis_position).ljust(15),
+                                       sequence_with_context,
+                                       "{:.6f}".format(normalized_score).ljust(12),
+                                       shortened_promoter_name]
+                                table2.append(row)
 
         if len(table2) > 0:
-            table2.sort(key=lambda x: float(x[3]), reverse=True)
-            header = ["Position", "Relative position", "Sequence", "Score %", "p-value", "Promoter"]
-            table2.insert(0, header)
+            if calc_pvalue :
+                table2.sort(key=lambda x: float(x[3]), reverse=True)
+                header = ["Position", "Relative position", "Sequence", "Score %", "p-value", "Promoter"]
+                table2.insert(0, header)
+            else:
+                table2.sort(key=lambda x: float(x[3]), reverse=True)
+                header = ["Position", "Relative position", "Sequence", "Score %", "Promoter"]
+                table2.insert(0, header)
             
         else:
             no_consensus = "No consensus sequence found with the specified threshold."
@@ -411,10 +428,11 @@ def BSF_page():
 # TSS entry
     entry_tis = st.number_input("🔸 :red[**Step 1.4**] Relative position to TSS or Gene End (in bp):", -10000, 10000, 0, help="Distance of TSS or gene end from begin of sequences. Same distance is required for multiple sequences. Leave '0' if you don't know")
 
-# Threshold
+# Threshold p-value
     if jaspar:
             threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0.0, 1.0 ,0.95, step= 0.05)
-
+    calc_pvalue = st.checkbox("p-value (experimental, take more times)")
+    
 # Run Responsive Elements finder
     if result_promoter.startswith(("A", "T", "G", "C", ">")):
         with st.spinner("Finding responsive elements..."):
