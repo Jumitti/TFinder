@@ -446,7 +446,7 @@ def BSF_page():
 
 # Threshold p-value
     if jaspar:
-            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0.0, 1.0 ,0.95, step= 0.05)
+            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0.0, 1.0 ,0.85, step= 0.05)
             
     calc_pvalue = st.checkbox('p-value (experimental, take more times)')
     
