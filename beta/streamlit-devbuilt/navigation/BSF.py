@@ -329,6 +329,7 @@ def BSF_page():
         IUPAC_code = ['A','T','G','C','R','Y','M','K','W','S','B','D','H','V','N']
         
         if all(char in IUPAC_code for char in IUPAC):
+            isUIPAC = True
             # IUPAC code
             def generate_iupac_variants(sequence):
                 iupac_codes = {
