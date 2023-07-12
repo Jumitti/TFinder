@@ -508,23 +508,23 @@ def BSF_page():
                 color_scale = alt.Color("Promoter:N", scale=scale)
                 
                 if calc_pvalue:
-                        chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                            y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'p-value', 'Sequence', 'Promoter']
-                        ).properties(width=600, height=400)
-                                              
-                        st.altair_chart(chart, use_container_width=True)
-                    else:
-                        chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                            y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'Sequence', 'Promoter']
-                        ).properties(width=600, height=400)
-                                              
-                        st.altair_chart(chart, use_container_width=True)
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                        y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=color_scale,
+                        tooltip=['Relative position', 'Relative Score', 'p-value', 'Sequence', 'Promoter']
+                    ).properties(width=600, height=400)
+                                          
+                    st.altair_chart(chart, use_container_width=True)
+                else:
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                        y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=color_scale,
+                        tooltip=['Relative position', 'Relative Score', 'Sequence', 'Promoter']
+                    ).properties(width=600, height=400)
+                                          
+                    st.altair_chart(chart, use_container_width=True)
             else: 
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
@@ -551,23 +551,23 @@ def BSF_page():
                 color_scale = alt.Color("Promoter:N", scale=scale)
                 
                 if calc_pvalue:
-                        chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                            y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'p-value', 'Sequence', 'Promoter']
-                        ).properties(width=600, height=400)
-                                              
-                        st.altair_chart(chart, use_container_width=True)
-                    else:
-                        chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                            y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'Sequence', 'Promoter']
-                        ).properties(width=600, height=400)
-                                              
-                        st.altair_chart(chart, use_container_width=True)
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                        y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=color_scale,
+                        tooltip=['Relative position', 'Relative Score', 'p-value', 'Sequence', 'Promoter']
+                    ).properties(width=600, height=400)
+                                          
+                    st.altair_chart(chart, use_container_width=True)
+                else:
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                        y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=color_scale,
+                        tooltip=['Relative position', 'Relative Score', 'Sequence', 'Promoter']
+                    ).properties(width=600, height=400)
+                                          
+                    st.altair_chart(chart, use_container_width=True)
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
         else:
