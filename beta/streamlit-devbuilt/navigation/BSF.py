@@ -456,7 +456,7 @@ def BSF_page():
     if jaspar:
             threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.80, step= 0.05)
             
-    calc_pvalue = st.checkbox('p-value (experimental, take more times)')
+    calc_pvalue = st.checkbox('_p-value_ (Experimental, take more times)')
     
 # Run Responsive Elements finder
     if result_promoter.startswith(("A", "T", "G", "C", ">")):
