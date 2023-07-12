@@ -523,7 +523,6 @@ def BSF_page():
                 response_data = response.json()
                 TF_name = response_data['name']
                 st.error(f"No consensus sequence found with the specified threshold for {TF_name}")
-                st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
         else:
             st.text("")
     else:
