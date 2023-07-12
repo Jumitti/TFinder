@@ -215,11 +215,11 @@ def BSF_page():
         if len(table2) > 0:
             if calc_pvalue :
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Relative position", "Sequence", "Score %", "p-value", "Promoter"]
+                header = ["Position", "Relative position", "Sequence", "Relative Score", "p-value", "Promoter"]
                 table2.insert(0, header)
             else:
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Relative position", "Sequence", "Score %", "Promoter"]
+                header = ["Position", "Relative position", "Sequence", "Relative Score", "Promoter"]
                 table2.insert(0, header)
             
         else:
@@ -454,7 +454,7 @@ def BSF_page():
 
 # Threshold p-value
     if jaspar:
-            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0.0, 1.0 ,0.85, step= 0.05)
+            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.80, step= 0.05)
             
     calc_pvalue = st.checkbox('p-value (experimental, take more times)')
     
@@ -470,7 +470,7 @@ def BSF_page():
                     table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                 else:
                     if isUIPAC == 'False':
-                        st.error("Please use IUPAC DNA code")
+                        st.error("Please use IUPAC code for Responsive Elements")
                     else:
                         matrix_lines = matrix_text.split('\n')
                         matrix = {}
@@ -502,7 +502,7 @@ def BSF_page():
                 st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
 
                 source = df
-                score_range = source['Score %'].astype(float)
+                score_range = source['Relative Score'].astype(float)
                 ystart = score_range.min() - 0.05
                 ystop = score_range.max() + 0.05
                 scale = alt.Scale(scheme='category10')
@@ -510,9 +510,9 @@ def BSF_page():
                 
                 chart = alt.Chart(source).mark_circle().encode(
                     x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                    y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+                    y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                     color=color_scale,
-                    tooltip=['Relative position', 'Score %', 'Sequence', 'Promoter']
+                    tooltip=['Relative position', 'Relative Score', 'Sequence', 'Promoter']
                 ).properties(width=600, height=400)
                                       
                 st.altair_chart(chart, use_container_width=True)
@@ -536,7 +536,7 @@ def BSF_page():
                 st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
 
                 source = df
-                score_range = source['Score %'].astype(float)
+                score_range = source['Relative Score'].astype(float)
                 ystart = score_range.min() - 0.05
                 ystop = score_range.max() + 0.05
                 scale = alt.Scale(scheme='category10')
@@ -544,9 +544,9 @@ def BSF_page():
                 
                 chart = alt.Chart(source).mark_circle().encode(
                     x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                    y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
+                    y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                     color=color_scale,
-                    tooltip=['Relative position', 'Score %', 'Sequence', 'Promoter']
+                    tooltip=['Relative position', 'Relative Score', 'Sequence', 'Promoter']
                 ).properties(width=600, height=400)
                                       
                 st.altair_chart(chart, use_container_width=True)
