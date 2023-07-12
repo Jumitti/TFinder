@@ -715,6 +715,7 @@ def aio_page():
                     csv = df.to_csv(index=False).encode('utf-8')
 
                     st.download_button("Press to Download",csv,"file.csv","text/csv",key='download-csv')
+                    st.download_button("Press to Download2")
                     
                     st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
                     
