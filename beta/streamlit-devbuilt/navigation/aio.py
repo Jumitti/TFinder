@@ -738,7 +738,7 @@ def aio_page():
     else:
         if 'table2' in locals():
             if len(table2) > 0:
-                si.divider()
+                st.divider()
                 st.success(f"Finding responsive elements done")
                 outcol1, outcol2 = st.columns(2)
                 with outcol1:
