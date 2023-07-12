@@ -712,6 +712,21 @@ def aio_page():
                     st.session_state['df'] = df
                     st.dataframe(df)
                     st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+                    
+                    @st.experimental_memo
+                    def convert_df(df):
+                       return df.to_csv(index=False).encode('utf-8')
+
+                    csv = convert_df(df)
+
+                    st.download_button(
+                       "Press to Download",
+                       csv,
+                       "file.csv",
+                       "text/csv",
+                       key='download-csv'
+                    )
+                    
                 with outcol2:
                     source = df
                     score_range = source['Relative Score'].astype(float)
