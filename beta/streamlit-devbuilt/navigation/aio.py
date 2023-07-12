@@ -649,45 +649,32 @@ def aio_page():
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
             if len(table2) > 0:
-                # Disposition Output
-                st.divider()
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
                 response = requests.get(url)
                 response_data = response.json()
                 TF_name = response_data['name']
                 st.success(f"Finding responsive elements done for {TF_name}")
-                col1output, col2output = st.columns(2)
-                with col1output:
-                    df = pd.DataFrame(table2[1:], columns=table2[0])
-                    st.session_state['df'] = df
-                    st.dataframe(df)
-                    st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+                df = pd.DataFrame(table2[1:], columns=table2[0])
+                st.session_state['df'] = df
+                st.dataframe(df)
+                st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+
+                source = df
+                score_range = source['Relative Score'].astype(float)
+                ystart = score_range.min() - 0.05
+                ystop = score_range.max() + 0.05
+                scale = alt.Scale(scheme='category10')
+                color_scale = alt.Color("Promoter:N", scale=scale)
                 
-                with col2output:
-                    source = df
-                    score_range = source['Score %'].astype(float)
-                    ystart = score_range.min() - 0.05
-                    ystop = score_range.max() + 0.05
-                    scale = alt.Scale(scheme='category10')
-                    color_scale = alt.Color("Promoter:N", scale=scale)
-                    
-                    if prom_term == 'Promoter':
-                        chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-                            y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=color_scale,
-                            tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-                        ).properties(width=600, height=500)
-                    else:
-                        chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Position (Gene end):Q', axis=alt.Axis(title='Relative position to gene end (bp)'), sort='ascending'),
-                            y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=color_scale,
-                            tooltip=['Position (Gene end)', 'Score %', 'Sequence', 'Promoter']
-                        ).properties(width=600, height=500)
-                                          
-                    st.altair_chart(chart, use_container_width=True)
+                chart = alt.Chart(source).mark_circle().encode(
+                    x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                    y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                    color=color_scale,
+                    tooltip=['Relative position', 'Relative Score', 'Sequence', 'Promoter']
+                ).properties(width=600, height=400)
+                                      
+                st.altair_chart(chart, use_container_width=True)
             else: 
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
@@ -695,47 +682,29 @@ def aio_page():
                 response_data = response.json()
                 TF_name = response_data['name']
                 st.error(f"No consensus sequence found with the specified threshold for {TF_name}")
-                st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg")
-        else:
-            st.text("")
     else:
         if 'table2' in locals():
             if len(table2) > 0:
-                # Disposition Output
-                st.divider()
                 st.success(f"Finding responsive elements done")
-                col1output, col2output = st.columns(2)
-                with col1output:
-                    df = pd.DataFrame(table2[1:], columns=table2[0])
-                    st.session_state['df'] = df
-                    st.dataframe(df)
-                    st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+                df = pd.DataFrame(table2[1:], columns=table2[0])
+                st.session_state['df'] = df
+                st.dataframe(df)
+                st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+
+                source = df
+                score_range = source['Relative Score'].astype(float)
+                ystart = score_range.min() - 0.05
+                ystop = score_range.max() + 0.05
+                scale = alt.Scale(scheme='category10')
+                color_scale = alt.Color("Promoter:N", scale=scale)
                 
-                with col2output:
-                    source = df
-                    score_range = source['Score %'].astype(float)
-                    ystart = score_range.min() - 0.05
-                    ystop = score_range.max() + 0.05
-                    scale = alt.Scale(scheme='category10')
-                    color_scale = alt.Color("Promoter:N", scale=scale)
-                    
-                    if prom_term == 'Promoter':
-                        chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Position (TSS):Q', axis=alt.Axis(title='Relative position to TSS (bp)'), sort='ascending'),
-                            y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=color_scale,
-                            tooltip=['Position (TSS)', 'Score %', 'Sequence', 'Promoter']
-                        ).properties(width=600, height=500)
-                    else:
-                        chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Position (Gene end):Q', axis=alt.Axis(title='Relative position to gene end (bp)'), sort='ascending'),
-                            y=alt.Y('Score %:Q', axis=alt.Axis(title='Score %'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=color_scale,
-                            tooltip=['Position (Gene end)', 'Score %', 'Sequence', 'Promoter']
-                        ).properties(width=600, height=500)
-                                          
-                    st.altair_chart(chart, use_container_width=True)
+                chart = alt.Chart(source).mark_circle().encode(
+                    x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                    y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                    color=color_scale,
+                    tooltip=['Relative position', 'Relative Score', 'Sequence', 'Promoter']
+                ).properties(width=600, height=400)
+                                      
+                st.altair_chart(chart, use_container_width=True)
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
-        else:
-            st.text("")
