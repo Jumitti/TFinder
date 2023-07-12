@@ -326,7 +326,7 @@ def BSF_page():
         
         IUPAC_code = ['A','T','G','C']
         
-        index = IUPAC.find('A','T','G','C')
+        index = IUPAC.find(IUPAC_code)
         
         if index != 1:
             st.success("good")
