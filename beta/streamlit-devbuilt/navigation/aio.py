@@ -447,7 +447,7 @@ def aio_page():
                 fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", help='Put FASTA sequences. Same sequence length required ⚠️')
                 isUIPAC = True
                 def calculate_pwm(sequences):
-                    num_sequences = len(sequences)
+                    num_sequences = len(sequences) 
                     sequence_length = len(sequences[0])
                     pwm = np.zeros((4, sequence_length))
                     for i in range(sequence_length):
