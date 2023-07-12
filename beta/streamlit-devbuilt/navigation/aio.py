@@ -711,7 +711,7 @@ def aio_page():
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
                     st.dataframe(df)
-                    st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+                    
                     
                     @st.experimental_memo
                     def convert_df(df):
@@ -726,6 +726,8 @@ def aio_page():
                        "text/csv",
                        key='download-csv'
                     )
+                    
+                    st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
                     
                 with outcol2:
                     source = df
