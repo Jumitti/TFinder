@@ -711,13 +711,8 @@ def aio_page():
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
                     st.dataframe(df)
-                    
-                    
-                    @st.experimental_memo
-                    def convert_df(df):
-                       return df.to_csv(index=False).encode('utf-8')
 
-                    csv = convert_df(df)
+                    csv = df.to_csv(index=False).encode('utf-8')
 
                     st.download_button("Press to Download",csv,"file.csv","text/csv",key='download-csv')
                     
