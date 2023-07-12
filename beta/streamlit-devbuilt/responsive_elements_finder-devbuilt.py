@@ -130,6 +130,7 @@ st.sidebar.write(f"Average rating: {average_rating:.2f} ⭐ ({num_ratings} votes
 
 st.sidebar.title("Help")
 with st.sidebar.expander("Video tutorials"):
+    st.write('coming soon')
     
 with st.sidebar.expander("Promoter & Terminator Extractor"):
     st.subheader("Gene ID:")
