@@ -444,6 +444,7 @@ def BSF_page():
                     st.pyplot(logo.fig)
         else:
             st.error("Please use IUPAC DNA code")
+            break
         
 
 # TSS entry
