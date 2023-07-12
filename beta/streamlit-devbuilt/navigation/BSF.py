@@ -124,7 +124,7 @@ def BSF_page():
                      
                     random_scores = []
                     motif_length = seq_length
-                    num_random_seqs = 100000
+                    num_random_seqs = 500000
                     
                     count_a = promoter_region.count('A')
                     count_t = promoter_region.count('T')
