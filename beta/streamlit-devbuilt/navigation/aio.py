@@ -714,10 +714,7 @@ def aio_page():
 
                     csv = df.to_csv(index=False).encode('utf-8')
 
-                    st.download_button("Press to Download",csv,"file.csv","text/csv",key='download-csv')
-                    st.error("Press to Download2")
-                    
-                    st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+                    st.download_button("💾 Download (.csv)",csv,"file.csv","text/csv",key='download-csv')
                     
                 with outcol2:
                     source = df
@@ -763,7 +760,11 @@ def aio_page():
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
                     st.dataframe(df)
-                    st.info("⬆ Copy: select one cell, CTRL+A, CTRL+C, CTRL+V into spreadsheet software.")
+                    
+                    csv = df.to_csv(index=False).encode('utf-8')
+
+                    st.download_button("💾 Download (.csv)",csv,"file.csv","text/csv",key='download-csv')
+                    
                 with outcol2:
                     source = df
                     score_range = source['Relative Score'].astype(float)
