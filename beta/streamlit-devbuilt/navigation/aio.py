@@ -678,7 +678,7 @@ def aio_page():
                         matrices = matrix_extraction(sequence_consensus_input)
                         table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     else:
-                        if isUIPAC == 'False':
+                        if isUIPAC == False:
                             st.error("Please use IUPAC code for Responsive Elements")
                         else:
                             matrix_lines = matrix_text.split('\n')
