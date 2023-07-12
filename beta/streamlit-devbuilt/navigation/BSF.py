@@ -324,6 +324,11 @@ def BSF_page():
     else:
         IUPAC = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized):", value="ATGCN")
         
+        if IUPAC.find("A","T","G","C"):
+            st.succes("good")
+        else:
+            st.error("bad")
+        
         # IUPAC code
         def generate_iupac_variants(sequence):
             iupac_codes = {
