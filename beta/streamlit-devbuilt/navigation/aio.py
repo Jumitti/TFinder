@@ -285,84 +285,144 @@ def aio_page():
         global table2
         table2 = []
         
+        # Promoter input type
+        lines = result_promoter
+        promoters = []
+
+        first_line = lines
+        if first_line.startswith(("A", "T", "C", "G")):
+            shortened_promoter_name = "n.d."
+            promoter_region = lines
+            promoters.append((shortened_promoter_name, promoter_region))
+        else:
+            lines = result_promoter.split("\n")
+            i = 0
+            while i < len(lines):
+                line = lines[i]
+                if line.startswith(">"):
+                    promoter_name = line[1:]
+                    shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
+                    promoter_region = lines[i + 1]
+                    promoters.append((shortened_promoter_name, promoter_region))
+                    i += 2
+                else:
+                    i += 1
+        
         for matrix_name, matrix in matrices.items():
             seq_length = len(matrix['A'])
 
             # Max score per matrix
             max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-
-            # Promoter input type
-            lines = result_promoter
-            promoters = []
-
-            first_line = lines
-            if first_line.startswith(("A", "T", "C", "G")):
-                shortened_promoter_name = "n.d."
-                promoter_region = lines
-                promoters.append((shortened_promoter_name, promoter_region))
-            else:
-                lines = result_promoter.split("\n")
-                i = 0
-                while i < len(lines):
-                    line = lines[i]
-                    if line.startswith(">"):
-                        promoter_name = line[1:]
-                        shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
-                        promoter_region = lines[i + 1]
-                        promoters.append((shortened_promoter_name, promoter_region))
-                        i += 2
-                    else:
-                        i += 1
+            min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
 
             # REF
             for shortened_promoter_name, promoter_region in promoters:
                 found_positions = []
-                total_promoter = len(promoters)
+                length_prom = len(promoter_region)
+
+                if calc_pvalue :
+                    def generate_random_sequence(length, probabilities):
+                        nucleotides = ['A', 'C', 'G', 'T']
+                        sequence = random.choices(nucleotides, probabilities, k=length)
+                        return ''.join(sequence)
+                     
+                    random_scores = []
+                    motif_length = seq_length
+                    num_random_seqs = 100000
+                    
+                    count_a = promoter_region.count('A')
+                    count_t = promoter_region.count('T')
+                    count_g = promoter_region.count('G')
+                    count_c = promoter_region.count('C')
+
+                    percentage_a = count_a / length_prom
+                    percentage_t = count_t / length_prom
+                    percentage_g = count_g / length_prom
+                    percentage_c = count_c / length_prom
+                    
+                    probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
+                    
+                    for _ in range(num_random_seqs):
+                        random_sequence = generate_random_sequence(motif_length, probabilities)
+                        random_score = calculate_score(random_sequence, matrix)
+                        normalized_random_score = (random_score - min_score)/(max_score - min_score)
+                        random_scores.append(normalized_random_score)
+
+                    random_scores = np.array(random_scores)
 
                 for i in range(len(promoter_region) - seq_length + 1):
                     seq = promoter_region[i:i + seq_length]
                     score = calculate_score(seq, matrix)
-                    normalized_score = (score / max_score)
+                    normalized_score = (score - min_score)/(max_score - min_score)
                     position = int(i)
+                    
+                    if calc_pvalue : 
+                        p_value = (random_scores >= normalized_score).sum() / num_random_seqs
 
-                    found_positions.append((position, seq, normalized_score))
-
+                        found_positions.append((position, seq, normalized_score, p_value))
+                    else :
+                        found_positions.append((position, seq, normalized_score))
+                    
                 # Sort positions in descending order of score percentage
                 found_positions.sort(key=lambda x: x[1], reverse=True)
 
                 # Creating a results table
                 if len(found_positions) > 0:
-                    for position, seq, normalized_score in found_positions:
-                        start_position = max(0, position - 3)
-                        end_position = min(len(promoter_region), position + len(seq) + 3)
-                        sequence_with_context = promoter_region[start_position:end_position]
+                    if calc_pvalue :
+                        for position, seq, normalized_score, p_value in found_positions:
+                            start_position = max(0, position - 3)
+                            end_position = min(len(promoter_region), position + len(seq) + 3)
+                            sequence_with_context = promoter_region[start_position:end_position]
 
-                        sequence_parts = []
-                        for j in range(start_position, end_position):
-                            if j < position or j >= position + len(seq):
-                                sequence_parts.append(sequence_with_context[j - start_position].lower())
-                            else:
-                                sequence_parts.append(sequence_with_context[j - start_position].upper())
+                            sequence_parts = []
+                            for j in range(start_position, end_position):
+                                if j < position or j >= position + len(seq):
+                                    sequence_parts.append(sequence_with_context[j - start_position].lower())
+                                else:
+                                    sequence_parts.append(sequence_with_context[j - start_position].upper())
 
-                        sequence_with_context = ''.join(sequence_parts)
-                        tis_position = position - tis_value
+                            sequence_with_context = ''.join(sequence_parts)
+                            tis_position = position - tis_value
+                            
+                            if normalized_score >= threshold:
+                                row = [str(position).ljust(8),
+                                       str(tis_position).ljust(15),
+                                       sequence_with_context,
+                                       "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
+                                       shortened_promoter_name]
+                                table2.append(row)
+                    else:
+                        for position, seq, normalized_score in found_positions:
+                            start_position = max(0, position - 3)
+                            end_position = min(len(promoter_region), position + len(seq) + 3)
+                            sequence_with_context = promoter_region[start_position:end_position]
 
-                        if normalized_score >= threshold:
-                            row = [str(position).ljust(8),
-                                   str(tis_position).ljust(15),
-                                   sequence_with_context,
-                                   "{:.3f}".format(normalized_score).ljust(12),
-                                   shortened_promoter_name]
-                            table2.append(row)
+                            sequence_parts = []
+                            for j in range(start_position, end_position):
+                                if j < position or j >= position + len(seq):
+                                    sequence_parts.append(sequence_with_context[j - start_position].lower())
+                                else:
+                                    sequence_parts.append(sequence_with_context[j - start_position].upper())
+
+                            sequence_with_context = ''.join(sequence_parts)
+                            tis_position = position - tis_value
+                            
+                            if normalized_score >= threshold:
+                                row = [str(position).ljust(8),
+                                       str(tis_position).ljust(15),
+                                       sequence_with_context,
+                                       "{:.6f}".format(normalized_score).ljust(12),
+                                       shortened_promoter_name]
+                                table2.append(row)
 
         if len(table2) > 0:
-            if prom_term == 'Promoter':
+            if calc_pvalue :
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Position (TSS)", "Sequence", "Score %", "Promoter"]
+                header = ["Position", "Relative position", "Sequence", "Relative Score", "p-value", "Promoter"]
                 table2.insert(0, header)
             else:
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Position (Gene end)", "Sequence", "Score %", "Promoter"]
+                header = ["Position", "Relative position", "Sequence", "Relative Score", "Promoter"]
                 table2.insert(0, header)
             
         else:
@@ -381,9 +441,11 @@ def aio_page():
         elif jaspar == 'Matrix':
             matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'))
             if matrix_type == 'With PWM':
+                isUIPAC = True
                 matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]", help="Only PWM generated with our tools are allowed")
             else:
                 fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", help='Put FASTA sequences. Same sequence length required ⚠️')
+                isUIPAC = True
                 def calculate_pwm(sequences):
                     num_sequences = len(sequences)
                     sequence_length = len(sequences[0])
@@ -437,154 +499,160 @@ def aio_page():
                             base_str += "]\n"
                             pwm_text += base_str
 
-                        matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Don't modify.", key="non_editable_text")
+                        matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Dont't modify.", key="non_editable_text")
 
                     else:
                         st.warning("You forget FASTA sequences :)")
-                        
-                def create_web_logo(sequences):
-                    matrix = logomaker.alignment_to_matrix(sequences)
-                    logo = logomaker.Logo(matrix)
+                    
+                    def create_web_logo(sequences):
+                        matrix = logomaker.alignment_to_matrix(sequences)
+                        logo = logomaker.Logo(matrix, color_scheme = 'classic')
 
-                    return logo
+                        return logo
 
-                sequences_text = fasta_text
-                sequences = []
-                current_sequence = ""
-                for line in sequences_text.splitlines():
-                    line = line.strip()
-                    if line.startswith(">"):
-                        if current_sequence:
-                            sequences.append(current_sequence)
-                        current_sequence = ""
-                    else:
-                        current_sequence += line
+                    sequences_text = fasta_text
+                    sequences = []
+                    current_sequence = ""
+                    for line in sequences_text.splitlines():
+                        line = line.strip()
+                        if line.startswith(">"):
+                            if current_sequence:
+                                sequences.append(current_sequence)
+                            current_sequence = ""
+                        else:
+                            current_sequence += line
 
-                if current_sequence:
-                    sequences.append(current_sequence)
+                    if current_sequence:
+                        sequences.append(current_sequence)
 
-                if sequences:
-                    logo = create_web_logo(sequences)
-                    st.pyplot(logo.fig)
+                    if sequences:
+                        logo = create_web_logo(sequences)
+                        st.pyplot(logo.fig)
               
         else:
             IUPAC = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized):", value="ATGCN")
             
-            # IUPAC code
-            def generate_iupac_variants(sequence):
-                iupac_codes = {
-                    "R": ["A", "G"],
-                    "Y": ["C", "T"],
-                    "M": ["A", "C"],
-                    "K": ["G", "T"],
-                    "W": ["A", "T"],
-                    "S": ["C", "G"],
-                    "B": ["C", "G", "T"],
-                    "D": ["A", "G", "T"],
-                    "H": ["A", "C", "T"],
-                    "V": ["A", "C", "G"],
-                    "N": ["A", "C", "G", "T"]
-                }
+            IUPAC_code = ['A','T','G','C','R','Y','M','K','W','S','B','D','H','V','N']
+            
+            if all(char in IUPAC_code for char in IUPAC):
+                isUIPAC = True
+                # IUPAC code
+                def generate_iupac_variants(sequence):
+                    iupac_codes = {
+                        "R": ["A", "G"],
+                        "Y": ["C", "T"],
+                        "M": ["A", "C"],
+                        "K": ["G", "T"],
+                        "W": ["A", "T"],
+                        "S": ["C", "G"],
+                        "B": ["C", "G", "T"],
+                        "D": ["A", "G", "T"],
+                        "H": ["A", "C", "T"],
+                        "V": ["A", "C", "G"],
+                        "N": ["A", "C", "G", "T"]
+                    }
 
-                sequences = [sequence]
-                for i, base in enumerate(sequence):
-                    if base.upper() in iupac_codes:
-                        new_sequences = []
-                        for seq in sequences:
-                            for alternative in iupac_codes[base.upper()]:
-                                new_sequence = seq[:i] + alternative + seq[i + 1:]
-                                new_sequences.append(new_sequence)
-                        sequences = new_sequences
+                    sequences = [sequence]
+                    for i, base in enumerate(sequence):
+                        if base.upper() in iupac_codes:
+                            new_sequences = []
+                            for seq in sequences:
+                                for alternative in iupac_codes[base.upper()]:
+                                    new_sequence = seq[:i] + alternative + seq[i + 1:]
+                                    new_sequences.append(new_sequence)
+                            sequences = new_sequences
 
-                return sequences
-               
-            sequences = generate_iupac_variants(IUPAC)
-            fasta_text = ""
-            for i, seq in enumerate(sequences):
-                fasta_text += f">seq{i + 1}\n{seq}\n"
-                
-            def calculate_pwm(sequences):
-                num_sequences = len(sequences)
-                sequence_length = len(sequences[0])
-                pwm = np.zeros((4, sequence_length))
-                for i in range(sequence_length):
-                    counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
-                    for sequence in sequences:
-                        nucleotide = sequence[i]
-                        if nucleotide in counts:
-                            counts[nucleotide] += 1
-                    pwm[0, i] = counts['A'] / num_sequences
-                    pwm[1, i] = counts['T'] / num_sequences
-                    pwm[2, i] = counts['G'] / num_sequences
-                    pwm[3, i] = counts['C'] / num_sequences
+                    return sequences
+                   
+                sequences = generate_iupac_variants(IUPAC)
+                fasta_text = ""
+                for i, seq in enumerate(sequences):
+                    fasta_text += f">seq{i + 1}\n{seq}\n"
+                    
+                def calculate_pwm(sequences):
+                    num_sequences = len(sequences)
+                    sequence_length = len(sequences[0])
+                    pwm = np.zeros((4, sequence_length))
+                    for i in range(sequence_length):
+                        counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
+                        for sequence in sequences:
+                            nucleotide = sequence[i]
+                            if nucleotide in counts:
+                                counts[nucleotide] += 1
+                        pwm[0, i] = counts['A'] / num_sequences
+                        pwm[1, i] = counts['T'] / num_sequences
+                        pwm[2, i] = counts['G'] / num_sequences
+                        pwm[3, i] = counts['C'] / num_sequences
 
-                return pwm
+                    return pwm
 
-            def parse_fasta(fasta_text):
-                sequences = []
-                current_sequence = ""
+                def parse_fasta(fasta_text):
+                    sequences = []
+                    current_sequence = ""
 
-                for line in fasta_text.splitlines():
-                    if line.startswith(">"):
-                        if current_sequence:
-                            sequences.append(current_sequence)
-                        current_sequence = ""
+                    for line in fasta_text.splitlines():
+                        if line.startswith(">"):
+                            if current_sequence:
+                                sequences.append(current_sequence)
+                            current_sequence = ""
+                        else:
+                            current_sequence += line
+
+                    if current_sequence:
+                        sequences.append(current_sequence)
+
+                    return sequences
+                    
+                if fasta_text:
+                    sequences = parse_fasta(fasta_text)
+                    sequences = [seq.upper() for seq in sequences]
+
+                    if len(sequences) > 0:
+                        pwm = calculate_pwm(sequences)
+                        bases = ['A', 'T', 'G', 'C']
+                        pwm_text = ""
+                        for i in range(len(pwm)):
+                            base_name = bases[i]
+                            base_values = pwm[i]
+
+                            base_str = base_name + " ["
+                            for value in base_values:
+                                base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+
+                            base_str += "]\n"
+                            pwm_text += base_str
+
+                        matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Dont't modify.", key="non_editable_text")
+
                     else:
-                        current_sequence += line
+                        st.warning("You forget FASTA sequences :)")
+                    
+                    def create_web_logo(sequences):
+                        matrix = logomaker.alignment_to_matrix(sequences)
+                        logo = logomaker.Logo(matrix, color_scheme = 'classic')
 
-                if current_sequence:
-                    sequences.append(current_sequence)
+                        return logo
 
-                return sequences
-                
-            if fasta_text:
-                sequences = parse_fasta(fasta_text)
-                sequences = [seq.upper() for seq in sequences]
+                    sequences_text = fasta_text
+                    sequences = []
+                    current_sequence = ""
+                    for line in sequences_text.splitlines():
+                        line = line.strip()
+                        if line.startswith(">"):
+                            if current_sequence:
+                                sequences.append(current_sequence)
+                            current_sequence = ""
+                        else:
+                            current_sequence += line
 
-                if len(sequences) > 0:
-                    pwm = calculate_pwm(sequences)
-                    bases = ['A', 'T', 'G', 'C']
-                    pwm_text = ""
-                    for i in range(len(pwm)):
-                        base_name = bases[i]
-                        base_values = pwm[i]
+                    if current_sequence:
+                        sequences.append(current_sequence)
 
-                        base_str = base_name + " ["
-                        for value in base_values:
-                            base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
-
-                        base_str += "]\n"
-                        pwm_text += base_str
-
-                    matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Dont't modify.", key="non_editable_text")
-
-                else:
-                    st.warning("You forget FASTA sequences :)")
-                
-                def create_web_logo(sequences):
-                    matrix = logomaker.alignment_to_matrix(sequences)
-                    logo = logomaker.Logo(matrix, color_scheme = 'classic')
-
-                    return logo
-
-                sequences_text = fasta_text
-                sequences = []
-                current_sequence = ""
-                for line in sequences_text.splitlines():
-                    line = line.strip()
-                    if line.startswith(">"):
-                        if current_sequence:
-                            sequences.append(current_sequence)
-                        current_sequence = ""
-                    else:
-                        current_sequence += line
-
-                if current_sequence:
-                    sequences.append(current_sequence)
-
-                if sequences:
-                    logo = create_web_logo(sequences)
-                    st.pyplot(logo.fig)
+                    if sequences:
+                        logo = create_web_logo(sequences)
+                        st.pyplot(logo.fig)
+            else:
+                isUIPAC = False
 
     # TSS entry
         if prom_term == 'Promoter':
@@ -592,9 +660,11 @@ def aio_page():
         else:
             entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
 
-    # Threshold
+    # Threshold pvalue
         if jaspar:
-            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Score threshold (%)", 0.0, 1.0 ,0.95, step= 0.05) 
+            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05)
+        
+        calc_pvalue = st.checkbox('_p-value_ (Experimental, take more times)')
 
     # Run Responsive Elements finder
         if result_promoter.startswith(("A", "T", "G", "C", ">")):
@@ -607,29 +677,8 @@ def aio_page():
                         matrices = matrix_extraction(sequence_consensus_input)
                         table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     else:
-                        matrix_lines = matrix_text.split('\n')
-                        matrix = {}
-                        for line in matrix_lines:
-                            line = line.strip()
-                            if line:
-                                key, values = line.split('[', 1)
-                                values = values.replace(']', '').split()
-                                values = [float(value) for value in values]
-                                matrix[key.strip()] = values
-                        matrices = transform_matrix(matrix)
-                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
-                except Exception as e:
-                    st.error(f"Error finding responsive elements: {str(e)}")
-        else:
-            if st.button("🔎 :orange[**Step 2.6**] Find responsive elements"):
-                with st.spinner("Finding responsive elements..."):
-                    tis_value = int(entry_tis)
-                    threshold = float(threshold_entry)
-                    try:
-                        if jaspar == 'JASPAR_ID':
-                            sequence_consensus_input = entry_sequence
-                            matrices = matrix_extraction(sequence_consensus_input)
-                            table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                        if isUIPAC == 'False':
+                            st.error("Please use IUPAC code for Responsive Elements")
                         else:
                             matrix_lines = matrix_text.split('\n')
                             matrix = {}
@@ -642,8 +691,8 @@ def aio_page():
                                     matrix[key.strip()] = values
                             matrices = transform_matrix(matrix)
                             table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
-                    except Exception as e:
-                        st.error(f"Error finding responsive elements: {str(e)}")
+                except Exception as e:
+                    st.error(f"Error finding responsive elements: {str(e)}")
     
     # RE output
     if jaspar == 'JASPAR_ID':
