@@ -157,7 +157,7 @@ with st.sidebar.expander("Binding Sites Finder"):
     st.write('Note: If you use Step 1 , it will be defined automatically.')
     st.subheader("Relative Score Threshold:")
     st.write('Eliminates responsive element with Relative Score < threshold')
-    st.write('Relative Score = (TFBS-min)/(max-min) where TFBS is the score of the element found, min is the minimum score obtainable with the PWM and max is the maximum score obtainable with the PWM')
+    st.write('Relative Score = (TFBS-min)/(max-min) where TFBS is the score of the element found, min is the minimum score obtainable with the PWM and max is the maximum score obtainable with the PWM.')
     st.subheader('_p-value_')
     st.write('The p-value calculation takes time so it is optional. it represents the probability that a random generated sequence of the lenght of the PWM with the nucleotide proportions of the sequence has a score greater than or equal to the element found.')
 
