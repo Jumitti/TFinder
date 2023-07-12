@@ -326,7 +326,7 @@ def BSF_page():
         
         IUPAC_code = ['A','T','G','C']
         
-        if IUPAC in IUPAC_code:
+        if all(char in IUPAC_code for char in IUPAC):
             st.success("good")
         else:
             st.error("bad")
