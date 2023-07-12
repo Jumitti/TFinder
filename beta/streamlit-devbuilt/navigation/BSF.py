@@ -443,8 +443,7 @@ def BSF_page():
                     logo = create_web_logo(sequences)
                     st.pyplot(logo.fig)
         else:
-            st.error("Please use IUPAC DNA code")
-            break
+            non_IUPAC = st.error("Please use IUPAC DNA code")
         
 
 # TSS entry
@@ -467,17 +466,20 @@ def BSF_page():
                     matrices = matrix_extraction(sequence_consensus_input)
                     table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                 else:
-                    matrix_lines = matrix_text.split('\n')
-                    matrix = {}
-                    for line in matrix_lines:
-                        line = line.strip()
-                        if line:
-                            key, values = line.split('[', 1)
-                            values = values.replace(']', '').split()
-                            values = [float(value) for value in values]
-                            matrix[key.strip()] = values
-                    matrices = transform_matrix(matrix)
-                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
+                    if non_IUPAC:
+                        non_IUPAC = st.error("Please use IUPAC DNA code")
+                    else:
+                        matrix_lines = matrix_text.split('\n')
+                        matrix = {}
+                        for line in matrix_lines:
+                            line = line.strip()
+                            if line:
+                                key, values = line.split('[', 1)
+                                values = values.replace(']', '').split()
+                                values = [float(value) for value in values]
+                                matrix[key.strip()] = values
+                        matrices = transform_matrix(matrix)
+                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
     else:
