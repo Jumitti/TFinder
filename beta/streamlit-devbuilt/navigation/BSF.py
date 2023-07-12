@@ -325,7 +325,7 @@ def BSF_page():
         IUPAC = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized):", value="ATGCN")
         
         if IUPAC.find("A","T","G","C"):
-            st.succes("good")
+            st.success("good")
         else:
             st.error("bad")
         
