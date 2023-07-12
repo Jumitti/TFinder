@@ -462,28 +462,29 @@ def BSF_page():
         with st.spinner("Finding responsive elements..."):
             tis_value = int(entry_tis)
             threshold = float(threshold_entry)
-            # try:
-            if jaspar == 'JASPAR_ID':
-                sequence_consensus_input = entry_sequence
-                matrices = matrix_extraction(sequence_consensus_input)
-                table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-            else:
-                if isUIPAC == 'False':
-                    st.error("Please use IUPAC code for Responsive Elements")
+            try:
+                if jaspar == 'JASPAR_ID':
+                    sequence_consensus_input = entry_sequence
+                    matrices = matrix_extraction(sequence_consensus_input)
+                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                 else:
-                    matrix_lines = matrix_text.split('\n')
-                    matrix = {}
-                    for line in matrix_lines:
-                        line = line.strip()
-                        if line:
-                            key, values = line.split('[', 1)
-                            values = values.replace(']', '').split()
-                            values = [float(value) for value in values]
-                            matrix[key.strip()] = values
-                    matrices = transform_matrix(matrix)
-                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
-            # except Exception as e:
-                # st.error(f"Error finding responsive elements: {str(e)}")
+                    if isUIPAC == 'False':
+                        st.error("Please use IUPAC code for Responsive Elements")
+                    else:
+                        matrix_lines = matrix_text.split('\n')
+                        matrix = {}
+                        for line in matrix_lines:
+                            line = line.strip()
+                            if line:
+                                key, values = line.split('[', 1)
+                                values = values.replace(']', '').split()
+                                values = [float(value) for value in values]
+                                matrix[key.strip()] = values
+                        matrices = transform_matrix(matrix)
+                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
+            except Exception as e:
+                st.error(f"Error finding responsive elements: {str(e)}")
+
     # RE output
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
