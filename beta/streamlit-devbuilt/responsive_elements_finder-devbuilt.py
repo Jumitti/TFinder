@@ -130,12 +130,6 @@ st.sidebar.write(f"Average rating: {average_rating:.2f} ⭐ ({num_ratings} votes
 
 st.sidebar.title("Help")
 with st.sidebar.expander("Video tutorials"):
-    st.write("How to extract promoter and find responsive elements")
-    st.video('https://www.youtube.com/watch?v=lknbKbZCXuo')
-    st.write("How to use FASTA sequences and find responsive elements")
-    st.video('https://www.youtube.com/watch?v=QelVLLuNJqs')
-    st.write("How to use JASPAR option")
-    st.video('https://www.youtube.com/watch?v=DH8PBVqa860')
     
 with st.sidebar.expander("Promoter & Terminator Extractor"):
     st.subheader("Gene ID:")
@@ -144,8 +138,8 @@ with st.sidebar.expander("Promoter & Terminator Extractor"):
     st.subheader("Species:")
     st.write("Human, mouse, rat, drosophila and zebrafish are allowed.")
     st.write("If you use several ENTREZ_GENE_ID/gene names, make sure you select the correct species.")
-    st.subheader("Upstream/Downstream:")
-    st.write("Distance to Transcription Start Site (TSS) in bp.")
+    st.subheader("Promoter/Terminator and Upstream/Downstream")
+    st.write("Distance to Transcription Start Site (TSS) or gene end in bp.")
     st.image("https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/whatisagene.png")
     st.subheader("Promoter & Terminator:")
     st.write('Use "Find promoter/extractor" button or paste your sequences. FASTA format allowed and required for multiple sequences.')
@@ -153,17 +147,18 @@ with st.sidebar.expander("Promoter & Terminator Extractor"):
     
 with st.sidebar.expander("Binding Sites Finder"):
     st.subheader("Responsive element:")
-    st.write("To use the JASPAR option, check the box and use the JASPAR_ID of your transcription factor.")
-    st.write('If you want to use your responsive element, do not check the JASPAR option.')
-    st.write('IUPAC allowed')
+    st.write('IUPAC code is authorized for manual sequences')
+    st.write('You can generate a PWM with several sequences in FASTA format (same lenght required) or use a PWM already generated with our tools')
+    st.write("For JASPAR option, use the JASPAR_ID of your transcription factor.")
     st.image("https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/IUPAC.png")
-    st.subheader("Transcription Start Site (TSS):")
-    st.write('Distance to Transcription Start Site (TSS) in bp')
+    st.subheader("Transcription Start Site (TSS) or gene end:")
+    st.write('Distance to Transcription Start Site (TSS) or gene end in bp')
     st.write('Note: If you use Step 1 , it will be defined automatically.')
-    st.subheader("Threshold:")
-    st.write('Eliminates responsive element with homology < threshold or score < threshold')
-    st.write('Note for JASPAR option: Score is normalized to the maximum PWM score of the requested transcription factor. The result is displayed as a percentage')
-    st.write('Note without JASPAR option: Homology is calculated between the responsive element in the promoter and the responsive element requested. The calculation uses the Hamming distance, counts the number of differences and gives a percentage score homology.')
+    st.subheader("Relative Score Threshold:")
+    st.write('Eliminates responsive element with Relative Score < threshold')
+    st.write('Relative Score = (TFBS-min)/(max-min) where TFBS is the score of the element found, min is the minimum score obtainable with the PWM and max is the maximum score obtainable with the PWM')
+    st.subheader('_p-value_')
+    st.write('The p-value calculation takes time so it is optional. it represents the probability that a random generated sequence of the lenght of the PWM with the nucleotide proportions of the sequence has a score greater than or equal to the element found.')
 
 url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term=nos2[Gene%20Name]+AND+human[Organism]&retmode=json&rettype=xml'
 url1 = 'https://jaspar.genereg.net/api/v1/matrix/'
