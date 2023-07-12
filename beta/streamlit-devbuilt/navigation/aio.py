@@ -175,7 +175,7 @@ def aio_page():
         st.info("💡 If you have a FASTA sequence, go to :orange[**Step 2**]")
 
     # Gene ID
-        gene_id_entry = st.text_area("🔸 :orange[**Step 1.1**] Gene ID:", value="PRKN\n5071")
+        gene_id_entry = st.text_area("🔸 :orange[**Step 1.1**] Gene ID:", value="PRKN\n351")
 
     # Species
         species_combobox = st.selectbox("🔸 :orange[**Step 1.2**] Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
