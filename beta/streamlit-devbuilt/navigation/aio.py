@@ -735,6 +735,7 @@ def aio_page():
                 response_data = response.json()
                 TF_name = response_data['name']
                 st.error(f"No consensus sequence found with the specified threshold for {TF_name}")
+                
     else:
         if 'table2' in locals():
             if len(table2) > 0:
