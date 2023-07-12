@@ -235,9 +235,11 @@ def BSF_page():
     elif jaspar == 'Matrix':
         matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'))
         if matrix_type == 'With PWM':
+            isUIPAC = True
             matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]", help="Only PWM generated with our tools are allowed")
         else:
             fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", help='Put FASTA sequences. Same sequence length required ⚠️')
+            isUIPAC = True
             def calculate_pwm(sequences):
                 num_sequences = len(sequences)
                 sequence_length = len(sequences[0])
@@ -443,7 +445,7 @@ def BSF_page():
                     logo = create_web_logo(sequences)
                     st.pyplot(logo.fig)
         else:
-            non_IUPAC = st.error("Please use IUPAC DNA code")
+            isUIPAC = False
         
 
 # TSS entry
@@ -466,8 +468,8 @@ def BSF_page():
                     matrices = matrix_extraction(sequence_consensus_input)
                     table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                 else:
-                    if non_IUPAC:
-                        non_IUPAC = st.error("Please use IUPAC DNA code")
+                    if isUIPAC = 'False':
+                        st.error("Please use IUPAC DNA code")
                     else:
                         matrix_lines = matrix_text.split('\n')
                         matrix = {}
