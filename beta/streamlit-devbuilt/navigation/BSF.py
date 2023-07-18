@@ -115,6 +115,7 @@ def BSF_page():
                         return ''.join(sequence)
                      
                     random_scores = []
+                    random_sequence = []
                     motif_length = seq_length
                     num_random_seqs = 500000
                     
@@ -132,11 +133,6 @@ def BSF_page():
                     
                     for _ in range(num_random_seqs):
                         random_sequence = generate_random_sequence(motif_length, probabilities)
-                        random_score = calculate_score(random_sequence, matrix)
-                        normalized_random_score = (random_score - min_score)/(max_score - min_score)
-                        random_scores.append(normalized_random_score)
-
-                    random_scores = np.array(random_scores)
         
         for matrix_name, matrix in matrices.items():
             seq_length = len(matrix['A'])
