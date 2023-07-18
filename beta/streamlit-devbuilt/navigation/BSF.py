@@ -169,7 +169,7 @@ def BSF_page():
                         normalized_random_score = (random_score - min_score) / (max_score - min_score)
                         matrix_random_scores.append(normalized_random_score)
 
-                    random_scores[matrix_name] = matrix_random_scores
+                    random_scores = np.array(matrix_random_scores)
 
                 for i in range(len(promoter_region) - seq_length + 1):
                     seq = promoter_region[i:i + seq_length]
