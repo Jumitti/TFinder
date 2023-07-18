@@ -133,8 +133,6 @@ def BSF_page():
                     
                     for _ in range(num_random_seqs):
                         random_sequence = generate_random_sequence(motif_length, probabilities)
-                    
-                    random_sequence = np.array(random_sequence)
         
         for matrix_name, matrix in matrices.items():
             seq_length = len(matrix['A'])
