@@ -146,12 +146,13 @@ def BSF_page():
             # REF
             for shortened_promoter_name, promoter_region in promoters:
                 found_positions = []
-           
-                random_score = calculate_score(random_sequence, matrix)
-                normalized_random_score = (random_score - min_score)/(max_score - min_score)
-                random_scores.append(normalized_random_score)
+                
+                if calc_pvalue :
+                    random_score = calculate_score(random_sequence, matrix)
+                    normalized_random_score = (random_score - min_score)/(max_score - min_score)
+                    random_scores.append(normalized_random_score)
 
-                random_scores = np.array(random_scores)
+                    random_scores = np.array(random_scores)
 
                 for i in range(len(promoter_region) - seq_length + 1):
                     seq = promoter_region[i:i + seq_length]
