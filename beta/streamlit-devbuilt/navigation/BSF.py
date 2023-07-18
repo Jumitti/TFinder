@@ -103,19 +103,26 @@ def BSF_page():
                     i += 2
                 else:
                     i += 1
-                               
-        if calc_pvalue :
-            for matrix in matrices:
-                seq_length = len(matrix['A'])
-                for promoter_region in promoters:
-                    length_prom = len(promoter_region)
+        
+        for matrix_name, matrix in matrices.items():
+            seq_length = len(matrix['A'])
+
+            # Max score per matrix
+            max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+            min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+
+            # REF
+            for shortened_promoter_name, promoter_region in promoters:
+                found_positions = []
+                length_prom = len(promoter_region)
+
+                if calc_pvalue :
                     def generate_random_sequence(length, probabilities):
                         nucleotides = ['A', 'C', 'G', 'T']
                         sequence = random.choices(nucleotides, probabilities, k=length)
                         return ''.join(sequence)
                      
                     random_scores = []
-                    random_sequence = []
                     motif_length = seq_length
                     num_random_seqs = 500000
                     
@@ -133,24 +140,9 @@ def BSF_page():
                     
                     for _ in range(num_random_seqs):
                         random_sequence = generate_random_sequence(motif_length, probabilities)
-                    
-                    random_sequence = np.array(random_sequence)
-        
-        for matrix_name, matrix in matrices.items():
-            seq_length = len(matrix['A'])
-
-            # Max score per matrix
-            max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-            min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-
-            # REF
-            for shortened_promoter_name, promoter_region in promoters:
-                found_positions = []
-                
-                if calc_pvalue :
-                    random_score = calculate_score(random_sequence, matrix)
-                    normalized_random_score = (random_score - min_score)/(max_score - min_score)
-                    random_scores.append(normalized_random_score)
+                        random_score = calculate_score(random_sequence, matrix)
+                        normalized_random_score = (random_score - min_score)/(max_score - min_score)
+                        random_scores.append(normalized_random_score)
 
                     random_scores = np.array(random_scores)
 
