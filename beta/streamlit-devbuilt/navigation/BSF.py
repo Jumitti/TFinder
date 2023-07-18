@@ -155,14 +155,6 @@ def BSF_page():
 
                 if calc_pvalue :
                     
-                    # for _ in range(num_random_seqs):
-                        # random_sequence = generate_random_sequence(motif_length, probabilities)
-                        # random_score = calculate_score(random_sequences, matrix)
-                        # normalized_random_score = (random_score - min_score)/(max_score - min_score)
-                        # random_scores.append(normalized_random_score)
-
-                    # random_scores = np.array(random_scores)
-                    
                     matrix_random_scores = []
                     for random_sequence in random_sequences:
                         random_score = calculate_score(random_sequence, matrix)

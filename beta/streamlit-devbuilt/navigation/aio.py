@@ -309,6 +309,43 @@ def aio_page():
                 else:
                     i += 1
         
+        if calc_pvalue:
+            for matrix_name, matrix in matrices.items():
+                seq_length = len(matrix['A'])
+            
+            for shortened_promoter_name, promoter_region in promoters:
+                length_prom = len(promoter_region)
+                        
+                def generate_random_sequence(length, probabilities):
+                    nucleotides = ['A', 'C', 'G', 'T']
+                    sequence = random.choices(nucleotides, probabilities, k=length)
+                    return ''.join(sequence)
+
+                # Génération des séquences aléatoires une seule fois
+                motif_length = seq_length  # Remplacer par la longueur de votre motif
+                num_random_seqs = 500000
+
+                count_a = promoter_region.count('A')
+                count_t = promoter_region.count('T')
+                count_g = promoter_region.count('G')
+                count_c = promoter_region.count('C')
+
+                length_prom = len(promoter_region)
+                percentage_a = count_a / length_prom
+                percentage_t = count_t / length_prom
+                percentage_g = count_g / length_prom
+                percentage_c = count_c / length_prom
+
+                probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
+
+                random_sequences = []
+                for _ in range(num_random_seqs):
+                    random_sequence = generate_random_sequence(motif_length, probabilities)
+                    random_sequences.append(random_sequence)
+
+                # Calcul des scores aléatoires à partir des différentes matrices
+                random_scores = {}
+        
         for matrix_name, matrix in matrices.items():
             seq_length = len(matrix['A'])
 
@@ -322,34 +359,14 @@ def aio_page():
                 length_prom = len(promoter_region)
 
                 if calc_pvalue :
-                    def generate_random_sequence(length, probabilities):
-                        nucleotides = ['A', 'C', 'G', 'T']
-                        sequence = random.choices(nucleotides, probabilities, k=length)
-                        return ''.join(sequence)
-                     
-                    random_scores = []
-                    motif_length = seq_length
-                    num_random_seqs = 500000
                     
-                    count_a = promoter_region.count('A')
-                    count_t = promoter_region.count('T')
-                    count_g = promoter_region.count('G')
-                    count_c = promoter_region.count('C')
-
-                    percentage_a = count_a / length_prom
-                    percentage_t = count_t / length_prom
-                    percentage_g = count_g / length_prom
-                    percentage_c = count_c / length_prom
-                    
-                    probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
-                    
-                    for _ in range(num_random_seqs):
-                        random_sequence = generate_random_sequence(motif_length, probabilities)
+                    matrix_random_scores = []
+                    for random_sequence in random_sequences:
                         random_score = calculate_score(random_sequence, matrix)
-                        normalized_random_score = (random_score - min_score)/(max_score - min_score)
-                        random_scores.append(normalized_random_score)
+                        normalized_random_score = (random_score - min_score) / (max_score - min_score)
+                        matrix_random_scores.append(normalized_random_score)
 
-                    random_scores = np.array(random_scores)
+                    random_scores = np.array(matrix_random_scores)
 
                 for i in range(len(promoter_region) - seq_length + 1):
                     seq = promoter_region[i:i + seq_length]
