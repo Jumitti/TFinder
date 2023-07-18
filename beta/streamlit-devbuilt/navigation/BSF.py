@@ -515,10 +515,6 @@ def BSF_page():
                 df = pd.DataFrame(table2[1:], columns=table2[0])
                 st.session_state['df'] = df
                 st.dataframe(df)
-                
-                df = pd.DataFrame(table2[1:], columns=table2[0])
-                st.session_state['df'] = df
-                st.dataframe(df)
 
                 csv = df.to_csv(index=False).encode('utf-8')
 
@@ -562,10 +558,6 @@ def BSF_page():
         if 'table2' in locals():
             if len(table2) > 0:
                 st.success(f"Finding responsive elements done")
-                df = pd.DataFrame(table2[1:], columns=table2[0])
-                st.session_state['df'] = df
-                st.dataframe(df)
-                
                 df = pd.DataFrame(table2[1:], columns=table2[0])
                 st.session_state['df'] = df
                 st.dataframe(df)
