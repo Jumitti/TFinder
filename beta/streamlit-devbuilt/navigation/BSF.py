@@ -103,40 +103,40 @@ def BSF_page():
                     i += 2
                 else:
                     i += 1
+                               
+        if calc_pvalue :
+            for matrix in matrices.items():
+                seq_length = len(matrix['A'])
+                for promoter_region in promoters:
+                    length_prom = len(promoter_region)
+                    def generate_random_sequence(length, probabilities):
+                        nucleotides = ['A', 'C', 'G', 'T']
+                        sequence = random.choices(nucleotides, probabilities, k=length)
+                        return ''.join(sequence)
+                     
+                    random_scores = []
+                    motif_length = seq_length
+                    num_random_seqs = 500000
                     
-        for promoter_region in promoters:
-            length_prom = len(promoter_region)
-            seq_length = len(matrix['A'])
-            
-            if calc_pvalue :
-                def generate_random_sequence(length, probabilities):
-                    nucleotides = ['A', 'C', 'G', 'T']
-                    sequence = random.choices(nucleotides, probabilities, k=length)
-                    return ''.join(sequence)
-                 
-                random_scores = []
-                motif_length = seq_length
-                num_random_seqs = 500000
-                
-                count_a = promoter_region.count('A')
-                count_t = promoter_region.count('T')
-                count_g = promoter_region.count('G')
-                count_c = promoter_region.count('C')
+                    count_a = promoter_region.count('A')
+                    count_t = promoter_region.count('T')
+                    count_g = promoter_region.count('G')
+                    count_c = promoter_region.count('C')
 
-                percentage_a = count_a / length_prom
-                percentage_t = count_t / length_prom
-                percentage_g = count_g / length_prom
-                percentage_c = count_c / length_prom
-                
-                probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
-                
-                for _ in range(num_random_seqs):
-                    random_sequence = generate_random_sequence(motif_length, probabilities)
-                    random_score = calculate_score(random_sequence, matrix)
-                    normalized_random_score = (random_score - min_score)/(max_score - min_score)
-                    random_scores.append(normalized_random_score)
+                    percentage_a = count_a / length_prom
+                    percentage_t = count_t / length_prom
+                    percentage_g = count_g / length_prom
+                    percentage_c = count_c / length_prom
+                    
+                    probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
+                    
+                    for _ in range(num_random_seqs):
+                        random_sequence = generate_random_sequence(motif_length, probabilities)
+                        random_score = calculate_score(random_sequence, matrix)
+                        normalized_random_score = (random_score - min_score)/(max_score - min_score)
+                        random_scores.append(normalized_random_score)
 
-                random_scores = np.array(random_scores)
+                    random_scores = np.array(random_scores)
         
         for matrix_name, matrix in matrices.items():
             seq_length = len(matrix['A'])
