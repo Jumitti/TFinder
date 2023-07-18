@@ -103,8 +103,10 @@ def BSF_page():
                     i += 2
                 else:
                     i += 1
+                    
         for promoter_region in promoters:
             length_prom = len(promoter_region)
+            seq_length = len(matrix['A'])
             
             if calc_pvalue :
                 def generate_random_sequence(length, probabilities):
