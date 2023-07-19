@@ -29,4 +29,4 @@ def resource_page():
         st.image('https://raw.githubusercontent.com/Jumitti/TFinder/main/img/NCBI%20API.png')
     with col2:
         st.write('To retrieve a promoter or terminal region of a gene, we first need the name of the gene. We usually use the NCBI database to retrieve these regions, so we decided to use the NCBI API to extract them. TFinder accepts gene names and Gene IDs (Step 1.1 and photo).')
-    st.subheader('Transcription Factors Binding Site')
+    st.header('Transcription Factors Binding Site')
