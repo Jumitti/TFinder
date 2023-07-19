@@ -148,16 +148,15 @@ def prom_extractor_page():
                 chrstart = gene_info['genomicinfo'][0]['chrstart']
                 chrstop = gene_info['genomicinfo'][0]['chrstop']
                 species_API = gene_info['organism']['scientificname']
-                st.success(species_API)
 
-                dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
+                dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream, species_API)
 
                 # Append the result to the result_promoter
                 if prom_term == 'Promoter':
-                    result_promoter.append(f">{gene_name} | {species} | {chraccver} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
+                    result_promoter.append(f">{gene_name} | {species_API} | {chraccver} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
                     st.session_state['result_promoter'] = result_promoter
                 else:
-                    result_promoter.append(f">{gene_name} | {species} | {chraccver} | Gene end (on chromosome): {chrstop}\n{dna_sequence}\n")
+                    result_promoter.append(f">{gene_name} | {species_API} | {chraccver} | Gene end (on chromosome): {chrstop}\n{dna_sequence}\n")
                     st.session_state['result_promoter'] = result_promoter
 
             return result_promoter
