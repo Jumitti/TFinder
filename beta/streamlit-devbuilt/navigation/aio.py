@@ -180,7 +180,7 @@ def aio_page():
         gene_id_entry = st.text_area("🔸 :orange[**Step 1.1**] Gene ID:", value="PRKN\n351")
 
     # Species
-        species_combobox = st.selectbox("🔸 :orange[**Step 1.2**] Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
+        species_combobox = st.selectbox("🔸 :orange[**Step 1.2**] Select species of gene names:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
 
     # Upstream/Downstream Promoter
         prom_term = st.radio(

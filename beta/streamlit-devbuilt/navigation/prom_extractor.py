@@ -171,7 +171,7 @@ def prom_extractor_page():
     gene_id_entry = st.text_area("🔸 :red[**Step 1.1**] Gene ID:", value="PRKN\n5071")
 
     # Species
-    species_combobox = st.selectbox("🔸 :red[**Step 1.2**] Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
+    species_combobox = st.selectbox("🔸 :red[**Step 1.2**] Select species of gene names:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
 
     # Upstream/Downstream Promoter
     prom_term = st.radio(
