@@ -147,7 +147,7 @@ def prom_extractor_page():
                 chraccver = gene_info['genomicinfo'][0]['chraccver']
                 chrstart = gene_info['genomicinfo'][0]['chrstart']
                 chrstop = gene_info['genomicinfo'][0]['chrstop']
-                species_API = gene_info['organism'][0]['scientificname']
+                species_API = gene_info['organism']['scientificname']
                 st.success(species_API)
 
                 dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
