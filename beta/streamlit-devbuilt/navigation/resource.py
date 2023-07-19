@@ -35,12 +35,12 @@ def resource_page():
     col3, col4 = st.columns(2)
     with col3:
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/NCBI%20gene%20ID.png?raw=true')
-        st.caption('')
+        st.caption('Picture 2: NCBI gene name (upper red rectangle) and Gene ID (lower red rectangle)')
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/GeneBank.png?raw=true')
-        st.caption('')
+        st.caption('Picture 3: GeneBank of a gene')
     with col4:
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/whatisagene.png?raw=true')
-        st.caption('')
+        st.caption('Picture 2: What is a gene ?')
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/coordinates.png?raw=true')
-        st.caption('')
+        st.caption('Picture 4: Chromosic coordinates on a genetic map from NCBI')
     st.header('Transcription Factors Binding Site')
