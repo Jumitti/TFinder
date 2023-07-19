@@ -152,7 +152,7 @@ def aio_page():
                 chrstop = gene_info['genomicinfo'][0]['chrstop']
                 species_API = gene_info['organism']['scientificname']
 
-                dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream, species_API)
+                dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
 
                 # Append the result to the result_promoter
                 if prom_term == 'Promoter':
