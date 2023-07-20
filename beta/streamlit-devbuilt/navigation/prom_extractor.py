@@ -280,8 +280,6 @@ def prom_extractor_page():
             disabled=["widgets"],
             hide_index=True,
         )
-        
-        st.dataframe(data_df)
 
         # Sélection du gène à afficher
         selected_gene = st.selectbox("Sélectionnez un gène :", gene_list)
