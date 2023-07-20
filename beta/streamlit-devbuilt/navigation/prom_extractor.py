@@ -280,12 +280,8 @@ def prom_extractor_page():
             disabled=["widgets"],
             hide_index=True,
         )
-
-        # Sélection du gène à afficher
-        selected_gene = st.selectbox("Sélectionnez un gène :", gene_list)
-
-        # Filtrer les données pour le gène sélectionné
-        selected_gene_data = data_df[data_df["Gene"] == selected_gene]
-
-        # Afficher les résultats pour le gène sélectionné
-        st.write("Résultats pour le gène sélectionné :", selected_gene_data)
+        
+        updown_slide = st.slider("🔸 :red[**Step 1.4**] Upstream/downstream from TSS/gene end (bp)", -10000, 10000, (-2000, 2000), step=100)
+        st.write("Upstream: ", min(updown_slide), " bp from TSS/gene end | Downstream: ", max(updown_slide), " bp from TSS/gene end")
+        upstream_entry = -min(updown_slide)
+        downstream_entry = max(updown_slide)
