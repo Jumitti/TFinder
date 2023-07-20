@@ -218,7 +218,6 @@ def prom_extractor_page():
                         st.error(f"Error finding terminators: {str(e)}")
 
     with tab2:
-    @st.cache_ressource
         gene_list = gene_id_entry.strip().split('\n')
         
         data_df = pd.DataFrame(
