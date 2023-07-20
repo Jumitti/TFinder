@@ -26,6 +26,9 @@ import math
 import pickle
 import time
 
+from st_aggrid import AgGrid, GridUpdateMode
+from st_aggrid.grid_options_builder import GridOptionsBuilder
+
 def prom_extractor_page():
     # Reverse complement
     def reverse_complement(sequence):
@@ -230,28 +233,19 @@ def prom_extractor_page():
                 result_promoter_text = "\n".join(st.session_state['result_promoter'])
                 result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
     with tab2:
-        gene_list = gene_id_entry.strip().split('\n')
-        
-        gene_table = [[gene] for gene in gene_list]
+        data = {
+            'country': ['Japan', 'China', 'Thailand', 'France', 'Belgium', 'South Korea'],
+            'capital': ['Tokyo', 'Beijing', 'Bangkok', 'Paris', 'Brussels', 'Seoul']
+        }
 
-        # Créer un tableau avec les noms de gènes et les cases à cocher pour le promoteur et le terminator
-        adgen, adhum, admou, adrat, addro, adzer, adprom, adterm = st.columns([1, 1, 1, 1, 1, 1, 1, 1])
-        adgen.markdown('##### Gene')
-        adhum.markdown('##### Human')
-        admou.markdown('##### Mouse')
-        adrat.markdown('##### Rat')
-        addro.markdown('##### Drosophila')
-        adzer.markdown('##### Zebrafish')
-        adprom.markdown('##### Promoter')
-        adterm.markdown('##### Terminator')
-        
-        bbox = {}
-        for gene in gene_list:
-            bbox = gene.write(gene),
-                adhum.checkbox(label="", key=f"Human_{gene}"),
-                admou.checkbox(label="", key=f"Mouse_{gene}"),
-                adrat.checkbox(label="", key=f"Rat_{gene}"),
-                addro.checkbox(label="", key=f"Drosophila_{gene}"),
-                adzer.checkbox(label="", key=f"Zebrafish_{gene}"),
-                adprom.checkbox(label="", key=f"Promoter_{gene}"),
-                adterm.checkbox(label="", key=f"Terminator_{gene}")
+        df = pd.DataFrame(data)
+        gd = GridOptionsBuilder.from_dataframe(df)
+        gd.configure_selection(selection_mode='multiple', use_checkbox=True)
+        gridoptions = gd.build()
+
+        grid_table = AgGrid(df, height=250, gridOptions=gridoptions,
+                            update_mode=GridUpdateMode.SELECTION_CHANGED)
+
+        st.write('## Selected')
+        selected_row = grid_table["selected_rows"]
+        st.dataframe(selected_row)
