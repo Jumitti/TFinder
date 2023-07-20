@@ -47,7 +47,7 @@ def resource_page():
     st.header('Transcription Factors Binding Site')
     
     def embed_pdf(pdf_url):
-        embed_code = f'<embed src="{pdf_url}" width="800" height="600" type="application/pdf">'
+        pdf_display = F'<iframe src="data:application/pdf;base64,{pdf_url}" width="700" height="1000" type="application/pdf"></iframe>'
         return embed_code
 
     # URL du fichier PDF que vous souhaitez afficher
