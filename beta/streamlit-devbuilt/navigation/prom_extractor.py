@@ -232,7 +232,7 @@ def prom_extractor_page():
     with tab2:
         gene_list = gene_id_entry.strip().split('\n')
         
-        ds2 = ['gene', 'human', 'mouse', 'rat', 'drosophila', 'zebrafish', 'promoter', 'terminator']]
+        ds2 = ['gene', 'human', 'mouse', 'rat', 'drosophila', 'zebrafish', 'promoter', 'terminator']
         
         adgen, adhum, admou, adrat, addro, adzer, adprom, adterm = st.columns([1, 1, 1, 1, 1, 1, 1, 1])
         adgen.markdown('##### Gene')
