@@ -26,8 +26,7 @@ import math
 import pickle
 import time
 
-from st_aggrid import AgGrid, GridUpdateMode
-from st_aggrid.grid_options_builder import GridOptionsBuilder
+import streamlit.components.v1 as components
 
 def prom_extractor_page():
     # Reverse complement
@@ -233,18 +232,19 @@ def prom_extractor_page():
                 result_promoter_text = "\n".join(st.session_state['result_promoter'])
                 result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
     with tab2:
+        gene_list = gene_id_entry.strip().split('\n')
+        
         data = {
-            'country': ['Japan', 'China', 'Thailand', 'France', 'Belgium', 'South Korea'],
-            'capital': ['Tokyo', 'Beijing', 'Bangkok', 'Paris', 'Brussels', 'Seoul']
+            'Gene': gene_list,
+            'Human': [False] * len(gene_list),
+            'Mouse': [False] * len(gene_list),
+            'Rat': [False] * len(gene_list),
+            'Drosophila': [False] * len(gene_list),
+            'Zebrafish': [False] * len(gene_list),
+            'Promoter': [False] * len(gene_list),
+            'Terminator': [False] * len(gene_list)
         }
-
         df = pd.DataFrame(data)
-        gd = GridOptionsBuilder.from_dataframe(df)
-        gd.configure_selection(selection_mode='multiple', use_checkbox=True)
-        gridoptions = gd.build()
 
-        grid_table = AgGrid(df, height=250, gridOptions=gridoptions,update_mode=GridUpdateMode.SELECTION_CHANGED)
-
-        st.write('## Selected')
-        selected_row = grid_table["selected_rows"]
-        st.dataframe(selected_row)
+        # Utiliser le module ag-Grid pour afficher le tableau interactif
+        components.html(df.to_html(escape=False, classes='ag-theme-alpine'), height=500)
