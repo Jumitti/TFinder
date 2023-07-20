@@ -236,12 +236,12 @@ def prom_extractor_page():
             {
                 "Gene": gene_list,
                 "human": [False] * len(gene_list),
-                "mouse": [True] + [False] * (len(gene_list) - 1),
-                "rat": [True] + [False] * (len(gene_list) - 1),
-                "droso": [True] + [False] * (len(gene_list) - 1),
-                "zebra": [True] + [False] * (len(gene_list) - 1),
-                "prom": [True] + [False] * (len(gene_list) - 1),
-                "term": [True] + [False] * (len(gene_list) - 1),
+                "mouse": [False] * len(gene_list),
+                "rat": [False] * len(gene_list),
+                "droso": [False] * len(gene_list),
+                "zebra": [False] * len(gene_list),
+                "prom": [False] * len(gene_list),
+                "term": [False] * len(gene_list),
             }
         )
 
@@ -299,6 +299,30 @@ def prom_extractor_page():
                 st.write(gene_name)
                 st.write('ok')
             if mouse_checked == True and prom_checked == True:
+                st.write(gene_name)
+                st.write('ok mouse')
+            if rat_checked == True and prom_checked == True:
+                st.write(gene_name)
+                st.write('ok rat')
+            if droso_checked == True and prom_checked == True:
+                st.write(gene_name)
+                st.write('ok dr')
+            if zebra_checked == True and prom_checked == True:
+                st.write(gene_name)
+                st.write('ok ze')
+            if human_checked == True and term_checked == True:
+                st.write(gene_name)
+                st.write('ok')
+            if mouse_checked == True and term_checked == True:
+                st.write(gene_name)
+                st.write('ok mouse')
+            if rat_checked == True and term_checked == True:
+                st.write(gene_name)
+                st.write('ok mouse')
+            if droso_checked == True and term_checked == True:
+                st.write(gene_name)
+                st.write('ok mouse')
+            if zebra_checked == True and term_checked == True:
                 st.write(gene_name)
                 st.write('ok mouse')
             else:
