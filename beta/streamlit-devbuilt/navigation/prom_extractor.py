@@ -234,7 +234,7 @@ def prom_extractor_page():
         
         data_df = pd.DataFrame(
             {
-                "widgets": [st.selectbox("", gene_list, key=f"gene_{gene}") for gene in gene_list],
+                "widgets": gene_list,
                 "favorite": [True, False, False, True],
             }
         )
