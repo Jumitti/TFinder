@@ -135,6 +135,7 @@ def prom_extractor_page():
 
     # Promoter Finder
     def find_promoters(gene_ids, species, upstream, downstream):
+        st.write(prom_term)
         try:
             
             for gene_id in gene_ids:
@@ -285,7 +286,7 @@ def prom_extractor_page():
                 term_checked = gene_info["term"]
             
                 if human_checked == True and prom_checked == True:
-                    # prom_term = 'Promoter'
+                    prom_term = 'Promoter'
                     gene_ids = gene_name.strip().split('\n')
                     upstream = int(upstream_entry)
                     downstream = int(downstream_entry)
