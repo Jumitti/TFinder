@@ -230,4 +230,15 @@ def prom_extractor_page():
                 result_promoter_text = "\n".join(st.session_state['result_promoter'])
                 result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
     with tab2:
-        st.success('ok')
+        gene_id_entry = gene_names.strip().split('\n')
+
+        # Créer un DataFrame pour le tableau
+        data = {
+            "Nom du gène": gene_list,
+            "Promoter": [False] * len(gene_list),
+            "Terminator": [False] * len(gene_list)
+        }
+        df = pd.DataFrame(data)
+
+        # Affichage du tableau avec les cases à cocher
+        st.write(df)
