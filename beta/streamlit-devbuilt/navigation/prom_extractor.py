@@ -231,22 +231,12 @@ def prom_extractor_page():
                 result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
     with tab2:
         gene_list = gene_id_entry.strip().split('\n')
+        # Créer un tableau interactif avec des cases à cocher pour chaque gène
+        table_data = []
+        for gene in gene_list:
+            promoter = st.checkbox(label="Promoter", key=f"Promoter_{gene}")
+            terminator = st.checkbox(label="Terminator", key=f"Terminator_{gene}")
+            table_data.append([gene, promoter, terminator])
 
-        # Créer un DataFrame pour le tableau
-        data = {
-            "Nom du gène": gene_list,
-            "Promoter": [False] * len(gene_list),
-            "Terminator": [False] * len(gene_list)
-        }
-        df = pd.DataFrame(data)
-
-        # Affichage du tableau avec les cases à cocher
-        st.dataframe(df)
-
-        # Mettre à jour les cases à cocher en fonction de l'entrée de l'utilisateur
-        for index, row in df.iterrows():
-            df.at[index, "Promoter"] = st.checkbox("", value=row["Promoter"])
-            df.at[index, "Terminator"] = st.checkbox("", value=row["Terminator"])
-
-        st.write("Tableau mis à jour :")
-        st.dataframe(df)
+        # Affichage du tableau interactif
+        st.table(table_data)
