@@ -230,11 +230,11 @@ def prom_extractor_page():
                 result_promoter_text = "\n".join(st.session_state['result_promoter'])
                 result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
     with tab2:
-        gene_table = []
         gene_list = gene_id_entry.strip().split('\n')
         
-        gene_table.append(gene_list)
-        
+        gene_table = [[gene] for gene in gene_list]
+
+        # Créer un tableau avec les noms de gènes et les cases à cocher pour le promoteur et le terminator
         adgen, adhum, admou, adrat, addro, adzer, adprom, adterm = st.columns([1, 1, 1, 1, 1, 1, 1, 1])
         adgen.markdown('##### Gene')
         adhum.markdown('##### Human')
@@ -244,14 +244,19 @@ def prom_extractor_page():
         adzer.markdown('##### Zebrafish')
         adprom.markdown('##### Promoter')
         adterm.markdown('##### Terminator')
-        
-        bbox = {}
-        bbox[gene_list] = adgen.write(gene_table)  
-        adhum.checkbox('')  
-        admou.checkbox('')
-        adrat.checkbox('')
-        addro.checkbox('')
-        adzer.checkbox('')
-        adprom.checkbox('')
-        adterm.checkbox('')
+
+        for gene in gene_list:
+            gene_table.append([
+                gene,
+                adhum.checkbox(label="", key=f"Human_{gene}"),
+                admou.checkbox(label="", key=f"Mouse_{gene}"),
+                adrat.checkbox(label="", key=f"Rat_{gene}"),
+                addro.checkbox(label="", key=f"Drosophila_{gene}"),
+                adzer.checkbox(label="", key=f"Zebrafish_{gene}"),
+                adprom.checkbox(label="", key=f"Promoter_{gene}"),
+                adterm.checkbox(label="", key=f"Terminator_{gene}")
+            ])
+
+        # Affichage du tableau interactif
+        st.table(gene_table)
             
