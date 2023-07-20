@@ -136,7 +136,7 @@ def prom_extractor_page():
     # Promoter Finder
     def find_promoters(gene_ids, species, upstream, downstream):
         try:
-            
+            result_promoter = []
             for gene_id in gene_ids:
                 if gene_id.isdigit():
                     entrez_id = gene_id
@@ -170,9 +170,6 @@ def prom_extractor_page():
 
     # Gene ID
     gene_id_entry = st.text_area("🔸 :red[**Step 1.1**] Gene ID:", value="PRKN\n5071")
-    
-    
-    result_promoter = []
     
     tab1, tab2 = st.tabs(['Default','Advance'])
     with tab1:
