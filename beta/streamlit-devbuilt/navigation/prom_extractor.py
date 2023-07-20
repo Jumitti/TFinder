@@ -243,8 +243,7 @@ def prom_extractor_page():
         gd.configure_selection(selection_mode='multiple', use_checkbox=True)
         gridoptions = gd.build()
 
-        grid_table = AgGrid(df, height=250, gridOptions=gridoptions,
-                            update_mode=GridUpdateMode.SELECTION_CHANGED)
+        grid_table = AgGrid(df, height=250, gridOptions=gridoptions,update_mode=GridUpdateMode.SELECTION_CHANGED)
 
         st.write('## Selected')
         selected_row = grid_table["selected_rows"]
