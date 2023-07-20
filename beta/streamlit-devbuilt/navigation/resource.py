@@ -55,3 +55,4 @@ def resource_page():
 
     # Afficher le PDF en utilisant la fonction embed_pdf()
     st.markdown(embed_pdf(pdf_url), unsafe_allow_html=True)
+    st.success('hello')
