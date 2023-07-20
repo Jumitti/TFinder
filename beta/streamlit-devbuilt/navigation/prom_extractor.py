@@ -28,6 +28,8 @@ import time
 
 import streamlit.components.v1 as components
 
+from streamlit_aggrid import st_aggrid
+
 def prom_extractor_page():
     # Reverse complement
     def reverse_complement(sequence):
