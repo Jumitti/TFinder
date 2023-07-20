@@ -287,4 +287,16 @@ def prom_extractor_page():
         downstream_entry = max(updown_slide)
         
         if st.button("Extraire les séquences"):
-            
+            for i, gene_info in data_df.iterrows():
+                gene_name = gene_info["Gene"]
+                human_checked = gene_info["human"]
+                mouse_checked = gene_info["mouse"]
+                rat_checked = gene_info["rat"]
+                droso_checked = gene_info["droso"]
+                zebra_checked = gene_info["zebra"]
+                prom_checked = gene_info["prom"]
+                term_checked = gene_info["term"]
+
+                st.write(f"Informations pour le gène {gene_name}:")
+                st.write(f"Human: {human_checked}, Mouse: {mouse_checked}, Rat: {rat_checked}, Drosophila: {droso_checked}, Zebrafish: {zebra_checked}, Promoter: {prom_checked}, Terminator: {term_checked}")
+                        
