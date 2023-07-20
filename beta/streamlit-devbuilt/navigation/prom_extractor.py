@@ -136,7 +136,7 @@ def prom_extractor_page():
     # Promoter Finder
     def find_promoters(gene_ids, species, upstream, downstream):
         try:
-            result_promoter = []
+            
             for gene_id in gene_ids:
                 if gene_id.isdigit():
                     entrez_id = gene_id
@@ -327,6 +327,7 @@ def prom_extractor_page():
         
         
     # Promoter output state
+    result_promoter = []
     if prom_term == 'Promoter':
         if 'result_promoter' not in st.session_state:
             result_promoter = st.text_area("🔸 :red[**Step 1.6**] Promoter:", value="")
