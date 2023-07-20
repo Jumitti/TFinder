@@ -47,8 +47,8 @@ def resource_page():
     st.header('Transcription Factors Binding Site')
     
     def embed_pdf(pdf_url):
-    embed_code = f'<embed src="{pdf_url}" width="800" height="600" type="application/pdf">'
-    return embed_code
+        embed_code = f'<embed src="{pdf_url}" width="800" height="600" type="application/pdf">'
+        return embed_code
 
     # URL du fichier PDF que vous souhaitez afficher
     pdf_url = "https://github.com/Jumitti/TFinder/blob/main/old%20versions/v4.1/Promoter_finder_HELP.pdf"
