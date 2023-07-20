@@ -136,7 +136,7 @@ def prom_extractor_page():
     # Promoter Finder
     def find_promoters(gene_ids, species, upstream, downstream):
         try:
-            result_promoter = []
+            
             for gene_id in gene_ids:
                 if gene_id.isdigit():
                     entrez_id = gene_id
@@ -167,6 +167,9 @@ def prom_extractor_page():
 
     # Promoter Finder
     st.subheader('🧬 Promoter and Terminator Extractor')
+    
+    @st.cache_ressource
+    result_promoter = []
 
     # Gene ID
     gene_id_entry = st.text_area("🔸 :red[**Step 1.1**] Gene ID:", value="PRKN\n5071")
@@ -273,7 +276,6 @@ def prom_extractor_page():
         upstream_entry = -min(updown_slide)
         downstream_entry = max(updown_slide)
         
-        @st.cache_data
         if st.button("test"):
             for i, gene_info in data_dff.iterrows():
                 gene_name = gene_info["Gene"]
