@@ -301,7 +301,7 @@ def prom_extractor_page():
                 downstream = int(downstream_entry)
 
                 if selected_species:
-                    st.write(f"Séquences pour le gène {gene_name}:")
+                    st.write(f"Séquences pour le gène {gene_ids}:")
                     for species in selected_species:
                         st.write(species)
                         
