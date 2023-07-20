@@ -45,7 +45,6 @@ def aio_page():
 
             # Request for ENTREZ_GENE_ID
             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml"
-            st.success(url)
             response = requests.get(url)
 
             if response.status_code == 200:
