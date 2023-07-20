@@ -47,7 +47,7 @@ def resource_page():
     st.header('Transcription Factors Binding Site')
     
     def embed_pdf(pdf_url):
-        with open(pdf_url, "rb") as f:
+        with urllib.request.urlopen(pdf_url) as f:
             base64_pdf = base64.b64encode(f.read()).decode('utf-8')
         
         embed_code = F'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf"></iframe>'
