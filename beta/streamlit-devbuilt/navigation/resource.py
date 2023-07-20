@@ -56,7 +56,7 @@ def resource_page():
         return embed_code
 
     # URL du fichier PDF que vous souhaitez afficher
-    pdf_url = "https://github.com/Jumitti/TFinder/blob/main/old%20versions/v4.1/Promoter_finder_HELP.pdf"
+    pdf_url = "https://raw.githubusercontent.com/Jumitti/TFinder/55cf52b5574f5a92336824c2b6fa193d5b8430ca/old%20versions/v4.1/Promoter_finder_HELP.pdf"
 
     # Afficher le PDF en utilisant la fonction embed_pdf()
     st.markdown(embed_pdf(pdf_url), unsafe_allow_html=True)
