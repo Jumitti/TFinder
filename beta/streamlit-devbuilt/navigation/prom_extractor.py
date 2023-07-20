@@ -235,7 +235,7 @@ def prom_extractor_page():
         data_df = pd.DataFrame(
             {
                 "Gene": gene_list,
-                "human": [True] + [False] * (len(gene_list) - 1),
+                "human": [False] * (len(gene_list) - 1),
                 "mouse": [True] + [False] * (len(gene_list) - 1),
                 "rat": [True] + [False] * (len(gene_list) - 1),
                 "droso": [True] + [False] * (len(gene_list) - 1),
@@ -294,10 +294,6 @@ def prom_extractor_page():
             zebra_checked = gene_info["zebra"]
             prom_checked = gene_info["prom"]
             term_checked = gene_info["term"]
-
-            st.write(f"Informations pour le gène {gene_name}:")
-            
-            st.write(f"Human: {human_checked}, Mouse: {mouse_checked}, Rat: {rat_checked}, Drosophila: {droso_checked}, Zebrafish: {zebra_checked}, Promoter: {prom_checked}, Terminator: {term_checked}")
         
             if human_checked == True and prom_checked == True:
                 st.write(gene_name)
