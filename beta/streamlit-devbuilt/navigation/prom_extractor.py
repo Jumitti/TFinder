@@ -296,20 +296,60 @@ def prom_extractor_page():
                     except Exception as e:
                         st.error(f"Error finding promoters: {str(e)}")
                 if mouse_checked == True and prom_checked == True:
-                    st.write(gene_name)
-                    st.write('ok mouse')
+                    prom_term = 'Promoter'
+                    gene_ids = gene_name.strip().split('\n')
+                    upstream = int(upstream_entry)
+                    downstream = int(downstream_entry)
+                    species = 'human'
+                    try:
+                        result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                        st.success("Promoters extraction complete!")
+                    except Exception as e:
+                        st.error(f"Error finding promoters: {str(e)}")
                 if rat_checked == True and prom_checked == True:
-                    st.write(gene_name)
-                    st.write('ok rat')
+                    prom_term = 'Promoter'
+                    gene_ids = gene_name.strip().split('\n')
+                    upstream = int(upstream_entry)
+                    downstream = int(downstream_entry)
+                    species = 'human'
+                    try:
+                        result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                        st.success("Promoters extraction complete!")
+                    except Exception as e:
+                        st.error(f"Error finding promoters: {str(e)}")
                 if droso_checked == True and prom_checked == True:
-                    st.write(gene_name)
-                    st.write('ok dr')
+                    prom_term = 'Promoter'
+                    gene_ids = gene_name.strip().split('\n')
+                    upstream = int(upstream_entry)
+                    downstream = int(downstream_entry)
+                    species = 'human'
+                    try:
+                        result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                        st.success("Promoters extraction complete!")
+                    except Exception as e:
+                        st.error(f"Error finding promoters: {str(e)}")
                 if zebra_checked == True and prom_checked == True:
-                    st.write(gene_name)
-                    st.write('ok ze')
+                    prom_term = 'Promoter'
+                    gene_ids = gene_name.strip().split('\n')
+                    upstream = int(upstream_entry)
+                    downstream = int(downstream_entry)
+                    species = 'human'
+                    try:
+                        result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                        st.success("Promoters extraction complete!")
+                    except Exception as e:
+                        st.error(f"Error finding promoters: {str(e)}")
                 if human_checked == True and term_checked == True:
-                    st.write(gene_name)
-                    st.write('ok')
+                    prom_term = 'Terminator'
+                    gene_ids = gene_name.strip().split('\n')
+                    upstream = int(upstream_entry)
+                    downstream = int(downstream_entry)
+                    species = 'human'
+                    try:
+                        result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                        st.success("Promoters extraction complete!")
+                    except Exception as e:
+                        st.error(f"Error finding promoters: {str(e)}")
                 if mouse_checked == True and term_checked == True:
                     st.write(gene_name)
                     st.write('ok mouse')
