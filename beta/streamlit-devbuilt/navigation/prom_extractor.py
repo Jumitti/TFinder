@@ -384,8 +384,6 @@ def prom_extractor_page():
                             result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                         except Exception as e:
                             st.error(f"Error finding promoters: {str(e)}")
-                    else:
-                        st.write('nothing')
         
         
     # Promoter output state
