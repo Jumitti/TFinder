@@ -181,7 +181,7 @@ def aio_page():
         gene_id_entry = st.text_area("🔸 :orange[**Step 1.1**] Gene ID:", value="PRKN\n351")
 
     # Species
-        species_combobox = st.selectbox("🔸 :orange[**Step 1.2**] Select species of gene names:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
+        species = st.selectbox("🔸 :orange[**Step 1.2**] Select species of gene names:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
 
     # Upstream/Downstream Promoter
         prom_term = st.radio(
@@ -208,7 +208,7 @@ def aio_page():
                     upstream = int(upstream_entry)
                     downstream = int(downstream_entry)
                     try:
-                        result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
+                        result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                         st.success("Promoters extraction complete!")
                     except Exception as e:
                         st.error(f"Error finding promoters: {str(e)}")
@@ -219,7 +219,7 @@ def aio_page():
                     upstream = int(upstream_entry)
                     downstream = int(downstream_entry)
                     try:
-                        result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
+                        result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                         st.success("Terminators extraction complete!")
                     except Exception as e:
                         st.error(f"Error finding terminators: {str(e)}")
