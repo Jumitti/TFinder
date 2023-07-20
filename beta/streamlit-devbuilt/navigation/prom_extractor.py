@@ -302,6 +302,9 @@ def prom_extractor_page():
             if human_checked == True and prom_checked == True:
                 st.write(gene_name)
                 st.write('ok')
+            elif human_checked == True and prom_checked == True:
+                st.write(gene_name)
+                st.write('ok mouse')
             else:
                 st.write('nothing')
             
