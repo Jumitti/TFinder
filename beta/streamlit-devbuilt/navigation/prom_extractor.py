@@ -216,19 +216,6 @@ def prom_extractor_page():
                         st.success("Terminators extraction complete!")
                     except Exception as e:
                         st.error(f"Error finding terminators: {str(e)}")
-        # Promoter output state
-        if prom_term == 'Promoter':
-            if 'result_promoter' not in st.session_state:
-                result_promoter = st.text_area("🔸 :red[**Step 1.6**] Promoter:", value="", key=1)
-            else:
-                result_promoter_text = "\n".join(st.session_state['result_promoter'])
-                result_promoter = st.text_area("🔸 :red[**Step 1.6**] Promoter:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C', key=1)
-        else:
-            if 'result_promoter' not in st.session_state:
-                result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value="", key=1)
-            else:
-                result_promoter_text = "\n".join(st.session_state['result_promoter'])
-                result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C', key=1)
 
     with tab2:
         gene_list = gene_id_entry.strip().split('\n')
@@ -339,16 +326,16 @@ def prom_extractor_page():
                     st.write('nothing')
         
         
-        # Promoter output state
-        if prom_term == 'Promoter':
-            if 'result_promoter' not in st.session_state:
-                result_promoter = st.text_area("🔸 :red[**Step 1.6**] Promoter:", value="", key=2)
-            else:
-                result_promoter_text = "\n".join(st.session_state['result_promoter'])
-                result_promoter = st.text_area("🔸 :red[**Step 1.6**] Promoter:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C', key=2)
+    # Promoter output state
+    if prom_term == 'Promoter':
+        if 'result_promoter' not in st.session_state:
+            result_promoter = st.text_area("🔸 :red[**Step 1.6**] Promoter:", value="")
         else:
-            if 'result_promoter' not in st.session_state:
-                result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value="", key=2)
-            else:
-                result_promoter_text = "\n".join(st.session_state['result_promoter'])
-                result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C', key=2)        
+            result_promoter_text = "\n".join(st.session_state['result_promoter'])
+            result_promoter = st.text_area("🔸 :red[**Step 1.6**] Promoter:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
+    else:
+        if 'result_promoter' not in st.session_state:
+            result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value="")
+        else:
+            result_promoter_text = "\n".join(st.session_state['result_promoter'])
+            result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')        
