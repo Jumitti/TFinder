@@ -248,6 +248,8 @@ def prom_extractor_page():
 
         # Utiliser le module ag-Grid pour afficher le tableau interactif avec des cases à cocher
         grid_js = f"""
+            <div id="agGrid" style="height: 400px; width: 100%;" class="ag-theme-alpine"></div>
+            <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.noStyle.js"></script>
             <script>
                 document.addEventListener('DOMContentLoaded', function() {{
                     // Fonction pour mettre à jour les valeurs des cases à cocher dans le DataFrame
@@ -277,7 +279,8 @@ def prom_extractor_page():
                         rowData: {df.to_json(orient='records')},
                         onCellValueChanged: onCellValueChanged,
                         animateRows: true,
-                        singleClickEdit: true
+                        singleClickEdit: true,
+                        theme: 'alpine'
                     }};
 
                     // Créer la grille
@@ -286,4 +289,4 @@ def prom_extractor_page():
             </script>
         """
 
-        st.markdown(grid_js, unsafe_allow_html=True)
+        components.html(grid_js)
