@@ -136,7 +136,7 @@ def prom_extractor_page():
     # Promoter Finder
     def find_promoters(gene_ids, species, upstream, downstream):
         try:
-            
+            result_promoter = []
             for gene_id in gene_ids:
                 if gene_id.isdigit():
                     entrez_id = gene_id
@@ -167,9 +167,6 @@ def prom_extractor_page():
 
     # Promoter Finder
     st.subheader('🧬 Promoter and Terminator Extractor')
-    
-    @st.cache_ressource
-    result_promoter = []
 
     # Gene ID
     gene_id_entry = st.text_area("🔸 :red[**Step 1.1**] Gene ID:", value="PRKN\n5071")
@@ -221,6 +218,7 @@ def prom_extractor_page():
                         st.error(f"Error finding terminators: {str(e)}")
 
     with tab2:
+    @st.cache_ressource
         gene_list = gene_id_entry.strip().split('\n')
         
         data_df = pd.DataFrame(
