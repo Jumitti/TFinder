@@ -231,22 +231,24 @@ def prom_extractor_page():
                 result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
     with tab2:
         gene_list = gene_id_entry.strip().split('\n')
-
-        # Créer un DataFrame avec les noms de gènes et les cases à cocher pour le promoteur et le terminator
-        data = {
-            'Gene': gene_list,
-            'Human': [st.checkbox(label="", key=f"Human_{gene}") for gene in gene_list],
-            'Mouse': [st.checkbox(label="", key=f"Mouse_{gene}") for gene in gene_list],
-            'Rat': [st.checkbox(label="", key=f"Rat_{gene}") for gene in gene_list],
-            'Drosophila': [st.checkbox(label="", key=f"Drosophila_{gene}") for gene in gene_list],
-            'Zebrafish': [st.checkbox(label="", key=f"Zebrafish_{gene}") for gene in gene_list],
-            'Promoter': [st.checkbox(label="", key=f"Promoter_{gene}") for gene in gene_list],
-            'Terminator': [st.checkbox(label="", key=f"Terminator_{gene}") for gene in gene_list]
-        }
-
-        # Créer un DataFrame à partir des données
-        df = pd.DataFrame(data)
-
-        # Affichage du tableau interactif
-        st.dataframe(df)
+        
+        adgen, adhum, admou, adrat, addro, adzer, adprom, adterm = st.columns([1, 1, 1, 1, 1, 1, 1, 1])
+        adgen.markdown('##### Gene')
+        adhum.markdown('##### Human')
+        admou.markdown('##### Mouse')
+        adrat.markdown('##### Rat')
+        addro.markdown('##### Drosophila')
+        adzer.markdown('##### Zebrafish')
+        adprom.markdown('##### Promoter')
+        adterm.markdown('##### Terminator')
+        
+        bbox = {}
+        bbox[gene_list] = adgen.checkbox(f'{gene_list}', key=f'datasets_{gene_list}')  
+        adhum.checkbox('')  
+        admou.checkbox('')
+        adrat.checkbox('')
+        addro.checkbox('')
+        adzer.checkbox('')
+        adprom.checkbox('')
+        adterm.checkbox('')
             
