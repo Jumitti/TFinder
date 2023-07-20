@@ -169,61 +169,65 @@ def prom_extractor_page():
 
     # Gene ID
     gene_id_entry = st.text_area("🔸 :red[**Step 1.1**] Gene ID:", value="PRKN\n5071")
+    
+    tab1, tab2 = st.tabs(['Default','Advance'])
+    with tab1:
+        # Species
+        species_combobox = st.selectbox("🔸 :red[**Step 1.2**] Select species of gene names:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
 
-    # Species
-    species_combobox = st.selectbox("🔸 :red[**Step 1.2**] Select species of gene names:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
-
-    # Upstream/Downstream Promoter
-    prom_term = st.radio(
-        "🔸 :red[**Step 1.3**] Regulatory region:",
-        ('Promoter', 'Terminator'))
-    if prom_term == 'Promoter':
-        updown_slide = st.slider("🔸 :red[**Step 1.4**] Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
-        st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
-        upstream_entry = -min(updown_slide)
-        downstream_entry = max(updown_slide)
-        st.session_state['upstream_entry'] = upstream_entry
-    else:
-        updown_slide = st.slider("🔸 :red[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
-        st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
-        upstream_entry = -min(updown_slide)
-        downstream_entry = max(updown_slide)
-        st.session_state['upstream_entry'] = upstream_entry
-
-    # Run Promoter Finder
-    if prom_term == 'Promoter':
-        if st.button("🧬 :red[**Step 1.5**] Extract promoter (~5sec/gene)"):
-            with st.spinner("Finding promoters..."):
-                gene_ids = gene_id_entry.strip().split("\n")
-                upstream = int(upstream_entry)
-                downstream = int(downstream_entry)
-                try:
-                    result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
-                    st.success("Promoters extraction complete!")
-                except Exception as e:
-                    st.error(f"Error finding promoters: {str(e)}")
-    else:
-        if st.button("🧬 :red[**Step 1.5**] Extract terminator (~5sec/gene)"):
-            with st.spinner("Finding terminators..."):
-                gene_ids = gene_id_entry.strip().split("\n")
-                upstream = int(upstream_entry)
-                downstream = int(downstream_entry)
-                try:
-                    result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
-                    st.success("Terminators extraction complete!")
-                except Exception as e:
-                    st.error(f"Error finding terminators: {str(e)}")
-
-    # Promoter output state
-    if prom_term == 'Promoter':
-        if 'result_promoter' not in st.session_state:
-            result_promoter = st.text_area("🔸 :red[**Step 1.6**] Promoter:", value="")
+        # Upstream/Downstream Promoter
+        prom_term = st.radio(
+            "🔸 :red[**Step 1.3**] Regulatory region:",
+            ('Promoter', 'Terminator'))
+        if prom_term == 'Promoter':
+            updown_slide = st.slider("🔸 :red[**Step 1.4**] Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
+            st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
+            upstream_entry = -min(updown_slide)
+            downstream_entry = max(updown_slide)
+            st.session_state['upstream_entry'] = upstream_entry
         else:
-            result_promoter_text = "\n".join(st.session_state['result_promoter'])
-            result_promoter = st.text_area("🔸 :red[**Step 1.6**] Promoter:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
-    else:
-        if 'result_promoter' not in st.session_state:
-            result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value="")
+            updown_slide = st.slider("🔸 :red[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
+            st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
+            upstream_entry = -min(updown_slide)
+            downstream_entry = max(updown_slide)
+            st.session_state['upstream_entry'] = upstream_entry
+
+        # Run Promoter Finder
+        if prom_term == 'Promoter':
+            if st.button("🧬 :red[**Step 1.5**] Extract promoter (~5sec/gene)"):
+                with st.spinner("Finding promoters..."):
+                    gene_ids = gene_id_entry.strip().split("\n")
+                    upstream = int(upstream_entry)
+                    downstream = int(downstream_entry)
+                    try:
+                        result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
+                        st.success("Promoters extraction complete!")
+                    except Exception as e:
+                        st.error(f"Error finding promoters: {str(e)}")
         else:
-            result_promoter_text = "\n".join(st.session_state['result_promoter'])
-            result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
+            if st.button("🧬 :red[**Step 1.5**] Extract terminator (~5sec/gene)"):
+                with st.spinner("Finding terminators..."):
+                    gene_ids = gene_id_entry.strip().split("\n")
+                    upstream = int(upstream_entry)
+                    downstream = int(downstream_entry)
+                    try:
+                        result_promoter = find_promoters(gene_ids, species_combobox, upstream, downstream)
+                        st.success("Terminators extraction complete!")
+                    except Exception as e:
+                        st.error(f"Error finding terminators: {str(e)}")
+
+        # Promoter output state
+        if prom_term == 'Promoter':
+            if 'result_promoter' not in st.session_state:
+                result_promoter = st.text_area("🔸 :red[**Step 1.6**] Promoter:", value="")
+            else:
+                result_promoter_text = "\n".join(st.session_state['result_promoter'])
+                result_promoter = st.text_area("🔸 :red[**Step 1.6**] Promoter:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
+        else:
+            if 'result_promoter' not in st.session_state:
+                result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value="")
+            else:
+                result_promoter_text = "\n".join(st.session_state['result_promoter'])
+                result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
+    with tab2:
+        st.success('ok')
