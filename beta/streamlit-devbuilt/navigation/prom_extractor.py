@@ -274,7 +274,7 @@ def prom_extractor_page():
         downstream_entry = max(updown_slide)
         
         if st.button("test"):
-            for i, gene_info in data_dff.iterrows():
+            for gene_info in data_dff.iterrows():
                 gene_name = gene_info["Gene"]
                 human_checked = gene_info["human"]
                 mouse_checked = gene_info["mouse"]
