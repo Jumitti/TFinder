@@ -234,7 +234,7 @@ def prom_extractor_page():
         
         data_df = pd.DataFrame(
             {
-                "widgets": ["st.selectbox", "st.number_input", "st.text_area", "st.button"],
+                "widgets": [gene_list],
                 "favorite": [True, False, False, True],
             }
         )
