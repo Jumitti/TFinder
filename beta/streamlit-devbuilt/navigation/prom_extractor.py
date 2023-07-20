@@ -245,7 +245,7 @@ def prom_extractor_page():
             }
         )
 
-        st.data_editor(
+        data_dff = st.data_editor(
             data_df,
             column_config={
                 "human": st.column_config.CheckboxColumn(
@@ -286,7 +286,7 @@ def prom_extractor_page():
         upstream_entry = -min(updown_slide)
         downstream_entry = max(updown_slide)
         
-        selected_data_df = st.table(data_df)
+        selected_data_df = st.table(data_dff)
 
         # Vous pouvez accéder aux valeurs sélectionnées à partir de `selected_data_df`
         # Par exemple, pour accéder à la valeur de la case Human pour le premier gène :
