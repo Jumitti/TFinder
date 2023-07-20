@@ -235,7 +235,7 @@ def prom_extractor_page():
         data_df = pd.DataFrame(
             {
                 "Gene": gene_list,
-                "human": [False] * (len(gene_list) - 1),
+                "human": [False] * len(gene_list),
                 "mouse": [True] + [False] * (len(gene_list) - 1),
                 "rat": [True] + [False] * (len(gene_list) - 1),
                 "droso": [True] + [False] * (len(gene_list) - 1),
