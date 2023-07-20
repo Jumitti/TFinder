@@ -34,7 +34,7 @@ def resource_page():
     # col3, col4 = st.columns(2)
     with col2:
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/NCBI%20gene%20ID.png?raw=true', caption='Picture 2: NCBI gene name (upper red rectangle) and Gene ID (lower red rectangle)')
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/GeneBank.png?raw=true', caption='Picture 5: GeneBank of a gene')
+        st.image('https://github.com/Jumitti/TFinder/blob/main/img/GeneBank.png?raw=true', caption='Picture 4: GeneBank of a gene')
     with col2:
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/whatisagene.png?raw=true', caption='Picture 3: What is a gene ?')
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/coordinates.png?raw=true', caption='Picture 5: Chromosic coordinates on a genetic map from NCBI')
