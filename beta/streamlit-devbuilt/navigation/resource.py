@@ -50,7 +50,7 @@ def resource_page():
         with open(pdf_url, "rb") as f:
             base64_pdf = base64.b64encode(f.read()).decode('utf-8')
         
-        embed_code = F'<iframe src="data:application/pdf;base64,{pdf_url}" width="700" height="1000" type="application/pdf"></iframe>'
+        embed_code = F'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf"></iframe>'
         return embed_code
 
     # URL du fichier PDF que vous souhaitez afficher
