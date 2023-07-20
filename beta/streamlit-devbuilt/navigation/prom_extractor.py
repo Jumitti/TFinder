@@ -232,11 +232,6 @@ def prom_extractor_page():
     with tab2:
         gene_list = gene_id_entry.strip().split('\n')
         
-        species_list = ["human", "mouse", "rat", "drosophila", "zebrafish"]
-        
-        region_list = ["promoter", "terminator"]
-
-        
         data_df = pd.DataFrame(
             {
                 "Gene": gene_list,
@@ -292,21 +287,4 @@ def prom_extractor_page():
         downstream_entry = max(updown_slide)
         
         if st.button("Extraire les séquences"):
-            # Parcourez le DataFrame pour récupérer les informations de sélection des espèces pour chaque gène
-            for gene_row in data_df.iterrows():
-                gene_ids = gene_row["Gene"]
-                selected_species = [species for species, selected in gene_row.items() if selected and species != "Gene"]
-                selected_region = [species for species, selected in gene_row.items() if selected and species != "Gene"]
-                upstream = int(upstream_entry)
-                downstream = int(downstream_entry)
-
-                if selected_species:
-                    st.write(f"Séquences pour le gène {gene_ids}:")
-                    for species in selected_species:
-                        st.write(species)
-                
-                # if 'result_promoter' not in st.session_state:
-                    # result_promoter = st.text_area("🔸 :red[**Step 1.6**] Output:", value="")
-                # else:
-                    # result_promoter_text = "\n".join(st.session_state['result_promoter'])
-                    # result_promoter = st.text_area("🔸 :red[**Step 1.6**] Output:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
+            
