@@ -290,7 +290,7 @@ def prom_extractor_page():
 
         # Vous pouvez accéder aux valeurs sélectionnées à partir de `selected_data_df`
         # Par exemple, pour accéder à la valeur de la case Human pour le premier gène :
-        if selected_data_df[0, "Human"]:
+        if selected_data_df[0, "human"]:
             st.write("Human est coché pour le premier gène.")
         else:
             st.write("Human n'est pas coché pour le premier gène.")
