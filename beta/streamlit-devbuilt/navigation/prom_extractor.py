@@ -231,8 +231,6 @@ def prom_extractor_page():
                 result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
     with tab2:
         gene_list = gene_id_entry.strip().split('\n')
-        
-        gene_list = gene_names.strip().split('\n')
 
         # Créer un DataFrame avec les noms de gènes et les cases à cocher pour le promoteur et le terminator
         data = {
