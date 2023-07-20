@@ -246,5 +246,44 @@ def prom_extractor_page():
         }
         df = pd.DataFrame(data)
 
-        # Utiliser le module ag-Grid pour afficher le tableau interactif
-        components.html(df.to_html(escape=False, classes='ag-theme-alpine'), height=500)
+        # Utiliser le module ag-Grid pour afficher le tableau interactif avec des cases à cocher
+        grid_js = f"""
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {{
+                    // Fonction pour mettre à jour les valeurs des cases à cocher dans le DataFrame
+                    function onCellValueChanged(params) {{
+                        var colName = params.column.getColId();
+                        var rowIndex = params.node.rowIndex;
+                        var newValue = params.newValue;
+                        var rowNode = params.node;
+                        var data = params.data;
+
+                        data[colName] = newValue;
+                        gridOptions.api.refreshCells({{rowNodes: [rowNode]}});
+                    }}
+
+                    // Configurer la grille avec les colonnes et les cases à cocher
+                    var gridOptions = {{
+                        columnDefs: [
+                            {{headerName: 'Gene', field: 'Gene'}},
+                            {{headerName: 'Human', field: 'Human', cellRenderer: 'agAnimateShowChangeCellRenderer', editable: true, cellEditor: 'agSelectCellEditor', cellEditorParams: {{values: ['True', 'False']}}}},
+                            {{headerName: 'Mouse', field: 'Mouse', cellRenderer: 'agAnimateShowChangeCellRenderer', editable: true, cellEditor: 'agSelectCellEditor', cellEditorParams: {{values: ['True', 'False']}}}},
+                            {{headerName: 'Rat', field: 'Rat', cellRenderer: 'agAnimateShowChangeCellRenderer', editable: true, cellEditor: 'agSelectCellEditor', cellEditorParams: {{values: ['True', 'False']}}}},
+                            {{headerName: 'Drosophila', field: 'Drosophila', cellRenderer: 'agAnimateShowChangeCellRenderer', editable: true, cellEditor: 'agSelectCellEditor', cellEditorParams: {{values: ['True', 'False']}}}},
+                            {{headerName: 'Zebrafish', field: 'Zebrafish', cellRenderer: 'agAnimateShowChangeCellRenderer', editable: true, cellEditor: 'agSelectCellEditor', cellEditorParams: {{values: ['True', 'False']}}}},
+                            {{headerName: 'Promoter', field: 'Promoter', cellRenderer: 'agAnimateShowChangeCellRenderer', editable: true, cellEditor: 'agSelectCellEditor', cellEditorParams: {{values: ['True', 'False']}}}},
+                            {{headerName: 'Terminator', field: 'Terminator', cellRenderer: 'agAnimateShowChangeCellRenderer', editable: true, cellEditor: 'agSelectCellEditor', cellEditorParams: {{values: ['True', 'False']}}}}
+                        ],
+                        rowData: {df.to_json(orient='records')},
+                        onCellValueChanged: onCellValueChanged,
+                        animateRows: true,
+                        singleClickEdit: true
+                    }};
+
+                    // Créer la grille
+                    new agGrid.Grid(document.querySelector('#agGrid'), gridOptions);
+                }});
+            </script>
+        """
+
+        st.markdown(grid_js, unsafe_allow_html=True)
