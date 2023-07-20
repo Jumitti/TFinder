@@ -284,5 +284,4 @@ def prom_extractor_page():
                 )
             },
             disabled=["widgets"],
-            hide_index=True,
-        )
+            hide_index=True)
