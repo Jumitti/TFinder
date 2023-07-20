@@ -216,6 +216,19 @@ def prom_extractor_page():
                         st.success("Terminators extraction complete!")
                     except Exception as e:
                         st.error(f"Error finding terminators: {str(e)}")
+        # Promoter output state
+        if prom_term == 'Promoter':
+            if 'result_promoter' not in st.session_state:
+                result_promoter = st.text_area("🔸 :red[**Step 1.6**] Promoter:", value="")
+            else:
+                result_promoter_text = "\n".join(st.session_state['result_promoter'])
+                result_promoter = st.text_area("🔸 :red[**Step 1.6**] Promoter:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
+        else:
+            if 'result_promoter' not in st.session_state:
+                result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value="")
+            else:
+                result_promoter_text = "\n".join(st.session_state['result_promoter'])
+                result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
 
     with tab2:
         gene_list = gene_id_entry.strip().split('\n')
