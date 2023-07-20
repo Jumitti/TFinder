@@ -26,12 +26,6 @@ import math
 import pickle
 import time
 
-from utils.components import local_css
-from texts.descriptions import DatasetDesc, Desc
-
-import os
-import hydralit_components as hc
-
 def prom_extractor_page():
     # Reverse complement
     def reverse_complement(sequence):
@@ -238,7 +232,7 @@ def prom_extractor_page():
     with tab2:
         gene_list = gene_id_entry.strip().split('\n')
         
-        ds2 = ds[['gene', 'human', 'mouse', 'rat', 'drosophila', 'zebrafish', 'promoter', 'terminator']]
+        ds2 = ['gene', 'human', 'mouse', 'rat', 'drosophila', 'zebrafish', 'promoter', 'terminator']]
         
         adgen, adhum, admou, adrat, addro, adzer, adprom, adterm = st.columns([1, 1, 1, 1, 1, 1, 1, 1])
         adgen.markdown('##### Gene')
@@ -254,11 +248,11 @@ def prom_extractor_page():
     
         for gene, human, mouse, rat, drosophila, zebrafish, promoter, terminator in ds2.values:
             bbox[gene_list] = adgen.checkbox(f'{gene_list}', key=f'datasets_{gene_list}')  
-            adhum.write(str(patients))  
-            admou.write(cells)
-            adrat.write(str(proteins))
-            addro.write(str(tfs))
-            adzer.write(cells)
-            adprom.write(str(proteins))
-            adterm.write(str(tfs))
+            adhum.checkbox('')  
+            admou.checkbox('')
+            adrat.checkbox('')
+            addro.checkbox('')
+            adzer.checkbox('')
+            adprom.checkbox('')
+            adterm.checkbox('')
             
