@@ -273,6 +273,7 @@ def prom_extractor_page():
         upstream_entry = -min(updown_slide)
         downstream_entry = max(updown_slide)
         
+        @st.cache_data
         if st.button("test"):
             for i, gene_info in data_dff.iterrows():
                 gene_name = gene_info["Gene"]
