@@ -230,7 +230,10 @@ def prom_extractor_page():
                 result_promoter_text = "\n".join(st.session_state['result_promoter'])
                 result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
     with tab2:
+        gene_table = []
         gene_list = gene_id_entry.strip().split('\n')
+        
+        gene_table.append(gene_list)
         
         adgen, adhum, admou, adrat, addro, adzer, adprom, adterm = st.columns([1, 1, 1, 1, 1, 1, 1, 1])
         adgen.markdown('##### Gene')
@@ -243,7 +246,7 @@ def prom_extractor_page():
         adterm.markdown('##### Terminator')
         
         bbox = {}
-        bbox[gene_list] = adgen.checkbox(f'{gene_list}', key=f'datasets_{gene_list}')  
+        bbox[gene_list] = adgen.write(gene_table)  
         adhum.checkbox('')  
         admou.checkbox('')
         adrat.checkbox('')
