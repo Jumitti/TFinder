@@ -231,12 +231,28 @@ def prom_extractor_page():
                 result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
     with tab2:
         gene_list = gene_id_entry.strip().split('\n')
-        # Créer un tableau interactif avec des cases à cocher pour chaque gène
-        table_data = []
-        for gene in gene_list:
-            promoter = st.checkbox(label="Promoter", key=f"Promoter_{gene}")
-            terminator = st.checkbox(label="Terminator", key=f"Terminator_{gene}")
-            table_data.append([gene, promoter, terminator])
-
-        # Affichage du tableau interactif
-        st.table(table_data)
+        
+        ds2 = ds[['gene', 'human', 'mouse', 'rat', 'drosophila', 'zebrafish', 'promoter', 'terminator']]
+        
+        adgen, adhum, admou, adrat, addro, adzer, adprom, adterm = st.columns([1, 1, 1, 1, 1, 1, 1, 1])
+        adgen.markdown('##### Gene')
+        adhum.markdown('##### Human')
+        admou.markdown('##### Mouse')
+        adrat.markdown('##### Rat')
+        addro.markdown('##### Drosophila')
+        adzer.markdown('##### Zebrafish')
+        adprom.markdown('##### Promoter')
+        adterm.markdown('##### Terminator')
+        
+        bbox = {}
+    
+        for gene, human, mouse, rat, drosophila, zebrafish, promoter, terminator in ds2.values:
+            bbox[gene_list] = adgen.checkbox(f'{gene_list}', key=f'datasets_{gene_list}')  
+            adhum.write(str(patients))  
+            admou.write(cells)
+            adrat.write(str(proteins))
+            addro.write(str(tfs))
+            adzer.write(cells)
+            adprom.write(str(proteins))
+            adterm.write(str(tfs))
+            
