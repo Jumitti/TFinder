@@ -106,7 +106,7 @@ def prom_extractor_page():
 
                 else:
                     raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
-            else:
+            elif prom_term == 'Terminator':
                 if chrstop > chrstart:
                     start = chrstop - upstream
                     end = chrstop + downstream
