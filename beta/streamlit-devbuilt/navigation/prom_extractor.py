@@ -234,8 +234,14 @@ def prom_extractor_page():
         
         data_df = pd.DataFrame(
             {
-                "gene": gene_list,
+                "Gene": gene_list,
                 "human": [True] + [False] * (len(gene_list) - 1),
+                "mouse": [True] + [False] * (len(gene_list) - 1),
+                "rat": [True] + [False] * (len(gene_list) - 1),
+                "droso": [True] + [False] * (len(gene_list) - 1),
+                "zebra": [True] + [False] * (len(gene_list) - 1),
+                "prom": [True] + [False] * (len(gene_list) - 1),
+                "term": [True] + [False] * (len(gene_list) - 1),
             }
         )
 
@@ -244,6 +250,36 @@ def prom_extractor_page():
             column_config={
                 "human": st.column_config.CheckboxColumn(
                     "Human",
+                    default=False,
+                )
+            },{
+                "mouse": st.column_config.CheckboxColumn(
+                    "Mouse",
+                    default=False,
+                )
+            },{
+                "rat": st.column_config.CheckboxColumn(
+                    "Rat",
+                    default=False,
+                )
+            },{
+                "droso": st.column_config.CheckboxColumn(
+                    "Drosophila",
+                    default=False,
+                )
+            },{
+                "zebra": st.column_config.CheckboxColumn(
+                    "Zebrafish",
+                    default=False,
+                )
+            },{
+                "prom": st.column_config.CheckboxColumn(
+                    "Promoter",
+                    default=False,
+                )
+            },{
+                "term": st.column_config.CheckboxColumn(
+                    "Terminator",
                     default=False,
                 )
             },
