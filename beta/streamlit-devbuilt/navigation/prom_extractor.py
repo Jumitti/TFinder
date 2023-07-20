@@ -296,6 +296,14 @@ def prom_extractor_page():
                 zebra_checked = gene_info["zebra"]
                 prom_checked = gene_info["prom"]
                 term_checked = gene_info["term"]
+                
+                data_df.at[i, "human"] = human_checked
+                data_df.at[i, "mouse"] = mouse_checked
+                data_df.at[i, "rat"] = rat_checked
+                data_df.at[i, "droso"] = droso_checked
+                data_df.at[i, "zebra"] = zebra_checked
+                data_df.at[i, "prom"] = prom_checked
+                data_df.at[i, "term"] = term_checked
 
                 st.write(f"Informations pour le gène {gene_name}:")
                 st.write(f"Human: {human_checked}, Mouse: {mouse_checked}, Rat: {rat_checked}, Drosophila: {droso_checked}, Zebrafish: {zebra_checked}, Promoter: {prom_checked}, Terminator: {term_checked}")
