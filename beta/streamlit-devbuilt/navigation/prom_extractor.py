@@ -244,10 +244,10 @@ def prom_extractor_page():
         adzer.markdown('##### Zebrafish')
         adprom.markdown('##### Promoter')
         adterm.markdown('##### Terminator')
-
+        
+        bbox = {}
         for gene in gene_list:
-            gene_table.append([
-                gene,
+            bbox = st.write(gene),
                 adhum.checkbox(label="", key=f"Human_{gene}"),
                 admou.checkbox(label="", key=f"Mouse_{gene}"),
                 adrat.checkbox(label="", key=f"Rat_{gene}"),
@@ -255,8 +255,3 @@ def prom_extractor_page():
                 adzer.checkbox(label="", key=f"Zebrafish_{gene}"),
                 adprom.checkbox(label="", key=f"Promoter_{gene}"),
                 adterm.checkbox(label="", key=f"Terminator_{gene}")
-            ])
-
-        # Affichage du tableau interactif
-        st.table(gene_table)
-            
