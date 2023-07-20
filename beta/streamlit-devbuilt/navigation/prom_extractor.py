@@ -171,6 +171,9 @@ def prom_extractor_page():
     # Gene ID
     gene_id_entry = st.text_area("🔸 :red[**Step 1.1**] Gene ID:", value="PRKN\n5071")
     
+    
+    result_promoter = []
+    
     tab1, tab2 = st.tabs(['Default','Advance'])
     with tab1:
         # Species
@@ -327,7 +330,6 @@ def prom_extractor_page():
         
         
     # Promoter output state
-    result_promoter = []
     if prom_term == 'Promoter':
         if 'result_promoter' not in st.session_state:
             result_promoter = st.text_area("🔸 :red[**Step 1.6**] Promoter:", value="")
