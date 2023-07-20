@@ -284,47 +284,65 @@ def prom_extractor_page():
         st.write("Upstream: ", min(updown_slide), " bp from TSS/gene end | Downstream: ", max(updown_slide), " bp from TSS/gene end")
         upstream_entry = -min(updown_slide)
         downstream_entry = max(updown_slide)
-
-        for i, gene_info in data_dff.iterrows():
-            gene_name = gene_info["Gene"]
-            human_checked = gene_info["human"]
-            mouse_checked = gene_info["mouse"]
-            rat_checked = gene_info["rat"]
-            droso_checked = gene_info["droso"]
-            zebra_checked = gene_info["zebra"]
-            prom_checked = gene_info["prom"]
-            term_checked = gene_info["term"]
         
-            if human_checked == True and prom_checked == True:
-                st.write(gene_name)
-                st.write('ok')
-            if mouse_checked == True and prom_checked == True:
-                st.write(gene_name)
-                st.write('ok mouse')
-            if rat_checked == True and prom_checked == True:
-                st.write(gene_name)
-                st.write('ok rat')
-            if droso_checked == True and prom_checked == True:
-                st.write(gene_name)
-                st.write('ok dr')
-            if zebra_checked == True and prom_checked == True:
-                st.write(gene_name)
-                st.write('ok ze')
-            if human_checked == True and term_checked == True:
-                st.write(gene_name)
-                st.write('ok')
-            if mouse_checked == True and term_checked == True:
-                st.write(gene_name)
-                st.write('ok mouse')
-            if rat_checked == True and term_checked == True:
-                st.write(gene_name)
-                st.write('ok mouse')
-            if droso_checked == True and term_checked == True:
-                st.write(gene_name)
-                st.write('ok mouse')
-            if zebra_checked == True and term_checked == True:
-                st.write(gene_name)
-                st.write('ok mouse')
-            else:
-                st.write('nothing')
+        if st.button("🧬 :red[**Step 1.5**] Extract promoter (~5sec/gene)"):
+            for i, gene_info in data_dff.iterrows():
+                gene_name = gene_info["Gene"]
+                human_checked = gene_info["human"]
+                mouse_checked = gene_info["mouse"]
+                rat_checked = gene_info["rat"]
+                droso_checked = gene_info["droso"]
+                zebra_checked = gene_info["zebra"]
+                prom_checked = gene_info["prom"]
+                term_checked = gene_info["term"]
+            
+                if human_checked == True and prom_checked == True:
+                    prom_term = 'Promoter'
+                    gene_ids = gene_name
+                    upstream = int(upstream_entry)
+                    downstream = int(downstream_entry)
+                    species = 'human'
+                    try:
+                        result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                        st.success("Promoters extraction complete!")
+                    except Exception as e:
+                        st.error(f"Error finding promoters: {str(e)}")
+                if mouse_checked == True and prom_checked == True:
+                    st.write(gene_name)
+                    st.write('ok mouse')
+                if rat_checked == True and prom_checked == True:
+                    st.write(gene_name)
+                    st.write('ok rat')
+                if droso_checked == True and prom_checked == True:
+                    st.write(gene_name)
+                    st.write('ok dr')
+                if zebra_checked == True and prom_checked == True:
+                    st.write(gene_name)
+                    st.write('ok ze')
+                if human_checked == True and term_checked == True:
+                    st.write(gene_name)
+                    st.write('ok')
+                if mouse_checked == True and term_checked == True:
+                    st.write(gene_name)
+                    st.write('ok mouse')
+                if rat_checked == True and term_checked == True:
+                    st.write(gene_name)
+                    st.write('ok mouse')
+                if droso_checked == True and term_checked == True:
+                    st.write(gene_name)
+                    st.write('ok mouse')
+                if zebra_checked == True and term_checked == True:
+                    st.write(gene_name)
+                    st.write('ok mouse')
+                else:
+                    st.write('nothing')
+                
+                
+        if 'result_promoter' not in st.session_state:
+            result_promoter = st.text_area("🔸 :red[**Step 1.6**] Promoter:", value="")
+        else:
+            result_promoter_text = "\n".join(st.session_state['result_promoter'])
+            result_promoter = st.text_area("🔸 :red[**Step 1.6**] Fasta:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
+        
+        
             
