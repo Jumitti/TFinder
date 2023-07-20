@@ -230,7 +230,7 @@ def prom_extractor_page():
                 result_promoter_text = "\n".join(st.session_state['result_promoter'])
                 result_promoter = st.text_area("🔸 :red[**Step 1.6**] Terminator:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
     with tab2:
-        gene_id_entry = gene_names.strip().split('\n')
+        gene_list = gene_id_entry.strip().split('\n')
 
         # Créer un DataFrame pour le tableau
         data = {
