@@ -299,12 +299,10 @@ def prom_extractor_page():
             
             st.write(f"Human: {human_checked}, Mouse: {mouse_checked}, Rat: {rat_checked}, Drosophila: {droso_checked}, Zebrafish: {zebra_checked}, Promoter: {prom_checked}, Terminator: {term_checked}")
         
-            if human_checked == True and prom_checked == True:
+            for human_checked == True and prom_checked == True:
                 st.write(gene_name)
                 st.write('ok')
-            elif human_checked == True and prom_checked == True:
+            for human_checked == True and prom_checked == True:
                 st.write(gene_name)
                 st.write('ok mouse')
-            else:
-                st.write('nothing')
             
