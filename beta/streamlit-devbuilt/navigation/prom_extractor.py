@@ -239,6 +239,9 @@ def prom_extractor_page():
             "Terminator": [False] * len(gene_list)
         }
         df = pd.DataFrame(data)
+        
+        for index, row in df.iterrows():
+            row["Promoter"] = st.checkbox(f"{row['Nom du gène']} - Promoter", value=row["Promoter"])
+            row["Terminator"] = st.checkbox(f"{row['Nom du gène']} - Terminator", value=row["Terminator"])
 
-        # Affichage du tableau avec les cases à cocher
         st.write(df)
