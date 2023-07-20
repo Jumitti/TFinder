@@ -246,47 +246,8 @@ def prom_extractor_page():
         }
         df = pd.DataFrame(data)
 
-        # Utiliser le module ag-Grid pour afficher le tableau interactif avec des cases à cocher
-        grid_js = f"""
-            <div id="agGrid" style="height: 400px; width: 100%;" class="ag-theme-alpine"></div>
-            <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.noStyle.js"></script>
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {{
-                    // Fonction pour mettre à jour les valeurs des cases à cocher dans le DataFrame
-                    function onCellValueChanged(params) {{
-                        var colName = params.column.getColId();
-                        var rowIndex = params.node.rowIndex;
-                        var newValue = params.newValue;
-                        var rowNode = params.node;
-                        var data = params.data;
+        # Utiliser st_aggrid pour afficher le tableau interactif avec des cases à cocher
+        grid_result = st_aggrid(df, editable=True, fit_columns_on_grid_load=True)
 
-                        data[colName] = newValue;
-                        gridOptions.api.refreshCells({{rowNodes: [rowNode]}});
-                    }}
-
-                    // Configurer la grille avec les colonnes et les cases à cocher
-                    var gridOptions = {{
-                        columnDefs: [
-                            {{headerName: 'Gene', field: 'Gene'}},
-                            {{headerName: 'Human', field: 'Human', cellRenderer: 'agAnimateShowChangeCellRenderer', editable: true, cellEditor: 'agSelectCellEditor', cellEditorParams: {{values: ['True', 'False']}}}},
-                            {{headerName: 'Mouse', field: 'Mouse', cellRenderer: 'agAnimateShowChangeCellRenderer', editable: true, cellEditor: 'agSelectCellEditor', cellEditorParams: {{values: ['True', 'False']}}}},
-                            {{headerName: 'Rat', field: 'Rat', cellRenderer: 'agAnimateShowChangeCellRenderer', editable: true, cellEditor: 'agSelectCellEditor', cellEditorParams: {{values: ['True', 'False']}}}},
-                            {{headerName: 'Drosophila', field: 'Drosophila', cellRenderer: 'agAnimateShowChangeCellRenderer', editable: true, cellEditor: 'agSelectCellEditor', cellEditorParams: {{values: ['True', 'False']}}}},
-                            {{headerName: 'Zebrafish', field: 'Zebrafish', cellRenderer: 'agAnimateShowChangeCellRenderer', editable: true, cellEditor: 'agSelectCellEditor', cellEditorParams: {{values: ['True', 'False']}}}},
-                            {{headerName: 'Promoter', field: 'Promoter', cellRenderer: 'agAnimateShowChangeCellRenderer', editable: true, cellEditor: 'agSelectCellEditor', cellEditorParams: {{values: ['True', 'False']}}}},
-                            {{headerName: 'Terminator', field: 'Terminator', cellRenderer: 'agAnimateShowChangeCellRenderer', editable: true, cellEditor: 'agSelectCellEditor', cellEditorParams: {{values: ['True', 'False']}}}}
-                        ],
-                        rowData: {df.to_json(orient='records')},
-                        onCellValueChanged: onCellValueChanged,
-                        animateRows: true,
-                        singleClickEdit: true,
-                        theme: 'alpine'
-                    }};
-
-                    // Créer la grille
-                    new agGrid.Grid(document.querySelector('#agGrid'), gridOptions);
-                }});
-            </script>
-        """
-
-        components.html(grid_js)
+        # Afficher le résultat du tableau après modification
+        st.write("Tableau mis à jour :", grid_result)
