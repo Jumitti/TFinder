@@ -274,7 +274,7 @@ def prom_extractor_page():
         downstream_entry = max(updown_slide)
         
         if st.button("test"):
-            for gene_info in data_dff.iterrows():
+            for i, gene_info in data_dff.iterrows():
                 gene_name = gene_info["Gene"]
                 human_checked = gene_info["human"]
                 mouse_checked = gene_info["mouse"]
@@ -286,7 +286,7 @@ def prom_extractor_page():
             
                 if human_checked == True and prom_checked == True:
                     prom_term = 'Promoter'
-                    gene_ids = gene_name
+                    gene_ids = gene_info["Gene"]
                     upstream = int(upstream_entry)
                     downstream = int(downstream_entry)
                     species = 'human'
