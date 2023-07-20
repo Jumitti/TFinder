@@ -286,7 +286,7 @@ def prom_extractor_page():
             
                 if human_checked == True and prom_checked == True:
                     prom_term = 'Promoter'
-                    gene_ids = gene_name.strip()
+                    gene_ids = gene_name.strip().split(\n)
                     upstream = int(upstream_entry)
                     downstream = int(downstream_entry)
                     species = 'human'
