@@ -284,13 +284,18 @@ def prom_extractor_page():
         st.write("Upstream: ", min(updown_slide), " bp from TSS/gene end | Downstream: ", max(updown_slide), " bp from TSS/gene end")
         upstream_entry = -min(updown_slide)
         downstream_entry = max(updown_slide)
-        
-        selected_data_df = st.table(data_dff)
 
-        # Vous pouvez accéder aux valeurs sélectionnées à partir de `selected_data_df`
-        # Par exemple, pour accéder à la valeur de la case Human pour le premier gène :
-        if selected_data_df[0, "human"]:
-            st.write("Human est coché pour le premier gène.")
-        else:
-            st.write("Human n'est pas coché pour le premier gène.")
-                        
+        for i, gene_info in data_dff.iterrows():
+            gene_name = gene_info["Gene"]
+            human_checked = gene_info["human"]
+            mouse_checked = gene_info["mouse"]
+            rat_checked = gene_info["rat"]
+            droso_checked = gene_info["droso"]
+            zebra_checked = gene_info["zebra"]
+            prom_checked = gene_info["prom"]
+            term_checked = gene_info["term"]
+
+            st.write(f"Informations pour le gène {gene_name}:")
+            
+            st.write(f"Human: {human_checked}, Mouse: {mouse_checked}, Rat: {rat_checked}, Drosophila: {droso_checked}, Zebrafish: {zebra_checked}, Promoter: {prom_checked}, Terminator: {term_checked}")
+            
