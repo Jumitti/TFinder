@@ -234,17 +234,16 @@ def prom_extractor_page():
         
         data_df = pd.DataFrame(
             {
-                "widgets": gene_list,
-                "favorite": [True] + [False] * (len(gene_list) - 1),
+                "gene": gene_list,
+                "human": [True] + [False] * (len(gene_list) - 1),
             }
         )
 
         st.data_editor(
             data_df,
             column_config={
-                "favorite": st.column_config.CheckboxColumn(
-                    "Your favorite?",
-                    help="Select your **favorite** widgets",
+                "human": st.column_config.CheckboxColumn(
+                    "Human",
                     default=False,
                 )
             },
