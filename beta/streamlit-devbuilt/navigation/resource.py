@@ -19,6 +19,7 @@
 # SOFTWARE.
 
 import streamlit as st
+import requests
 
 def resource_page():
     st.header('Introduction')
@@ -44,3 +45,13 @@ def resource_page():
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/coordinates.png?raw=true')
         st.caption('Picture 5: Chromosic coordinates on a genetic map from NCBI')
     st.header('Transcription Factors Binding Site')
+    
+    def embed_pdf(pdf_url):
+    embed_code = f'<embed src="{pdf_url}" width="800" height="600" type="application/pdf">'
+    return embed_code
+
+    # URL du fichier PDF que vous souhaitez afficher
+    pdf_url = "https://github.com/Jumitti/TFinder/blob/main/old%20versions/v4.1/Promoter_finder_HELP.pdf"
+
+    # Afficher le PDF en utilisant la fonction embed_pdf()
+    st.markdown(embed_pdf(pdf_url), unsafe_allow_html=True)
