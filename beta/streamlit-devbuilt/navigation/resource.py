@@ -21,6 +21,7 @@
 import streamlit as st
 import requests
 import urllib.request
+import base64
 
 def resource_page():
     st.header('Introduction')
