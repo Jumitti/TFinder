@@ -285,7 +285,7 @@ def prom_extractor_page():
         upstream_entry = -min(updown_slide)
         downstream_entry = max(updown_slide)
         
-        if st.button("🧬 :red[**Step 1.5**] Extract promoter (~5sec/gene)"):
+        if st.button("test"):
             for i, gene_info in data_dff.iterrows():
                 gene_name = gene_info["Gene"]
                 human_checked = gene_info["human"]
