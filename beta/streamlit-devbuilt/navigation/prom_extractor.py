@@ -304,14 +304,9 @@ def prom_extractor_page():
                     st.write(f"Séquences pour le gène {gene_ids}:")
                     for species in selected_species:
                         st.write(species)
-                        st.write
-                        
-                        result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                        
-                        st.success("Promoters extraction complete!")
                 
-                if 'result_promoter' not in st.session_state:
-                    result_promoter = st.text_area("🔸 :red[**Step 1.6**] Output:", value="")
-                else:
-                    result_promoter_text = "\n".join(st.session_state['result_promoter'])
-                    result_promoter = st.text_area("🔸 :red[**Step 1.6**] Output:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
+                # if 'result_promoter' not in st.session_state:
+                    # result_promoter = st.text_area("🔸 :red[**Step 1.6**] Output:", value="")
+                # else:
+                    # result_promoter_text = "\n".join(st.session_state['result_promoter'])
+                    # result_promoter = st.text_area("🔸 :red[**Step 1.6**] Output:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
