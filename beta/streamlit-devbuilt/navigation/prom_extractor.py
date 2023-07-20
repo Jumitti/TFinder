@@ -235,7 +235,7 @@ def prom_extractor_page():
         data_df = pd.DataFrame(
             {
                 "widgets": gene_list,
-                "favorite": [True, False, False, True],
+                "favorite": [True] + [False] * (len(gene_list) - 1),
             }
         )
 
