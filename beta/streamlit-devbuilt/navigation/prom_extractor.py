@@ -304,6 +304,8 @@ def prom_extractor_page():
                 data_df.at[i, "zebra"] = zebra_checked
                 data_df.at[i, "prom"] = prom_checked
                 data_df.at[i, "term"] = term_checked
+                
+                st.write(data_df)
 
                 st.write(f"Informations pour le gène {gene_name}:")
                 st.write(f"Human: {human_checked}, Mouse: {mouse_checked}, Rat: {rat_checked}, Drosophila: {droso_checked}, Zebrafish: {zebra_checked}, Promoter: {prom_checked}, Terminator: {term_checked}")
