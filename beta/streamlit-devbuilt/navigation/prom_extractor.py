@@ -299,8 +299,9 @@ def prom_extractor_page():
             
             st.write(f"Human: {human_checked}, Mouse: {mouse_checked}, Rat: {rat_checked}, Drosophila: {droso_checked}, Zebrafish: {zebra_checked}, Promoter: {prom_checked}, Terminator: {term_checked}")
         
-        if data_dff[0, "Human"]:
-            st.write("Human est coché pour le premier gène.")
-        else:
-            st.write("Human n'est pas coché pour le premier gène.")
+            if human_checked == True and prom_checked == True:
+                st.write(gene_name)
+                st.write('ok')
+            else:
+                st.write('nothing')
             
