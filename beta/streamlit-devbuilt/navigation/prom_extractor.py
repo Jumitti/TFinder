@@ -247,7 +247,7 @@ def prom_extractor_page():
         
         bbox = {}
         for gene in gene_list:
-            bbox = st.write(gene),
+            bbox = gene.write(gene),
                 adhum.checkbox(label="", key=f"Human_{gene}"),
                 admou.checkbox(label="", key=f"Mouse_{gene}"),
                 adrat.checkbox(label="", key=f"Rat_{gene}"),
