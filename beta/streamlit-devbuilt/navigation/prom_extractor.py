@@ -251,37 +251,32 @@ def prom_extractor_page():
                 "human": st.column_config.CheckboxColumn(
                     "Human",
                     default=False,
-                )
-            },{
+                ),
                 "mouse": st.column_config.CheckboxColumn(
                     "Mouse",
                     default=False,
-                )
-            },{
+                ),
                 "rat": st.column_config.CheckboxColumn(
                     "Rat",
                     default=False,
-                )
-            },{
+                ),
                 "droso": st.column_config.CheckboxColumn(
                     "Drosophila",
                     default=False,
-                )
-            },{
+                ),
                 "zebra": st.column_config.CheckboxColumn(
                     "Zebrafish",
                     default=False,
-                )
-            },{
+                ),
                 "prom": st.column_config.CheckboxColumn(
                     "Promoter",
                     default=False,
-                )
-            },{
+                ),
                 "term": st.column_config.CheckboxColumn(
                     "Terminator",
                     default=False,
                 )
             },
             disabled=["widgets"],
-            hide_index=True)
+            hide_index=True,
+        )
