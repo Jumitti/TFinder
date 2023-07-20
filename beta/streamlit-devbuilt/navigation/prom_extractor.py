@@ -26,10 +26,6 @@ import math
 import pickle
 import time
 
-import streamlit.components.v1 as components
-
-from streamlit_aggrid import st_aggrid
-
 def prom_extractor_page():
     # Reverse complement
     def reverse_complement(sequence):
@@ -236,20 +232,22 @@ def prom_extractor_page():
     with tab2:
         gene_list = gene_id_entry.strip().split('\n')
         
-        data = {
-            'Gene': gene_list,
-            'Human': [False] * len(gene_list),
-            'Mouse': [False] * len(gene_list),
-            'Rat': [False] * len(gene_list),
-            'Drosophila': [False] * len(gene_list),
-            'Zebrafish': [False] * len(gene_list),
-            'Promoter': [False] * len(gene_list),
-            'Terminator': [False] * len(gene_list)
-        }
-        df = pd.DataFrame(data)
+        data_df = pd.DataFrame(
+            {
+                "widgets": ["st.selectbox", "st.number_input", "st.text_area", "st.button"],
+                "favorite": [True, False, False, True],
+            }
+        )
 
-        # Utiliser st_aggrid pour afficher le tableau interactif avec des cases à cocher
-        grid_result = st_aggrid(df, editable=True, fit_columns_on_grid_load=True)
-
-        # Afficher le résultat du tableau après modification
-        st.write("Tableau mis à jour :", grid_result)
+        st.data_editor(
+            data_df,
+            column_config={
+                "favorite": st.column_config.CheckboxColumn(
+                    "Your favorite?",
+                    help="Select your **favorite** widgets",
+                    default=False,
+                )
+            },
+            disabled=["widgets"],
+            hide_index=True,
+        )
