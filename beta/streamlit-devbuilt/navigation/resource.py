@@ -20,6 +20,7 @@
 
 import streamlit as st
 import requests
+import urllib.request
 
 def resource_page():
     st.header('Introduction')
