@@ -293,7 +293,7 @@ def prom_extractor_page():
         
         if st.button("Extraire les séquences"):
             # Parcourez le DataFrame pour récupérer les informations de sélection des espèces pour chaque gène
-            for i, gene_row in data_df.iterrows():
+            for gene_row in data_df.iterrows():
                 gene_ids = gene_row["Gene"]
                 selected_species = [species for species, selected in gene_row.items() if selected and species != "Gene"]
                 selected_region = [species for species, selected in gene_row.items() if selected and species != "Gene"]
