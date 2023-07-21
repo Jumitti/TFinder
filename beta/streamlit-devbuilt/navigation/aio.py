@@ -667,11 +667,11 @@ def aio_page():
         if len(table2) > 0:
             if calc_pvalue :
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Relative position", "Sequence", "Relative Score", "p-value", "Promoter"]
+                header = ["Position", "Relative position", "Sequence", "Relative Score", "p-value", "Gene"]
                 table2.insert(0, header)
             else:
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Relative position", "Sequence", "Relative Score", "Promoter"]
+                header = ["Position", "Relative position", "Sequence", "Relative Score", "Gene"]
                 table2.insert(0, header)
             
         else:
@@ -970,14 +970,14 @@ def aio_page():
                     ystart = score_range.min() - 0.02
                     ystop = score_range.max() + 0.02
                     scale = alt.Scale(scheme='category10')
-                    color_scale = alt.Color("Promoter:N", scale=scale)
+                    color_scale = alt.Color("Gene:N", scale=scale)
                     
                     if calc_pvalue:
                         chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                             y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'p-value', 'Sequence', 'Promoter']
+                            tooltip=['Relative position', 'Relative Score', 'p-value', 'Sequence', 'Gene']
                         ).properties(width=600, height=400)
                                               
                         st.altair_chart(chart, use_container_width=True)
@@ -986,7 +986,7 @@ def aio_page():
                             x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                             y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'Sequence', 'Promoter']
+                            tooltip=['Relative position', 'Relative Score', 'Sequence', 'Gene']
                         ).properties(width=600, height=400)
                                               
                         st.altair_chart(chart, use_container_width=True)
@@ -1019,14 +1019,14 @@ def aio_page():
                     ystart = score_range.min() - 0.02
                     ystop = score_range.max() + 0.02
                     scale = alt.Scale(scheme='category10')
-                    color_scale = alt.Color("Promoter:N", scale=scale)
+                    color_scale = alt.Color("Gene:N", scale=scale)
                     
                     if calc_pvalue:
                         chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                             y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'p-value', 'Sequence', 'Promoter']
+                            tooltip=['Relative position', 'Relative Score', 'p-value', 'Sequence', 'Gene']
                         ).properties(width=600, height=400)
                                               
                         st.altair_chart(chart, use_container_width=True)
@@ -1035,7 +1035,7 @@ def aio_page():
                             x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                             y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'Sequence', 'Promoter']
+                            tooltip=['Relative position', 'Relative Score', 'Sequence', 'Gene']
                         ).properties(width=600, height=400)
                                               
                         st.altair_chart(chart, use_container_width=True)
