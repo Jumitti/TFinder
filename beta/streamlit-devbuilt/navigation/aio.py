@@ -958,7 +958,7 @@ def aio_page():
                 with outcol1:
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
-                    st.table(df)
+                    st.dataframe(df, hide_index=True)
 
                     csv = df.to_csv(index=False).encode('utf-8')
 
