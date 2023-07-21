@@ -233,7 +233,7 @@ def prom_extractor_page():
         )
         
         if st.button("Tout cocher pour Human"):
-            data_df["Human"] = True
+            data_df["human"] = True
 
         data_dff = st.data_editor(
             data_df,
