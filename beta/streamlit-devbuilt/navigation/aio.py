@@ -184,6 +184,7 @@ def aio_page():
         tab1, tab2 = st.tabs(['Default','Advance'])
         
         with tab1:
+            geneinput = 'Default'
         # Species
             species = st.selectbox("🔸 :orange[**Step 1.2**] Select species of gene names:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
 
@@ -229,6 +230,7 @@ def aio_page():
                             st.error(f"Error finding terminators: {str(e)}")
         
         with tab2:
+            geneinput = 'Advance'
             gene_list = gene_id_entry.strip().split('\n')
         
             data_df = pd.DataFrame(
@@ -899,10 +901,13 @@ def aio_page():
                 isUIPAC = False
 
     # TSS entry
-        if prom_term == 'Promoter':
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
+        if geneinput == 'Default'
+            if prom_term == 'Promoter':
+                entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
+            else:
+                entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
         else:
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
+            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS and gene end from begin of sequences. Do not modify if you use Step 1")
 
     # Threshold pvalue
         if jaspar:
