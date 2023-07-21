@@ -169,7 +169,7 @@ def aio_page():
 
     #Disposition
 
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2 , gap="large")
 
     # Promoter Finder
     with col1:
