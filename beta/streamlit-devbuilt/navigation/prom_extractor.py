@@ -232,7 +232,7 @@ def prom_extractor_page():
             }
         )
         
-        all_human = st.checkbox("Human"):
+        all_human = st.checkbox("Human")
         if all_human:
             data_df["human"] = True
         else:
