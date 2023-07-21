@@ -246,8 +246,6 @@ def aio_page():
                 }
             )
             
-            
-            
             st.write('**Auto complete species**')
             
             species1, species2, species3, species4, species5 = st.columns([1,1,0.9,1.1,1],gap="small")
@@ -343,6 +341,7 @@ def aio_page():
             st.write("Upstream: ", min(updown_slide), " bp from TSS and gene end | Downstream: ", max(updown_slide), " bp from TSS and gene end")
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
+            st.session_state['upstream_entry'] = upstream_entry
             
             if st.button("🧬 :red[**Step 1.5**] Extract sequences (~5sec/seq)"):
                 with st.spinner("Finding sequences..."):
