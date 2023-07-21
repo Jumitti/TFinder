@@ -956,9 +956,9 @@ def aio_page():
                 st.success(f"Finding responsive elements done for {TF_name}")
                 outcol1, outcol2 = st.columns(2)
                 with outcol1:
-                    df = pd.DataFrame(table2[1:], columns=table2[0])
+                    df = pd.DataFrame(table2[1:], columns=table2[0], index=False)
                     st.session_state['df'] = df
-                    st.dataframe(df, index=False)
+                    st.dataframe(df)
 
                     csv = df.to_csv(index=False).encode('utf-8')
 
