@@ -240,6 +240,31 @@ def prom_extractor_page():
                 data_df["human"] = True
             else:
                 data_df["human"] = False
+                
+            all_mouse = st.checkbox("Mouse")
+            if all_mouse:
+                data_df["mouse"] = True
+            else:
+                data_df["mouse"] = False
+                
+            all_rat = st.checkbox("Rat")
+            if all_rat:
+                data_df["rat"] = True
+            else:
+                data_df["rat"] = False
+            
+            all_droso = st.checkbox("Drosophila")
+            if all_droso:
+                data_df["droso"] = True
+            else:
+                data_df["droso"] = False
+                
+            all_zebra = st.checkbox("Zebrafish")
+            if all_zebra:
+                data_df["zebra"] = True
+            else:
+                data_df["zebra"] = False
+
         
         with genetable1:
             data_dff = st.data_editor(
