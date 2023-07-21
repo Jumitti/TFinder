@@ -529,7 +529,7 @@ def aio_page():
                 line = lines[i]
                 if line.startswith(">"):
                     promoter_name = line[1:]
-                    shortened_promoter_name = promoter_name[:20] if len(promoter_name) > 10 else promoter_name
+                    shortened_promoter_name = promoter_name[:15] if len(promoter_name) > 10 else promoter_name
                     if "Promoter" in promoter_name:
                         region = "Prom."
                     elif "Terminator" in promoter_name:
@@ -981,7 +981,7 @@ def aio_page():
                             x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
-                            tooltip=['Relative position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                            tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
                         ).properties(width=600, height=400)
                                               
                         st.altair_chart(chart, use_container_width=True)
@@ -1030,7 +1030,7 @@ def aio_page():
                             x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
-                            tooltip=['Relative position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                            tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
                         ).properties(width=600, height=400)
                                               
                         st.altair_chart(chart, use_container_width=True)
