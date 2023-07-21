@@ -1022,8 +1022,12 @@ def aio_page():
                     score_range = source['Rel Score'].astype(float)
                     ystart = score_range.min() - 0.02
                     ystop = score_range.max() + 0.02
+                    
+                    source['Gene_Region'] = source['Gene'] + " " + source['Region']
+                    
                     scale = alt.Scale(scheme='category10')
-                    color_scale = alt.Color("Gene:N", scale=scale)
+                    
+                    color_scale = alt.Color("Gene_Region:N", scale=scale)
                     
                     if calc_pvalue:
                         chart = alt.Chart(source).mark_circle().encode(
