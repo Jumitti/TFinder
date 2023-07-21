@@ -273,13 +273,13 @@ def prom_extractor_page():
             st.write('**Auto complete regions**')
             
             all_prom = st.checkbox("Promoter")
-            if all_human:
+            if all_prom:
                 data_df["prom"] = True
             else:
                 data_df["prom"] = False
                 
             all_term = st.checkbox("Terminator")
-            if all_mouse:
+            if all_term:
                 data_df["term"] = True
             else:
                 data_df["term"] = False
