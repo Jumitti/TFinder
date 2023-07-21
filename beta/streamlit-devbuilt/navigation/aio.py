@@ -530,8 +530,14 @@ def aio_page():
                 if line.startswith(">"):
                     promoter_name = line[1:]
                     shortened_promoter_name = promoter_name[:15] if len(promoter_name) > 15 else promoter_name
+                    if "Promoter" in promoter_name:
+                        region = "Prom."
+                    elif "Terminator" in promoter_name:
+                        region = "Term."
+                    else:
+                        region = "n.d"
                     promoter_region = lines[i + 1]
-                    promoters.append((shortened_promoter_name, promoter_region))
+                    promoters.append((shortened_promoter_name, promoter_region, region))
                     i += 2
                 else:
                     i += 1
@@ -540,7 +546,7 @@ def aio_page():
             for matrix_name, matrix in matrices.items():
                 seq_length = len(matrix['A'])
             
-            for shortened_promoter_name, promoter_region in promoters:
+            for shortened_promoter_name, promoter_region, region in promoters:
                 length_prom = len(promoter_region)
                         
                 def generate_random_sequence(length, probabilities):
@@ -581,7 +587,7 @@ def aio_page():
             min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
 
             # REF
-            for shortened_promoter_name, promoter_region in promoters:
+            for shortened_promoter_name, promoter_region, region in promoters:
                 found_positions = []
                 length_prom = len(promoter_region)
 
@@ -634,7 +640,7 @@ def aio_page():
                                        str(tis_position).ljust(15),
                                        sequence_with_context,
                                        "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
-                                       shortened_promoter_name]
+                                       shortened_promoter_name, region]
                                 table2.append(row)
                     else:
                         for position, seq, normalized_score in found_positions:
@@ -657,17 +663,17 @@ def aio_page():
                                        str(tis_position).ljust(15),
                                        sequence_with_context,
                                        "{:.6f}".format(normalized_score).ljust(12),
-                                       shortened_promoter_name]
+                                       shortened_promoter_name, region]
                                 table2.append(row)
 
         if len(table2) > 0:
             if calc_pvalue :
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Relative position", "Sequence", "Relative Score", "p-value", "Gene"]
+                header = ["Position", "Relative position", "Sequence", "Relative Score", "p-value", "Gene", "Region"]
                 table2.insert(0, header)
             else:
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Relative position", "Sequence", "Relative Score", "Gene"]
+                header = ["Position", "Relative position", "Sequence", "Relative Score", "Gene", "Region"]
                 table2.insert(0, header)
             
         else:
