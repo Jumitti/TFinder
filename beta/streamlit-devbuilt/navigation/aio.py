@@ -981,7 +981,7 @@ def aio_page():
                             x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                             y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'p-value', 'Sequence', 'Gene']
+                            tooltip=['Relative position', 'Relative Score', 'p-value', 'Sequence', 'Gene', 'Region']
                         ).properties(width=600, height=400)
                                               
                         st.altair_chart(chart, use_container_width=True)
@@ -990,7 +990,7 @@ def aio_page():
                             x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                             y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'Sequence', 'Gene']
+                            tooltip=['Relative position', 'Relative Score', 'Sequence', 'Gene', 'Region']
                         ).properties(width=600, height=400)
                                               
                         st.altair_chart(chart, use_container_width=True)
@@ -1030,7 +1030,7 @@ def aio_page():
                             x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                             y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'p-value', 'Sequence', 'Gene']
+                            tooltip=['Relative position', 'Relative Score', 'p-value', 'Sequence', 'Gene', 'Region']
                         ).properties(width=600, height=400)
                                               
                         st.altair_chart(chart, use_container_width=True)
@@ -1039,7 +1039,7 @@ def aio_page():
                             x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                             y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'Sequence', 'Gene']
+                            tooltip=['Relative position', 'Relative Score', 'Sequence', 'Gene', 'Region']
                         ).properties(width=600, height=400)
                                               
                         st.altair_chart(chart, use_container_width=True)
