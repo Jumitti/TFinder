@@ -232,7 +232,7 @@ def prom_extractor_page():
             }
         )
         
-        genetable1, genetable2, genetable3 = st.columns([0.6,0.2,0.2])
+        genetable1, genetable2, genetable3 = st.columns([0.7,0.15,0.15])
         
         with genetable2:
         
