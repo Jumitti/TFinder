@@ -337,15 +337,10 @@ def aio_page():
             )
             
             
-            updown_slide = st.slider("🔸 :red[**Step 1.4 Promoter**] Upstream/downstream from TSS (bp)", -10000, 10000, (-2000, 500), step=100)
-            st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
-            upstream_entry_prom = -min(updown_slide)
-            downstream_entry_prom = max(updown_slide)
-        
-            updown_slide = st.slider("🔸 :red[**Step 1.4 Terminator**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
-            st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
-            upstream_entry_term = -min(updown_slide)
-            downstream_entry_term = max(updown_slide)
+            updown_slide = st.slider("🔸 :red[**Step 1.4**] Upstream/downstream from TSS and gene end (bp)", -10000, 10000, (-2000, 500), step=100)
+            st.write("Upstream: ", min(updown_slide), " bp from TSS and gene end | Downstream: ", max(updown_slide), " bp from TSS and gene end")
+            upstream_entry = -min(updown_slide)
+            downstream_entry = max(updown_slide)
             
             if st.button("🧬 :red[**Step 1.5**] Extract sequences (~5sec/seq)"):
                 with st.spinner("Finding sequences..."):
@@ -362,8 +357,8 @@ def aio_page():
                         if human_checked == True and prom_checked == True:
                             prom_term = 'Promoter'
                             gene_ids = gene_name.strip().split('\n')
-                            upstream = int(upstream_entry_prom)
-                            downstream = int(downstream_entry_prom)
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
                             species = 'human'
                             try:
                                 result_promoter = find_promoters(gene_ids, species, upstream, downstream)
@@ -372,8 +367,8 @@ def aio_page():
                         if mouse_checked == True and prom_checked == True:
                             prom_term = 'Promoter'
                             gene_ids = gene_name.strip().split('\n')
-                            upstream = int(upstream_entry_prom)
-                            downstream = int(downstream_entry_prom)
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
                             species = 'mouse'
                             try:
                                 result_promoter = find_promoters(gene_ids, species, upstream, downstream)
@@ -382,8 +377,8 @@ def aio_page():
                         if rat_checked == True and prom_checked == True:
                             prom_term = 'Promoter'
                             gene_ids = gene_name.strip().split('\n')
-                            upstream = int(upstream_entry_prom)
-                            downstream = int(downstream_entry_prom)
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
                             species = 'rat'
                             try:
                                 result_promoter = find_promoters(gene_ids, species, upstream, downstream)
@@ -392,8 +387,8 @@ def aio_page():
                         if droso_checked == True and prom_checked == True:
                             prom_term = 'Promoter'
                             gene_ids = gene_name.strip().split('\n')
-                            upstream = int(upstream_entry_prom)
-                            downstream = int(downstream_entry_prom)
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
                             species = 'drosophila'
                             try:
                                 result_promoter = find_promoters(gene_ids, species, upstream, downstream)
@@ -402,8 +397,8 @@ def aio_page():
                         if zebra_checked == True and prom_checked == True:
                             prom_term = 'Promoter'
                             gene_ids = gene_name.strip().split('\n')
-                            upstream = int(upstream_entry_prom)
-                            downstream = int(downstream_entry_prom)
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
                             species = 'zebrafish'
                             try:
                                 result_promoter = find_promoters(gene_ids, species, upstream, downstream)
@@ -412,8 +407,8 @@ def aio_page():
                         if human_checked == True and term_checked == True:
                             prom_term = 'Terminator'
                             gene_ids = gene_name.strip().split('\n')
-                            upstream = int(upstream_entry_term)
-                            downstream = int(downstream_entry_term)
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
                             species = 'human'
                             try:
                                 result_promoter = find_promoters(gene_ids, species, upstream, downstream)
@@ -422,8 +417,8 @@ def aio_page():
                         if mouse_checked == True and term_checked == True:
                             prom_term = 'Terminator'
                             gene_ids = gene_name.strip().split('\n')
-                            upstream = int(upstream_entry_term)
-                            downstream = int(downstream_entry_term)
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
                             species = 'mouse'
                             try:
                                 result_promoter = find_promoters(gene_ids, species, upstream, downstream)
@@ -432,8 +427,8 @@ def aio_page():
                         if rat_checked == True and term_checked == True:
                             prom_term = 'Terminator'
                             gene_ids = gene_name.strip().split('\n')
-                            upstream = int(upstream_entry_term)
-                            downstream = int(downstream_entry_term)
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
                             species = 'rat'
                             try:
                                 result_promoter = find_promoters(gene_ids, species, upstream, downstream)
@@ -442,8 +437,8 @@ def aio_page():
                         if droso_checked == True and term_checked == True:
                             prom_term = 'Terminator'
                             gene_ids = gene_name.strip().split('\n')
-                            upstream = int(upstream_entry_term)
-                            downstream = int(downstream_entry_term)
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
                             species = 'drosophila'
                             try:
                                 result_promoter = find_promoters(gene_ids, species, upstream, downstream)
@@ -452,8 +447,8 @@ def aio_page():
                         if zebra_checked == True and term_checked == True:
                             prom_term = 'Terminator'
                             gene_ids = gene_name.strip().split('\n')
-                            upstream = int(upstream_entry_term)
-                            downstream = int(downstream_entry_term)
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
                             species = 'zebrafish'
                             try:
                                 result_promoter = find_promoters(gene_ids, species, upstream, downstream)
