@@ -302,7 +302,7 @@ def aio_page():
                 data_df,
                 column_config={
                     "human": st.column_config.CheckboxColumn(
-                        "Human", hide_help = True,
+                        "Human",
                         default=False,
                     ),
                     "mouse": st.column_config.CheckboxColumn(
@@ -330,6 +330,7 @@ def aio_page():
                         default=False,
                     )
                 },
+                disabled=["human"],
                 hide_index=True,
             )
             
