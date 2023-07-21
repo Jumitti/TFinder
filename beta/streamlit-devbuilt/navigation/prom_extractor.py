@@ -235,7 +235,7 @@ def prom_extractor_page():
         genetable1, genetable2 = st.columns([0.7,0.3])
         
         with genetable2:
-            st.text('**Auto complete species**')
+            st.write('**Auto complete species**')
             all_human = st.checkbox("Human")
             if all_human:
                 data_df["human"] = True
