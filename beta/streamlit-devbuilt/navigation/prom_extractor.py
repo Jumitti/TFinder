@@ -232,46 +232,50 @@ def prom_extractor_page():
             }
         )
         
-        all_human = st.checkbox("Human")
-        if all_human:
-            data_df["human"] = True
-        else:
-            data_df["human"] = False
-
-        data_dff = st.data_editor(
-            data_df,
-            column_config={
-                "human": st.column_config.CheckboxColumn(
-                    "Human",
-                    default=False,
-                ),
-                "mouse": st.column_config.CheckboxColumn(
-                    "Mouse",
-                    default=False,
-                ),
-                "rat": st.column_config.CheckboxColumn(
-                    "Rat",
-                    default=False,
-                ),
-                "droso": st.column_config.CheckboxColumn(
-                    "Drosophila",
-                    default=False,
-                ),
-                "zebra": st.column_config.CheckboxColumn(
-                    "Zebrafish",
-                    default=False,
-                ),
-                "prom": st.column_config.CheckboxColumn(
-                    "Promoter",
-                    default=False,
-                ),
-                "term": st.column_config.CheckboxColumn(
-                    "Terminator",
-                    default=False,
-                )
-            },
-            hide_index=True,
-        )
+        genetable1, genetable2 = st.columns([0.7,0.3])
+        
+        with genetable2:
+            all_human = st.checkbox("Human")
+            if all_human:
+                data_df["human"] = True
+            else:
+                data_df["human"] = False
+        
+        with genetable1:
+            data_dff = st.data_editor(
+                data_df,
+                column_config={
+                    "human": st.column_config.CheckboxColumn(
+                        "Human",
+                        default=False,
+                    ),
+                    "mouse": st.column_config.CheckboxColumn(
+                        "Mouse",
+                        default=False,
+                    ),
+                    "rat": st.column_config.CheckboxColumn(
+                        "Rat",
+                        default=False,
+                    ),
+                    "droso": st.column_config.CheckboxColumn(
+                        "Drosophila",
+                        default=False,
+                    ),
+                    "zebra": st.column_config.CheckboxColumn(
+                        "Zebrafish",
+                        default=False,
+                    ),
+                    "prom": st.column_config.CheckboxColumn(
+                        "Promoter",
+                        default=False,
+                    ),
+                    "term": st.column_config.CheckboxColumn(
+                        "Terminator",
+                        default=False,
+                    )
+                },
+                hide_index=True,
+            )
         
         promcol, termcol = st.columns(2)
         with promcol:
