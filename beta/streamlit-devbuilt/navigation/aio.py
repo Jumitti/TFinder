@@ -246,57 +246,44 @@ def aio_page():
                 }
             )
             
-            st.write('**Auto complete species**')
+            st.write('**Select species for all genes:**')
             
             species1, species2, species3, species4, species5 = st.columns([1,1,0.9,1.1,1],gap="small")
             
             with species1:
                 all_human = st.checkbox("Human")
-                if all_human:
-                    data_df["human"] = True
-                else:
-                    data_df["human"] = False
             with species2:    
                 all_mouse = st.checkbox("Mouse")
-                if all_mouse:
-                    data_df["mouse"] = True
-                else:
-                    data_df["mouse"] = False
             with species3:        
                 all_rat = st.checkbox("Rat")
-                if all_rat:
-                    data_df["rat"] = True
-                else:
-                    data_df["rat"] = False
             with species4:    
                 all_droso = st.checkbox("Drosophila")
-                if all_droso:
-                    data_df["droso"] = True
-                else:
-                    data_df["droso"] = False
             with species5:        
                 all_zebra = st.checkbox("Zebrafish")
-                if all_zebra:
-                    data_df["zebra"] = True
-                else:
-                    data_df["zebra"] = False
             
-            st.write('**Auto complete regions**')
+            st.write('**Select regions for all genes:**')
             
             region1, region2 = st.columns(2)
             
             with region1: 
                 all_prom = st.checkbox("Promoter")
-                if all_prom:
-                    data_df["prom"] = True
-                else:
-                    data_df["prom"] = False
             with region2:         
                 all_term = st.checkbox("Terminator")
-                if all_term:
-                    data_df["term"] = True
-                else:
-                    data_df["term"] = False
+                    
+            if all_human:
+                data_df["human"] = True
+            if all_mouse:
+                data_df["mouse"] = True
+            if all_rat:
+                data_df["rat"] = True
+            if all_droso:
+                data_df["droso"] = True
+            if all_zebra:
+                data_df["zebra"] = True
+            if all_prom:
+                data_df["prom"] = True
+            if all_term:
+                data_df["term"] = True
                     
             st.write('**On demand genes table**')      
                 
