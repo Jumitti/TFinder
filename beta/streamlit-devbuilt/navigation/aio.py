@@ -246,6 +246,14 @@ def aio_page():
                 }
             )
             
+            all_human_checked = False
+            all_mouse_checked = False
+            all_rat_checked = False
+            all_droso_checked = False
+            all_zebra_checked = False
+            all_prom_checked = False
+            all_term_checked = False
+            
             st.write('**Select species for all genes:**')
             
             species1, species2, species3, species4, species5 = st.columns([1,1,0.9,1.1,1],gap="small")
@@ -270,20 +278,28 @@ def aio_page():
             with region2:         
                 all_term = st.checkbox("Terminator")
                     
-            if all_human:
-                data_df["human"] = True
-            if all_mouse:
-                data_df["mouse"] = True
-            if all_rat:
-                data_df["rat"] = True
-            if all_droso:
-                data_df["droso"] = True
-            if all_zebra:
-                data_df["zebra"] = True
-            if all_prom:
-                data_df["prom"] = True
-            if all_term:
-                data_df["term"] = True
+            if all_human_checked != all_human:
+                data_df["human"] = all_human
+            if all_mouse_checked != all_mouse:
+                data_df["mouse"] = all_mouse
+            if all_rat_checked != all_rat:
+                data_df["rat"] = all_rat
+            if all_droso_checked != all_droso:
+                data_df["droso"] = all_droso
+            if all_zebra_checked != all_zebra:
+                data_df["zebra"] = all_zebra
+            if all_prom_checked != all_prom:
+                data_df["prom"] = all_prom
+            if all_term_checked != all_term:
+                data_df["term"] = all_term
+            
+            all_human_checked = all_human
+            all_mouse_checked = all_mouse
+            all_rat_checked = all_rat
+            all_droso_checked = all_droso
+            all_zebra_checked = all_zebra
+            all_prom_checked = all_prom
+            all_term_checked = all_term
                     
             st.write('**On demand genes table**')      
                 
