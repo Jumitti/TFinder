@@ -901,7 +901,7 @@ def aio_page():
                 isUIPAC = False
 
     # TSS entry
-        if geneinput == 'Default'
+        if geneinput == 'Default':
             if prom_term == 'Promoter':
                 entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
             else:
