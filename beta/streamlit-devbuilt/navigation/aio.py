@@ -337,7 +337,7 @@ def aio_page():
             )
             
             
-            updown_slide = st.slider("🔸 :red[**Step 1.4**] Upstream/downstream from TSS and gene end (bp)", -10000, 10000, (-2000, 500), step=100)
+            updown_slide = st.slider("🔸 :red[**Step 1.4**] Upstream/downstream from TSS and gene end (bp)", -10000, 10000, (-2000, 2000), step=100)
             st.write("Upstream: ", min(updown_slide), " bp from TSS and gene end | Downstream: ", max(updown_slide), " bp from TSS and gene end")
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
