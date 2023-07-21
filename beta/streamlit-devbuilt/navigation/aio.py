@@ -297,6 +297,8 @@ def aio_page():
                     data_df["term"] = True
                 else:
                     data_df["term"] = False
+                    
+            st.write('**On demand genes table**')      
                 
             data_dff = st.data_editor(
                 data_df,
