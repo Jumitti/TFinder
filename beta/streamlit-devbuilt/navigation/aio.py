@@ -248,7 +248,7 @@ def aio_page():
             
             st.write('**Auto complete species**')
             
-            species1, species2, species3, species4, species5 = st.columns(5,gap="small")
+            species1, species2, species3, species4, species5 = st.columns([1,1,0.9,1.1,1],gap="small")
             
             with species1:
                 all_human = st.checkbox("Human")
