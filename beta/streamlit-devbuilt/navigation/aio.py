@@ -165,7 +165,7 @@ def aio_page():
             return result_promoter
 
         except Exception as e:
-            raise Exception(f"Error retrieving gene information: {str(e)}")
+            raise Exception(f"Error retrieving gene information: {str(e)} for species {species}")
 
     #Disposition
 
