@@ -269,12 +269,12 @@ def prom_extractor_page():
         
         promcol, termcol = st.columns(2)
         with promcol:
-            updown_slide = st.slider("🔸 :red[**Step 1.4**] Upstream/downstream from TSS (bp)", -10000, 10000, (-2000, 500), step=100)
+            updown_slide = st.slider("🔸 :red[**Step 1.4 Promoter**] Upstream/downstream from TSS (bp)", -10000, 10000, (-2000, 500), step=100)
             st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
             upstream_entry_prom = -min(updown_slide)
             downstream_entry_prom = max(updown_slide)
         with termcol:
-            updown_slide = st.slider("🔸 :red[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
+            updown_slide = st.slider("🔸 :red[**Step 1.4 Terminator**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
             st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
             upstream_entry_term = -min(updown_slide)
             downstream_entry_term = max(updown_slide)
