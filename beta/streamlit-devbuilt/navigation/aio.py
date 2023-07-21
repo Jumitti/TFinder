@@ -332,7 +332,7 @@ def aio_page():
                         default=False,
                     )
                 },
-                disabled=["gene","human","mouse","rat","droso","zebra","prom"],
+                disabled=["Gene"],
                 hide_index=True,
             )
             
