@@ -529,7 +529,7 @@ def aio_page():
                 line = lines[i]
                 if line.startswith(">"):
                     promoter_name = line[1:]
-                    shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
+                    shortened_promoter_name = promoter_name[:20] if len(promoter_name) > 10 else promoter_name
                     if "Promoter" in promoter_name:
                         region = "Prom."
                     elif "Terminator" in promoter_name:
@@ -669,11 +669,11 @@ def aio_page():
         if len(table2) > 0:
             if calc_pvalue :
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Relative position", "Sequence", "Relative Score", "p-value", "Gene", "Region"]
+                header = ["Position", "Rel Position", "Sequence", "Rel Score", "p-value", "Gene", "Region"]
                 table2.insert(0, header)
             else:
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Relative position", "Sequence", "Relative Score", "Gene", "Region"]
+                header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Region"]
                 table2.insert(0, header)
             
         else:
@@ -978,19 +978,19 @@ def aio_page():
                     
                     if calc_pvalue:
                         chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                            y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                            tooltip=['Relative position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
                         ).properties(width=600, height=400)
                                               
                         st.altair_chart(chart, use_container_width=True)
                     else:
                         chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                            y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'Sequence', 'Gene', 'Region']
+                            tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
                         ).properties(width=600, height=400)
                                               
                         st.altair_chart(chart, use_container_width=True)
@@ -1027,19 +1027,19 @@ def aio_page():
                     
                     if calc_pvalue:
                         chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                            y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                            tooltip=['Relative position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
                         ).properties(width=600, height=400)
                                               
                         st.altair_chart(chart, use_container_width=True)
                     else:
                         chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                            y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'Sequence', 'Gene', 'Region']
+                            tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
                         ).properties(width=600, height=400)
                                               
                         st.altair_chart(chart, use_container_width=True)
