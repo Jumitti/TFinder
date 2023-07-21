@@ -331,7 +331,6 @@ def aio_page():
                     )
                 },
                 hide_index=True,
-                hide_help=True
             )
             
             
