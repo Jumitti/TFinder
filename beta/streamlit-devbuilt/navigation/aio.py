@@ -970,7 +970,7 @@ def aio_page():
                     
                 with outcol2:
                     source = df
-                    score_range = source['Relative Score'].astype(float)
+                    score_range = source['Rel Score'].astype(float)
                     ystart = score_range.min() - 0.02
                     ystop = score_range.max() + 0.02
                     scale = alt.Scale(scheme='category10')
@@ -1019,7 +1019,7 @@ def aio_page():
                     
                 with outcol2:
                     source = df
-                    score_range = source['Relative Score'].astype(float)
+                    score_range = source['Rel Score'].astype(float)
                     ystart = score_range.min() - 0.02
                     ystop = score_range.max() + 0.02
                     scale = alt.Scale(scheme='category10')
