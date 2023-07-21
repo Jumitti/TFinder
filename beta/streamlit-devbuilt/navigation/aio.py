@@ -58,7 +58,7 @@ def aio_page():
                     return gene_id
 
             else:
-                raise Exception(f"Error during gene search: {response.status_code}")
+                st.error(f"Error during gene search: {gene} in {species}")
 
         except Exception as e:
             raise Exception(f"Error: {str(e)}")
