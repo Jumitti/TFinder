@@ -138,7 +138,7 @@ def aio_page():
     # Promoter Finder
     def find_promoters(gene_ids, species, upstream, downstream):
         try:
-            result_promoter = []
+            
             for gene_id in gene_ids:
                 if gene_id.isdigit():
                     entrez_id = gene_id
@@ -175,6 +175,8 @@ def aio_page():
     with col1:
         st.header(':orange[Step 1] Promoter and Terminator Extractor')
         st.info("💡 If you have a FASTA sequence, go to :orange[**Step 2**]")
+        
+        result_promoter = []
 
     # Gene ID
         gene_id_entry = st.text_area("🔸 :orange[**Step 1.1**] Gene ID:", value="PRKN\n351")
