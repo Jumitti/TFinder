@@ -229,7 +229,233 @@ def aio_page():
                             st.error(f"Error finding terminators: {str(e)}")
         
         with tab2:
-            st.success('ok')
+            gene_list = gene_id_entry.strip().split('\n')
+        
+            data_df = pd.DataFrame(
+                {
+                    "Gene": gene_list,
+                    "human": [False] * len(gene_list),
+                    "mouse": [False] * len(gene_list),
+                    "rat": [False] * len(gene_list),
+                    "droso": [False] * len(gene_list),
+                    "zebra": [False] * len(gene_list),
+                    "prom": [False] * len(gene_list),
+                    "term": [False] * len(gene_list),
+                }
+            )
+            
+            
+            
+            st.write('**Auto complete species**')
+            
+            species1, species2, species3, species4, species5 = st.columns(5)
+            
+            with species1:
+                all_human = st.checkbox("Human")
+                if all_human:
+                    data_df["human"] = True
+                else:
+                    data_df["human"] = False
+            with species2:    
+                all_mouse = st.checkbox("Mouse")
+                if all_mouse:
+                    data_df["mouse"] = True
+                else:
+                    data_df["mouse"] = False
+            with species3:        
+                all_rat = st.checkbox("Rat")
+                if all_rat:
+                    data_df["rat"] = True
+                else:
+                    data_df["rat"] = False
+            with species4:    
+                all_droso = st.checkbox("Drosophila")
+                if all_droso:
+                    data_df["droso"] = True
+                else:
+                    data_df["droso"] = False
+            with species5:        
+                all_zebra = st.checkbox("Zebrafish")
+                if all_zebra:
+                    data_df["zebra"] = True
+                else:
+                    data_df["zebra"] = False
+            
+            st.write('**Auto complete regions**')
+            
+            region1, region2 = st.columns(2)
+            
+            with region1: 
+                all_prom = st.checkbox("Promoter")
+                if all_prom:
+                    data_df["prom"] = True
+                else:
+                    data_df["prom"] = False
+            with region2:         
+                all_term = st.checkbox("Terminator")
+                if all_term:
+                    data_df["term"] = True
+                else:
+                    data_df["term"] = False
+                
+            data_dff = st.data_editor(
+                data_df,
+                column_config={
+                    "human": st.column_config.CheckboxColumn(
+                        "Human",
+                        default=False,
+                    ),
+                    "mouse": st.column_config.CheckboxColumn(
+                        "Mouse",
+                        default=False,
+                    ),
+                    "rat": st.column_config.CheckboxColumn(
+                        "Rat",
+                        default=False,
+                    ),
+                    "droso": st.column_config.CheckboxColumn(
+                        "Drosophila",
+                        default=False,
+                    ),
+                    "zebra": st.column_config.CheckboxColumn(
+                        "Zebrafish",
+                        default=False,
+                    ),
+                    "prom": st.column_config.CheckboxColumn(
+                        "Promoter",
+                        default=False,
+                    ),
+                    "term": st.column_config.CheckboxColumn(
+                        "Terminator",
+                        default=False,
+                    )
+                },
+                hide_index=True,
+            )
+            
+            
+            updown_slide = st.slider("🔸 :red[**Step 1.4 Promoter**] Upstream/downstream from TSS (bp)", -10000, 10000, (-2000, 500), step=100)
+            st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
+            upstream_entry_prom = -min(updown_slide)
+            downstream_entry_prom = max(updown_slide)
+        
+            updown_slide = st.slider("🔸 :red[**Step 1.4 Terminator**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
+            st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
+            upstream_entry_term = -min(updown_slide)
+            downstream_entry_term = max(updown_slide)
+            
+            if st.button("🧬 :red[**Step 1.5**] Extract sequences (~5sec/seq)"):
+                with st.spinner("Finding sequences..."):
+                    for i, gene_info in data_dff.iterrows():
+                        gene_name = gene_info["Gene"]
+                        human_checked = gene_info["human"]
+                        mouse_checked = gene_info["mouse"]
+                        rat_checked = gene_info["rat"]
+                        droso_checked = gene_info["droso"]
+                        zebra_checked = gene_info["zebra"]
+                        prom_checked = gene_info["prom"]
+                        term_checked = gene_info["term"]
+                    
+                        if human_checked == True and prom_checked == True:
+                            prom_term = 'Promoter'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry_prom)
+                            downstream = int(downstream_entry_prom)
+                            species = 'human'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if mouse_checked == True and prom_checked == True:
+                            prom_term = 'Promoter'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry_prom)
+                            downstream = int(downstream_entry_prom)
+                            species = 'mouse'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if rat_checked == True and prom_checked == True:
+                            prom_term = 'Promoter'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry_prom)
+                            downstream = int(downstream_entry_prom)
+                            species = 'rat'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if droso_checked == True and prom_checked == True:
+                            prom_term = 'Promoter'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry_prom)
+                            downstream = int(downstream_entry_prom)
+                            species = 'drosophila'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if zebra_checked == True and prom_checked == True:
+                            prom_term = 'Promoter'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry_prom)
+                            downstream = int(downstream_entry_prom)
+                            species = 'zebrafish'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if human_checked == True and term_checked == True:
+                            prom_term = 'Terminator'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry_term)
+                            downstream = int(downstream_entry_term)
+                            species = 'human'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if mouse_checked == True and term_checked == True:
+                            prom_term = 'Terminator'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry_term)
+                            downstream = int(downstream_entry_term)
+                            species = 'mouse'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if rat_checked == True and term_checked == True:
+                            prom_term = 'Terminator'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry_term)
+                            downstream = int(downstream_entry_term)
+                            species = 'rat'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if droso_checked == True and term_checked == True:
+                            prom_term = 'Terminator'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry_term)
+                            downstream = int(downstream_entry_term)
+                            species = 'drosophila'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if zebra_checked == True and term_checked == True:
+                            prom_term = 'Terminator'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry_term)
+                            downstream = int(downstream_entry_term)
+                            species = 'zebrafish'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
 
     # Promoter output state
     with col2:
