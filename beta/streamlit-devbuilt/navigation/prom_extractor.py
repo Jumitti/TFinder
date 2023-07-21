@@ -232,8 +232,11 @@ def prom_extractor_page():
             }
         )
         
-        if st.button("Tout cocher pour Human"):
+        all_human = st.checkbox("Human"):
+        if all_human:
             data_df["human"] = True
+        else:
+            data_df["human"] = False
 
         data_dff = st.data_editor(
             data_df,
