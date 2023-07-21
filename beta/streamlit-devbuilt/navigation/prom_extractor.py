@@ -231,6 +231,9 @@ def prom_extractor_page():
                 "term": [False] * len(gene_list),
             }
         )
+        
+        if st.button("Tout cocher pour Human"):
+            data_df["Human"] = True
 
         data_dff = st.data_editor(
             data_df,
