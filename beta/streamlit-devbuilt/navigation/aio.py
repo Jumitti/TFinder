@@ -958,43 +958,42 @@ def aio_page():
                 response_data = response.json()
                 TF_name = response_data['name']
                 st.success(f"Finding responsive elements done for {TF_name}")
-                outcol1, outcol2 = st.columns(2)
-                with outcol1:
-                    df = pd.DataFrame(table2[1:], columns=table2[0])
-                    st.session_state['df'] = df
-                    st.dataframe(df, hide_index=True)
+                
+                df = pd.DataFrame(table2[1:], columns=table2[0])
+                st.session_state['df'] = df
+                st.dataframe(df, hide_index=True)
 
-                    csv = df.to_csv(index=False).encode('utf-8')
+                csv = df.to_csv(index=False).encode('utf-8')
 
-                    st.download_button("💾 Download (.csv)",csv,"file.csv","text/csv",key='download-csv')
-                    
-                with outcol2:
-                    source = df
-                    score_range = source['Rel Score'].astype(float)
-                    ystart = score_range.min() - 0.02
-                    ystop = score_range.max() + 0.02
-                    source['Gene_Region'] = source['Gene'] + " " + source['Region']
-                    scale = alt.Scale(scheme='category10')
-                    color_scale = alt.Color("Gene_Region:N", scale=scale)
-                    
-                    if calc_pvalue:
-                        chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=color_scale,
-                            tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
-                        ).properties(width=600, height=400)
-                                              
-                        st.altair_chart(chart, use_container_width=True)
-                    else:
-                        chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=color_scale,
-                            tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
-                        ).properties(width=600, height=400)
-                                              
-                        st.altair_chart(chart, use_container_width=True)
+                st.download_button("💾 Download (.csv)",csv,"file.csv","text/csv",key='download-csv')
+                
+            
+                source = df
+                score_range = source['Rel Score'].astype(float)
+                ystart = score_range.min() - 0.02
+                ystop = score_range.max() + 0.02
+                source['Gene_Region'] = source['Gene'] + " " + source['Region']
+                scale = alt.Scale(scheme='category10')
+                color_scale = alt.Color("Gene_Region:N", scale=scale)
+                
+                if calc_pvalue:
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=color_scale,
+                        tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                    ).properties(width=600, height=400)
+                                          
+                    st.altair_chart(chart, use_container_width=True)
+                else:
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=color_scale,
+                        tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
+                    ).properties(width=600, height=400)
+                                          
+                    st.altair_chart(chart, use_container_width=True)
             else: 
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
@@ -1008,42 +1007,40 @@ def aio_page():
             if len(table2) > 0:
                 st.divider()
                 st.success(f"Finding responsive elements done")
-                outcol1, outcol2 = st.columns(2)
-                with outcol1:
-                    df = pd.DataFrame(table2[1:], columns=table2[0])
-                    st.session_state['df'] = df
-                    st.dataframe(df)
-                    
-                    csv = df.to_csv(index=False).encode('utf-8')
+                
+                df = pd.DataFrame(table2[1:], columns=table2[0])
+                st.session_state['df'] = df
+                st.dataframe(df)
+                
+                csv = df.to_csv(index=False).encode('utf-8')
 
-                    st.download_button("💾 Download (.csv)",csv,"file.csv","text/csv",key='download-csv')
-                    
-                with outcol2:
-                    source = df
-                    score_range = source['Rel Score'].astype(float)
-                    ystart = score_range.min() - 0.02
-                    ystop = score_range.max() + 0.02
-                    source['Gene_Region'] = source['Gene'] + " " + source['Region']
-                    scale = alt.Scale(scheme='category10')
-                    color_scale = alt.Color("Gene_Region:N", scale=scale)
-                    
-                    if calc_pvalue:
-                        chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=color_scale,
-                            tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
-                        ).properties(width=600, height=400)
-                                              
-                        st.altair_chart(chart, use_container_width=True)
-                    else:
-                        chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=color_scale,
-                            tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
-                        ).properties(width=600, height=400)
-                                              
-                        st.altair_chart(chart, use_container_width=True)
+                st.download_button("💾 Download (.csv)",csv,"file.csv","text/csv",key='download-csv')
+             
+                source = df
+                score_range = source['Rel Score'].astype(float)
+                ystart = score_range.min() - 0.02
+                ystop = score_range.max() + 0.02
+                source['Gene_Region'] = source['Gene'] + " " + source['Region']
+                scale = alt.Scale(scheme='category10')
+                color_scale = alt.Color("Gene_Region:N", scale=scale)
+                
+                if calc_pvalue:
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=color_scale,
+                        tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                    ).properties(width=600, height=400)
+                                          
+                    st.altair_chart(chart, use_container_width=True)
+                else:
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=color_scale,
+                        tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
+                    ).properties(width=600, height=400)
+                                          
+                    st.altair_chart(chart, use_container_width=True)
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
