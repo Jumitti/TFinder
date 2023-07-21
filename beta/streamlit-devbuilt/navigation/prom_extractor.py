@@ -232,10 +232,12 @@ def prom_extractor_page():
             }
         )
         
-        genetable1, genetable2 = st.columns([0.7,0.3])
+        genetable1, genetable2, genetable3 = st.columns([0.6,0.2,0.2])
         
         with genetable2:
+        
             st.write('**Auto complete species**')
+            
             all_human = st.checkbox("Human")
             if all_human:
                 data_df["human"] = True
@@ -265,6 +267,22 @@ def prom_extractor_page():
                 data_df["zebra"] = True
             else:
                 data_df["zebra"] = False
+        
+        with genetable3:
+        
+            st.write('**Auto complete regions**')
+            
+            all_prom = st.checkbox("Promoter")
+            if all_human:
+                data_df["prom"] = True
+            else:
+                data_df["prom"] = False
+                
+            all_term = st.checkbox("Terminator")
+            if all_mouse:
+                data_df["term"] = True
+            else:
+                data_df["term"] = False
 
         
         with genetable1:
