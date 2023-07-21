@@ -156,7 +156,7 @@ def prom_extractor_page():
                     result_promoter.append(f">{gene_name} | {species_API} | {chraccver} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
                     st.session_state['result_promoter'] = result_promoter
                 else:
-                    result_promoter.append(f">{gene_name} | {species_API} | {chraccver} | Gene end (on chromosome): {chrstop}\n{dna_sequence}\n")
+                    result_promoter.append(f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop}\n{dna_sequence}\n")
                     st.session_state['result_promoter'] = result_promoter
 
             return result_promoter
