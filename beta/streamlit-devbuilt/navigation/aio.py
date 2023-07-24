@@ -704,7 +704,7 @@ def aio_page():
             response = requests.get(url)
             response_data = response.json()
             TF_name = response_data['name']
-            TF_species = response_data['species']['name']
+            TF_species = response_data['species'][0]['name']
             st.success(f"{TF_species} transcription factor {TF_name}")
         with REcol2:
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
