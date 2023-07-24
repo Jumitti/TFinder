@@ -222,7 +222,7 @@ def aio_page():
                 
         # Run Promoter Finder
             if prom_term == 'Promoter':
-                if st.button("🧬 :orange[**Step 1.5**] Extract promoter (~5sec/gene)"):
+                if st.button("🧬 :orange[**Step 1.5**] Extract promoter" ,help='(~5sec/gene)'):
                     with st.spinner("Finding promoters..."):
                         gene_ids = gene_id_entry.strip().split("\n")
                         upstream = int(upstream_entry)
@@ -233,7 +233,7 @@ def aio_page():
                         except Exception as e:
                             st.error(f"Error finding promoters: {str(e)}")
             else:
-                if st.button("🧬 :orange[**Step 1.5**] Extract terminator (~5sec/gene)"):
+                if st.button("🧬 :orange[**Step 1.5**] Extract terminator", help='(~5sec/gene)'):
                     with st.spinner("Finding terminators..."):
                         gene_ids = gene_id_entry.strip().split("\n")
                         upstream = int(upstream_entry)
@@ -344,7 +344,7 @@ def aio_page():
             downstream_entry = max(updown_slide)
             st.session_state['upstream_entry'] = upstream_entry
             
-            if st.button("🧬 :red[**Step 1.4**] Extract sequences (~5sec/seq)"):
+            if st.button("🧬 :red[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
                 with st.spinner("Finding sequences..."):
                     for i, gene_info in data_dff.iterrows():
                         gene_name = gene_info["Gene"]
@@ -686,10 +686,13 @@ def aio_page():
     # Responsive Elements Finder
 
     # RE entry
-    jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','Matrix'))
+    REcol1, REcol2, REcol3 = st.columns(3)
+    with REcol1:
+        jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','Matrix'))
     if jaspar == 'JASPAR_ID':
-        entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1")
-        st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
+        with REcol2, REcol3:
+            entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1")
+            st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
     elif jaspar == 'Matrix':
         matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'))
         if matrix_type == 'With PWM':
