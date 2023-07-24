@@ -1031,7 +1031,7 @@ def aio_page():
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Gene_Region:N", scale=scale)
                 
-                gene_region_selection = alt.selection_multi(fields=['Gene_Region'], on='click')
+                gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
                 
                 if calc_pvalue:
                     chart = alt.Chart(source).mark_circle().encode(
@@ -1039,7 +1039,7 @@ def aio_page():
                         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
                         tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
-                    ).properties(width=600, height=400).interactive().add_selection(gene_region_selection)
+                    ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
                                           
                     st.altair_chart(chart, theme=None, use_container_width=True)
                 else:
@@ -1048,7 +1048,7 @@ def aio_page():
                         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
                         tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
-                    ).properties(width=600, height=400).interactive().add_selection(gene_region_selection)
+                    ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
                                           
                     st.altair_chart(chart, theme=None, use_container_width=True)
             else:
