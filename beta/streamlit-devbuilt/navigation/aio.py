@@ -192,31 +192,31 @@ def aio_page():
 
                         if response_data['esearchresult']['count'] == '0':
                             st.warning(f"{gene_input} gene not found for {species_test}", icon="⚠️")
-    
-    # with colprom2:
-        # tab1, tab2 = st.tabs(['Default','Advance'])
+    '''
+    with colprom2:
+        tab1, tab2 = st.tabs(['Default','Advance'])
         
-        # with tab1:
+        with tab1:
             
-        Species
-            # species = st.selectbox("🔸 :orange[**Step 1.2**] Select species of gene names:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
+        # Species
+            species = st.selectbox("🔸 :orange[**Step 1.2**] Select species of gene names:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
 
-        Upstream/Downstream Promoter
-            # prom_term = st.radio(
-                # "🔸 :orange[**Step 1.3**] Regulatory region:",
-                # ('Promoter', 'Terminator'))
-            # if prom_term == 'Promoter':
-                # updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
-                # st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
-                # upstream_entry = -min(updown_slide)
-                # downstream_entry = max(updown_slide)
-                # st.session_state['upstream_entry'] = upstream_entry
-            # else:
-                # updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
-                # st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
-                # upstream_entry = -min(updown_slide)
-                # downstream_entry = max(updown_slide)
-                # st.session_state['upstream_entry'] = upstream_entry
+        # Upstream/Downstream Promoter
+            prom_term = st.radio(
+                "🔸 :orange[**Step 1.3**] Regulatory region:",
+                ('Promoter', 'Terminator'))
+            if prom_term == 'Promoter':
+                updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
+                st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
+                upstream_entry = -min(updown_slide)
+                downstream_entry = max(updown_slide)
+                st.session_state['upstream_entry'] = upstream_entry
+            else:
+                updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
+                st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
+                upstream_entry = -min(updown_slide)
+                downstream_entry = max(updown_slide)
+                st.session_state['upstream_entry'] = upstream_entry'''
     
     with colprom1:
         if tab1: 
