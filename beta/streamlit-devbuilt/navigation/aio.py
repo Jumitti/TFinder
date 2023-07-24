@@ -985,7 +985,7 @@ def aio_page():
                         tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
                     ).properties(width=600, height=400)
                                           
-                    st.altair_chart(chart, use_container_width=True)
+                    st.altair_chart(chart, theme=None, use_container_width=True)
                 else:
                     chart = alt.Chart(source).mark_circle().encode(
                         x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
@@ -994,7 +994,7 @@ def aio_page():
                         tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
                     ).properties(width=600, height=400)
                                           
-                    st.altair_chart(chart, use_container_width=True)
+                    st.altair_chart(chart, theme=None, use_container_width=True)
             else: 
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
@@ -1033,7 +1033,7 @@ def aio_page():
                         tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
                     ).properties(width=600, height=400)
                                           
-                    st.altair_chart(chart, use_container_width=True)
+                    st.altair_chart(chart, theme=None, use_container_width=True)
                 else:
                     chart = alt.Chart(source).mark_circle().encode(
                         x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
@@ -1042,6 +1042,6 @@ def aio_page():
                         tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
                     ).properties(width=600, height=400)
                                           
-                    st.altair_chart(chart, use_container_width=True)
+                    st.altair_chart(chart, theme=None, use_container_width=True)
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
