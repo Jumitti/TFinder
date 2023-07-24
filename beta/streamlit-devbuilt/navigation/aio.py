@@ -357,7 +357,7 @@ def aio_page():
                         st.success("Promoters extraction complete!")
                     except Exception as e:
                         st.error(f"Error finding promoters: {str(e)}")
-        if prom_term == 'Terminator':
+        elif prom_term == 'Terminator':
             if st.button("🧬 :orange[**Step 1.5**] Extract terminator (~5sec/gene)"):
                 with st.spinner("Finding terminators..."):
                     gene_ids = gene_id_entry.strip().split("\n")
