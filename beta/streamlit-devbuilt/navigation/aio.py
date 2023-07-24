@@ -170,7 +170,6 @@ def aio_page():
     #Disposition
 
     colprom1, colprom2 = st.columns(2 , gap="small")
-    tab1, tab2 = st.tabs(['Default','Advance'])
 
     # Promoter Finder
     with colprom1:
@@ -196,7 +195,7 @@ def aio_page():
                             st.warning(f"{gene_input} gene not found for {species_test}", icon="⚠️")
     
     with colprom2:
-        
+        tab1, tab2 = st.tabs(['Default','Advance'])
         with tab1:
             
         # Species
