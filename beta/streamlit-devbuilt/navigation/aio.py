@@ -169,7 +169,6 @@ def aio_page():
 
     #Disposition
     st.header(':orange[Step 1] Promoter and Terminator Extractor')
-    
     colprom1, colprom2 = st.columns([0.8,1.2] , gap="small")
     
     # Promoter Finder
@@ -458,6 +457,7 @@ def aio_page():
                                 st.error(f"Error finding promoters: {str(e)}")
 
     # Promoter output state
+    st.divider()
     st.header(':orange[Step 2] Binding Sites Finder')
     if 'result_promoter' not in st.session_state:
         result_promoter = st.text_area("🔸 :orange[**Step 2.1**] Sequences:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).")
