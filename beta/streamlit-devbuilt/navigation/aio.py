@@ -960,13 +960,16 @@ def aio_page():
                 TF_name = response_data['name']
                 st.success(f"Finding responsive elements done for {TF_name}")
                 
-                df = pd.DataFrame(table2[1:], columns=table2[0])
-                st.session_state['df'] = df
-                st.dataframe(df, hide_index=True)
+                coltable1, coltable2 = st.columns(2, gap="small")
+                with caltable1:
+                    df = pd.DataFrame(table2[1:], columns=table2[0])
+                    st.session_state['df'] = df
+                    st.dataframe(df, hide_index=True)
+                    
+                with coltable2:
+                    csv = df.to_csv(index=False).encode('utf-8')
 
-                csv = df.to_csv(index=False).encode('utf-8')
-
-                st.download_button("💾 Download (.csv)",csv,"file.csv","text/csv",key='download-csv')
+                    st.download_button("💾 Download (.csv)",csv,"file.csv","text/csv",key='download-csv')
                 
             
                 source = df
@@ -1009,13 +1012,16 @@ def aio_page():
                 st.divider()
                 st.success(f"Finding responsive elements done")
                 
-                df = pd.DataFrame(table2[1:], columns=table2[0])
-                st.session_state['df'] = df
-                st.dataframe(df)
-                
-                csv = df.to_csv(index=False).encode('utf-8')
+                coltable1, coltable2 = st.columns(2, gap="small")
+                with caltable1:
+                    df = pd.DataFrame(table2[1:], columns=table2[0])
+                    st.session_state['df'] = df
+                    st.dataframe(df, hide_index=True)
+                    
+                with coltable2:
+                    csv = df.to_csv(index=False).encode('utf-8')
 
-                st.download_button("💾 Download (.csv)",csv,"file.csv","text/csv",key='download-csv')
+                    st.download_button("💾 Download (.csv)",csv,"file.csv","text/csv",key='download-csv')
              
                 source = df
                 score_range = source['Rel Score'].astype(float)
