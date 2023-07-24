@@ -192,7 +192,7 @@ def aio_page():
 
                         if response_data['esearchresult']['count'] == '0':
                             st.warning(f"{gene_input} gene not found for {species_test}", icon="⚠️")
-    '''
+    
     with colprom2:
         tab1, tab2 = st.tabs(['Default','Advance'])
         
@@ -216,8 +216,8 @@ def aio_page():
                 st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
                 upstream_entry = -min(updown_slide)
                 downstream_entry = max(updown_slide)
-                st.session_state['upstream_entry'] = upstream_entry'''
-    
+                st.session_state['upstream_entry'] = upstream_entry
+    '''
     with colprom1:
         if tab1: 
     # Run Promoter Finder
@@ -242,7 +242,7 @@ def aio_page():
                         result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                         st.success("Terminators extraction complete!")
                     except Exception as e:
-                        st.error(f"Error finding terminators: {str(e)}")
+                        st.error(f"Error finding terminators: {str(e)}")'''
     with colprom2:    
         with tab2:
             
