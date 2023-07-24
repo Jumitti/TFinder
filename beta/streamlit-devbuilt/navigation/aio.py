@@ -220,29 +220,30 @@ def aio_page():
                 st.session_state['upstream_entry'] = upstream_entry
     
         with colprom1:
-        # Run Promoter Finder
-            if prom_term == 'Promoter':
-                if st.button("🧬 :orange[**Step 1.5**] Extract promoter (~5sec/gene)"):
-                    with st.spinner("Finding promoters..."):
-                        gene_ids = gene_id_entry.strip().split("\n")
-                        upstream = int(upstream_entry)
-                        downstream = int(downstream_entry)
-                        try:
-                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                            st.success("Promoters extraction complete!")
-                        except Exception as e:
-                            st.error(f"Error finding promoters: {str(e)}")
-            else:
-                if st.button("🧬 :orange[**Step 1.5**] Extract terminator (~5sec/gene)"):
-                    with st.spinner("Finding terminators..."):
-                        gene_ids = gene_id_entry.strip().split("\n")
-                        upstream = int(upstream_entry)
-                        downstream = int(downstream_entry)
-                        try:
-                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                            st.success("Terminators extraction complete!")
-                        except Exception as e:
-                            st.error(f"Error finding terminators: {str(e)}")
+            with tab1:
+            # Run Promoter Finder
+                if prom_term == 'Promoter':
+                    if st.button("🧬 :orange[**Step 1.5**] Extract promoter (~5sec/gene)"):
+                        with st.spinner("Finding promoters..."):
+                            gene_ids = gene_id_entry.strip().split("\n")
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                st.success("Promoters extraction complete!")
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                else:
+                    if st.button("🧬 :orange[**Step 1.5**] Extract terminator (~5sec/gene)"):
+                        with st.spinner("Finding terminators..."):
+                            gene_ids = gene_id_entry.strip().split("\n")
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                st.success("Terminators extraction complete!")
+                            except Exception as e:
+                                st.error(f"Error finding terminators: {str(e)}")
     with colprom2:    
         with tab2:
             
