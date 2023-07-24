@@ -922,11 +922,14 @@ def aio_page():
     BSFcol1, BSFcol2, BSFcol3 = st.columns(3, gap="medium")
     with BSFcol1:
         if prom_term == 'Promoter':
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1", label_visibility="collapsed")
+            st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
+            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", -10000, 10000, st.session_state['upstream_entry'], label_visibility="collapsed")
         elif prom_term == 'Terminator':
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.", label_visibility="collapsed")
+            st.markdown("🔸 :orange[**Step 2.4**] Gene end at (in bp):", help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
+            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], label_visibility="collapsed")
         else:
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS and gene end from begin of sequences. Do not modify if you use Step 1", label_visibility="collapsed")
+            sr.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. Do not modify if you use Step 1")
+            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], label_visibility="collapsed")
 
     # Threshold pvalue
     
