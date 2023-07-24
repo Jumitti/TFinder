@@ -170,7 +170,7 @@ def aio_page():
     #Disposition
     st.header(':orange[Step 1] Promoter and Terminator Extractor')
     
-    colprom1, colprom2 = st.columns(2 , gap="small")
+    colprom1, colprom2 = st.columns([0.8,1.2] , gap="small")
     
     # Promoter Finder
     with colprom1:
