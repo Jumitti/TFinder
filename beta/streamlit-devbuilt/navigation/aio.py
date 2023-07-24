@@ -700,6 +700,12 @@ def aio_page():
         with REcol1:
             st.markdown("🔸 :orange[**Step 2.3**] JASPAR ID:")
             entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1", label_visibility='collapsed')
+            url = f"https://jaspar.genereg.net/api/v1/matrix/{entry_sequence}/"
+            response = requests.get(url)
+            response_data = response.json()
+            TF_name = response_data['name']
+            TF_species = response_data['species']
+            st.success(f"Transcription factor: {TF_name}\nSpecies : {TF_species}")
         with REcol2:
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
     elif jaspar == 'Matrix':
