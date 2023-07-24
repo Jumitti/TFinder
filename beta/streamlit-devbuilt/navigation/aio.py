@@ -791,7 +791,8 @@ def aio_page():
                         st.pyplot(logo.fig)
           
     else:
-        IUPAC = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized):", value="ATGCN")
+        with REcol1:
+            IUPAC = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized):", value="ATGCN")
         
         IUPAC_code = ['A','T','G','C','R','Y','M','K','W','S','B','D','H','V','N']
         
@@ -882,8 +883,9 @@ def aio_page():
 
                         base_str += "]\n"
                         pwm_text += base_str
-
-                    matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Dont't modify.", key="non_editable_text")
+                    
+                    with REcol2:
+                        matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Dont't modify.", key="non_editable_text")
 
                 else:
                     st.warning("You forget FASTA sequences :)")
@@ -893,25 +895,26 @@ def aio_page():
                     logo = logomaker.Logo(matrix, color_scheme = 'classic')
 
                     return logo
+                
+                with REcol2:
+                    sequences_text = fasta_text
+                    sequences = []
+                    current_sequence = ""
+                    for line in sequences_text.splitlines():
+                        line = line.strip()
+                        if line.startswith(">"):
+                            if current_sequence:
+                                sequences.append(current_sequence)
+                            current_sequence = ""
+                        else:
+                            current_sequence += line
 
-                sequences_text = fasta_text
-                sequences = []
-                current_sequence = ""
-                for line in sequences_text.splitlines():
-                    line = line.strip()
-                    if line.startswith(">"):
-                        if current_sequence:
-                            sequences.append(current_sequence)
-                        current_sequence = ""
-                    else:
-                        current_sequence += line
+                    if current_sequence:
+                        sequences.append(current_sequence)
 
-                if current_sequence:
-                    sequences.append(current_sequence)
-
-                if sequences:
-                    logo = create_web_logo(sequences)
-                    st.pyplot(logo.fig)
+                    if sequences:
+                        logo = create_web_logo(sequences)
+                        st.pyplot(logo.fig)
         else:
             isUIPAC = False
 
