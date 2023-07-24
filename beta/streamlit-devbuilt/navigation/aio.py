@@ -299,7 +299,7 @@ def aio_page():
                 data_df["term"] = True
                     
             st.write('**:orange[Step 1.2] On demand genes table**')    
-            st.text('**OK** ok')
+            st.text('', help="Check the boxes for which you want to extract a sequence. Pay attention that the gene name is equivalent for each species. The choice of species is not available for gene IDs. Parameterize the table last, if you check the boxes above, it resets the whole table.")
                 
             data_dff = st.data_editor(
                 data_df,
