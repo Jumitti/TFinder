@@ -170,6 +170,7 @@ def aio_page():
     #Disposition
 
     colprom1, colprom2 = st.columns(2 , gap="small")
+    tab1, tab2 = st.tabs(['Default','Advance'])
 
     # Promoter Finder
     with colprom1:
@@ -196,8 +197,6 @@ def aio_page():
     
     with colprom2:
         
-        tab1, tab2 = st.tabs(['Default','Advance'])
-        
         with tab1:
             
         # Species
@@ -221,6 +220,7 @@ def aio_page():
                 st.session_state['upstream_entry'] = upstream_entry
     
     with colprom1:
+        with tab1:
         # Run Promoter Finder
             if prom_term == 'Promoter':
                 if st.button("🧬 :orange[**Step 1.5**] Extract promoter (~5sec/gene)"):
@@ -347,6 +347,7 @@ def aio_page():
             st.session_state['upstream_entry'] = upstream_entry
     
     with colprom1:
+        with tab2:
             if st.button("🧬 :red[**Step 1.5**] Extract sequences (~5sec/seq)"):
                 with st.spinner("Finding sequences..."):
                     for i, gene_info in data_dff.iterrows():
