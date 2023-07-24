@@ -877,7 +877,7 @@ def aio_page():
                             base_str += "]\n"
                             pwm_text += base_str
 
-                        matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Dont't modify.", key="non_editable_text")
+                        matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Dont't modify.", disabled=True)
 
                     else:
                         st.warning("You forget FASTA sequences :)")
