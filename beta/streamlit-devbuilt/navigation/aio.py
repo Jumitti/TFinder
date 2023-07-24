@@ -180,6 +180,19 @@ def aio_page():
 
     # Gene ID
         gene_id_entry = st.text_area("🔸 :orange[**Step 1.1**] Gene ID:", value="PRKN\n351")
+        gene_list = gene_id_entry.strip().split('\n')
+        for gene_input in gene_list:
+            if not gene_input.isdigit():
+                species_list = ['human','mouse','rat','drosophila','zebrafish']
+                for species_test in species_list:
+                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
+                    response = requests.get(url)
+
+                    if response.status_code == 200:
+                        response_data = response.json()
+
+                        if response_data['esearchresult']['count'] == '0':
+                            st.warning(f"No gene found for : {gene_input} for {species_test}", icon="⚠️")
         
         tab1, tab2 = st.tabs(['Default','Advance'])
         
