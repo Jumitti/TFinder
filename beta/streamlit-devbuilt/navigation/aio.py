@@ -686,7 +686,7 @@ def aio_page():
     # Responsive Elements Finder
 
     # RE entry
-    REcol1, REcol2 = st.columns(0.30,0.70)
+    REcol1, REcol2 = st.columns([0.30,0.70])
     with REcol1:
         jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','Matrix'))
     with REcol2:
