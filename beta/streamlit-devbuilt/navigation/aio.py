@@ -688,10 +688,12 @@ def aio_page():
     # RE entry
     REcol1, REcol2 = st.columns([0.30,0.70])
     with REcol1:
-        jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','Matrix'))
+        st.markdown('🔸 :orange[**Step 2.2**] Responsive elements type:')
+        jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','Matrix'), label_visibility='collapsed')
     if jaspar == 'JASPAR_ID':
         with REcol1:
-            entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1")
+            st.markdown("🔸 :orange[**Step 2.3**] JASPAR ID:")
+            entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1", label_visibility='collapsed')
         with REcol2:
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
     elif jaspar == 'Matrix':
