@@ -169,7 +169,8 @@ def prom_extractor_page():
     result_promoter = []
     # Gene ID
     gene_id_entry = st.text_area("🔸 :red[**Step 1.1**] Gene ID:", value="PRKN\n5071")
-    for gene_input in gene_id_entry:
+    gene_list = gene_id_entry.strip().split('\n')
+    for gene_input in gene_list:
         if not gene_input.isdigit():
             species_list = ['human','mouse','rat','drosophila','zebrafish']
             for species_test in species_list:
