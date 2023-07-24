@@ -196,6 +196,7 @@ def aio_page():
     
     with colprom2:
         tab1, tab2 = st.tabs(['Default','Advance'])
+        
         with tab1:
             
         # Species
@@ -218,8 +219,7 @@ def aio_page():
                 downstream_entry = max(updown_slide)
                 st.session_state['upstream_entry'] = upstream_entry
     
-    with colprom1:
-        with tab1:
+        with colprom1:
         # Run Promoter Finder
             if prom_term == 'Promoter':
                 if st.button("🧬 :orange[**Step 1.5**] Extract promoter (~5sec/gene)"):
