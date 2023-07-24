@@ -169,7 +169,7 @@ def aio_page():
 
     #Disposition
 
-    colprom1, colprom2 = st.columns(2 , gap="smal")
+    colprom1, colprom2 = st.columns(2 , gap="small")
 
     # Promoter Finder
     with colprom1:
