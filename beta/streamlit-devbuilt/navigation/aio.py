@@ -686,228 +686,228 @@ def aio_page():
     # Responsive Elements Finder
 
     # RE entry
-    REcol1, REcol2 = st.columns(0.33,0.66)
+    REcol1, REcol2 = st.columns(0.30,0.70)
     with REcol1:
         jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','Matrix'))
-    if jaspar == 'JASPAR_ID':
     with REcol2:
-        entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1")
-        st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
-    elif jaspar == 'Matrix':
-        matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'))
-        if matrix_type == 'With PWM':
-            isUIPAC = True
-            matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]", help="Only PWM generated with our tools are allowed")
+        if jaspar == 'JASPAR_ID':
+            entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1")
+            st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
+        elif jaspar == 'Matrix':
+            matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'))
+            if matrix_type == 'With PWM':
+                isUIPAC = True
+                matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]", help="Only PWM generated with our tools are allowed")
+            else:
+                fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", help='Put FASTA sequences. Same sequence length required ⚠️')
+                isUIPAC = True
+                def calculate_pwm(sequences):
+                    num_sequences = len(sequences) 
+                    sequence_length = len(sequences[0])
+                    pwm = np.zeros((4, sequence_length))
+                    for i in range(sequence_length):
+                        counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
+                        for sequence in sequences:
+                            nucleotide = sequence[i]
+                            if nucleotide in counts:
+                                counts[nucleotide] += 1
+                        pwm[0, i] = counts['A'] / num_sequences
+                        pwm[1, i] = counts['T'] / num_sequences
+                        pwm[2, i] = counts['G'] / num_sequences
+                        pwm[3, i] = counts['C'] / num_sequences
+
+                    return pwm
+
+                def parse_fasta(fasta_text):
+                    sequences = []
+                    current_sequence = ""
+
+                    for line in fasta_text.splitlines():
+                        if line.startswith(">"):
+                            if current_sequence:
+                                sequences.append(current_sequence)
+                            current_sequence = ""
+                        else:
+                            current_sequence += line
+
+                    if current_sequence:
+                        sequences.append(current_sequence)
+
+                    return sequences
+                    
+                if fasta_text:
+                    sequences = parse_fasta(fasta_text)
+                    sequences = [seq.upper() for seq in sequences]
+
+                    if len(sequences) > 0:
+                        pwm = calculate_pwm(sequences)
+                        bases = ['A', 'T', 'G', 'C']
+                        pwm_text = ""
+                        for i in range(len(pwm)):
+                            base_name = bases[i]
+                            base_values = pwm[i]
+
+                            base_str = base_name + " ["
+                            for value in base_values:
+                                base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+
+                            base_str += "]\n"
+                            pwm_text += base_str
+
+                        matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Don't modify.", key="non_editable_text")
+
+                    else:
+                        st.warning("You forget FASTA sequences :)")
+                    
+                    def create_web_logo(sequences):
+                        matrix = logomaker.alignment_to_matrix(sequences)
+                        logo = logomaker.Logo(matrix, color_scheme = 'classic')
+
+                        return logo
+
+                    sequences_text = fasta_text
+                    sequences = []
+                    current_sequence = ""
+                    for line in sequences_text.splitlines():
+                        line = line.strip()
+                        if line.startswith(">"):
+                            if current_sequence:
+                                sequences.append(current_sequence)
+                            current_sequence = ""
+                        else:
+                            current_sequence += line
+
+                    if current_sequence:
+                        sequences.append(current_sequence)
+
+                    if sequences:
+                        logo = create_web_logo(sequences)
+                        st.pyplot(logo.fig)
+              
         else:
-            fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", help='Put FASTA sequences. Same sequence length required ⚠️')
-            isUIPAC = True
-            def calculate_pwm(sequences):
-                num_sequences = len(sequences) 
-                sequence_length = len(sequences[0])
-                pwm = np.zeros((4, sequence_length))
-                for i in range(sequence_length):
-                    counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
-                    for sequence in sequences:
-                        nucleotide = sequence[i]
-                        if nucleotide in counts:
-                            counts[nucleotide] += 1
-                    pwm[0, i] = counts['A'] / num_sequences
-                    pwm[1, i] = counts['T'] / num_sequences
-                    pwm[2, i] = counts['G'] / num_sequences
-                    pwm[3, i] = counts['C'] / num_sequences
+            IUPAC = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized):", value="ATGCN")
+            
+            IUPAC_code = ['A','T','G','C','R','Y','M','K','W','S','B','D','H','V','N']
+            
+            if all(char in IUPAC_code for char in IUPAC):
+                isUIPAC = True
+                # IUPAC code
+                def generate_iupac_variants(sequence):
+                    iupac_codes = {
+                        "R": ["A", "G"],
+                        "Y": ["C", "T"],
+                        "M": ["A", "C"],
+                        "K": ["G", "T"],
+                        "W": ["A", "T"],
+                        "S": ["C", "G"],
+                        "B": ["C", "G", "T"],
+                        "D": ["A", "G", "T"],
+                        "H": ["A", "C", "T"],
+                        "V": ["A", "C", "G"],
+                        "N": ["A", "C", "G", "T"]
+                    }
 
-                return pwm
+                    sequences = [sequence]
+                    for i, base in enumerate(sequence):
+                        if base.upper() in iupac_codes:
+                            new_sequences = []
+                            for seq in sequences:
+                                for alternative in iupac_codes[base.upper()]:
+                                    new_sequence = seq[:i] + alternative + seq[i + 1:]
+                                    new_sequences.append(new_sequence)
+                            sequences = new_sequences
 
-            def parse_fasta(fasta_text):
-                sequences = []
-                current_sequence = ""
+                    return sequences
+                   
+                sequences = generate_iupac_variants(IUPAC)
+                fasta_text = ""
+                for i, seq in enumerate(sequences):
+                    fasta_text += f">seq{i + 1}\n{seq}\n"
+                    
+                def calculate_pwm(sequences):
+                    num_sequences = len(sequences)
+                    sequence_length = len(sequences[0])
+                    pwm = np.zeros((4, sequence_length))
+                    for i in range(sequence_length):
+                        counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
+                        for sequence in sequences:
+                            nucleotide = sequence[i]
+                            if nucleotide in counts:
+                                counts[nucleotide] += 1
+                        pwm[0, i] = counts['A'] / num_sequences
+                        pwm[1, i] = counts['T'] / num_sequences
+                        pwm[2, i] = counts['G'] / num_sequences
+                        pwm[3, i] = counts['C'] / num_sequences
 
-                for line in fasta_text.splitlines():
-                    if line.startswith(">"):
-                        if current_sequence:
-                            sequences.append(current_sequence)
-                        current_sequence = ""
+                    return pwm
+
+                def parse_fasta(fasta_text):
+                    sequences = []
+                    current_sequence = ""
+
+                    for line in fasta_text.splitlines():
+                        if line.startswith(">"):
+                            if current_sequence:
+                                sequences.append(current_sequence)
+                            current_sequence = ""
+                        else:
+                            current_sequence += line
+
+                    if current_sequence:
+                        sequences.append(current_sequence)
+
+                    return sequences
+                    
+                if fasta_text:
+                    sequences = parse_fasta(fasta_text)
+                    sequences = [seq.upper() for seq in sequences]
+
+                    if len(sequences) > 0:
+                        pwm = calculate_pwm(sequences)
+                        bases = ['A', 'T', 'G', 'C']
+                        pwm_text = ""
+                        for i in range(len(pwm)):
+                            base_name = bases[i]
+                            base_values = pwm[i]
+
+                            base_str = base_name + " ["
+                            for value in base_values:
+                                base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+
+                            base_str += "]\n"
+                            pwm_text += base_str
+
+                        matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Dont't modify.", key="non_editable_text")
+
                     else:
-                        current_sequence += line
+                        st.warning("You forget FASTA sequences :)")
+                    
+                    def create_web_logo(sequences):
+                        matrix = logomaker.alignment_to_matrix(sequences)
+                        logo = logomaker.Logo(matrix, color_scheme = 'classic')
 
-                if current_sequence:
-                    sequences.append(current_sequence)
+                        return logo
 
-                return sequences
-                
-            if fasta_text:
-                sequences = parse_fasta(fasta_text)
-                sequences = [seq.upper() for seq in sequences]
+                    sequences_text = fasta_text
+                    sequences = []
+                    current_sequence = ""
+                    for line in sequences_text.splitlines():
+                        line = line.strip()
+                        if line.startswith(">"):
+                            if current_sequence:
+                                sequences.append(current_sequence)
+                            current_sequence = ""
+                        else:
+                            current_sequence += line
 
-                if len(sequences) > 0:
-                    pwm = calculate_pwm(sequences)
-                    bases = ['A', 'T', 'G', 'C']
-                    pwm_text = ""
-                    for i in range(len(pwm)):
-                        base_name = bases[i]
-                        base_values = pwm[i]
+                    if current_sequence:
+                        sequences.append(current_sequence)
 
-                        base_str = base_name + " ["
-                        for value in base_values:
-                            base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
-
-                        base_str += "]\n"
-                        pwm_text += base_str
-
-                    matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Don't modify.", key="non_editable_text")
-
-                else:
-                    st.warning("You forget FASTA sequences :)")
-                
-                def create_web_logo(sequences):
-                    matrix = logomaker.alignment_to_matrix(sequences)
-                    logo = logomaker.Logo(matrix, color_scheme = 'classic')
-
-                    return logo
-
-                sequences_text = fasta_text
-                sequences = []
-                current_sequence = ""
-                for line in sequences_text.splitlines():
-                    line = line.strip()
-                    if line.startswith(">"):
-                        if current_sequence:
-                            sequences.append(current_sequence)
-                        current_sequence = ""
-                    else:
-                        current_sequence += line
-
-                if current_sequence:
-                    sequences.append(current_sequence)
-
-                if sequences:
-                    logo = create_web_logo(sequences)
-                    st.pyplot(logo.fig)
-          
-    else:
-        IUPAC = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized):", value="ATGCN")
-        
-        IUPAC_code = ['A','T','G','C','R','Y','M','K','W','S','B','D','H','V','N']
-        
-        if all(char in IUPAC_code for char in IUPAC):
-            isUIPAC = True
-            # IUPAC code
-            def generate_iupac_variants(sequence):
-                iupac_codes = {
-                    "R": ["A", "G"],
-                    "Y": ["C", "T"],
-                    "M": ["A", "C"],
-                    "K": ["G", "T"],
-                    "W": ["A", "T"],
-                    "S": ["C", "G"],
-                    "B": ["C", "G", "T"],
-                    "D": ["A", "G", "T"],
-                    "H": ["A", "C", "T"],
-                    "V": ["A", "C", "G"],
-                    "N": ["A", "C", "G", "T"]
-                }
-
-                sequences = [sequence]
-                for i, base in enumerate(sequence):
-                    if base.upper() in iupac_codes:
-                        new_sequences = []
-                        for seq in sequences:
-                            for alternative in iupac_codes[base.upper()]:
-                                new_sequence = seq[:i] + alternative + seq[i + 1:]
-                                new_sequences.append(new_sequence)
-                        sequences = new_sequences
-
-                return sequences
-               
-            sequences = generate_iupac_variants(IUPAC)
-            fasta_text = ""
-            for i, seq in enumerate(sequences):
-                fasta_text += f">seq{i + 1}\n{seq}\n"
-                
-            def calculate_pwm(sequences):
-                num_sequences = len(sequences)
-                sequence_length = len(sequences[0])
-                pwm = np.zeros((4, sequence_length))
-                for i in range(sequence_length):
-                    counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
-                    for sequence in sequences:
-                        nucleotide = sequence[i]
-                        if nucleotide in counts:
-                            counts[nucleotide] += 1
-                    pwm[0, i] = counts['A'] / num_sequences
-                    pwm[1, i] = counts['T'] / num_sequences
-                    pwm[2, i] = counts['G'] / num_sequences
-                    pwm[3, i] = counts['C'] / num_sequences
-
-                return pwm
-
-            def parse_fasta(fasta_text):
-                sequences = []
-                current_sequence = ""
-
-                for line in fasta_text.splitlines():
-                    if line.startswith(">"):
-                        if current_sequence:
-                            sequences.append(current_sequence)
-                        current_sequence = ""
-                    else:
-                        current_sequence += line
-
-                if current_sequence:
-                    sequences.append(current_sequence)
-
-                return sequences
-                
-            if fasta_text:
-                sequences = parse_fasta(fasta_text)
-                sequences = [seq.upper() for seq in sequences]
-
-                if len(sequences) > 0:
-                    pwm = calculate_pwm(sequences)
-                    bases = ['A', 'T', 'G', 'C']
-                    pwm_text = ""
-                    for i in range(len(pwm)):
-                        base_name = bases[i]
-                        base_values = pwm[i]
-
-                        base_str = base_name + " ["
-                        for value in base_values:
-                            base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
-
-                        base_str += "]\n"
-                        pwm_text += base_str
-
-                    matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Dont't modify.", key="non_editable_text")
-
-                else:
-                    st.warning("You forget FASTA sequences :)")
-                
-                def create_web_logo(sequences):
-                    matrix = logomaker.alignment_to_matrix(sequences)
-                    logo = logomaker.Logo(matrix, color_scheme = 'classic')
-
-                    return logo
-
-                sequences_text = fasta_text
-                sequences = []
-                current_sequence = ""
-                for line in sequences_text.splitlines():
-                    line = line.strip()
-                    if line.startswith(">"):
-                        if current_sequence:
-                            sequences.append(current_sequence)
-                        current_sequence = ""
-                    else:
-                        current_sequence += line
-
-                if current_sequence:
-                    sequences.append(current_sequence)
-
-                if sequences:
-                    logo = create_web_logo(sequences)
-                    st.pyplot(logo.fig)
-        else:
-            isUIPAC = False
+                    if sequences:
+                        logo = create_web_logo(sequences)
+                        st.pyplot(logo.fig)
+            else:
+                isUIPAC = False
 
     # TSS entry
     if prom_term == 'Promoter':
