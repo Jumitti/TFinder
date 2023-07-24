@@ -1037,7 +1037,7 @@ def aio_page():
                     chart = alt.Chart(source).mark_circle().encode(
                         x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                        color=color_scale,
+                        color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
                         tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
                     ).properties(width=600, height=400).interactive().add_selection(gene_region_selection)
                                           
@@ -1046,7 +1046,7 @@ def aio_page():
                     chart = alt.Chart(source).mark_circle().encode(
                         x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                        color=color_scale,
+                        color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
                         tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
                     ).properties(width=600, height=400).interactive().add_selection(gene_region_selection)
                                           
