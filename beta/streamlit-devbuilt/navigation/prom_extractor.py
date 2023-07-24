@@ -219,6 +219,8 @@ def prom_extractor_page():
     with tab2:
         gene_list = gene_id_entry.strip().split('\n')
         
+        genetable1, genetable2, genetable3 = st.columns([0.7,0.15,0.15])
+        
         with genetable1:
             for gene_input in gene_list:
                 if not gene_input.isdigit():
@@ -247,8 +249,6 @@ def prom_extractor_page():
                 "term": [False] * len(gene_list),
             }
         )
-        
-        genetable1, genetable2, genetable3 = st.columns([0.7,0.15,0.15])
         
         with genetable2:
         
