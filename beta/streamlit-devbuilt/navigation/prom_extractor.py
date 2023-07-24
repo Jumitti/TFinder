@@ -230,7 +230,7 @@ def prom_extractor_page():
                         response_data = response.json()
 
                         if response_data['esearchresult']['count'] == '0':
-                            st.warning(f"No gene found for : {gene_input} for {species_test}", , icon="⚠️")
+                            st.warning(f"No gene found for : {gene_input} for {species_test}", icon="⚠️")
                 
             
         
