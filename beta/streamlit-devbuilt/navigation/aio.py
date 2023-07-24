@@ -696,7 +696,8 @@ def aio_page():
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
     elif jaspar == 'Matrix':
         with REcol1:
-            matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'))
+            st.markdown('🔸 :orange[**Step 2.2bis**] Matrix:')
+            matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'), label_visibility='collapsed')
         if matrix_type == 'With PWM':
             isUIPAC = True
             with REcol2:
