@@ -178,7 +178,8 @@ def aio_page():
         result_promoter = []
 
     # Gene ID
-        gene_id_entry = st.text_area("🔸 :orange[**Step 1.1**] Gene ID:", value="PRKN\n351", help='NCBI gene name and NCBI gene ID allowed')
+        st.markdown("🔸 :orange[**Step 1.1**] Gene ID:", help='NCBI gene name and NCBI gene ID allowed'
+        gene_id_entry = st.text_area("🔸 :orange[**Step 1.1**] Gene ID:", value="PRKN\n351", label_visibility='collapsed')
         if st.button('🔎 Check genes avaibility', help='Sometimes genes do not have the same name in all species or do not exist.'):
             with st.spinner("Checking genes avaibility..."):
                 gene_list = gene_id_entry.strip().split('\n')
@@ -201,20 +202,22 @@ def aio_page():
         with tab1:
             
         # Species
-            species = st.selectbox("🔸 :orange[**Step 1.2**] Select species of gene names:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
+            st.markdown("🔸 :orange[**Step 1.2**] Select species of gene names:")
+            species = st.selectbox("🔸 :orange[**Step 1.2**] Select species of gene names:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0, label_visibility='collapsed')
 
         # Upstream/Downstream Promoter
-            prom_term = st.radio(
-                "🔸 :orange[**Step 1.3**] Regulatory region:",
-                ('Promoter', 'Terminator'))
+            st.markdown("🔸 :orange[**Step 1.3**] Regulatory region:")
+            prom_term = st.radio("🔸 :orange[**Step 1.3**] Regulatory region:",('Promoter', 'Terminator'), label_visibility='collapsed')
             if prom_term == 'Promoter':
-                updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100)
+                st.markdown("🔸 :orange[**Step 1.4**] Upstream/downstream from the TSS (bp)")
+                updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100, label_visibility='collapsed')
                 st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
                 upstream_entry = -min(updown_slide)
                 downstream_entry = max(updown_slide)
                 st.session_state['upstream_entry'] = upstream_entry
             else:
-                updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100)
+                st.markdown("🔸 :orange[**Step 1.4**] Upstream/downstream from gene end (bp)")
+                updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100, label_visibility='collapsed')
                 st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
                 upstream_entry = -min(updown_slide)
                 downstream_entry = max(updown_slide)
@@ -261,7 +264,7 @@ def aio_page():
                 }
             )
             
-            st.markdown('**🔸 :orange[Step 1.2] Select species for all genes:**', help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
+            st.markdown('**🔸 :orange[Step 1.2]** Select species for all genes:', help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
             
             species1, species2, species3, species4, species5 = st.columns(5)
             
@@ -276,7 +279,7 @@ def aio_page():
             with species5:        
                 all_zebra = st.checkbox("Zebrafish")
             
-            st.markdown('**🔸 :orange[Step 1.2] Select regions for all genes:**', help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
+            st.markdown('**🔸 :orange[Step 1.2]** Select regions for all genes:', help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
             
             region1, region2 = st.columns(2)
             
@@ -300,7 +303,7 @@ def aio_page():
             if all_term:
                 data_df["term"] = True
                 
-            st.markdown('**🔸 :orange[Step 1.2] On demand genes table**', help="Check the boxes for which you want to extract a sequence. Pay attention that the gene name is equivalent for each species. The choice of species is not available for gene IDs. Parameterize the table last, if you check the boxes above, it resets the whole table.")
+            st.markdown('**🔸 :orange[Step 1.2]** On demand genes table', help="Check the boxes for which you want to extract a sequence. Pay attention that the gene name is equivalent for each species. The choice of species is not available for gene IDs. Parameterize the table last, if you check the boxes above, it resets the whole table.")
                 
             data_dff = st.data_editor(
                 data_df,
@@ -338,7 +341,8 @@ def aio_page():
                 hide_index=True,
             ) 
             
-            updown_slide = st.slider("🔸 :red[**Step 1.3**] Upstream/downstream from TSS and gene end (bp)", -10000, 10000, (-2000, 2000), step=100)
+            st.markdown("🔸 :red[**Step 1.3**] Upstream/downstream from TSS and gene end (bp)")
+            updown_slide = st.slider("🔸 :red[**Step 1.3**] Upstream/downstream from TSS and gene end (bp)", -10000, 10000, (-2000, 2000), step=100, label_visibility='collapsed')
             st.write("Upstream: ", min(updown_slide), " bp from TSS and gene end | Downstream: ", max(updown_slide), " bp from TSS and gene end")
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
