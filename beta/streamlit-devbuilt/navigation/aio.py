@@ -521,7 +521,8 @@ def aio_page():
         if first_line.startswith(("A", "T", "C", "G")):
             shortened_promoter_name = "n.d."
             promoter_region = lines
-            promoters.append((shortened_promoter_name, promoter_region))
+            region = "n.d"
+            promoters.append((shortened_promoter_name, promoter_region, region))
         else:
             lines = result_promoter.split("\n")
             i = 0
