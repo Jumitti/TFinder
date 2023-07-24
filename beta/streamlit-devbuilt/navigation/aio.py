@@ -983,7 +983,7 @@ def aio_page():
                         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                         color=color_scale,
                         tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
-                    ).properties(width=600, height=400)
+                    ).properties(width=600, height=400).interactive()
                                           
                     st.altair_chart(chart, theme=None, use_container_width=True)
                 else:
@@ -992,7 +992,7 @@ def aio_page():
                         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                         color=color_scale,
                         tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
-                    ).properties(width=600, height=400)
+                    ).properties(width=600, height=400).interactive()
                                           
                     st.altair_chart(chart, theme=None, use_container_width=True)
             else: 
@@ -1031,7 +1031,7 @@ def aio_page():
                         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                         color=color_scale,
                         tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
-                    ).properties(width=600, height=400)
+                    ).properties(width=600, height=400).interactive()
                                           
                     st.altair_chart(chart, theme=None, use_container_width=True)
                 else:
@@ -1040,7 +1040,7 @@ def aio_page():
                         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                         color=color_scale,
                         tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
-                    ).properties(width=600, height=400)
+                    ).properties(width=600, height=400).interactive()
                                           
                     st.altair_chart(chart, theme=None, use_container_width=True)
             else:
