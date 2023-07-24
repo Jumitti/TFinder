@@ -461,10 +461,12 @@ def aio_page():
     st.divider()
     st.header(':orange[Step 2] Binding Sites Finder')
     if 'result_promoter' not in st.session_state:
-        result_promoter = st.text_area("🔸 :orange[**Step 2.1**] Sequences:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).")
+        st.markdown("🔸 :orange[**Step 2.1**] Sequences:")
+        result_promoter = st.text_area("🔸 :orange[**Step 2.1**] Sequences:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).", label_visibility='collapsed')
     else:
+        st.markdown("🔸 :orange[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
         result_promoter_text = "\n".join(st.session_state['result_promoter'])
-        result_promoter = st.text_area("🔸 :orange[**Step 2.1**] Sequences:", value=result_promoter_text, help='Copy: Click in sequence, CTRL+A, CTRL+C')
+        result_promoter = st.text_area("🔸 :orange[**Step 2.1**] Sequences:", value=result_promoter_text, label_visibility='collapsed')
 
     # Responsive-Elements-Finder
         
