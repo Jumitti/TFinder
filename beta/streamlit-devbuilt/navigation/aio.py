@@ -179,19 +179,21 @@ def aio_page():
 
     # Gene ID
         gene_id_entry = st.text_area("🔸 :orange[**Step 1.1**] Gene ID:", value="PRKN\n351", help='NCBI gene name and NCBI gene ID allowed')
-        gene_list = gene_id_entry.strip().split('\n')
-        for gene_input in gene_list:
-            if not gene_input.isdigit():
-                species_list = ['human','mouse','rat','drosophila','zebrafish']
-                for species_test in species_list:
-                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
-                    response = requests.get(url)
+        if st.button('Check genes avaibility'):
+            with st.spinner("Checking genes avaibility..."):
+                gene_list = gene_id_entry.strip().split('\n')
+                for gene_input in gene_list:
+                    if not gene_input.isdigit():
+                        species_list = ['human','mouse','rat','drosophila','zebrafish']
+                        for species_test in species_list:
+                            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
+                            response = requests.get(url)
 
-                    if response.status_code == 200:
-                        response_data = response.json()
+                            if response.status_code == 200:
+                                response_data = response.json()
 
-                        if response_data['esearchresult']['count'] == '0':
-                            st.warning(f"{gene_input} gene not found for {species_test}", icon="⚠️")
+                                if response_data['esearchresult']['count'] == '0':
+                                    st.warning(f"{gene_input} gene not found for {species_test}", icon="⚠️")
     
     with colprom2:
         tab1, tab2 = st.tabs(['Default','Advance'])
