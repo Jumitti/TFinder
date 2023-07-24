@@ -558,7 +558,7 @@ def aio_page():
 
                 # Génération des séquences aléatoires une seule fois
                 motif_length = seq_length  # Remplacer par la longueur de votre motif
-                num_random_seqs = 500000
+                num_random_seqs = 1000000
 
                 count_a = promoter_region.count('A')
                 count_t = promoter_region.count('T')
