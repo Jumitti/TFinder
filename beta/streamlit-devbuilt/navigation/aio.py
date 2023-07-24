@@ -298,7 +298,8 @@ def aio_page():
             if all_term:
                 data_df["term"] = True
                     
-            st.write('**:orange[Step 1.2] On demand genes table**')      
+            st.write('**:orange[Step 1.2] On demand genes table**')    
+            st.text('**OK** ok')
                 
             data_dff = st.data_editor(
                 data_df,
