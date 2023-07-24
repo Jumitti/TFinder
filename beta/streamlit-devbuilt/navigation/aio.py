@@ -259,7 +259,7 @@ def aio_page():
                 }
             )
             
-            st.write('**Select species for all genes:**')
+            st.write('**:orange[Step 1.2] Select species for all genes:**')
             
             species1, species2, species3, species4, species5 = st.columns(5)
             
@@ -274,7 +274,7 @@ def aio_page():
             with species5:        
                 all_zebra = st.checkbox("Zebrafish")
             
-            st.write('**Select regions for all genes:**')
+            st.write('**:orange[Step 1.2] Select regions for all genes:**')
             
             region1, region2 = st.columns(2)
             
@@ -298,7 +298,7 @@ def aio_page():
             if all_term:
                 data_df["term"] = True
                     
-            st.write('**On demand genes table**')      
+            st.write('**:orange[Step 1.2] On demand genes table**')      
                 
             data_dff = st.data_editor(
                 data_df,
@@ -336,14 +336,15 @@ def aio_page():
                 hide_index=True,
             )
             
+            st.help('hello')
             
-            updown_slide = st.slider("🔸 :red[**Step 1.4**] Upstream/downstream from TSS and gene end (bp)", -10000, 10000, (-2000, 2000), step=100)
+            updown_slide = st.slider("🔸 :red[**Step 1.3**] Upstream/downstream from TSS and gene end (bp)", -10000, 10000, (-2000, 2000), step=100)
             st.write("Upstream: ", min(updown_slide), " bp from TSS and gene end | Downstream: ", max(updown_slide), " bp from TSS and gene end")
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
             st.session_state['upstream_entry'] = upstream_entry
             
-            if st.button("🧬 :red[**Step 1.5**] Extract sequences (~5sec/seq)"):
+            if st.button("🧬 :red[**Step 1.4**] Extract sequences (~5sec/seq)"):
                 with st.spinner("Finding sequences..."):
                     for i, gene_info in data_dff.iterrows():
                         gene_name = gene_info["Gene"]
