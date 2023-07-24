@@ -961,7 +961,7 @@ def aio_page():
                 st.success(f"Finding responsive elements done for {TF_name}")
                 
                 coltable1, coltable2 = st.columns(2, gap="small")
-                with caltable1:
+                with coltable1:
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
                     st.dataframe(df, hide_index=True)
@@ -1013,7 +1013,7 @@ def aio_page():
                 st.success(f"Finding responsive elements done")
                 
                 coltable1, coltable2 = st.columns(2, gap="small")
-                with caltable1:
+                with coltable1:
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
                     st.dataframe(df, hide_index=True)
