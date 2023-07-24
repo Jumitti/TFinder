@@ -919,7 +919,7 @@ def aio_page():
             isUIPAC = False
 
     # TSS entry
-    BSFcol1, BSFcol2, BSFcol3 = st.columns(3)
+    BSFcol1, BSFcol2, BSFcol3 = st.columns(3, gap="medium")
     with BSFcol1:
         if prom_term == 'Promoter':
             entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
@@ -931,7 +931,8 @@ def aio_page():
     # Threshold pvalue
     
     with BSFcol2:
-        threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05)
+        st.markdown("🔸 :orange[**Step 2.5**] Relative Score threshol")
+        threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
         
     with BSFcol3:
         st.markdown("🔸 :orange[**Step 2.6**] Calcul _p-value_", help='Experimental, take more times')
