@@ -919,18 +919,22 @@ def aio_page():
             isUIPAC = False
 
     # TSS entry
-    if prom_term == 'Promoter':
-        entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
-    elif prom_term == 'Terminator':
-        entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
-    else:
-        entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS and gene end from begin of sequences. Do not modify if you use Step 1")
+    BSFcol1, BSFcol2 BSFcol3 = st.columns(3)
+    with BSFcol1:
+        if prom_term == 'Promoter':
+            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
+        elif prom_term == 'Terminator':
+            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
+        else:
+            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS and gene end from begin of sequences. Do not modify if you use Step 1")
 
     # Threshold pvalue
-    if jaspar:
-        threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05)
     
-    calc_pvalue = st.checkbox('_p-value_ (Experimental, take more times)')
+    with BSFcol2:
+        threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05)
+        
+    with BSFcol3:
+        calc_pvalue = st.checkbox('Calcul _p-value_', help='Experimental, take more times')
 
     # Run Responsive Elements finder
     if result_promoter.startswith(("A", "T", "G", "C", ">")):
