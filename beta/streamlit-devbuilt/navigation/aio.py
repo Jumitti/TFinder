@@ -259,7 +259,7 @@ def aio_page():
                 }
             )
             
-            st.write('**:orange[Step 1.2] Select species for all genes:**')
+            st.markdown('**:orange[Step 1.2] Select species for all genes:**', help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
             
             species1, species2, species3, species4, species5 = st.columns(5)
             
@@ -274,7 +274,7 @@ def aio_page():
             with species5:        
                 all_zebra = st.checkbox("Zebrafish")
             
-            st.write('**:orange[Step 1.2] Select regions for all genes:**')
+            st.markdown('**:orange[Step 1.2] Select regions for all genes:**', help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
             
             region1, region2 = st.columns(2)
             
@@ -297,8 +297,7 @@ def aio_page():
                 data_df["prom"] = True
             if all_term:
                 data_df["term"] = True
-                    
-            st.write('**:orange[Step 1.2] On demand genes table**')    
+                
             st.markdown('**:orange[Step 1.2] On demand genes table**', help="Check the boxes for which you want to extract a sequence. Pay attention that the gene name is equivalent for each species. The choice of species is not available for gene IDs. Parameterize the table last, if you check the boxes above, it resets the whole table.")
                 
             data_dff = st.data_editor(
