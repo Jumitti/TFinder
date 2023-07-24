@@ -972,7 +972,7 @@ def aio_page():
                 TF_name = response_data['name']
                 st.success(f"Finding responsive elements done for {TF_name}")
                 
-                coltable1, coltable2 = st.columns([0.6,0.4])
+                coltable1, coltable2 = st.columns([0.6,0.4], gap="large")
                 with coltable1:
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
@@ -1025,7 +1025,7 @@ def aio_page():
                 st.divider()
                 st.success(f"Finding responsive elements done")
                 
-                coltable1, coltable2 = st.columns(2, gap="large")
+                coltable1, coltable2 = st.columns([0.6,0.4], gap="large")
                 with coltable1:
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
