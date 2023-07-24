@@ -792,7 +792,7 @@ def aio_page():
           
     else:
         with REcol1:
-            IUPAC = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized):", value="ATGCN")
+            IUPAC = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized):", value="GGGRNYYYCC")
         
         IUPAC_code = ['A','T','G','C','R','Y','M','K','W','S','B','D','H','V','N']
         
