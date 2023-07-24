@@ -919,7 +919,7 @@ def aio_page():
             isUIPAC = False
 
     # TSS entry
-    BSFcol1, BSFcol2 BSFcol3 = st.columns(3)
+    BSFcol1, BSFcol2, BSFcol3 = st.columns(3)
     with BSFcol1:
         if prom_term == 'Promoter':
             entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", -10000, 10000, st.session_state['upstream_entry'], help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
