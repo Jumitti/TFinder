@@ -170,10 +170,9 @@ def aio_page():
     #Disposition
 
     colprom1, colprom2 = st.columns(2 , gap="small")
-
+    st.header(':orange[Step 1] Promoter and Terminator Extractor')
     # Promoter Finder
     with colprom1:
-        st.header(':orange[Step 1] Promoter and Terminator Extractor')
         st.info("💡 If you have a FASTA sequence, go to :orange[**Step 2**]")
         
         result_promoter = []
