@@ -179,7 +179,7 @@ def aio_page():
 
     # Gene ID
         gene_id_entry = st.text_area("🔸 :orange[**Step 1.1**] Gene ID:", value="PRKN\n351", help='NCBI gene name and NCBI gene ID allowed')
-        if st.button('Check genes avaibility'):
+        if st.button('🔎 Check genes avaibility'):
             with st.spinner("Checking genes avaibility..."):
                 gene_list = gene_id_entry.strip().split('\n')
                 for gene_input in gene_list:
