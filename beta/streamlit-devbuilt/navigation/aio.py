@@ -950,7 +950,7 @@ def aio_page():
     # Threshold pvalue
     
     with BSFcol2:
-        st.markdown("🔸 :orange[**Step 2.5**] Relative Score threshol")
+        st.markdown("🔸 :orange[**Step 2.5**] Relative Score threshold")
         threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
         
     with BSFcol3:
