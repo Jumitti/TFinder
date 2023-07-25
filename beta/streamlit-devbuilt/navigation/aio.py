@@ -168,7 +168,7 @@ def aio_page():
             raise Exception(f"Error retrieving gene information: {str(e)} for species {species}")
 
     #Disposition
-    st.header(':orange[Step 1] Promoter and Terminator Extractor')
+    st.subheader(':orange[Step 1] Promoter and Terminator Extractor')
     colprom1, colprom2 = st.columns([0.8,1.2] , gap="small")
     
     # Promoter Finder
@@ -463,7 +463,7 @@ def aio_page():
 
     # Promoter output state
     st.divider()
-    st.header(':orange[Step 2] Binding Sites Finder')
+    st.subheader(':orange[Step 2] Binding Sites Finder')
     if 'result_promoter' not in st.session_state:
         st.markdown("🔸 :orange[**Step 2.1**] Sequences:")
         result_promoter = st.text_area("🔸 :orange[**Step 2.1**] Sequences:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).", label_visibility='collapsed')
@@ -987,29 +987,27 @@ def aio_page():
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
     
+    
+    st.divider()
     # RE output
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
             if len(table2) > 0:
-                st.divider()
+                st.subheader(':orange[Result]')
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
                 response = requests.get(url)
                 response_data = response.json()
                 TF_name = response_data['name']
                 st.success(f"Finding responsive elements done for {TF_name}")
-                
                 coltable1, coltable2 = st.columns([0.6,0.4], gap="large")
                 with coltable1:
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
                     st.dataframe(df, hide_index=True)
-                    
                 with coltable2:
                     csv = df.to_csv(index=False).encode('utf-8')
-
                     st.download_button("💾 Download (.csv)",csv,"file.csv","text/csv",key='download-csv')
-                
             
                 source = df
                 score_range = source['Rel Score'].astype(float)
@@ -1049,18 +1047,15 @@ def aio_page():
     else:
         if 'table2' in locals():
             if len(table2) > 0:
-                st.divider()
+                st.subheader(':orange[Result]')
                 st.success(f"Finding responsive elements done")
-                
                 coltable1, coltable2 = st.columns([0.6,0.4], gap="large")
                 with coltable1:
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
                     st.dataframe(df, hide_index=True)
-                    
                 with coltable2:
                     csv = df.to_csv(index=False).encode('utf-8')
-
                     st.download_button("💾 Download (.csv)",csv,"file.csv","text/csv",key='download-csv')
              
                 source = df
