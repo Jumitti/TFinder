@@ -28,17 +28,19 @@ def resource_page():
     st.write("Transcription Factors are proteins that bind to DNA to regulate gene expression. They specifically recognize a nucleotide sequence called a Transcription Factor Binding Site present in the 5’ end (most of the time proximal and core promoter regions) and sometimes 3’ end of the regulatory sequences of a gene (terminator regions) (**Fig.3**). TFinder allows the extraction of these 2 regions. NCBI does not allow direct extraction of regions external to genes. You have to do an extraction directly on the chromosome. We therefore need to know on which chromosome is the gene of interest, where it begins and ends. The API makes it possible to recover this information and it is also present in the GeneBank of the gene. Once the information has been retrieved, the direction of the gene can be determined (if start coordinate < end coordinate then sense strand, otherwise anti-sense strand). This makes it possible to transform the extracted region always in the 5' to 3' direction of the gene. With the start and end coordinates, we can set the window to extract with the upstream/downstream information. Thanks to the ACCESION of the chromosome by setting the coordinates calculated with the upstream/downstream, we can extract the requested region.")
     st.write('An "Advance" mode allows you to choose more specifically what you want to extract. With this mode, you can select the region and species you want to recover for each gene. You can make a multiple selection. Of course, it is not possible to choose the species for the gene IDs, only for the gene names. However, in all cases, the region can be selected.')
     st.write("Note: the NCBI API does not allow to extract regions external to genes in a simple way. We have to make a request for a piece of chromosome. But the coordinates are dependent on the requested gene. NCBI does not have coordinates for different transcripts of the same gene. We decided to display the coordinates of the TSS or the gene end in the FASTA in order to find more easily which transcript it corresponds to. You can hover your mouse over the NCBI genetic map to see approximate coordinates on the chromosome and the different transcripts below (Fig.5)")
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Figure 1", "Figure 2", "Figure 3", "Figure 4", "Figure 5", "Figure 6"])
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Figure 1", "Figure 2", "Figure 3", "Figure 4", "Figure 5", "Figure 6", "Figure 7"])
     with tab1:
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/promtermoriginal.png?raw=true', caption='Figure 1: Screenshot of TFinder promoter and terminator extraction tool')
-    with tab2:
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/NCBI%20gene%20ID.png?raw=true', caption='Figure 2: NCBI gene name (upper red rectangle) and Gene ID (lower red rectangle)')
     with tab3:
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/whatisagene.png?raw=true', caption='Figure 3: What is a gene ?')
+        st.image('https://github.com/Jumitti/TFinder/blob/main/img/NCBI%20gene%20ID.png?raw=true', caption='Figure 3: NCBI gene name (upper red rectangle) and Gene ID (lower red rectangle)')
     with tab4:
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/GeneBank.png?raw=true', caption='Figure 4: GeneBank of a gene')
+        st.image('https://github.com/Jumitti/TFinder/blob/main/img/whatisagene.png?raw=true', caption='Figure 4: What is a gene ?')
     with tab5:
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/coordinates.png?raw=true', caption='Figure 5: Chromosic coordinates on a genetic map from NCBI')
+        st.image('https://github.com/Jumitti/TFinder/blob/main/img/GeneBank.png?raw=true', caption='Figure 5: GeneBank of a gene')
     with tab6:
+        st.image('https://github.com/Jumitti/TFinder/blob/main/img/coordinates.png?raw=true', caption='Figure 6: Chromosic coordinates on a genetic map from NCBI')
+    with tab7:
         st.code('>PRKN | Homo sapiens | NC_000006.12 | Promoter | TSS (on chromosome): 162727765\nATGAATACAGGTTTAGGAAAAAACAGAAAAGAACCCCAACCAGTAAAAAAAAAATTAAAGTATAACATTAAAAAACATCAAAATTGTAAATATTGTGTAGAAGAAAAACTAAATGATTAACCTGAATGGTTATGGTATTGCTGATAAATGCATCATCTTGA\n\n>APP | Homo sapiens | NC_000021.9 | Terminaotr | Gene end (on chromosome): 26171127\nACGCCATTCTCCTGCCTCAGCCTCCCCAGTAGCTGGGACTACAGGCGCCCGCCACGACGCCCGGCTAATTTTTTGTATTTTTAGTAGAGACGGGGTTTCACCGTGTTAGCCAGGATGGTGTTGATCTCCTGACCTCGTGATCCGCCCGCCTCAGCCTCCCAA')
+    with tab2:
+        st.image('https://github.com/Jumitti/TFinder/blob/main/img/promtermcheckgene.png?raw=true', caption='Figure 2: Check genes avaibility')
     st.header('Transcription Factors Binding Site')
