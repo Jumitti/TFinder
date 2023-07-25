@@ -249,8 +249,7 @@ def aio_page():
                             result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             st.success("Terminators extraction complete!")
                         except Exception as e:
-                            st.error(f"Error finding terminators: {str(e)}")
-    with colprom2:    
+                            st.error(f"Error finding terminators: {str(e)}")   
         with tab2:
             
             # Advance mode extraction
