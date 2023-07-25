@@ -62,7 +62,7 @@ def resource_page():
     with ttab3:
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/bsfJI.png?raw=true', caption='Figure 3: Screenshot of TFinder Binding Site Finder tools (option JASPAR)')
     with tab4:
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/promtermadvance.png?raw=true', caption='Figure 4: JASPAR_ID')
+        st.image('https://github.com/Jumitti/TFinder/blob/main/img/JASPAR%20ID.png?raw=true', caption='Figure 4: JASPAR_ID')
     with ttab5:
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/bsfM.png?raw=true', caption='Figure 5: Screenshot of TFinder Binding Site Finder tools (option PWM)')
     
