@@ -219,19 +219,20 @@ def aio_page():
                 st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
                 upstream_entry = -min(updown_slide)
                 downstream_entry = max(updown_slide)
+                st.session_state['upstream_entry'] = upstream_entry
             else:
                 st.markdown("🔸 :orange[**Step 1.4**] Upstream/downstream from gene end (bp)")
                 updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100, label_visibility='collapsed')
                 st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
                 upstream_entry = -min(updown_slide)
                 downstream_entry = max(updown_slide)
+                st.session_state['upstream_entry'] = upstream_entry
                 
         # Run Promoter Finder
             if prom_term == 'Promoter':
                 if st.button("🧬 :orange[**Step 1.5**] Extract promoter" ,help='(~5sec/gene)'):
                     with st.spinner("Finding promoters..."):
                         gene_ids = gene_id_entry.strip().split("\n")
-                        st.session_state['upstream_entry'] = upstream_entry
                         upstream = int(upstream_entry)
                         downstream = int(downstream_entry)
                         try:
@@ -243,7 +244,6 @@ def aio_page():
                 if st.button("🧬 :orange[**Step 1.5**] Extract terminator", help='(~5sec/gene)'):
                     with st.spinner("Finding terminators..."):
                         gene_ids = gene_id_entry.strip().split("\n")
-                        st.session_state['upstream_entry'] = upstream_entry
                         upstream = int(upstream_entry)
                         downstream = int(downstream_entry)
                         try:
@@ -351,6 +351,7 @@ def aio_page():
             st.write("Upstream: ", min(updown_slide), " bp from TSS and gene end | Downstream: ", max(updown_slide), " bp from TSS and gene end")
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
+            st.session_state['upstream_entry'] = upstream_entry
             
             if st.button("🧬 :red[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
                 with st.spinner("Finding sequences..."):
@@ -367,7 +368,6 @@ def aio_page():
                         if human_checked == True and prom_checked == True:
                             prom_term = 'Promoter'
                             gene_ids = gene_name.strip().split('\n')
-                            st.session_state['upstream_entry'] = upstream_entry
                             upstream = int(upstream_entry)
                             downstream = int(downstream_entry)
                             species = 'human'
@@ -378,7 +378,6 @@ def aio_page():
                         if mouse_checked == True and prom_checked == True:
                             prom_term = 'Promoter'
                             gene_ids = gene_name.strip().split('\n')
-                            st.session_state['upstream_entry'] = upstream_entry
                             upstream = int(upstream_entry)
                             downstream = int(downstream_entry)
                             species = 'mouse'
@@ -389,7 +388,6 @@ def aio_page():
                         if rat_checked == True and prom_checked == True:
                             prom_term = 'Promoter'
                             gene_ids = gene_name.strip().split('\n')
-                            st.session_state['upstream_entry'] = upstream_entry
                             upstream = int(upstream_entry)
                             downstream = int(downstream_entry)
                             species = 'rat'
@@ -400,7 +398,6 @@ def aio_page():
                         if droso_checked == True and prom_checked == True:
                             prom_term = 'Promoter'
                             gene_ids = gene_name.strip().split('\n')
-                            st.session_state['upstream_entry'] = upstream_entry
                             upstream = int(upstream_entry)
                             downstream = int(downstream_entry)
                             species = 'drosophila'
@@ -411,7 +408,6 @@ def aio_page():
                         if zebra_checked == True and prom_checked == True:
                             prom_term = 'Promoter'
                             gene_ids = gene_name.strip().split('\n')
-                            st.session_state['upstream_entry'] = upstream_entry
                             upstream = int(upstream_entry)
                             downstream = int(downstream_entry)
                             species = 'zebrafish'
@@ -422,7 +418,6 @@ def aio_page():
                         if human_checked == True and term_checked == True:
                             prom_term = 'Terminator'
                             gene_ids = gene_name.strip().split('\n')
-                            st.session_state['upstream_entry'] = upstream_entry
                             upstream = int(upstream_entry)
                             downstream = int(downstream_entry)
                             species = 'human'
@@ -433,7 +428,6 @@ def aio_page():
                         if mouse_checked == True and term_checked == True:
                             prom_term = 'Terminator'
                             gene_ids = gene_name.strip().split('\n')
-                            st.session_state['upstream_entry'] = upstream_entry
                             upstream = int(upstream_entry)
                             downstream = int(downstream_entry)
                             species = 'mouse'
@@ -444,7 +438,6 @@ def aio_page():
                         if rat_checked == True and term_checked == True:
                             prom_term = 'Terminator'
                             gene_ids = gene_name.strip().split('\n')
-                            st.session_state['upstream_entry'] = upstream_entry
                             upstream = int(upstream_entry)
                             downstream = int(downstream_entry)
                             species = 'rat'
@@ -455,7 +448,6 @@ def aio_page():
                         if droso_checked == True and term_checked == True:
                             prom_term = 'Terminator'
                             gene_ids = gene_name.strip().split('\n')
-                            st.session_state['upstream_entry'] = upstream_entry
                             upstream = int(upstream_entry)
                             downstream = int(downstream_entry)
                             species = 'drosophila'
@@ -466,7 +458,6 @@ def aio_page():
                         if zebra_checked == True and term_checked == True:
                             prom_term = 'Terminator'
                             gene_ids = gene_name.strip().split('\n')
-                            st.session_state['upstream_entry'] = upstream_entry
                             upstream = int(upstream_entry)
                             downstream = int(downstream_entry)
                             species = 'zebrafish'
@@ -962,9 +953,6 @@ def aio_page():
         elif prom_term == 'Terminator':
             st.markdown("🔸 :orange[**Step 2.4**] Gene end at (in bp):", help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
             entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], label_visibility="collapsed")
-        elif 'upstream_entry' not in st.session_state:
-            st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. Do not modify if you use Step 1")
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", -10000, 10000, 0, label_visibility="collapsed")
         else:
             st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. Do not modify if you use Step 1")
             entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], label_visibility="collapsed")
