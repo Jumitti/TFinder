@@ -947,13 +947,13 @@ def aio_page():
     # TSS entry
     BSFcol1, BSFcol2, BSFcol3 = st.columns([2,2,1], gap="medium")
     with BSFcol1:
-        if prom_term == 'Promoter' and active_tab = 'Default':
+        if prom_term == 'Promoter' and active_tab == 'Default':
             st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
             entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", -10000, 10000, st.session_state['upstream_entry_prom'], label_visibility="collapsed")
-        elif prom_term == 'Terminator' and active_tab = 'Default':
+        elif prom_term == 'Terminator' and active_tab == 'Default':
             st.markdown("🔸 :orange[**Step 2.4**] Gene end at (in bp):", help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
             entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry_term'], label_visibility="collapsed")
-        elif active_tab = 'Advance':
+        elif active_tab == 'Advance':
             st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. Do not modify if you use Step 1")
             entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], label_visibility="collapsed")
 
