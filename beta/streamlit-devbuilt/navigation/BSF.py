@@ -124,8 +124,8 @@ def BSF_page():
                     sequence = random.choices(nucleotides, probabilities, k=length)
                     return ''.join(sequence)
 
-                # Génération des séquences aléatoires une seule fois
-                motif_length = seq_length  # Remplacer par la longueur de votre motif
+                # Generate random sequences
+                motif_length = seq_length
                 num_random_seqs = 1000000
 
                 count_a = promoter_region.count('A')
@@ -146,7 +146,7 @@ def BSF_page():
                     random_sequence = generate_random_sequence(motif_length, probabilities)
                     random_sequences.append(random_sequence)
 
-                # Calcul des scores aléatoires à partir des différentes matrices
+                # Calculation of random scores from the different matrices
                 random_scores = {}
         
         for matrix_name, matrix in matrices.items():
@@ -284,6 +284,8 @@ def BSF_page():
                 st.markdown("🔸 :orange[**Step 2.3**] Sequences:", help='Put FASTA sequences. Same sequence length required ⚠️')
                 fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", label_visibility='collapsed')
             isUIPAC = True
+            
+             # Generate matrix
             def calculate_pwm(sequences):
                 num_sequences = len(sequences) 
                 sequence_length = len(sequences[0])
@@ -410,7 +412,8 @@ def BSF_page():
             fasta_text = ""
             for i, seq in enumerate(sequences):
                 fasta_text += f">seq{i + 1}\n{seq}\n"
-                
+            
+             # Generate matrix
             def calculate_pwm(sequences):
                 num_sequences = len(sequences)
                 sequence_length = len(sequences[0])

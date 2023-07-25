@@ -105,6 +105,8 @@ def prom_extractor_page():
 
                 else:
                     raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
+            
+            # Determine sens of gene + coordinate for upstream and downstream
             else:
                 if chrstop > chrstart:
                     start = chrstop - upstream
@@ -175,6 +177,8 @@ def prom_extractor_page():
     # Gene ID
         st.markdown("🔸 :orange[**Step 1.1**] Gene ID:", help='NCBI gene name and NCBI gene ID allowed')
         gene_id_entry = st.text_area("🔸 :orange[**Step 1.1**] Gene ID:", value="PRKN\n351", label_visibility='collapsed')
+        
+        # Verify if gene is available for all species
         if st.button('🔎 Check genes avaibility', help='Sometimes genes do not have the same name in all species or do not exist.'):
             with st.spinner("Checking genes avaibility..."):
                 gene_list = gene_id_entry.strip().split('\n')
@@ -244,6 +248,7 @@ def prom_extractor_page():
     with colprom2:    
         with tab2:
             
+            # Advance mode extraction
             gene_list = gene_id_entry.strip().split('\n')
         
             data_df = pd.DataFrame(
