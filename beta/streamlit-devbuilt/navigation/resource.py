@@ -30,7 +30,7 @@ def resource_page():
     st.write("Note: the NCBI API does not allow to extract regions external to genes in a simple way. We have to make a request for a piece of chromosome. But the coordinates are dependent on the requested gene. NCBI does not have coordinates for different transcripts of the same gene. We decided to display the coordinates of the TSS or the gene end in the FASTA in order to find more easily which transcript it corresponds to. You can hover your mouse over the NCBI genetic map to see approximate coordinates on the chromosome and the different transcripts below (Fig.5)")
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Figure 1", "Figure 2", "Figure 3", "Figure 4", "Figure 5", "Figure 6"])
     with tab1:
-        st.image('https://raw.githubusercontent.com/Jumitti/TFinder/main/img/NCBI%20API.png', caption='Figure 1: Screenshot of TFinder promoter and terminator extraction tool')
+        st.image('https://github.com/Jumitti/TFinder/blob/main/img/promtermoriginal.png?raw=true', caption='Figure 1: Screenshot of TFinder promoter and terminator extraction tool')
     with tab2:
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/NCBI%20gene%20ID.png?raw=true', caption='Figure 2: NCBI gene name (upper red rectangle) and Gene ID (lower red rectangle)')
     with tab3:
