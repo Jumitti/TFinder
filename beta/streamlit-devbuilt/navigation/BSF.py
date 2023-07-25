@@ -33,7 +33,8 @@ def BSF_page():
     # Promoter output state
 
     st.subheader('🔎 Binding Sites Finder')
-    result_promoter = st.text_area("🔸 :red[**Step 1.1**] Sequence:", value="Paste sequences here (FASTA required for multiple sequences).")
+    st.markdown("🔸 :orange[**Step 2.1**] Sequences:")
+    result_promoter = st.text_area("🔸 :red[**Step 1.1**] Sequence:", value="Paste sequences here (FASTA required for multiple sequences).", label_visibility='collapsed')
         
     # Extract JASPAR matrix
     def matrix_extraction(sequence_consensus_input):
@@ -89,7 +90,8 @@ def BSF_page():
         if first_line.startswith(("A", "T", "C", "G")):
             shortened_promoter_name = "n.d."
             promoter_region = lines
-            promoters.append((shortened_promoter_name, promoter_region))
+            region = "n.d"
+            promoters.append((shortened_promoter_name, promoter_region,region))
         else:
             lines = result_promoter.split("\n")
             i = 0
@@ -98,8 +100,14 @@ def BSF_page():
                 if line.startswith(">"):
                     promoter_name = line[1:]
                     shortened_promoter_name = promoter_name[:10] if len(promoter_name) > 10 else promoter_name
+                    if "promoter" in promoter_name.lower():
+                        region = "Prom."
+                    elif "terminator" in promoter_name.lower():
+                        region = "Term."
+                    else:
+                        region = "n.d"
                     promoter_region = lines[i + 1]
-                    promoters.append((shortened_promoter_name, promoter_region))
+                    promoters.append((shortened_promoter_name, promoter_region, region))
                     i += 2
                 else:
                     i += 1
@@ -118,7 +126,7 @@ def BSF_page():
 
                 # Génération des séquences aléatoires une seule fois
                 motif_length = seq_length  # Remplacer par la longueur de votre motif
-                num_random_seqs = 500000
+                num_random_seqs = 1000000
 
                 count_a = promoter_region.count('A')
                 count_t = promoter_region.count('T')
@@ -202,7 +210,7 @@ def BSF_page():
                                        str(tis_position).ljust(15),
                                        sequence_with_context,
                                        "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
-                                       shortened_promoter_name]
+                                       shortened_promoter_name,region]
                                 table2.append(row)
                     else:
                         for position, seq, normalized_score in found_positions:
@@ -225,17 +233,17 @@ def BSF_page():
                                        str(tis_position).ljust(15),
                                        sequence_with_context,
                                        "{:.6f}".format(normalized_score).ljust(12),
-                                       shortened_promoter_name]
+                                       shortened_promoter_name,region]
                                 table2.append(row)
 
         if len(table2) > 0:
             if calc_pvalue :
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Relative position", "Sequence", "Relative Score", "p-value", "Promoter"]
+                header = ["Position", "Relative position", "Sequence", "Relative Score", "p-value", "Promoter","Region"]
                 table2.insert(0, header)
             else:
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Relative position", "Sequence", "Relative Score", "Promoter"]
+                header = ["Position", "Relative position", "Sequence", "Relative Score", "Promoter","Region"]
                 table2.insert(0, header)
             
         else:
@@ -243,21 +251,41 @@ def BSF_page():
             
         return table2
 
+    # Responsive Elements Finder
+
     # RE entry
-    jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','Matrix'))
+    REcol1, REcol2 = st.columns([0.30,0.70])
+    with REcol1:
+        st.markdown('🔸 :orange[**Step 2.2**] Responsive elements type:')
+        jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','Matrix'), label_visibility='collapsed')
     if jaspar == 'JASPAR_ID':
-        entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1")
-        st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
+        with REcol1:
+            st.markdown("🔸 :orange[**Step 2.3**] JASPAR ID:")
+            entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1", label_visibility='collapsed')
+            url = f"https://jaspar.genereg.net/api/v1/matrix/{entry_sequence}/"
+            response = requests.get(url)
+            response_data = response.json()
+            TF_name = response_data['name']
+            TF_species = response_data['species'][0]['name']
+            st.success(f"{TF_species} transcription factor {TF_name}")
+        with REcol2:
+            st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
     elif jaspar == 'Matrix':
-        matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'))
+        with REcol1:
+            st.markdown('🔸 :orange[**Step 2.2bis**] Matrix:')
+            matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'), label_visibility='collapsed')
         if matrix_type == 'With PWM':
             isUIPAC = True
-            matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]", help="Only PWM generated with our tools are allowed")
+            with REcol2:
+                st.markdown("🔸 :orange[**Step 2.3**] Matrix:", help="Only PWM generated with our tools are allowed")
+                matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]", label_visibility='collapsed')
         else:
-            fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", help='Put FASTA sequences. Same sequence length required ⚠️')
+            with REcol1:
+                st.markdown("🔸 :orange[**Step 2.3**] Sequences:", help='Put FASTA sequences. Same sequence length required ⚠️')
+                fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", label_visibility='collapsed')
             isUIPAC = True
             def calculate_pwm(sequences):
-                num_sequences = len(sequences)
+                num_sequences = len(sequences) 
                 sequence_length = len(sequences[0])
                 pwm = np.zeros((4, sequence_length))
                 for i in range(sequence_length):
@@ -308,8 +336,9 @@ def BSF_page():
 
                         base_str += "]\n"
                         pwm_text += base_str
-
-                    matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Don't modify.", key="non_editable_text")
+                    
+                    with REcol2:
+                        matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Don't modify.", key="non_editable_text")
 
                 else:
                     st.warning("You forget FASTA sequences :)")
@@ -319,28 +348,31 @@ def BSF_page():
                     logo = logomaker.Logo(matrix, color_scheme = 'classic')
 
                     return logo
+                
+                with REcol2:
+                    sequences_text = fasta_text
+                    sequences = []
+                    current_sequence = ""
+                    for line in sequences_text.splitlines():
+                        line = line.strip()
+                        if line.startswith(">"):
+                            if current_sequence:
+                                sequences.append(current_sequence)
+                            current_sequence = ""
+                        else:
+                            current_sequence += line
 
-                sequences_text = fasta_text
-                sequences = []
-                current_sequence = ""
-                for line in sequences_text.splitlines():
-                    line = line.strip()
-                    if line.startswith(">"):
-                        if current_sequence:
-                            sequences.append(current_sequence)
-                        current_sequence = ""
-                    else:
-                        current_sequence += line
+                    if current_sequence:
+                        sequences.append(current_sequence)
 
-                if current_sequence:
-                    sequences.append(current_sequence)
-
-                if sequences:
-                    logo = create_web_logo(sequences)
-                    st.pyplot(logo.fig)
+                    if sequences:
+                        logo = create_web_logo(sequences)
+                        st.pyplot(logo.fig)
           
     else:
-        IUPAC = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized):", value="ATGCN")
+        with REcol1:
+            st.markdown("🔸 :orange[**Step 2.3**] Responsive element:", help="IUPAC authorized")
+            IUPAC = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized):", value="GGGRNYYYCC", label_visibility='collapsed')
         
         IUPAC_code = ['A','T','G','C','R','Y','M','K','W','S','B','D','H','V','N']
         
@@ -431,8 +463,9 @@ def BSF_page():
 
                         base_str += "]\n"
                         pwm_text += base_str
-
-                    matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Dont't modify.", key="non_editable_text")
+                    
+                    with REcol2:
+                        matrix_text = st.text_area("PWM:", value=pwm_text, help="Select and copy for later use. Dont't modify.", key="non_editable_text")
 
                 else:
                     st.warning("You forget FASTA sequences :)")
@@ -442,39 +475,46 @@ def BSF_page():
                     logo = logomaker.Logo(matrix, color_scheme = 'classic')
 
                     return logo
+                
+                with REcol2:
+                    sequences_text = fasta_text
+                    sequences = []
+                    current_sequence = ""
+                    for line in sequences_text.splitlines():
+                        line = line.strip()
+                        if line.startswith(">"):
+                            if current_sequence:
+                                sequences.append(current_sequence)
+                            current_sequence = ""
+                        else:
+                            current_sequence += line
 
-                sequences_text = fasta_text
-                sequences = []
-                current_sequence = ""
-                for line in sequences_text.splitlines():
-                    line = line.strip()
-                    if line.startswith(">"):
-                        if current_sequence:
-                            sequences.append(current_sequence)
-                        current_sequence = ""
-                    else:
-                        current_sequence += line
+                    if current_sequence:
+                        sequences.append(current_sequence)
 
-                if current_sequence:
-                    sequences.append(current_sequence)
-
-                if sequences:
-                    logo = create_web_logo(sequences)
-                    st.pyplot(logo.fig)
+                    if sequences:
+                        logo = create_web_logo(sequences)
+                        st.pyplot(logo.fig)
         else:
             isUIPAC = False
-        
 
-# TSS entry
-    entry_tis = st.number_input("🔸 :red[**Step 1.4**] Relative position to TSS or Gene End (in bp):", -10000, 10000, 0, help="Distance of TSS or gene end from begin of sequences. Same distance is required for multiple sequences. Leave '0' if you don't know")
+    # TSS entry
+    BSFcol1, BSFcol2, BSFcol3 = st.columns([2,2,1], gap="medium")
+    with BSFcol1:
+        sr.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. Do not modify if you use Step 1")
+        entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], label_visibility="collapsed")
 
-# Threshold p-value
-    if jaspar:
-            threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.80, step= 0.05)
-            
-    calc_pvalue = st.checkbox('_p-value_ (Experimental, take more times)')
+    # Threshold pvalue
     
-# Run Responsive Elements finder
+    with BSFcol2:
+        st.markdown("🔸 :orange[**Step 2.5**] Relative Score threshol")
+        threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
+        
+    with BSFcol3:
+        st.markdown("🔸 :orange[**Step 2.6**] Calcul _p-value_", help='Experimental, take more times')
+        calc_pvalue = st.checkbox('_p-value_')
+
+    # Run Responsive Elements finder
     if result_promoter.startswith(("A", "T", "G", "C", ">")):
         with st.spinner("Finding responsive elements..."):
             tis_value = int(entry_tis)
@@ -501,7 +541,7 @@ def BSF_page():
                         table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
-
+    
     # RE output
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
@@ -513,42 +553,46 @@ def BSF_page():
                 response_data = response.json()
                 TF_name = response_data['name']
                 st.success(f"Finding responsive elements done for {TF_name}")
-                outcol1, outcol2 = st.columns(2)
-                with outcol1:
+                
+                coltable1, coltable2 = st.columns([0.6,0.4], gap="large")
+                with coltable1:
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
-                    st.dataframe(df)
-
+                    st.dataframe(df, hide_index=True)
+                    
+                with coltable2:
                     csv = df.to_csv(index=False).encode('utf-8')
 
                     st.download_button("💾 Download (.csv)",csv,"file.csv","text/csv",key='download-csv')
-                    
-                with outcol2:
-                    source = df
-                    score_range = source['Relative Score'].astype(float)
-                    ystart = score_range.min() - 0.02
-                    ystop = score_range.max() + 0.02
-                    scale = alt.Scale(scheme='category10')
-                    color_scale = alt.Color("Promoter:N", scale=scale)
-                    
-                    if calc_pvalue:
-                        chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                            y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'p-value', 'Sequence', 'Promoter']
-                        ).properties(width=600, height=400)
-                                              
-                        st.altair_chart(chart, use_container_width=True)
-                    else:
-                        chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                            y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'Sequence', 'Promoter']
-                        ).properties(width=600, height=400)
-                                              
-                        st.altair_chart(chart, use_container_width=True)
+                
+            
+                source = df
+                score_range = source['Rel Score'].astype(float)
+                ystart = score_range.min() - 0.02
+                ystop = score_range.max() + 0.02
+                source['Gene_Region'] = source['Gene'] + " " + source['Region']
+                scale = alt.Scale(scheme='category10')
+                color_scale = alt.Color("Gene_Region:N", scale=scale)
+                gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
+                
+                if calc_pvalue:
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                        tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                    ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+                                          
+                    st.altair_chart(chart, theme=None, use_container_width=True)
+                else:
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                        tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
+                    ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+                                          
+                    st.altair_chart(chart, theme=None, use_container_width=True)
             else: 
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
@@ -562,41 +606,44 @@ def BSF_page():
             if len(table2) > 0:
                 st.divider()
                 st.success(f"Finding responsive elements done")
-                outcol1, outcol2 = st.columns(2)
-                with outcol1:
+                
+                coltable1, coltable2 = st.columns([0.6,0.4], gap="large")
+                with coltable1:
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
-                    st.dataframe(df)
+                    st.dataframe(df, hide_index=True)
                     
+                with coltable2:
                     csv = df.to_csv(index=False).encode('utf-8')
 
                     st.download_button("💾 Download (.csv)",csv,"file.csv","text/csv",key='download-csv')
-                    
-                with outcol2:
-                    source = df
-                    score_range = source['Relative Score'].astype(float)
-                    ystart = score_range.min() - 0.02
-                    ystop = score_range.max() + 0.02
-                    scale = alt.Scale(scheme='category10')
-                    color_scale = alt.Color("Promoter:N", scale=scale)
-                    
-                    if calc_pvalue:
-                        chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                            y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'p-value', 'Sequence', 'Promoter']
-                        ).properties(width=600, height=400)
-                                              
-                        st.altair_chart(chart, use_container_width=True)
-                    else:
-                        chart = alt.Chart(source).mark_circle().encode(
-                            x=alt.X('Relative position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                            y=alt.Y('Relative Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=color_scale,
-                            tooltip=['Relative position', 'Relative Score', 'Sequence', 'Promoter']
-                        ).properties(width=600, height=400)
-                                              
-                        st.altair_chart(chart, use_container_width=True)
+             
+                source = df
+                score_range = source['Rel Score'].astype(float)
+                ystart = score_range.min() - 0.02
+                ystop = score_range.max() + 0.02
+                source['Gene_Region'] = source['Gene'] + " " + source['Region']
+                scale = alt.Scale(scheme='category10')
+                color_scale = alt.Color("Gene_Region:N", scale=scale)
+                gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
+                
+                if calc_pvalue:
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                        tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                    ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+                                          
+                    st.altair_chart(chart, theme=None, use_container_width=True)
+                else:
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                        tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
+                    ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+                                          
+                    st.altair_chart(chart, theme=None, use_container_width=True)
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
