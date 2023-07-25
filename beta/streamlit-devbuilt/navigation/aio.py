@@ -1004,6 +1004,7 @@ def aio_page():
                 with coltable1:
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
+                    st.markdown('**Table**')
                     st.dataframe(df, hide_index=True)
                 with coltable2:
                     csv = df.to_csv(index=False).encode('utf-8')
@@ -1025,7 +1026,8 @@ def aio_page():
                         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
                         tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
                     ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-                                          
+                    
+                    st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                     st.altair_chart(chart, theme=None, use_container_width=True)
                 else:
                     chart = alt.Chart(source).mark_circle().encode(
@@ -1034,7 +1036,8 @@ def aio_page():
                         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
                         tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
                     ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-                                          
+                    
+                    st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                     st.altair_chart(chart, theme=None, use_container_width=True)
             else: 
                 jaspar_id = sequence_consensus_input
@@ -1053,6 +1056,7 @@ def aio_page():
                 with coltable1:
                     df = pd.DataFrame(table2[1:], columns=table2[0])
                     st.session_state['df'] = df
+                    st.markdown('**Table**')
                     st.dataframe(df, hide_index=True)
                 with coltable2:
                     csv = df.to_csv(index=False).encode('utf-8')
@@ -1074,7 +1078,8 @@ def aio_page():
                         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
                         tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
                     ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-                                          
+                    
+                    st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                     st.altair_chart(chart, theme=None, use_container_width=True)
                 else:
                     chart = alt.Chart(source).mark_circle().encode(
@@ -1083,7 +1088,8 @@ def aio_page():
                         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
                         tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
                     ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-                                          
+                    
+                    st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                     st.altair_chart(chart, theme=None, use_container_width=True)
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
