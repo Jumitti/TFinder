@@ -178,6 +178,7 @@ def aio_page():
         st.info("💡 If you have a FASTA sequence, go to :orange[**Step 2**]")
         
         result_promoter = []
+        upstream_entry = []
 
     # Gene ID
         st.markdown("🔸 :orange[**Step 1.1**] Gene ID:", help='NCBI gene name and NCBI gene ID allowed')
