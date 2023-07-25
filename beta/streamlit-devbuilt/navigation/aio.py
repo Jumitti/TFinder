@@ -203,7 +203,7 @@ def aio_page():
     with colprom2:
         tab1, tab2 = st.tabs(['Default','Advance'])
         
-        if tab1:
+        with tab1:
             
         # Species
             st.markdown("🔸 :orange[**Step 1.2**] Select species of gene names:")
@@ -218,7 +218,7 @@ def aio_page():
                 st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
                 upstream_entry = -min(updown_slide)
                 downstream_entry = max(updown_slide)
-                st.session_state['upstream_entry'] = upstream_entry
+                st.session_state['upstream_entry_prom'] = upstream_entry
             else:
                 st.markdown("🔸 :orange[**Step 1.4**] Upstream/downstream from gene end (bp)")
                 updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100, label_visibility='collapsed')
@@ -250,7 +250,7 @@ def aio_page():
                             st.success("Terminators extraction complete!")
                         except Exception as e:
                             st.error(f"Error finding terminators: {str(e)}")   
-        else: 
+        with tab2:
             
             # Advance mode extraction
             gene_list = gene_id_entry.strip().split('\n')
@@ -948,7 +948,7 @@ def aio_page():
     with BSFcol1:
         if prom_term == 'Promoter':
             st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", -10000, 10000, st.session_state['upstream_entry'], label_visibility="collapsed")
+            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", -10000, 10000, st.session_state['upstream_entry_prom'], label_visibility="collapsed")
         elif prom_term == 'Terminator':
             st.markdown("🔸 :orange[**Step 2.4**] Gene end at (in bp):", help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
             entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], label_visibility="collapsed")
