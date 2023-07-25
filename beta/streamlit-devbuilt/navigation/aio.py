@@ -956,7 +956,7 @@ def aio_page():
         else:
             st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. Do not modify if you use Step 1")
             entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], label_visibility="collapsed")'''
-        if any(var not in st.session_state for var in ['upstream_entry_prom', 'upstream_entry_term', 'upstream_entry'])
+        if not all(var in st.session_state for var in ['upstream_entry_prom', 'upstream_entry_term', 'upstream_entry']):
             st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
             entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", -10000, 10000, 0, label_visibility="collapsed")
         if 'upstream_entry_prom' in st.session_state:
