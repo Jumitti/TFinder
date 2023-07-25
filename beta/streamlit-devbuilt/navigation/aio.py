@@ -219,14 +219,12 @@ def aio_page():
                 st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
                 upstream_entry = -min(updown_slide)
                 downstream_entry = max(updown_slide)
-                st.session_state['upstream_entry_prom'] = upstream_entry
             else:
                 st.markdown("🔸 :orange[**Step 1.4**] Upstream/downstream from gene end (bp)")
                 updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100, label_visibility='collapsed')
                 st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
                 upstream_entry = -min(updown_slide)
                 downstream_entry = max(updown_slide)
-                st.session_state['upstream_entry_term'] = upstream_entry
                 
         # Run Promoter Finder
             if prom_term == 'Promoter':
@@ -351,7 +349,6 @@ def aio_page():
             st.write("Upstream: ", min(updown_slide), " bp from TSS and gene end | Downstream: ", max(updown_slide), " bp from TSS and gene end")
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
-            st.session_state['upstream_entry'] = upstream_entry
             
             if st.button("🧬 :red[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
                 with st.spinner("Finding sequences..."):
@@ -946,28 +943,9 @@ def aio_page():
 
     # TSS entry
     BSFcol1, BSFcol2, BSFcol3 = st.columns([2,2,1], gap="medium")
-    with BSFcol1:'''
-        if prom_term == 'Promoter':
-            st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", -10000, 10000, st.session_state['upstream_entry_prom'], label_visibility="collapsed")
-        elif prom_term == 'Terminator':
-            st.markdown("🔸 :orange[**Step 2.4**] Gene end at (in bp):", help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry_term'], label_visibility="collapsed")
-        else:
-            st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. Do not modify if you use Step 1")
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], label_visibility="collapsed")
-        if not all(var in st.session_state for var in ['upstream_entry_prom', 'upstream_entry_term', 'upstream_entry']):
-            st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", -10000, 10000, 0, label_visibility="collapsed")'''
-        if 'upstream_entry_prom' in st.session_state:
-            st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1")
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) at (in bp):", -10000, 10000, st.session_state['upstream_entry_prom'], label_visibility="collapsed")
-        elif 'upstream_entry_term' in st.session_state:
-            st.markdown("🔸 :orange[**Step 2.4**] Gene end at (in bp):", help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry_term'], label_visibility="collapsed")
-        elif 'upstream_entry' in st.session_state:
-            st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. Do not modify if you use Step 1")
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], label_visibility="collapsed")
+    with BSFcol1:
+        st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
+        entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", -10000, 10000, 0, label_visibility="collapsed")
 
     # Threshold pvalue
     
