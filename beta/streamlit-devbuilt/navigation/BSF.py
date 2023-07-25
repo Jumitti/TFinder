@@ -257,7 +257,7 @@ def BSF_page():
     REcol1, REcol2 = st.columns([0.30,0.70])
     with REcol1:
         st.markdown('🔸 :orange[**Step 2.2**] Responsive elements type:')
-        jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','Matrix'), label_visibility='collapsed')
+        jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','PWM'), label_visibility='collapsed')
     if jaspar == 'JASPAR_ID':
         with REcol1:
             st.markdown("🔸 :orange[**Step 2.3**] JASPAR ID:")
@@ -270,7 +270,7 @@ def BSF_page():
             st.success(f"{TF_species} transcription factor {TF_name}")
         with REcol2:
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
-    elif jaspar == 'Matrix':
+    elif jaspar == 'PWM':
         with REcol1:
             st.markdown('🔸 :orange[**Step 2.2bis**] Matrix:')
             matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'), label_visibility='collapsed')
