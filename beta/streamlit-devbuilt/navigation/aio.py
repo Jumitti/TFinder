@@ -993,7 +993,7 @@ def aio_page():
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
             if len(table2) > 0:
-                st.subheader(':orange[Result]')
+                st.subheader(':orange[Results]')
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
                 response = requests.get(url)
@@ -1047,7 +1047,7 @@ def aio_page():
     else:
         if 'table2' in locals():
             if len(table2) > 0:
-                st.subheader(':orange[Result]')
+                st.subheader(':orange[Results]')
                 st.success(f"Finding responsive elements done")
                 coltable1, coltable2 = st.columns([0.6,0.4], gap="large")
                 with coltable1:
