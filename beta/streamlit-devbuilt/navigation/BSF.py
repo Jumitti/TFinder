@@ -91,7 +91,7 @@ def BSF_page():
             shortened_promoter_name = "n.d."
             promoter_region = lines
             region = "n.d"
-            promoters.append((shortened_promoter_name, promoter_region,region, region))
+            promoters.append((shortened_promoter_name, promoter_region, region))
         else:
             lines = result_promoter.split("\n")
             i = 0
@@ -116,7 +116,7 @@ def BSF_page():
             for matrix_name, matrix in matrices.items():
                 seq_length = len(matrix['A'])
             
-            for shortened_promoter_name, region, promoter_region in promoters:
+            for shortened_promoter_name, promoter_region, region in promoters:
                 length_prom = len(promoter_region)
                         
                 def generate_random_sequence(length, probabilities):
@@ -157,7 +157,7 @@ def BSF_page():
             min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
 
             # REF
-            for shortened_promoter_name, region, promoter_region in promoters:
+            for shortened_promoter_name, promoter_region, region in promoters:
                 found_positions = []
                 length_prom = len(promoter_region)
 
@@ -210,7 +210,7 @@ def BSF_page():
                                        str(tis_position).ljust(15),
                                        sequence_with_context,
                                        "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
-                                       shortened_promoter_name,region]
+                                       shortened_promoter_name, region]
                                 table2.append(row)
                     else:
                         for position, seq, normalized_score in found_positions:
@@ -233,7 +233,7 @@ def BSF_page():
                                        str(tis_position).ljust(15),
                                        sequence_with_context,
                                        "{:.6f}".format(normalized_score).ljust(12),
-                                       shortened_promoter_name,region]
+                                       shortened_promoter_name, region]
                                 table2.append(row)
 
         if len(table2) > 0:

@@ -107,7 +107,7 @@ def aio_page():
                     return sequence
 
                 else:
-                    raise Exception(f"An error occurorange while retrieving the DNA sequence: {response.status_code}")
+                    raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
             else:
                 if chrstop > chrstart:
                     start = chrstop - upstream
@@ -131,7 +131,7 @@ def aio_page():
                     return sequence
 
                 else:
-                    raise Exception(f"An error occurorange while retrieving the DNA sequence: {response.status_code}")
+                    raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
         except Exception as e:
             raise Exception(f"Error: {str(e)}")
 
