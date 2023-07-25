@@ -203,7 +203,7 @@ def aio_page():
     with colprom2:
         tab1, tab2 = st.tabs(['Default','Advance'])
         
-        with tab1:
+        if tab1:
             
         # Species
             st.markdown("🔸 :orange[**Step 1.2**] Select species of gene names:")
@@ -250,7 +250,7 @@ def aio_page():
                             st.success("Terminators extraction complete!")
                         except Exception as e:
                             st.error(f"Error finding terminators: {str(e)}")   
-        with tab2:
+        if tab2:
             
             # Advance mode extraction
             gene_list = gene_id_entry.strip().split('\n')
