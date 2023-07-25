@@ -116,7 +116,7 @@ def BSF_page():
             for matrix_name, matrix in matrices.items():
                 seq_length = len(matrix['A'])
             
-            for shortened_promoter_name, promoter_region in promoters:
+            for shortened_promoter_name, region, promoter_region in promoters:
                 length_prom = len(promoter_region)
                         
                 def generate_random_sequence(length, probabilities):
@@ -157,7 +157,7 @@ def BSF_page():
             min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
 
             # REF
-            for shortened_promoter_name, promoter_region in promoters:
+            for shortened_promoter_name, region, promoter_region in promoters:
                 found_positions = []
                 length_prom = len(promoter_region)
 
