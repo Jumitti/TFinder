@@ -250,7 +250,7 @@ def aio_page():
                             st.success("Terminators extraction complete!")
                         except Exception as e:
                             st.error(f"Error finding terminators: {str(e)}")   
-        if tab2:
+        else:
             
             # Advance mode extraction
             gene_list = gene_id_entry.strip().split('\n')
