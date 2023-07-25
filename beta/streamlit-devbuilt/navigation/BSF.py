@@ -511,7 +511,7 @@ def BSF_page():
         threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
         
     with BSFcol3:
-        st.markdown("🔸 :orange[**Step 2.6**] Calcul _p-value_", help='Experimental, take more times')
+        st.markdown("🔸 :orange[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
         calc_pvalue = st.checkbox('_p-value_')
 
     # Run Responsive Elements finder
