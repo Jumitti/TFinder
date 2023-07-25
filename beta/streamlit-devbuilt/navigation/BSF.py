@@ -501,7 +501,7 @@ def BSF_page():
     # TSS entry
     BSFcol1, BSFcol2, BSFcol3 = st.columns([2,2,1], gap="medium")
     with BSFcol1:
-        sr.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. Do not modify if you use Step 1")
+        st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. Do not modify if you use Step 1")
         entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", -10000, 10000, label_visibility="collapsed")
 
     # Threshold pvalue

@@ -946,7 +946,7 @@ def aio_page():
             st.markdown("🔸 :orange[**Step 2.4**] Gene end at (in bp):", help="Distance of TSS or gene end from begin of sequences. Do not modify if you use Step 1.")
             entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], label_visibility="collapsed")
         else:
-            sr.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. Do not modify if you use Step 1")
+            st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. Do not modify if you use Step 1")
             entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS) and gene end at (in bp):", -10000, 10000, st.session_state['upstream_entry'], label_visibility="collapsed")
 
     # Threshold pvalue
