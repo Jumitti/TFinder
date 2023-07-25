@@ -169,9 +169,7 @@ def prom_extractor_page():
     colprom1, colprom2 = st.columns([0.8,1.2] , gap="small")
     
     # Promoter Finder
-    with colprom1:
-        st.info("💡 If you have a FASTA sequence, go to :orange[**Step 2**]")
-        
+    with colprom1:        
         result_promoter = []
 
     # Gene ID
