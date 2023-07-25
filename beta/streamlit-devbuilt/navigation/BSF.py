@@ -239,11 +239,11 @@ def BSF_page():
         if len(table2) > 0:
             if calc_pvalue :
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Relative position", "Sequence", "Relative Score", "p-value", "Promoter","Region"]
+                header = ["Position", "Rel Position", "Sequence", "Rel Score", "p-value", "Gene", "Region"]
                 table2.insert(0, header)
             else:
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Relative position", "Sequence", "Relative Score", "Promoter","Region"]
+                header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Region"]
                 table2.insert(0, header)
             
         else:
