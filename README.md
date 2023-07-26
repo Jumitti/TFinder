@@ -1,4 +1,4 @@
-# Responsive Elements Finder 🧬🔍
+# TFinder 🧬🔍
 
 ## About
 
