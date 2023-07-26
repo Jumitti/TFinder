@@ -40,7 +40,7 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 - Export results to excel (.cvs)
 - Graph of sequence positions found on the promoter
 
-![graph_webui]([https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/Graph%20WebUI.png](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/promtermoriginal.png))
-![graph_webui]([https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/Graph%20WebUI.png](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/bsfMS.png))
-![graph_webui](https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/Graph%20WebUI.png)
+![graph_webui](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/promtermoriginal.png)
+![graph_webui](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/bsfMS.png)
+![graph_webui](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/Graph%20WebUI.png)
 
