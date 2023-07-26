@@ -61,7 +61,7 @@ def resource_page():
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/IUPAC.png?raw=true', caption='Figure 2: IUPAC code')
     with ttab3:
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/bsfJI.png?raw=true', caption='Figure 3: Screenshot of TFinder Binding Site Finder tools (option JASPAR)')
-    with tab4:
+    with ttab4:
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/JASPAR%20ID.png?raw=true', caption='Figure 4: JASPAR_ID')
     with ttab5:
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/bsfM.png?raw=true', caption='Figure 5: Screenshot of TFinder Binding Site Finder tools (option PWM)')

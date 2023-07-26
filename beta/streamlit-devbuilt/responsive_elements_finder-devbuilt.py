@@ -33,7 +33,7 @@ from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 
 st.set_page_config(
-        page_title='REF by Minniti',
+        page_title='TFinder by Minniti Julien',
         initial_sidebar_state="expanded"
 )
 
