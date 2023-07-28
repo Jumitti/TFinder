@@ -193,7 +193,6 @@ if st.button("Send Email"):
         connection=smtplib.SMTP('smtp.gmail.com',587)
         connection.ehlo()
         connection.starttls()
-        connection.ehlo()
         connection.login(email_sender,password)
         message="Subject:{}\n\n".format(subject,body)
         connection.sendmail(email_sender,email_receiver,message)
