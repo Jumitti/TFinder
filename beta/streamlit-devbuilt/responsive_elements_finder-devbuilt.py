@@ -32,11 +32,6 @@ from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 
-import smtplib
-import ssl
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-
 st.set_page_config(
         page_title='TFinder by Minniti Julien',
         initial_sidebar_state="expanded"
@@ -185,31 +180,3 @@ df = pd.DataFrame(data, index=["Servers status"])
 st.sidebar.table(df)
 st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract regions via NCBI/use the JASPAR_IDs')
 st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
-
-def send_email(subject, body):
-    smtp_server = "smtp.gmail.com"  # Remplacez par l'adresse du serveur SMTP
-    smtp_port = 465  # Port SMTP (peut être différent selon le fournisseur de messagerie)
-    smtp_username = "noreply.results.tfinder@gmail.com"  # Remplacez par votre nom d'utilisateur SMTP
-    smtp_password = "PaulineJulien201097@"
-
-    msg = MIMEMultipart()
-    msg['From'] = smtp_username
-    msg['To'] = receiver
-    msg['Subject'] = subject
-    msg.attach(MIMEText(body, 'plain'))
-
-    # Se connecter au serveur SMTP et envoyer l'e-mail
-    with smtplib.SMTP(smtp_server, smtp_port) as server:
-        server.starttls()  # Activer le chiffrement TLS
-        server.login(smtp_username, smtp_password)
-        server.send_message(msg)
-
-    server.close()
-
-
-receiver = st.text_input('receiver')
-subject = st.text_input("Sujet de l'e-mail")
-body = st.text_input("Contenu de l'e-mail.\nCeci est un exemple d'e-mail envoyé depuis Streamlit.")
-if st.checkbox("Envoyer l'e-mail"):
-    send_email(subject, body)
-    st.success("E-mail envoyé avec succès !")
