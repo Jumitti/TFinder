@@ -194,7 +194,7 @@ envelope = Envelope(
 
 # Send the envelope using an ad-hoc connection...
 if st.button('mail'):
-    envelope.send('smtp.googlemail.com', login='noreply.results.tfinder@gmail.com',
+    envelope.send('smtp.gmail.com', login='noreply.results.tfinder@gmail.com',
                   password='PaulineJulien201097@', tls=True)
 
 # if st.button('mail'):# Or send the envelope using a shared GMail connection...
