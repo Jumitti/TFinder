@@ -188,7 +188,7 @@ st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFi
 
 def send_email(subject, body):
     smtp_server = "smtp.gmail.com"  # Remplacez par l'adresse du serveur SMTP
-    smtp_port = 587  # Port SMTP (peut être différent selon le fournisseur de messagerie)
+    smtp_port = 465  # Port SMTP (peut être différent selon le fournisseur de messagerie)
     smtp_username = "noreply.results.tfinder@gmail.com"  # Remplacez par votre nom d'utilisateur SMTP
     smtp_password = "PaulineJulien201097@"
 
