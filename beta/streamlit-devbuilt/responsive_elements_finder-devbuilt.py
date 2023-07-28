@@ -186,27 +186,29 @@ st.sidebar.table(df)
 st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract regions via NCBI/use the JASPAR_IDs')
 st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
 
-receiver = st.text_input('receiver')
-subject = st.text_input('subject')
-result= st.button('Click To Send Mail')
-st.write(result)
-if result:
+def send_email(subject, body):
+    smtp_server = "smtp.example.com"  # Remplacez par l'adresse du serveur SMTP
+    smtp_port = 587  # Port SMTP (peut être différent selon le fournisseur de messagerie)
+    smtp_username = "noreply.results.tfinder@gmail.com"  # Remplacez par votre nom d'utilisateur SMTP
+    smtp_password = "PaulineJulien201097@"
 
-	my_email= "noreply.results.tfinder@gmail.com"
-	password= sr.secrets['password']
+    msg = MIMEMultipart()
+    msg['From'] = smtp_username
+    msg['To'] = receiver
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
 
-	server = smtplib.SMTP_SSL('smtp.gmail.com' ,465)
-	server.ehlo()
-	server.login(my_email, password)
-    
-    msg['Subject']=subject
-    msg['From']=my_email
-    msg["To"]=receiver
-    text="Hi"
+    # Se connecter au serveur SMTP et envoyer l'e-mail
+    with smtplib.SMTP(smtp_server, smtp_port) as server:
+        server.starttls()  # Activer le chiffrement TLS
+        server.login(smtp_username, smtp_password)
+        server.send_message(msg)
 
-    part1 = MIMEText(text, "plain")
-    msg.attach(part1)
-    
-    server.sendmail(msg["From"], msg["To"].split(","), msg.as_string())
-	
-	server.close()
+    server.close()
+
+if st.button("Envoyer l'e-mail"):
+    receiver = st.text_input('receiver')
+    subject = "Sujet de l'e-mail"
+    body = "Contenu de l'e-mail.\nCeci est un exemple d'e-mail envoyé depuis Streamlit."
+    send_email(subject, body)
+    st.success("E-mail envoyé avec succès !")
