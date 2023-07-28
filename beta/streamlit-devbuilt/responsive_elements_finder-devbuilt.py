@@ -183,21 +183,3 @@ st.sidebar.table(df)
 st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract regions via NCBI/use the JASPAR_IDs')
 st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
 
-
-envelope = Envelope(
-    from_addr=(u'noreply.results.tfinder@gmail.com', u'From Example'),
-    to_addr=(u'minnitijulien06@gmail.com', u'To Example'),
-    subject=u'Envelopes demo',
-    text_body=u"I'm a helicopter!"
-)
-# envelope.add_attachment('/Users/bilbo/Pictures/helicopter.jpg')
-
-# Send the envelope using an ad-hoc connection...
-if st.button('mail'):
-    envelope.send('smtp.gmail.com', login='noreply.results.tfinder@gmail.com',
-                  password='PaulineJulien201097@', tls=True)
-
-# if st.button('mail'):# Or send the envelope using a shared GMail connection...
-    # gmail = GMailSMTP('noreply.results.tfinder@gmail.com', 'PaulineJulien201097@')
-    # gmail.send(envelope)
-
