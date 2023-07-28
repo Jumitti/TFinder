@@ -29,6 +29,8 @@ import json
 import logomaker
 import random
 
+import io
+
 def aio_page():
     # Reverse complement
     def reverse_complement(sequence):
@@ -1059,6 +1061,13 @@ def aio_page():
                 with coltable2:
                     csv = df.to_csv(index=False).encode('utf-8')
                     st.download_button("💾 Download (.csv)",csv,"file.csv","text/csv",key='download-csv')
+                    
+                    excel_file = io.BytesIO()
+                    df.to_excel(excel_file, index=False, sheet_name='Sheet1')
+                    excel_file.seek(0)
+
+                    # Télécharger le fichier Excel
+                    st.download_button("💾 Download (.xls)", excel_file, file_name="file.xls", mime="application/vnd.ms-excel", key='download-excel')
              
                 source = df
                 score_range = source['Rel Score'].astype(float)
