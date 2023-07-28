@@ -216,7 +216,7 @@ def send_email(sender_email, sender_password, receiver_email, subject, body):
 # Interface utilisateur Streamlit
 st.title("Envoyer un e-mail avec Streamlit")
 
-sender_email = "noreply.results.tfinder@gmail.com"
+sender_email = "TFinder"
 sender_password = "PaulineJulien201097@" 
 receiver_email = st.text_input("Adresse e-mail du destinataire")
 subject = st.text_input("Sujet de l'e-mail")
