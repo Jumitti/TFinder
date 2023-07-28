@@ -32,7 +32,8 @@ from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 
-from smtplib import SMTP
+import smtplib
+
 st.set_page_config(
         page_title='TFinder by Minniti Julien',
         initial_sidebar_state="expanded"
