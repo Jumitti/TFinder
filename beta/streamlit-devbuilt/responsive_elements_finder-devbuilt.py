@@ -32,7 +32,7 @@ from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 
-import smtp as s
+from smtplib import SMTP as s
 
 st.set_page_config(
         page_title='TFinder by Minniti Julien',
