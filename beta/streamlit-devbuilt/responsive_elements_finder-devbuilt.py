@@ -193,8 +193,9 @@ envelope = Envelope(
 # envelope.add_attachment('/Users/bilbo/Pictures/helicopter.jpg')
 
 # Send the envelope using an ad-hoc connection...
-# envelope.send('smtp.googlemail.com', login='from@example.com',
-              # password='password', tls=True)
+if st.button('mail'):
+    envelope.send('smtp.googlemail.com', login='noreply.results.tfinder@gmail.com',
+                  password='PaulineJulien201097@', tls=True)
 
 if st.button('mail'):# Or send the envelope using a shared GMail connection...
     gmail = GMailSMTP('noreply.results.tfinder@gmail.com', 'PaulineJulien201097@')
