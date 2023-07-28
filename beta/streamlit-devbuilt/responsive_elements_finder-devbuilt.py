@@ -183,22 +183,3 @@ st.sidebar.table(df)
 st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract regions via NCBI/use the JASPAR_IDs')
 st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
 
-email_sender = st.text_input('sender')
-email_receiver = st.text_input('receiver')
-subject = st.text_input('subject')
-body = st.text_input('body')
-password = st.text_input('password')
-if st.button("Send Email"):
-    try:
-        connection=smtplib.IMAP_SSL('imap.gmail.com',993)
-        connection.ehlo()
-        connection.starttls()
-        connection.ehlo()
-        connection.login(email_sender,password)
-        message="Subject:{}\n\n".format(subject,body)
-        connection.sendmail(email_sender,email_receiver,message)
-        connection.quit()
-        st.succes('ok')
-    except Exception as e:
-        st.error(f"Erreur lors de l'envoi de l'e-mail : {e}")
-
