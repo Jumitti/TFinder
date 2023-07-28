@@ -210,6 +210,6 @@ def send_email(subject, body):
 receiver = st.text_input('receiver')
 subject = st.text_input("Sujet de l'e-mail")
 body = st.text_input("Contenu de l'e-mail.\nCeci est un exemple d'e-mail envoyé depuis Streamlit.")
-if st.button("Envoyer l'e-mail"):
+if st.checkbox("Envoyer l'e-mail"):
     send_email(subject, body)
     st.success("E-mail envoyé avec succès !")
