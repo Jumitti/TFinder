@@ -207,4 +207,4 @@ if st.button("Send Email"):
         st.success('Email sent successfully! 🚀')
     except Exception as e:
         st.error(f"Erreur lors de l’envoi de l’e-mail : {e}")
-
+ 
