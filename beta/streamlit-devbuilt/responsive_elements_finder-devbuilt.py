@@ -187,6 +187,7 @@ email_sender = st.text_input('sender')
 email_receiver = st.text_input('receiver')
 subject = st.text_input('subject')
 body = st.text_input('body')
+password = st.text_input('password')
 if st.button("Send Email"):
     try:
         connection=s.SMTP('smtp.gmail.com',587)
