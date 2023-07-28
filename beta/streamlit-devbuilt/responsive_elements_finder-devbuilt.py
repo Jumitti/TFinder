@@ -191,7 +191,7 @@ st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFi
 def send_email(sender_email, sender_password, receiver_email, subject, body):
     try:
         # Configuration du serveur SMTP de Gmail
-        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+        server = smtplib.SMTP("smtp.gmail.com", 587)
         server.ehlo()
         server.login(sender_email, sender_password)
         st.swrite(login)
