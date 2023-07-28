@@ -32,6 +32,9 @@ from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 
+import smtplib
+import ssl
+
 st.set_page_config(
         page_title='TFinder by Minniti Julien',
         initial_sidebar_state="expanded"
@@ -181,4 +184,35 @@ st.sidebar.table(df)
 st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract regions via NCBI/use the JASPAR_IDs')
 st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
 
-st.sidebar.write('Secrets', st.secrets['TEST'])
+smtp_server = "smtp.gmail.com"
+smtp_port = 587  # Port standard pour le serveur SMTP de Gmail
+sender_email = "noreply.results.tfinder@gmail.com"
+password = st.secrets(password)
+st.write(password)
+
+def send_email(receiver_email, subject, body):
+    context = ssl.create_default_context()
+    server = smtplib.SMTP(smtp_server, smtp_port)
+    server.ehlo()
+    server.starttls(context=context)
+    server.ehlo()
+    server.login(sender_email, password)
+
+    message = f"Subject: {subject}\n\n{body}"
+    server.sendmail(sender_email, receiver_email, message)
+
+    server.quit()
+
+receiver_email = st.text_input("Adresse e-mail du destinataire")
+subject = st.text_input("Sujet de l'e-mail")
+body = st.text_area("Corps de l'e-mail")
+
+if st.sidebar.button("Envoyer"):
+    if receiver_email and subject and body:
+        try:
+            send_email(receiver_email, subject, body)
+            st.success("E-mail envoyé avec succès !")
+        except Exception as e:
+            st.error(f"Erreur lors de l'envoi de l'e-mail : {str(e)}")
+    else:
+        st.warning("Veuillez remplir tous les champs avant d'envoyer l'e-mail.")
