@@ -30,6 +30,7 @@ import logomaker
 import random
 
 import io
+import openpyxl
 
 def aio_page():
     # Reverse complement
