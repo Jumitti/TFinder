@@ -57,7 +57,6 @@ hide_menu_style = """
         #MainMenu {visibility: hidden;}
         </style>
         """
-# st.markdown(hide_menu_style, unsafe_allow_html=True)
 
 icons = """<style>
         img {
@@ -198,6 +197,7 @@ text-align: center;
 <div class="footer">
 <p style="font-size:  13px">Copyright (c) 2023 Minniti Julien.</p>
 <p style="font-size: 13px">This software is distributed under an MIT licence. Please consult the LICENSE file for more details.</p>
+<p style="font-size: 13px">Please cite as: "" | DOI: "".</p>
 <a href="https://www.ipmc.cnrs.fr/cgi-bin/site.cgi"><img class="image2" src="https://www.ipmc.cnrs.fr/fichiers/images/logo_ipmc.jpg"alt="github" width="80" height=57"></a>
 <a href="https://www.cnrs.fr/fr"><img class="image2" src="https://www.cnrs.fr/themes/custom/cnrs/logo.svg"alt="github" width="70" height="70"></a>
 <a href="https://www.inserm.fr/"><img class="image2" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiO1WigTsnnM4z42n8YZZCKWZuc8bmYY525E8aK7dPqObOTrUC9WMTh3cOP5uSK2SKx3E&usqp=CAU"alt="github" width="90" height="70"></a>
