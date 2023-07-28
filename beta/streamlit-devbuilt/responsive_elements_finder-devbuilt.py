@@ -32,6 +32,11 @@ from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 
+
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 st.set_page_config(
         page_title='TFinder by Minniti Julien',
         initial_sidebar_state="expanded"
@@ -180,3 +185,42 @@ df = pd.DataFrame(data, index=["Servers status"])
 st.sidebar.table(df)
 st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract regions via NCBI/use the JASPAR_IDs')
 st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
+
+
+# Fonction pour envoyer l'e-mail
+def send_email(sender_email, sender_password, receiver_email, subject, body):
+    try:
+        # Configuration du serveur SMTP de Gmail
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login(sender_email, sender_password)
+
+        # Création du message
+        message = MIMEMultipart()
+        message["From"] = sender_email
+        message["To"] = receiver_email
+        message["Subject"] = subject
+        message.attach(MIMEText(body, "plain"))
+
+        # Envoi de l'e-mail
+        server.sendmail(sender_email, receiver_email, message.as_string())
+
+        # Fermeture du serveur SMTP
+        server.quit()
+
+        st.success("E-mail envoyé avec succès !")
+    except Exception as e:
+        st.error(f"Erreur lors de l'envoi de l'e-mail : {e}")
+
+# Interface utilisateur Streamlit
+st.title("Envoyer un e-mail avec Streamlit")
+
+sender_email = "noreply.results.tfinder@gmail.com"
+sender_password = "PaulineJulien201097@"
+receiver_email = st.text_input("Adresse e-mail du destinataire")
+subject = st.text_input("Sujet de l'e-mail")
+body = st.text_area("Corps de l'e-mail", height=200)
+
+if st.button("Envoyer l'e-mail"):
+    send_email(sender_email, sender_password, receiver_email, subject, body)
+
