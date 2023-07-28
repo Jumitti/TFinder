@@ -197,5 +197,5 @@ if st.button("Send Email"):
         connection.quit()
         st.succes('ok')
     except Exception as e:
-        st.error(f"Erreur lors de l'envoi de l'e-mail : {e}"
+        st.error(f"Erreur lors de l'envoi de l'e-mail : {e}")
 
