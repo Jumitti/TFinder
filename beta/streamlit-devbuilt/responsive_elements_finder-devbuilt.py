@@ -190,7 +190,7 @@ body = st.text_input('body')
 password = st.text_input('password')
 if st.button("Send Email"):
     try:
-        connection=SMTP.SMTP('smtp.gmail.com',587)
+        connection=smtplib.SMTP('smtp.gmail.com',587)
         connection.starttls()
         connection.login(email_sender,password)
         message="Subject:{}\n\n".format(subject,body)
