@@ -185,7 +185,7 @@ st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract reg
 st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
 
 smtp_server = "smtp.gmail.com"
-smtp_port = 587  # Port standard pour le serveur SMTP de Gmail
+smtp_port = 465  # Port standard pour le serveur SMTP de Gmail
 sender_email = "noreply.results.tfinder@gmail.com"
 password = st.secrets['password']
 
