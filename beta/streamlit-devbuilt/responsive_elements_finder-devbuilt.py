@@ -190,7 +190,7 @@ body = st.text_input('body')
 password = st.text_input('password')
 if st.button("Send Email"):
     try:
-        connection=smtplib.IMAP_SSL('imap.gmail.com',993)
+        connection=smtplib.SMTP('smtp.gmail.com',587)
         connection.ehlo()
         connection.starttls()
         connection.ehlo()
