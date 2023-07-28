@@ -1103,7 +1103,7 @@ def aio_page():
                         chart_viz = alt.Chart.from_dict(chart_spec)
                         # Sauvegarder le graphique sous forme d'image
                         image = chart_viz.save(format='png')
-                        # Lire l'image en bytes
+                        # Lire l'image en bytes 
                         with open(image, 'rb') as f:
                             image_bytes = f.read()
                         return image_bytes
