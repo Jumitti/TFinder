@@ -33,3 +33,4 @@ hydralit_components
 weblogo
 Bio
 logomaker
+openpyxl
