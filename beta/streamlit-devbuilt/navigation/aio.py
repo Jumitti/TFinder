@@ -1097,25 +1097,5 @@ def aio_page():
                     
                     st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                     st.altair_chart(chart, theme=None, use_container_width=True)
-                    
-                    def save_chart_as_image(chart):
-                        # Convertir le graphique en spécification JSON
-                        chart_spec = chart.to_dict()
-                        # Créer une visualisation à partir de la spécification JSON
-                        chart_viz = alt.Chart.from_dict(chart_spec)
-                        # Convertir le graphique en image
-                        image = chart_viz.encode(alt.X('Rel Position:Q'), alt.Y('Rel Score:Q')).save('chart.png')
-                        return image
-
-                    # Utiliser la fonction pour obtenir l'image du graphique
-                    image = save_chart_as_image(chart)
-
-                    # Convertir l'image en bytes
-                    image_bytes = io.BytesIO()
-                    image.save(image_bytes, format='PNG')
-                    image_bytes.seek(0)
-
-                    # Télécharger le fichier image
-                    st.download_button("💾 Download Graph Image", image_bytes, file_name="chart.png", mime="image/png", key='download-image')
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
