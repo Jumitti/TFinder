@@ -197,7 +197,7 @@ if st.button('mail'):
     envelope.send('smtp.googlemail.com', login='noreply.results.tfinder@gmail.com',
                   password='PaulineJulien201097@', tls=True)
 
-if st.button('mail'):# Or send the envelope using a shared GMail connection...
-    gmail = GMailSMTP('noreply.results.tfinder@gmail.com', 'PaulineJulien201097@')
-    gmail.send(envelope)
+# if st.button('mail'):# Or send the envelope using a shared GMail connection...
+    # gmail = GMailSMTP('noreply.results.tfinder@gmail.com', 'PaulineJulien201097@')
+    # gmail.send(envelope)
 
