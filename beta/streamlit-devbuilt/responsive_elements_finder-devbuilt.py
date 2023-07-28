@@ -194,6 +194,7 @@ def send_email(sender_email, sender_password, receiver_email, subject, body):
         server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
         server.ehlo()
         server.login(sender_email, sender_password)
+        st.swrite(login)
 
         # Création du message
         message = MIMEMultipart()
