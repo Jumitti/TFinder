@@ -30,6 +30,7 @@ import logomaker
 import random
 import io
 from openpyxl import Workbook
+from PIL import Image
 
 def aio_page():
     # Reverse complement
@@ -1101,17 +1102,19 @@ def aio_page():
                         chart_spec = chart.to_dict()
                         # Créer une visualisation à partir de la spécification JSON
                         chart_viz = alt.Chart.from_dict(chart_spec)
-                        # Sauvegarder le graphique sous forme d'image
-                        image = chart_viz.save(format='png')
-                        # Lire l'image en bytes 
-                        with open(image, 'rb') as f:
-                            image_bytes = f.read()
-                        return image_bytes
+                        # Convertir le graphique en image
+                        image = chart_viz.encode(alt.X('Rel Position:Q'), alt.Y('Rel Score:Q')).save('chart.png')
+                        return image
 
                     # Utiliser la fonction pour obtenir l'image du graphique
-                    image_bytes = save_chart_as_image(chart)
+                    image = save_chart_as_image(chart)
+
+                    # Convertir l'image en bytes
+                    image_bytes = io.BytesIO()
+                    image.save(image_bytes, format='PNG')
+                    image_bytes.seek(0)
 
                     # Télécharger le fichier image
-                    st.download_button("💾 Download Graph Image", image_bytes, file_name="chart.png", mime="image/png", key='download-image') 
+                    st.download_button("💾 Download Graph Image", image_bytes, file_name="chart.png", mime="image/png", key='download-image')
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
