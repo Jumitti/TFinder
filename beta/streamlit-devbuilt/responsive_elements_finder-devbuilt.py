@@ -187,7 +187,7 @@ st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract reg
 st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
 
 def send_email(subject, body):
-    smtp_server = "smtp.example.com"  # Remplacez par l'adresse du serveur SMTP
+    smtp_server = "smtp.gmail.com"  # Remplacez par l'adresse du serveur SMTP
     smtp_port = 587  # Port SMTP (peut être différent selon le fournisseur de messagerie)
     smtp_username = "noreply.results.tfinder@gmail.com"  # Remplacez par votre nom d'utilisateur SMTP
     smtp_password = "PaulineJulien201097@"
