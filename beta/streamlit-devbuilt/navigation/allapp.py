@@ -34,9 +34,9 @@ from navigation.prom_extractor import prom_extractor_page
 #NavBar
 
 AIO = 'All in One'
-PROM = 'Promoter Extractor'
+PROM = 'Region Extractor'
 REF = 'Binding Sites Finder'
-PWM = 'PWM Generator'
+PWM = 'Position Weight Matrix'
 
 tabs = [
     AIO,
