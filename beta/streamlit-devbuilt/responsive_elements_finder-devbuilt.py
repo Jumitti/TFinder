@@ -32,6 +32,8 @@ from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 
+from decouple import config
+
 st.set_page_config(
         page_title='TFinder by Minniti Julien',
         initial_sidebar_state="expanded"
@@ -180,3 +182,6 @@ df = pd.DataFrame(data, index=["Servers status"])
 st.sidebar.table(df)
 st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract regions via NCBI/use the JASPAR_IDs')
 st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
+
+TEST = config(TEST)
+st.sidebar.success(TEST)
