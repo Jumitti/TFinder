@@ -187,7 +187,7 @@ st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFi
 smtp_server = "smtp.gmail.com"
 smtp_port = 587  # Port standard pour le serveur SMTP de Gmail
 sender_email = "noreply.results.tfinder@gmail.com"
-password = st.secrets(password)
+password = st.secrets['password']
 st.write(password)
 
 def send_email(receiver_email, subject, body):
