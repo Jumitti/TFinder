@@ -34,6 +34,8 @@ from navigation.allapp import allapp_page
 
 import smtplib
 import ssl
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 st.set_page_config(
         page_title='TFinder by Minniti Julien',
@@ -184,34 +186,31 @@ st.sidebar.table(df)
 st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract regions via NCBI/use the JASPAR_IDs')
 st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
 
-smtp_server = "smtp.gmail.com"
-smtp_port = 465  # Port standard pour le serveur SMTP de Gmail
-sender_email = "noreply.results.tfinder@gmail.com"
-password = st.secrets['password']
+receiver = st.text_input('receiver')
+subject = st.text_input('subject')
+result= st.button('Click To Send Mail')
+st.write(result)
+if result:
 
-def send_email(receiver_email, subject, body):
-    context = ssl.create_default_context()
-    server = smtplib.SMTP(smtp_server, smtp_port)
-    server.ehlo()
-    server.starttls(context=context)
-    server.ehlo()
-    server.login(sender_email, password)
+	my_email= "noreply.results.tfinder@gmail.com"
+	password= sr.secrets['password']
 
-    message = f"Subject: {subject}\n\n{body}"
-    server.sendmail(sender_email, receiver_email, message)
 
-    server.quit()
 
-receiver_email = st.text_input("Adresse e-mail du destinataire")
-subject = st.text_input("Sujet de l'e-mail")
-body = st.text_area("Corps de l'e-mail")
+	server = smtplib.SMTP_SSL('smtp.gmail.com' ,465)
+	server.ehlo()
+	server.login(my_email, password)
+	st.write(email_list)
 
-if st.sidebar.button("Envoyer"):
-    if receiver_email and subject and body:
-        try:
-            send_email(receiver_email, subject, body)
-            st.success("E-mail envoyé avec succès !")
-        except Exception as e:
-            st.error(f"Erreur lors de l'envoi de l'e-mail : {str(e)}")
-    else:
-        st.warning("Veuillez remplir tous les champs avant d'envoyer l'e-mail.")
+    msg=MIMEMultipart()
+    msg['Subject']=subject
+    msg['From']=my_email
+    msg["To"]=receiver
+    text="Hi"
+
+    part1 = MIMEText(text, "plain")
+    msg.attach(part1)
+    
+    server.sendmail(msg["From"], msg["To"].split(","), msg.as_string())
+	
+	server.close()
