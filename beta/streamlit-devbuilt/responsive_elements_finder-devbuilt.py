@@ -192,9 +192,8 @@ def send_email(sender_email, sender_password, receiver_email, subject, body):
     try:
         # Configuration du serveur SMTP de Gmail
         server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.ehlo()
+        server.starttls()
         server.login(sender_email, sender_password)
-        st.swrite(login)
 
         # Création du message
         message = MIMEMultipart()
