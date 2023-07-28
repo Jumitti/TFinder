@@ -30,6 +30,7 @@ import logomaker
 import random
 import io
 from openpyxl import Workbook
+
 from PIL import Image
 
 def aio_page():
