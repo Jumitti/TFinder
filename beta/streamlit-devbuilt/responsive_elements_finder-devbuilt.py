@@ -195,14 +195,10 @@ if result:
 	my_email= "noreply.results.tfinder@gmail.com"
 	password= sr.secrets['password']
 
-
-
 	server = smtplib.SMTP_SSL('smtp.gmail.com' ,465)
 	server.ehlo()
 	server.login(my_email, password)
-	st.write(email_list)
-
-    msg=MIMEMultipart()
+    
     msg['Subject']=subject
     msg['From']=my_email
     msg["To"]=receiver
