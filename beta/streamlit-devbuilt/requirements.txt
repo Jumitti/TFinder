@@ -33,4 +33,4 @@ hydralit_components
 weblogo
 Bio
 logomaker
-streamlit-aggrid
+Envelopes
