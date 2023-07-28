@@ -174,6 +174,7 @@ data = {
     "JASPAR": [jaspar_status]
 }
 
+st.sidebar.title("Servers status")
 df = pd.DataFrame(data, index=["Servers status"])
 
 st.sidebar.table(df)
