@@ -28,7 +28,6 @@ import numpy as np
 import json
 import logomaker
 import random
-
 import io
 from openpyxl import Workbook
 
@@ -1008,8 +1007,10 @@ def aio_page():
                     st.markdown('**Table**')
                     st.dataframe(df, hide_index=True)
                 with coltable2:
-                    csv = df.to_csv(index=False).encode('utf-8')
-                    st.download_button("💾 Download (.csv)",csv,"file.csv","text/csv",key='download-csv')
+                    excel_file = io.BytesIO()
+                    df.to_excel(excel_file, index=False, sheet_name='Sheet1')
+                    excel_file.seek(0)
+                    st.download_button("💾 Download (.xls)", excel_file, file_name="file.xls", mime="application/vnd.ms-excel", key='download-excel')
             
                 source = df
                 score_range = source['Rel Score'].astype(float)
@@ -1060,14 +1061,9 @@ def aio_page():
                     st.markdown('**Table**')
                     st.dataframe(df, hide_index=True)
                 with coltable2:
-                    csv = df.to_csv(index=False).encode('utf-8')
-                    st.download_button("💾 Download (.csv)",csv,"file.csv","text/csv",key='download-csv')
-                    
                     excel_file = io.BytesIO()
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
-
-                    # Télécharger le fichier Excel
                     st.download_button("💾 Download (.xls)", excel_file, file_name="file.xls", mime="application/vnd.ms-excel", key='download-excel')
              
                 source = df
@@ -1099,5 +1095,23 @@ def aio_page():
                     
                     st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                     st.altair_chart(chart, theme=None, use_container_width=True)
+                    
+                    def save_chart_as_image(chart):
+                        # Convertir le graphique en spécification JSON
+                        chart_spec = chart.to_dict()
+                        # Créer une visualisation à partir de la spécification JSON
+                        chart_viz = alt.Chart.from_dict(chart_spec)
+                        # Sauvegarder le graphique sous forme d'image
+                        image = chart_viz.save(format='png')
+                        # Lire l'image en bytes
+                        with open(image, 'rb') as f:
+                            image_bytes = f.read()
+                        return image_bytes
+
+                    # Utiliser la fonction pour obtenir l'image du graphique
+                    image_bytes = save_chart_as_image(chart)
+
+                    # Télécharger le fichier image
+                    st.download_button("💾 Download Graph Image", image_bytes, file_name="chart.png", mime="image/png", key='download-image')
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
