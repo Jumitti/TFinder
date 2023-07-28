@@ -33,4 +33,3 @@ hydralit_components
 weblogo
 Bio
 logomaker
-Envelopes
