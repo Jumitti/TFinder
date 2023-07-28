@@ -1112,6 +1112,6 @@ def aio_page():
                     image_bytes = save_chart_as_image(chart)
 
                     # Télécharger le fichier image
-                    st.download_button("💾 Download Graph Image", image_bytes, file_name="chart.png", mime="image/png", key='download-image')
+                    st.download_button("💾 Download Graph Image", image_bytes, file_name="chart.png", mime="image/png", key='download-image') 
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
