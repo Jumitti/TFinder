@@ -32,8 +32,7 @@ from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 
-from smtplib import SMTP as s
-
+from smtplib import SMTP
 st.set_page_config(
         page_title='TFinder by Minniti Julien',
         initial_sidebar_state="expanded"
@@ -190,7 +189,7 @@ body = st.text_input('body')
 password = st.text_input('password')
 if st.button("Send Email"):
     try:
-        connection=s.SMTP('smtp.gmail.com',587)
+        connection=SMTP.SMTP('smtp.gmail.com',587)
         connection.starttls()
         connection.login(email_sender,password)
         message="Subject:{}\n\n".format(subject,body)
