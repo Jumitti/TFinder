@@ -1117,7 +1117,7 @@ def aio_page():
                 attachment_text = result_promoter
                 
                 with colres4:
-                    if st.button("Send Email"):
+                    if st.button("Send Email ✉"):
                         try:
                             msg = MIMEMultipart()
                             msg['From'] = email_sender
@@ -1144,12 +1144,19 @@ def aio_page():
                             with colres5:
                                 st.success('Email sent successfully! 🚀')
                         except smtplib.SMTPAuthenticationError:
-                            st.error("Failed to authenticate. Please check your email and password.")
+                            with colres5:
+                                st.error("Failed to authenticate. Please check your email and password.")
                         except smtplib.SMTPServerDisconnected:
-                            st.error("Failed to connect to the SMTP server. Please check your internet connection.")
+                            with colres5:
+                                st.error("Failed to connect to the SMTP server. Please check your internet connection.")
                         except smtplib.SMTPException as e:
-                            st.error(f"Error sending email: {e}")
+                            with colres5:
+                                st.error(f"Error sending email: {e}")
+                        except smtplib.SMTPRecipientsRefused:
+                            with colres5:
+                                st.error(f"Error sending email: {email_receiver}")
                         except Exception as e:
-                            st.error(f"Unknown error occurred: {e}")
+                            with colres5:
+                                st.error(f"Unknown error occurred: {e}")
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
