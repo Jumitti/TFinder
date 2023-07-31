@@ -1109,7 +1109,7 @@ def aio_page():
                     
                 email_sender = st.secrets['sender']
                 with colres4:
-                    email_receiver = st.text_input('Send results by email ✉')
+                    email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉', label_visibility='collapsed')
                 subject = f'Results TFinder - {current_date_time}'
                 body = 'Results TFinder'
                 password = st.secrets['password']
