@@ -33,6 +33,7 @@ from openpyxl import Workbook
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import base64
 
 def aio_page():
     # Reverse complement
