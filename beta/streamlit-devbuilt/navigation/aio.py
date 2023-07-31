@@ -1149,12 +1149,12 @@ def aio_page():
                         except smtplib.SMTPServerDisconnected:
                             with colres5:
                                 st.error("Failed to connect to the SMTP server. Please check your internet connection.")
-                        except smtplib.SMTPException as e:
-                            with colres5:
-                                st.error(f"Error sending email: {e}")
                         except smtplib.SMTPRecipientsRefused:
                             with colres5:
                                 st.error(f"Error sending email: {email_receiver}")
+                        except smtplib.SMTPException as e:
+                            with colres5:
+                                st.error(f"Error sending email: {e}")
                         except Exception as e:
                             with colres5:
                                 st.error(f"Unknown error occurred: {e}")
