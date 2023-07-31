@@ -1102,7 +1102,7 @@ def aio_page():
                 email_sender = st.secrets['sender']
                 email_receiver = st.text_input('')
                 subject = 'Results TFinder'
-                body = st.text_area('Results TFinder')
+                body = 'Results TFinder'
                 password = st.secrets['password']
                 attachment = excel_file
 
