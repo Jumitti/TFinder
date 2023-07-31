@@ -25,15 +25,11 @@ import pandas as pd
 import altair as alt
 import math
 import pickle
-
 from utils.components import footer_style, footer
 from navigation.home import home_page
 from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
-
-import smtplib
-from email.mime.text import MIMEText
 
 st.set_page_config(
         page_title='TFinder by Minniti Julien',
@@ -183,27 +179,3 @@ df = pd.DataFrame(data, index=["Servers status"])
 st.sidebar.table(df)
 st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract regions via NCBI/use the JASPAR_IDs')
 st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
-
-# Taking inputs
-email_sender = st.text_input('From')
-email_receiver = st.text_input('To')
-subject = st.text_input('Subject')
-body = st.text_area('Body')
-password = st.text_input('Password', type="password") 
-
-if st.button("Send Email"):
-    try:
-        msg = MIMEText(body)
-        msg['From'] = email_sender
-        msg['To'] = email_receiver
-        msg['Subject'] = subject
-
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(email_sender, password)
-        server.sendmail(email_sender, email_receiver, msg.as_string())
-        server.quit()
-
-        st.success('Email sent successfully! 🚀')
-    except Exception as e:
-        st.error(f"Erreur lors de l’envoi de l’e-mail : {e}")

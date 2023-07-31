@@ -30,6 +30,9 @@ import logomaker
 import random
 import io
 from openpyxl import Workbook
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 def aio_page():
     # Reverse complement
@@ -1095,5 +1098,38 @@ def aio_page():
                     
                     st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                     st.altair_chart(chart, theme=None, use_container_width=True)
+                    
+                email_sender = st.secrets['sender']
+                email_receiver = st.text_input('')
+                subject = 'Results TFinder'
+                body = st.text_area('Results TFinder')
+                password = st.secrets['password']
+                attachment = excel_file
+
+                if st.button("Send Email"):
+                    try:
+                        msg = MIMEMultipart()
+                        msg['From'] = email_sender
+                        msg['To'] = email_receiver
+                        msg['Subject'] = subject
+                        
+                        msg.attach(MIMEText(body, 'plain'))
+                        
+                        if attachment is not None:
+                            file_data = attachment.read()
+                            file_name = attachment.name
+                            attachment = MIMEText(file_data, 'base64')
+                            attachment.add_header('Content-Disposition', 'attachment', filename=file_name)
+                            msg.attach(attachment)
+
+                        server = smtplib.SMTP('smtp.gmail.com', 587)
+                        server.starttls()
+                        server.login(email_sender, password)
+                        server.sendmail(email_sender, email_receiver, msg.as_string())
+                        server.quit()
+
+                        st.success('Email sent successfully! 🚀')
+                    except Exception as e:
+                        st.error(f"Erreur lors de l’envoi de l’e-mail : {e}")
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
