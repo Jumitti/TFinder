@@ -1110,7 +1110,8 @@ def aio_page():
                 subject = f'Results TFinder - {current_date_time}'
                 body = 'Results TFinder'
                 password = st.secrets['password']
-                attachment = excel_file
+                attachment_excel = excel_file
+                attachment_text = result_promoter
 
                 if st.button("Send Email"):
                     try:
@@ -1119,15 +1120,21 @@ def aio_page():
                         msg['To'] = email_receiver
                         msg['Subject'] = subject
 
-                        # Ajouter le corps du message
                         msg.attach(MIMEText(body, 'plain'))
 
-                        # Ajouter l'excel en tant que pièce jointe
-                        attachment = MIMEBase('application', 'octet-stream')
-                        attachment.set_payload(excel_file.getvalue())
-                        encoders.encode_base64(attachment)
-                        attachment.add_header('Content-Disposition', 'attachment', filename=f'Results_TFinder_{current_date_time}.xls')
-                        msg.attach(attachment)
+                        # Attach Excel file
+                        attachment_excel = MIMEBase('application', 'octet-stream')
+                        attachment_excel.set_payload(excel_file.getvalue())
+                        encoders.encode_base64(attachment_excel)
+                        attachment_excel.add_header('Content-Disposition', 'attachment', filename=f'Results_TFinder_{current_date_time}.xls')
+                        msg.attach(attachment_excel)
+
+                        # Attach text file
+                        attachment_text = MIMEBase('text', 'plain')
+                        attachment_text.set_payload(attachment_text.encode('utf-8'))
+                        encoders.encode_base64(attachment_text)
+                        attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.txt')
+                        msg.attach(attachment_text)
 
                         server = smtplib.SMTP('smtp.gmail.com', 587)
                         server.starttls()
