@@ -1117,7 +1117,7 @@ def aio_page():
                         # Ajouter le corps du message
                         msg.attach(MIMEText(body, 'plain'))
                         
-                        excel_file_encoded = base64.b64encode(excel_file.getvalue())
+                        excel_file_encoded = base64.b64encode(excel_file.getvalue()) 
 
                         # Ajouter l'excel en tant que pièce jointe
                         attachment = MIMEText(excel_file.read(), 'base64')
