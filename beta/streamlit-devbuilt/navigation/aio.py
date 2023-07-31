@@ -1075,7 +1075,7 @@ def aio_page():
                             attachment_excel = MIMEBase('application', 'octet-stream')
                             attachment_excel.set_payload(excel_file.getvalue())
                             encoders.encode_base64(attachment_excel)
-                            attachment_excel.add_header('Content-Disposition', 'attachment', filename=f'Results_TFinder_{current_date_time}.xls')
+                            attachment_excel.add_header('Content-Disposition', 'attachment', filename=f'Results_TFinder_{current_date_time}.xlsx')
                             msg.attach(attachment_excel)
 
                             attachment_text = MIMEText(attachment_text, 'plain', 'utf-8')
