@@ -1059,7 +1059,7 @@ def aio_page():
     else:
         if 'table2' in locals():
             if len(table2) > 0:
-                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 st.subheader(':orange[Results]')
                 colres1,colres2,colres3, colres4, colres5 = st.columns([1,0.5,0.5,1,1])
                 with colres1:
@@ -1074,7 +1074,14 @@ def aio_page():
                     excel_file.seek(0)
                     st.download_button("💾 Download table (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xls', mime="application/vnd.ms-excel", key='download-excel')
                 with colres3:
-                    st.download_button(label="💾 Download sequences (.txt)",data=result_promoter,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
+                    if jaspar == 'PWM':
+                        if matrix_type == 'With PWM':
+                            txt_output = f"Position Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter"
+                        if matrix_type == 'With FASTA sequences':
+                            txt_output = f"Responsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter"
+                    else:
+                        txt_output = f"Responsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
+                    st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
              
                 source = df
                 score_range = source['Rel Score'].astype(float)
@@ -1120,7 +1127,7 @@ def aio_page():
                     body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
                 password = st.secrets['password']
                 attachment_excel = excel_file
-                attachment_text = result_promoter
+                attachment_text = txt_output
                 
                 with colres4:
                     if st.button("Send ✉"):
