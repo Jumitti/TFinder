@@ -1112,15 +1112,14 @@ def aio_page():
                         msg['From'] = email_sender
                         msg['To'] = email_receiver
                         msg['Subject'] = subject
-                        
+
+                        # Ajouter le corps du message
                         msg.attach(MIMEText(body, 'plain'))
-                        
-                        if attachment is not None:
-                            file_data = attachment.read()
-                            file_name = attachment.name
-                            attachment = MIMEText(file_data, 'base64')
-                            attachment.add_header('Content-Disposition', 'attachment', filename=file_name)
-                            msg.attach(attachment)
+
+                        # Ajouter l'excel en tant que pièce jointe
+                        attachment = MIMEText(excel_file.read(), 'base64')
+                        attachment.add_header('Content-Disposition', 'attachment', filename="file.xls")
+                        msg.attach(attachment)
 
                         server = smtplib.SMTP('smtp.gmail.com', 587)
                         server.starttls()
