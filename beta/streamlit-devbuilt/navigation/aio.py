@@ -1143,11 +1143,13 @@ def aio_page():
                             server.quit()
                             with colres5:
                                 st.success('Email sent successfully! 🚀')
+                        except smtplib.SMTPAuthenticationError:
+                            st.error("Failed to authenticate. Please check your email and password.")
+                        except smtplib.SMTPServerDisconnected:
+                            st.error("Failed to connect to the SMTP server. Please check your internet connection.")
+                        except smtplib.SMTPException as e:
+                            st.error(f"Error sending email: {e}")
                         except Exception as e:
-                            with colres5:
-                                if 'The recipient address <Send> is not a valid RFC-5321 address.' in e:
-                                    st.error(f"Invalid e-mail : {email_receiver}")
-                                else:
-                                    st.error(f"Error sending e-mail : {e}") 
+                            st.error(f"Unknown error occurred: {e}")
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
