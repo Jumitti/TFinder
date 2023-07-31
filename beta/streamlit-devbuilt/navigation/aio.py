@@ -1076,11 +1076,11 @@ def aio_page():
                 with colres3:
                     if jaspar == 'PWM':
                         if matrix_type == 'With PWM':
-                            txt_output = f"Position Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter"
+                            txt_output = "Position Weight Matrix:\n" + matrix_text + "\n\nRelScore Threshold:\n" + threshold_entry "\n\nSequences:\n" + result_promoter
                         if matrix_type == 'With FASTA sequences':
-                            txt_output = f"Responsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter"
+                            txt_output = "Responsive Elements:\n" + fasta_text + "\n\nPosition Weight Matrix:\n" + matrix_text + "\n\nRelScore Threshold:\n" + threshold_entry + "\n\nSequences:\n" + result_promoter
                     else:
-                        txt_output = f"Responsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
+                        txt_output = "Responsive Elements:\n" + IUPAC + "\n\nPosition Weight Matrix:\n" + matrix_text + "\n\nRelScore Threshold:\n" + threshold_entry + "\n\nSequences:\n" + result_promoter
                     st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
              
                 source = df
