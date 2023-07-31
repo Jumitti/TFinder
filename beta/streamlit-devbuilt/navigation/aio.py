@@ -1061,18 +1061,20 @@ def aio_page():
             if len(table2) > 0:
                 current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M")
                 st.subheader(':orange[Results]')
-                st.success(f"Finding responsive elements done")
-                coltable1, coltable2 = st.columns([0.6,0.4], gap="large")
-                with coltable1:
-                    df = pd.DataFrame(table2[1:], columns=table2[0])
-                    st.session_state['df'] = df
-                    st.markdown('**Table**')
-                    st.dataframe(df, hide_index=True)
-                with coltable2:
+                colres1,colres2,colres3, colres4, colres5 = st.columns([1,0.5,0.5,1,1])
+                with colres1:
+                    st.success(f"Finding responsive elements done")
+                df = pd.DataFrame(table2[1:], columns=table2[0])
+                st.session_state['df'] = df
+                st.markdown('**Table**')
+                st.dataframe(df, hide_index=True)
+                with colres2:
                     excel_file = io.BytesIO()
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
-                    st.download_button("💾 Download (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xls', mime="application/vnd.ms-excel", key='download-excel')
+                    st.download_button("💾 Download table(.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xls', mime="application/vnd.ms-excel", key='download-excel')
+                with colres3:
+                    st.download_button(label="💾 Download Sequences (.txt)",data=result_promoter,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
              
                 source = df
                 score_range = source['Rel Score'].astype(float)
@@ -1122,16 +1124,14 @@ def aio_page():
 
                         msg.attach(MIMEText(body, 'plain'))
 
-                        # Attach Excel file
                         attachment_excel = MIMEBase('application', 'octet-stream')
                         attachment_excel.set_payload(excel_file.getvalue())
                         encoders.encode_base64(attachment_excel)
                         attachment_excel.add_header('Content-Disposition', 'attachment', filename=f'Results_TFinder_{current_date_time}.xls')
                         msg.attach(attachment_excel)
 
-                        # Attach text file
                         attachment_text = MIMEText(attachment_text, 'plain', 'utf-8')
-                        attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Results_TFinder_{current_date_time}.txt')
+                        attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.txt')
                         msg.attach(attachment_text)
 
                         server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -1142,6 +1142,6 @@ def aio_page():
 
                         st.success('Email sent successfully! 🚀')
                     except Exception as e:
-                        st.error(f"Erreur lors de l’envoi de l’e-mail : {e}")
+                        st.error(f"Error sending e-mail : {e}")
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
