@@ -1018,7 +1018,7 @@ def aio_page():
                     excel_file = io.BytesIO()
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
-                    st.download_button("💾 Download table (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xls', mime="application/vnd.ms-excel", key='download-excel')
+                    st.download_button("💾 Download table (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xlsx', mime="application/vnd.ms-excel", key='download-excel')
                 with colres3:
                     txt_output = f"JASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
                     st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
@@ -1129,7 +1129,7 @@ def aio_page():
                     excel_file = io.BytesIO()
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
-                    st.download_button("💾 Download table (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xls', mime="application/vnd.ms-excel", key='download-excel')
+                    st.download_button("💾 Download table (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xlsx', mime="application/vnd.ms-excel", key='download-excel')
                 with colres3:
                     if jaspar == 'PWM':
                         if matrix_type == 'With PWM':
@@ -1199,7 +1199,7 @@ def aio_page():
                             attachment_excel = MIMEBase('application', 'octet-stream')
                             attachment_excel.set_payload(excel_file.getvalue())
                             encoders.encode_base64(attachment_excel)
-                            attachment_excel.add_header('Content-Disposition', 'attachment', filename=f'Results_TFinder_{current_date_time}.xls')
+                            attachment_excel.add_header('Content-Disposition', 'attachment', filename=f'Results_TFinder_{current_date_time}.xlsx')
                             msg.attach(attachment_excel)
 
                             attachment_text = MIMEText(attachment_text, 'plain', 'utf-8')
