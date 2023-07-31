@@ -1000,24 +1000,28 @@ def aio_page():
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
             if len(table2) > 0:
+                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 st.subheader(':orange[Results]')
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
                 response = requests.get(url)
                 response_data = response.json()
                 TF_name = response_data['name']
-                st.success(f"Finding responsive elements done for {TF_name}")
-                coltable1, coltable2 = st.columns([0.6,0.4], gap="large")
-                with coltable1:
-                    df = pd.DataFrame(table2[1:], columns=table2[0])
-                    st.session_state['df'] = df
-                    st.markdown('**Table**')
-                    st.dataframe(df, hide_index=True)
-                with coltable2:
+                colres1,colres2,colres3, colres4, colres5 = st.columns([1,0.5,0.5,1,1])
+                with colres1:
+                    st.success(f"Finding responsive elements done for {TF_name}")
+                df = pd.DataFrame(table2[1:], columns=table2[0])
+                st.session_state['df'] = df
+                st.markdown('**Table**')
+                st.dataframe(df, hide_index=True)
+                with colres2:
                     excel_file = io.BytesIO()
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
-                    st.download_button("💾 Download (.xls)", excel_file, file_name="results.xls", mime="application/vnd.ms-excel", key='download-excel')
+                    st.download_button("💾 Download table (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xls', mime="application/vnd.ms-excel", key='download-excel')
+                with colres3:
+                    txt_output = f"JASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
+                    st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
             
                 source = df
                 score_range = source['Rel Score'].astype(float)
@@ -1048,6 +1052,59 @@ def aio_page():
                     
                     st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                     st.altair_chart(chart, theme=None, use_container_width=True)
+                    
+                email_sender = st.secrets['sender']
+                with colres4:
+                    email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉', label_visibility='collapsed')
+                subject = f'Results TFinder - {current_date_time}'
+                body = f"Hello ☺\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
+                password = st.secrets['password']
+                attachment_excel = excel_file
+                attachment_text = txt_output
+                
+                with colres4:
+                    if st.button("Send ✉"):
+                        try:
+                            msg = MIMEMultipart()
+                            msg['From'] = email_sender
+                            msg['To'] = email_receiver
+                            msg['Subject'] = subject
+
+                            msg.attach(MIMEText(body, 'plain'))
+
+                            attachment_excel = MIMEBase('application', 'octet-stream')
+                            attachment_excel.set_payload(excel_file.getvalue())
+                            encoders.encode_base64(attachment_excel)
+                            attachment_excel.add_header('Content-Disposition', 'attachment', filename=f'Results_TFinder_{current_date_time}.xls')
+                            msg.attach(attachment_excel)
+
+                            attachment_text = MIMEText(attachment_text, 'plain', 'utf-8')
+                            attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.txt')
+                            msg.attach(attachment_text)
+
+                            server = smtplib.SMTP('smtp.gmail.com', 587)
+                            server.starttls()
+                            server.login(email_sender, password)
+                            server.sendmail(email_sender, email_receiver, msg.as_string())
+                            server.quit()
+                            with colres5:
+                                st.success('Email sent successfully! 🚀')
+                        except smtplib.SMTPAuthenticationError:
+                            with colres5:
+                                st.error("Failed to authenticate. Please check your email and password.")
+                        except smtplib.SMTPServerDisconnected:
+                            with colres5:
+                                st.error("Failed to connect to the SMTP server. Please check your internet connection.")
+                        except smtplib.SMTPRecipientsRefused:
+                            with colres5:
+                                st.error(f"Error sending email: {email_receiver}")
+                        except smtplib.SMTPException as e:
+                            with colres5:
+                                st.error(f"Error sending email: {e}")
+                        except Exception as e:
+                            with colres5:
+                                st.error(f"Unknown error occurred: {e}")
+                                
             else: 
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
