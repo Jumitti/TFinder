@@ -1130,10 +1130,8 @@ def aio_page():
                         msg.attach(attachment_excel)
 
                         # Attach text file
-                        attachment_text = MIMEBase('text', 'plain')
-                        attachment_text.set_payload(attachment_text.encode('utf-8'))
-                        encoders.encode_base64(attachment_text)
-                        attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.txt')
+                        attachment_text = MIMEText(attachment_text, 'plain', 'utf-8')
+                        attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Results_TFinder_{current_date_time}.txt')
                         msg.attach(attachment_text)
 
                         server = smtplib.SMTP('smtp.gmail.com', 587)
