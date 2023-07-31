@@ -1072,9 +1072,9 @@ def aio_page():
                     excel_file = io.BytesIO()
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
-                    st.download_button("💾 Download table(.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xls', mime="application/vnd.ms-excel", key='download-excel')
+                    st.download_button("💾 Download table (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xls', mime="application/vnd.ms-excel", key='download-excel')
                 with colres3:
-                    st.download_button(label="💾 Download Sequences (.txt)",data=result_promoter,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
+                    st.download_button(label="💾 Download sequences (.txt)",data=result_promoter,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
              
                 source = df
                 score_range = source['Rel Score'].astype(float)
@@ -1108,40 +1108,43 @@ def aio_page():
                     
                     
                 email_sender = st.secrets['sender']
-                email_receiver = st.text_input('Receiver')
+                with colres4:
+                    email_receiver = st.text_input('Send results by email ✉')
                 subject = f'Results TFinder - {current_date_time}'
                 body = 'Results TFinder'
                 password = st.secrets['password']
                 attachment_excel = excel_file
                 attachment_text = result_promoter
+                
+                with colres4:
+                    if st.button("Send Email"):
+                        try:
+                            msg = MIMEMultipart()
+                            msg['From'] = email_sender
+                            msg['To'] = email_receiver
+                            msg['Subject'] = subject
 
-                if st.button("Send Email"):
-                    try:
-                        msg = MIMEMultipart()
-                        msg['From'] = email_sender
-                        msg['To'] = email_receiver
-                        msg['Subject'] = subject
+                            msg.attach(MIMEText(body, 'plain'))
 
-                        msg.attach(MIMEText(body, 'plain'))
+                            attachment_excel = MIMEBase('application', 'octet-stream')
+                            attachment_excel.set_payload(excel_file.getvalue())
+                            encoders.encode_base64(attachment_excel)
+                            attachment_excel.add_header('Content-Disposition', 'attachment', filename=f'Results_TFinder_{current_date_time}.xls')
+                            msg.attach(attachment_excel)
 
-                        attachment_excel = MIMEBase('application', 'octet-stream')
-                        attachment_excel.set_payload(excel_file.getvalue())
-                        encoders.encode_base64(attachment_excel)
-                        attachment_excel.add_header('Content-Disposition', 'attachment', filename=f'Results_TFinder_{current_date_time}.xls')
-                        msg.attach(attachment_excel)
+                            attachment_text = MIMEText(attachment_text, 'plain', 'utf-8')
+                            attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.txt')
+                            msg.attach(attachment_text)
 
-                        attachment_text = MIMEText(attachment_text, 'plain', 'utf-8')
-                        attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.txt')
-                        msg.attach(attachment_text)
-
-                        server = smtplib.SMTP('smtp.gmail.com', 587)
-                        server.starttls()
-                        server.login(email_sender, password)
-                        server.sendmail(email_sender, email_receiver, msg.as_string())
-                        server.quit()
-
-                        st.success('Email sent successfully! 🚀')
-                    except Exception as e:
-                        st.error(f"Error sending e-mail : {e}")
+                            server = smtplib.SMTP('smtp.gmail.com', 587)
+                            server.starttls()
+                            server.login(email_sender, password)
+                            server.sendmail(email_sender, email_receiver, msg.as_string())
+                            server.quit()
+                            with colres5:
+                                st.success('Email sent successfully! 🚀')
+                        except Exception as e:
+                            with colres5:
+                                st.error(f"Error sending e-mail : {e}")
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
