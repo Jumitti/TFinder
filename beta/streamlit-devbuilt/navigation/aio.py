@@ -1111,13 +1111,24 @@ def aio_page():
                 with colres4:
                     email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉', label_visibility='collapsed')
                 subject = f'Results TFinder - {current_date_time}'
-                body = 'Results TFinder'
+                body = f'Hello ☺\nHere are your results obtained with TFinder.\n\nResponsive Elements:\n{
+
+Position Weight Matrix:
+
+RelScore Threshold:\n{threshold_entry}
+
+This email also includes the sequences used in FASTA format and an Excel table of results.
+
+For all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.
+
+best regards
+TFinder Team'
                 password = st.secrets['password']
                 attachment_excel = excel_file
                 attachment_text = result_promoter
                 
                 with colres4:
-                    if st.button("Send Email ✉"):
+                    if st.button("Send ✉"):
                         try:
                             msg = MIMEMultipart()
                             msg['From'] = email_sender
