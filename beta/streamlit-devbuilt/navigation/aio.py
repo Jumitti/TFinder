@@ -33,6 +33,8 @@ from openpyxl import Workbook
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
 import base64
 
 def aio_page():
@@ -1117,11 +1119,10 @@ def aio_page():
                         # Ajouter le corps du message
                         msg.attach(MIMEText(body, 'plain'))
 
-                        # Encoder le contenu de l'excel en base64
-                        excel_file_encoded = base64.b64encode(excel_file.getvalue())
-
                         # Ajouter l'excel en tant que pièce jointe
-                        attachment = MIMEText(excel_file_encoded, 'base64')
+                        attachment = MIMEBase('application', 'octet-stream')
+                        attachment.set_payload(excel_file.getvalue())
+                        encoders.encode_base64(attachment)
                         attachment.add_header('Content-Disposition', 'attachment', filename="file.xls")
                         msg.attach(attachment)
 
