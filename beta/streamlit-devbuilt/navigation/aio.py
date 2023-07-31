@@ -1145,6 +1145,6 @@ def aio_page():
                                 st.success('Email sent successfully! 🚀')
                         except Exception as e:
                             with colres5:
-                                st.error(f"Error sending e-mail : {e}")
+                                st.error(f"Error sending e-mail : {e}") 
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
