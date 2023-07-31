@@ -34,3 +34,5 @@ weblogo
 Bio
 logomaker
 openpyxl
+sendgrid
+Pillow
