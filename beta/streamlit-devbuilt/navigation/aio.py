@@ -36,6 +36,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 import base64
+import datetime
 
 def aio_page():
     # Reverse complement
@@ -1016,7 +1017,7 @@ def aio_page():
                     excel_file = io.BytesIO()
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
-                    st.download_button("💾 Download (.xls)", excel_file, file_name="file.xls", mime="application/vnd.ms-excel", key='download-excel')
+                    st.download_button("💾 Download (.xls)", excel_file, file_name="results.xls", mime="application/vnd.ms-excel", key='download-excel')
             
                 source = df
                 score_range = source['Rel Score'].astype(float)
@@ -1058,6 +1059,7 @@ def aio_page():
     else:
         if 'table2' in locals():
             if len(table2) > 0:
+                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M")
                 st.subheader(':orange[Results]')
                 st.success(f"Finding responsive elements done")
                 coltable1, coltable2 = st.columns([0.6,0.4], gap="large")
@@ -1070,7 +1072,7 @@ def aio_page():
                     excel_file = io.BytesIO()
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
-                    st.download_button("💾 Download (.xls)", excel_file, file_name="file.xls", mime="application/vnd.ms-excel", key='download-excel')
+                    st.download_button("💾 Download (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xls', mime="application/vnd.ms-excel", key='download-excel')
              
                 source = df
                 score_range = source['Rel Score'].astype(float)
@@ -1102,9 +1104,10 @@ def aio_page():
                     st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                     st.altair_chart(chart, theme=None, use_container_width=True)
                     
+                    
                 email_sender = st.secrets['sender']
                 email_receiver = st.text_input('Receiver')
-                subject = 'Results TFinder'
+                subject = f'Results TFinder - {current_date_time}'
                 body = 'Results TFinder'
                 password = st.secrets['password']
                 attachment = excel_file
@@ -1123,7 +1126,7 @@ def aio_page():
                         attachment = MIMEBase('application', 'octet-stream')
                         attachment.set_payload(excel_file.getvalue())
                         encoders.encode_base64(attachment)
-                        attachment.add_header('Content-Disposition', 'attachment', filename="file.xls")
+                        attachment.add_header('Content-Disposition', 'attachment', filename=f'Results_TFinder_{current_date_time}.xls')
                         msg.attach(attachment)
 
                         server = smtplib.SMTP('smtp.gmail.com', 587)
