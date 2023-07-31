@@ -1100,7 +1100,7 @@ def aio_page():
                     st.altair_chart(chart, theme=None, use_container_width=True)
                     
                 email_sender = st.secrets['sender']
-                email_receiver = st.text_input('')
+                email_receiver = st.text_input('Receiver')
                 subject = 'Results TFinder'
                 body = 'Results TFinder'
                 password = st.secrets['password']
