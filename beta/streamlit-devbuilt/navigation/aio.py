@@ -1187,7 +1187,7 @@ def aio_page():
                 password = st.secrets['password']
                 attachment_excel = excel_file
                 attachment_text = txt_output
-                attachment_png = 
+                # attachment_png = 
                 
                 with colres4:
                     if st.button("Send ✉"):
@@ -1209,10 +1209,10 @@ def aio_page():
                             attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.txt')
                             msg.attach(attachment_text)
                             
-                            attachment_png = MIMEBase('application', 'octet-stream')
-                            attachment_png.set_payload(attachment_png)
-                            attachment_png.add_header('Content-Disposition', 'attachment', filename='image.png')
-                            msg.attach(attachment_png)
+                            # attachment_png = MIMEBase('application', 'octet-stream')
+                            # attachment_png.set_payload(attachment_png)
+                            # attachment_png.add_header('Content-Disposition', 'attachment', filename='image.png')
+                            # msg.attach(attachment_png)
 
                             server = smtplib.SMTP('smtp.gmail.com', 587)
                             server.starttls()
