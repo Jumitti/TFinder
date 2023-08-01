@@ -728,7 +728,7 @@ def aio_page():
             with REcol2:
                 st.markdown("🔸 :orange[**Step 2.3**] Matrix:", help="Only PWM generated with our tools are allowed")
                 matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]", label_visibility='collapsed')
-                logo = logomaker.Logo(matrix, color_scheme = 'classic')
+                logo = logomaker.Logo(matrix_text, color_scheme = 'classic')
                 st.pyplot(logo.fig)
         else:
             with REcol1:
