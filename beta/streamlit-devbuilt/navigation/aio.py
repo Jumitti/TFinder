@@ -720,7 +720,7 @@ def aio_page():
             TF_species = response_data['species'][0]['name']
             st.success(f"{TF_species} transcription factor {TF_name}")
         with REcol2:
-            st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
+            JASPAR_weblogo = st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
     elif jaspar == 'PWM':
         with REcol1:
             st.markdown('🔸 :orange[**Step 2.2bis**] Matrix:')
@@ -1089,6 +1089,9 @@ def aio_page():
                             attachment_text = MIMEText(attachment_text, 'plain', 'utf-8')
                             attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.txt')
                             msg.attach(attachment_text)
+                            
+                            image = MIMEImage(JASPAR_weblogo, name=f'image_{current_date_time}.jpg')
+                            msg.attach(image)
 
                             server = smtplib.SMTP('smtp.gmail.com', 587)
                             server.starttls()
@@ -1194,14 +1197,6 @@ def aio_page():
                 password = st.secrets['password']
                 attachment_excel = excel_file
                 attachment_text = txt_output
-                
-                # if jaspar == 'PWM':
-                    # if matrix_type == 'With FASTA sequences':
-                        # png_content = buffer.getvalue()
-                # elif jaspar == 'Manual sequence':
-                    # png_content = buffer.getvalue()
-                
-                
                 
                 with colres4:
                     if st.button("Send ✉"):
