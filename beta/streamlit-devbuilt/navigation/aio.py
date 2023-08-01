@@ -820,6 +820,9 @@ def aio_page():
                     if sequences:
                         logo = create_web_logo(sequences)
                         st.pyplot(logo.fig)
+                        buffer = io.BytesIO()
+                        plt.savefig(buffer, format='png')
+                        buffer.seek(0)
           
     else:
         with REcol1:
@@ -948,6 +951,9 @@ def aio_page():
                     if sequences:
                         logo = create_web_logo(sequences)
                         st.pyplot(logo.fig)
+                        buffer = io.BytesIO()
+                        plt.savefig(buffer, format='png')
+                        buffer.seek(0)
         else:
             isUIPAC = False
 
@@ -1189,15 +1195,9 @@ def aio_page():
                 
                 if jaspar == 'PWM':
                     if matrix_type == 'With FASTA sequences':
-                        buffer = io.BytesIO()
-                        plt.savefig(buffer, format='png')
-                        buffer.seek(0)
                         png_content = buffer.getvalue()
                         attachment_png = png_content
                 elif jaspar == 'Manual sequence':
-                    buffer = io.BytesIO()
-                    plt.savefig(buffer, format='png')
-                    buffer.seek(0)
                     png_content = buffer.getvalue()
                     attachment_png = png_content
                 
