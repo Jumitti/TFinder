@@ -776,10 +776,10 @@ def BSF_page():
                             
                             if jaspar == 'PWM':
                                 if matrix_type == 'With FASTA sequences':
-                                    image = MIMEImage(buffer.read(), name=f'image_{current_date_time}.jpg')
+                                    image = MIMEImage(buffer.read(), name=f'LOGOMAKER_{current_date_time}.jpg')
                                     msg.attach(image)
                             elif jaspar == 'Manual sequence':
-                                image = MIMEImage(buffer.read(), name=f'image_{current_date_time}.jpg')
+                                image = MIMEImage(buffer.read(), name=f'LOGOMAKER_{current_date_time}.jpg')
                                 msg.attach(image)
 
                             server = smtplib.SMTP('smtp.gmail.com', 587)
