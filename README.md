@@ -37,7 +37,8 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 - Calculation of the distance of the found sequence to TSS or Gene End
 - Relative Score calculation: (score element found - minimum score matrix reference)/(score maximum matrix reference- minimum score matrix reference)
 - p-value: 1000000 random sequences of reactive element length are generated based on the proportion of A, T, G, C in the search sequence. p-value=(Nb Rel Score random sequences >= Rel Score of elements founds)/ (Nb random seq generated). p-value is the number of random sequences generated having a relative score greater than or equal to the relative score of the element found divided by the number of random sequences generated
-- Export results to excel (.cvs)
+- Export results to excel (.xlsx)
+- Export results, sequences, parameters via e-mail
 - Graph of sequence positions found on the promoter
 
 ![graph_webui](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/promtermoriginal.png)
