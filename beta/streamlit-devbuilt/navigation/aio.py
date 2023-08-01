@@ -40,7 +40,6 @@ import base64
 import datetime
 import matplotlib.pyplot as plt
 from PIL import Image
-import cairosvg
 
 def aio_page():
     # Reverse complement
@@ -723,10 +722,6 @@ def aio_page():
             st.success(f"{TF_species} transcription factor {TF_name}")
         with REcol2:
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
-            url = f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg"
-            response = requests.get(url)
-            image_png = cairosvg.svg2png(bytestring=response.content)
-            buffer = io.BytesIO(image_png)
     elif jaspar == 'PWM':
         with REcol1:
             st.markdown('🔸 :orange[**Step 2.2bis**] Matrix:')
@@ -1095,10 +1090,6 @@ def aio_page():
                             attachment_text = MIMEText(attachment_text, 'plain', 'utf-8')
                             attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.txt')
                             msg.attach(attachment_text)
-                            
-                            attachment_img = MIMEImage(buffer.getvalue())
-                            attachment_img.add_header('Content-Disposition', f'attachment; filename="{jaspar_id}.png"')
-                            msg.attach(attachment_img)
 
                             server = smtplib.SMTP('smtp.gmail.com', 587)
                             server.starttls()
