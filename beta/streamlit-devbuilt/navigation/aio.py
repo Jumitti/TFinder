@@ -40,6 +40,7 @@ import base64
 import datetime
 import matplotlib.pyplot as plt
 from PIL import Image
+import cairosvg
 
 def aio_page():
     # Reverse complement
@@ -724,10 +725,8 @@ def aio_page():
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
             url = f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg"
             response = requests.get(url)
-            image = Image.open(io.BytesIO(response.content))
-            buffer = io.BytesIO()
-            image.save(buffer, format='png')
-            buffer.seek(0)
+            image_png = cairosvg.svg2png(bytestring=response.content)
+            buffer = io.BytesIO(image_png)
     elif jaspar == 'PWM':
         with REcol1:
             st.markdown('🔸 :orange[**Step 2.2bis**] Matrix:')
