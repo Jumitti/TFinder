@@ -1201,6 +1201,7 @@ def aio_page():
                 elif jaspar == 'Manual sequence':
                     png_content = buffer.getvalue()
                     attachment_png = png_content
+                    st.image(attachment_png)
                 
                 
                 
