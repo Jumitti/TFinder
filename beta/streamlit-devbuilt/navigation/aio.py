@@ -37,6 +37,7 @@ from email.mime.base import MIMEBase
 from email import encoders
 import base64
 import datetime
+import matplotlib.pyplot as plt
 
 def aio_page():
     # Reverse complement
