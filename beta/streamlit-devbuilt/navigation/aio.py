@@ -1189,6 +1189,7 @@ def aio_page():
                         body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
                 else:
                     body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
+                    
                 password = st.secrets['password']
                 attachment_excel = excel_file
                 attachment_text = txt_output
@@ -1225,12 +1226,12 @@ def aio_page():
                             
                             if jaspar == 'PWM':
                                 if matrix_type == 'With FASTA sequences':
-                                    attachment_png = MIMEBase('application', 'octet-stream')
+                                    attachment_png = MIMEBase('image', 'png')
                                     attachment_png.set_payload(attachment_png)
                                     attachment_png.add_header('Content-Disposition', 'attachment', filename=f'logomaker_{current_date_time}.png')
                                     msg.attach(attachment_png)
                             elif jaspar == 'Manual sequence':
-                                attachment_png = MIMEBase('application', 'octet-stream')
+                                attachment_png = MIMEBase('image', 'png')
                                 attachment_png.set_payload(attachment_png)
                                 attachment_png.add_header('Content-Disposition', 'attachment', filename=f'logomaker_{current_date_time}.png')
                                 msg.attach(attachment_png)
