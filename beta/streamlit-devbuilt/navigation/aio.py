@@ -1196,9 +1196,9 @@ def aio_page():
                 
                 if jaspar == 'PWM':
                     if matrix_type == 'With FASTA sequences':
-                        png_content = buffer.getvalue()
+                        png_content_base64 = base64.b64encode(buffer.read()).decode()
                 elif jaspar == 'Manual sequence':
-                    png_content = buffer.getvalue()
+                    png_content_base64 = base64.b64encode(buffer.read()).decode()
                 
                 
                 
@@ -1210,7 +1210,7 @@ def aio_page():
                             msg['To'] = email_receiver
                             msg['Subject'] = subject
 
-                            msg.attach(MIMEText(body, 'plain', 'utf-8'))
+                            msg.attach(MIMEText(body, 'plain'))
 
                             attachment_excel = MIMEBase('application', 'octet-stream')
                             attachment_excel.set_payload(excel_file.getvalue())
@@ -1225,12 +1225,12 @@ def aio_page():
                             if jaspar == 'PWM':
                                 if matrix_type == 'With FASTA sequences':
                                     attachment_png = MIMEBase('image', 'png')
-                                    attachment_png.set_payload(png_content)
+                                    attachment_png.set_payload(png_content_base64)
                                     attachment_png.add_header('Content-Disposition', 'attachment', filename=f'logomaker_{current_date_time}.png')
                                     msg.attach(attachment_png)
                             elif jaspar == 'Manual sequence':
                                 attachment_png = MIMEBase('image', 'png')
-                                attachment_png.set_payload(png_content)
+                                attachment_png.set_payload(png_content_base64)
                                 attachment_png.add_header('Content-Disposition', 'attachment', filename=f'logomaker_{current_date_time}.png')
                                 msg.attach(attachment_png)
 
