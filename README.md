@@ -15,7 +15,7 @@ All you have to do is search for your responsive elements. No need to ctrl+F, it
 ## Browser compatibility
 
 - Opera GX
-- Chrome (Chromium)
+- Chrome (also Chromium)
 - Safari
 - Edge
 - Mozilla
