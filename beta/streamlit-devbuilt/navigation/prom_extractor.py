@@ -469,4 +469,5 @@ def prom_extractor_page():
     else:
         st.markdown("🔸 :orange[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
         result_promoter_text = "\n".join(st.session_state['result_promoter'])
-        result_promoter = st.text_area("🔸 :orange[**Step 2.1**] Sequences:", value=result_promoter_text, label_visibility='collapsed') 
+        result_promoter = st.text_area("🔸 :orange[**Step 2.1**] Sequences:", value=result_promoter_text, label_visibility='collapsed')
+        st.download_button(label="💾 Download sequences (.txt)",data=result_promoter,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")

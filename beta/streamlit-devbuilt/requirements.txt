@@ -36,4 +36,3 @@ logomaker
 openpyxl
 sendgrid
 Pillow
-CairoSVG
