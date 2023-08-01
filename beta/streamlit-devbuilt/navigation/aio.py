@@ -821,7 +821,7 @@ def aio_page():
                         logo = create_web_logo(sequences)
                         st.pyplot(logo.fig)
                         buffer = io.BytesIO()
-                        plt.savefig(buffer, format='png')
+                        plt.savefig(buffer, format='jpg')
                         buffer.seek(0)
           
     else:
@@ -952,7 +952,7 @@ def aio_page():
                         logo = create_web_logo(sequences)
                         st.pyplot(logo.fig)
                         buffer = io.BytesIO()
-                        plt.savefig(buffer, format='png')
+                        plt.savefig(buffer, format='jpg')
                         buffer.seek(0)
         else:
             isUIPAC = False
@@ -1196,9 +1196,9 @@ def aio_page():
                 
                 if jaspar == 'PWM':
                     if matrix_type == 'With FASTA sequences':
-                        png_content_base64 = base64.b64encode(buffer.read()).decode()
+                        png_content = buffer.getvalue()
                 elif jaspar == 'Manual sequence':
-                    png_content_base64 = base64.b64encode(buffer.read()).decode()
+                    png_content = buffer.getvalue()
                 
                 
                 
@@ -1210,7 +1210,7 @@ def aio_page():
                             msg['To'] = email_receiver
                             msg['Subject'] = subject
 
-                            msg.attach(MIMEText(body, 'plain', 'utf-8'))
+                            msg.attach(MIMEText(body, 'plain'))
 
                             attachment_excel = MIMEBase('application', 'octet-stream')
                             attachment_excel.set_payload(excel_file.getvalue())
@@ -1225,13 +1225,13 @@ def aio_page():
                             if jaspar == 'PWM':
                                 if matrix_type == 'With FASTA sequences':
                                     attachment_png = MIMEBase('image', 'png')
-                                    attachment_png.set_payload(png_content_base64)
-                                    attachment_png.add_header('Content-Disposition', 'attachment', filename=f'logomaker_{current_date_time}.png')
+                                    attachment_png.set_payload(png_content)
+                                    attachment_png.add_header('Content-Disposition', 'attachment', filename=f'logomaker_{current_date_time}.jpg')
                                     msg.attach(attachment_png)
                             elif jaspar == 'Manual sequence':
                                 attachment_png = MIMEBase('image', 'png')
-                                attachment_png.set_payload(png_content_base64)
-                                attachment_png.add_header('Content-Disposition', 'attachment', filename=f'logomaker_{current_date_time}.png')
+                                attachment_png.set_payload(png_content)
+                                attachment_png.add_header('Content-Disposition', 'attachment', filename=f'logomaker_{current_date_time}.jpg')
                                 msg.attach(attachment_png)
 
                             server = smtplib.SMTP('smtp.gmail.com', 587)
