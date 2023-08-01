@@ -366,7 +366,7 @@ def aio_page():
             
             if st.button("🧬 :red[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
                 with st.spinner("Finding sequences..."):
-                    st.session_state['upstream'] = upstream
+                    st.session_state['upstream'] = upstream_entry
                     for i, gene_info in data_dff.iterrows():
                         gene_name = gene_info["Gene"]
                         human_checked = gene_info["human"]
