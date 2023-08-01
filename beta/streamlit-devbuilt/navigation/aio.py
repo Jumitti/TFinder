@@ -721,10 +721,10 @@ def aio_page():
             TF_species = response_data['species'][0]['name']
             st.success(f"{TF_species} transcription factor {TF_name}")
         with REcol2:
-            st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
+            JASPAR_weblogo = st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
             # url = f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg"
             # response = requests.get(url)
-            image = Image.open(io.BytesIO(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg"))
+            image = Image.open(io.BytesIO(JASPAR_weblogo))
             buffer = io.BytesIO()
             image.save(buffer, format='png')
             buffer.seek(0)
