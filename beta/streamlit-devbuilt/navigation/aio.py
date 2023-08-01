@@ -722,9 +722,9 @@ def aio_page():
             st.success(f"{TF_species} transcription factor {TF_name}")
         with REcol2:
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
-            url = f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg"
-            response = requests.get(url)
-            image = Image.open(io.BytesIO(response.content))
+            # url = f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg"
+            # response = requests.get(url)
+            image = Image.open(io.BytesIO(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg"))
             buffer = io.BytesIO()
             image.save(buffer, format='png')
             buffer.seek(0)
@@ -1098,7 +1098,7 @@ def aio_page():
                             msg.attach(attachment_text)
                             
                             attachment_img = MIMEImage(buffer.getvalue())
-                            attachment_img.add_header('Content-Disposition', f'attachment; filename="{entry_sequence}.png"')
+                            attachment_img.add_header('Content-Disposition', f'attachment; filename="{jaspar_id}.png"')
                             msg.attach(attachment_img)
 
                             server = smtplib.SMTP('smtp.gmail.com', 587)
