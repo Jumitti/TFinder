@@ -1224,12 +1224,12 @@ def aio_page():
                             
                             if jaspar == 'PWM':
                                 if matrix_type == 'With FASTA sequences':
-                                    attachment_png = MIMEBase('image', 'png')
+                                    attachment_png = MIMEBase('image', 'jpg')
                                     attachment_png.set_payload(png_content)
                                     attachment_png.add_header('Content-Disposition', 'attachment', filename=f'logomaker_{current_date_time}.jpg')
                                     msg.attach(attachment_png)
                             elif jaspar == 'Manual sequence':
-                                attachment_png = MIMEBase('image', 'png')
+                                attachment_png = MIMEBase('image', 'jpg')
                                 attachment_png.set_payload(png_content)
                                 attachment_png.add_header('Content-Disposition', 'attachment', filename=f'logomaker_{current_date_time}.jpg')
                                 msg.attach(attachment_png)
