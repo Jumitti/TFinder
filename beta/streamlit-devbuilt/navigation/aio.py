@@ -1210,7 +1210,7 @@ def aio_page():
                             msg['To'] = email_receiver
                             msg['Subject'] = subject
 
-                            msg.attach(MIMEText(body, 'plain'))
+                            msg.attach(MIMEText(body, 'plain', 'utf-8'))
 
                             attachment_excel = MIMEBase('application', 'octet-stream')
                             attachment_excel.set_payload(excel_file.getvalue())
