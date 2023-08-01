@@ -25,6 +25,7 @@ import altair as alt
 import math
 import pickle
 import time
+import datetime
 
 def prom_extractor_page():
     # Reverse complement
@@ -470,4 +471,5 @@ def prom_extractor_page():
         st.markdown("🔸 :orange[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
         result_promoter_text = "\n".join(st.session_state['result_promoter'])
         result_promoter = st.text_area("🔸 :orange[**Step 2.1**] Sequences:", value=result_promoter_text, label_visibility='collapsed')
+        current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         st.download_button(label="💾 Download sequences (.txt)",data=result_promoter,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
