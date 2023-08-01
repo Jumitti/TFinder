@@ -34,6 +34,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
+from email.mime.image import MIMEImage
 from email import encoders
 import base64
 import datetime
@@ -1194,11 +1195,11 @@ def aio_page():
                 attachment_excel = excel_file
                 attachment_text = txt_output
                 
-                if jaspar == 'PWM':
-                    if matrix_type == 'With FASTA sequences':
-                        png_content = buffer.getvalue()
-                elif jaspar == 'Manual sequence':
-                    png_content = buffer.getvalue()
+                # if jaspar == 'PWM':
+                    # if matrix_type == 'With FASTA sequences':
+                        # png_content = buffer.getvalue()
+                # elif jaspar == 'Manual sequence':
+                    # png_content = buffer.getvalue()
                 
                 
                 
@@ -1224,15 +1225,11 @@ def aio_page():
                             
                             if jaspar == 'PWM':
                                 if matrix_type == 'With FASTA sequences':
-                                    attachment_png = MIMEBase('image', 'jpg')
-                                    attachment_png.set_payload(png_content)
-                                    attachment_png.add_header('Content-Disposition', 'attachment', filename=f'logomaker_{current_date_time}.jpg')
-                                    msg.attach(attachment_png)
+                                    image = MIMEImage(buffer.read(), name=f'image_{current_date_time}.jpg')
+                                    msg.attach(image)
                             elif jaspar == 'Manual sequence':
-                                attachment_png = MIMEBase('image', 'jpg')
-                                attachment_png.set_payload(png_content)
-                                attachment_png.add_header('Content-Disposition', 'attachment', filename=f'logomaker_{current_date_time}.jpg')
-                                msg.attach(attachment_png)
+                                image = MIMEImage(buffer.read(), name=f'image_{current_date_time}.jpg')
+                                msg.attach(image)
 
                             server = smtplib.SMTP('smtp.gmail.com', 587)
                             server.starttls()
