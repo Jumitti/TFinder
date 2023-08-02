@@ -12,4 +12,4 @@
 
 ## Reporting a Vulnerability
 
-You can send an e-mail to minniti@ipmc.cnrs.fr or create an ![Issue]('https://github.com/Jumitti/TFinder/issues') on Github
+You can send an e-mail to minniti@ipmc.cnrs.fr or create an ![Issue](https://github.com/Jumitti/TFinder/issues) on Github
