@@ -1,0 +1,15 @@
+# Security Policy
+
+## Supported Web Browser
+
+| Supported              |
+| ---------------------- |
+| Chrome (also Chromium) |
+| Edge                   |
+| Mozilla                |
+| Opera GX               |
+| Safari                 |
+
+## Reporting a Vulnerability
+
+You can send an e-mail to minniti@ipmc.cnrs.fr or create an issue on Github
