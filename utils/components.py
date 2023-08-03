@@ -189,7 +189,7 @@ left: 0;
 bottom: 0;
 background-color: transparent;
 margin-top: auto;
-color: #F66833;
+color: #163172;
 padding: 24px;
 text-align: center;
 }
