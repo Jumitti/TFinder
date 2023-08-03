@@ -4,6 +4,8 @@
 
 [TFinder](https://tfinder-ipmc.streamlit.app/) is a web service python to quickly extract a promoter/terminator region with the NCBI API and search for the presence of transcription factor responsive elements from JASPAR and individuals motifs.
 
+[CLick here to go to TFinder website](https://tfinder-ipmc.streamlit.app/)
+
 ## Description
 
 First of all, I think it already exists. But even if I looked hard enough, I couldn't find an application or website that really does it the way I want. Of course, you can do a ctrl+F but it's always the same. You have to look for all the shapes in all the possible ways. Of course, there are applications that do it (SerialCloner), but once again, there's something missing. 
