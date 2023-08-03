@@ -198,10 +198,10 @@ text-align: center;
 <p style="font-size:  13px">Copyright (c) 2023 Minniti Julien.</p>
 <p style="font-size: 13px">This software is distributed under an MIT licence. Please consult the LICENSE file for more details.</p>
 <p style="font-size: 13px">Please cite as: "" | DOI: "".</p>
-<a href="https://www.ipmc.cnrs.fr/cgi-bin/site.cgi"><img class="image2" src="https://www.ipmc.cnrs.fr/fichiers/images/logo_ipmc.jpg"alt="github" width="80" height=57"></a>
+<a href="https://www.ipmc.cnrs.fr/cgi-bin/site.cgi"><img class="image2" src="https://raw.githubusercontent.com/Jumitti/TFinder/main/img/logo%20ipmc.png"alt="github" width="80" height=57"></a>
 <a href="https://www.cnrs.fr/fr"><img class="image2" src="https://www.cnrs.fr/themes/custom/cnrs/logo.svg"alt="github" width="70" height="70"></a>
-<a href="https://www.inserm.fr/"><img class="image2" src="https://raw.githubusercontent.com/Jumitti/TFinder/main/img/logo%20inserm.png"alt="github" width="90" height="70"></a>
-<a href="https://univ-cotedazur.fr/"><img class="image2" src="https://www6.inrae.fr/var/internet6_national_consortium_biocontrole/storage/images/les-membres/annuaire-des-membres-du-consortium-biocontrole/universite-cote-d-azur/39475-1-fre-FR/Universite-Cote-d-Azur_inra_image.png"alt="github" width="70" height="70"></a>
+<a href="https://www.inserm.fr/"><img class="image2" src="https://raw.githubusercontent.com/Jumitti/TFinder/main/img/logo%20inserm.png"alt="github" width="100" height="70"></a>
+<a href="https://univ-cotedazur.fr/"><img class="image2" src="https://raw.githubusercontent.com/Jumitti/TFinder/main/img/logo%20univ%20cote%20dazur.png"alt="github" width="70" height="70"></a>
 </a><a href="https://github.com/Jumitti"><img class="image2" src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="github" width="70" height="70"></a>
 """
 
