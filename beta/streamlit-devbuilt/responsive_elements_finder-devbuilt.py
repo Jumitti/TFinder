@@ -115,9 +115,7 @@ try:
 except FileNotFoundError:
     ratings = []
 rating = st.sidebar.slider("Rate it 😊 (1-5 ⭐)", 1, 5, 5)
-colscore1, colscore2 = st.sidebar.columns(2)
-with colscore1:
-    submit_button = st.button("Submit Rating")
+submit_button = st.sidebar.button("Submit Rating")
 if submit_button:
     ratings.append(rating)
     with open("ratings.pkl", "wb") as file:
@@ -125,8 +123,7 @@ if submit_button:
     st.sidebar.success("Thank you for rating the application!")
 average_rating = sum(ratings) / len(ratings) if ratings else 0
 num_ratings = len(ratings)
-with colscore2:
-    st.write(f"Average rating: {average_rating:.2f} ⭐ ({num_ratings} votes)")
+st.sidebar.write(f"Average rating: {average_rating:.2f} ⭐ ({num_ratings} votes)")
 
 #Help
 
