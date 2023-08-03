@@ -182,7 +182,7 @@ def aio_page():
             raise Exception(f"Error retrieving gene information: {str(e)} for species {species}")
 
     #Disposition
-    st.subheader(':orange[Step 1] Promoter and Terminator Extractor')
+    st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
     colprom1, colprom2 = st.columns([0.8,1.2] , gap="small")
     
     # Promoter Finder
