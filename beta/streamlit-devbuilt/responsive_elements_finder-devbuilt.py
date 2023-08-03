@@ -30,7 +30,6 @@ from navigation.home import home_page
 from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
-import webbrowser
 
 st.set_page_config(
         page_title='TFinder by Minniti Julien',
