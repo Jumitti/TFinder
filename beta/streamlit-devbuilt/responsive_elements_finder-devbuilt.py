@@ -30,6 +30,7 @@ from navigation.home import home_page
 from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
+import webbrowser
 
 st.set_page_config(
         page_title='TFinder by Minniti Julien',
@@ -180,10 +181,8 @@ st.sidebar.table(df)
 st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract regions via NCBI/use the JASPAR_IDs')
 st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
 
-st.sidebar.title("Report an issue/bug ⚠")
+if st.sidebar.button("Report an issue/bug 🆘"):
+    webbrowser.open(https://github.com/Jumitti/TFinder/issues/new/choose)
 
-st.sidebar.markdown("[Issue ⚠](https://github.com/Jumitti/TFinder/issues/new/choose)")
-
-st.sidebar.title("Want to talk ? 🙋🏼‍♂️")
-
-st.sidebar.markdown("[Discussions 🙋🏼‍♂️](https://github.com/Jumitti/TFinder/discussions)")
+if st.sidebar.button("Want to talk ? 🙋🏼‍♂️"):
+    webbrowser.open(https://github.com/Jumitti/TFinder/discussions)
