@@ -82,7 +82,7 @@ option_data = [
    
 ]
 
-over_theme = {'txc_inactive': 'black','menu_background':'#F3F8FF','txc_active':'white','option_active':'#91C8E4'}
+over_theme = {'txc_inactive': 'black','menu_background':'#DEECFF','txc_active':'white','option_active':'#91C8E4'}
 font_fmt = {'font-class':'h3','font-size':'50%'}
 
 chosen_tab = hc.option_bar(
