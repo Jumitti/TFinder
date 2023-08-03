@@ -4,7 +4,7 @@
 
 [TFinder](https://tfinder-ipmc.streamlit.app/) is a web service python to quickly extract a promoter/terminator region with the NCBI API and search for the presence of transcription factor responsive elements from JASPAR and individuals motifs.
 
-[Click here to go to TFinder website](https://tfinder-ipmc.streamlit.app/)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tfinder-ipmc.streamlit.app/)
 
 ## Description
 
