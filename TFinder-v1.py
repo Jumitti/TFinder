@@ -58,7 +58,7 @@ st.markdown("""
 
 #Footer
 
-st.markdown(footer_style, unsafe_allow_html=True)
+st.markdown(footer_style, unsafe_allow_html=True) ## Footer
 
 #NavBar
 
@@ -82,7 +82,7 @@ option_data = [
    
 ]
 
-over_theme = {'txc_inactive': 'black','menu_background':'#ECECEC','txc_active':'white','option_active':'#fab947'}
+over_theme = {'txc_inactive': 'black','menu_background':'#D6E5FA','txc_active':'white','option_active':'#749BC2'}
 font_fmt = {'font-class':'h3','font-size':'50%'}
 
 chosen_tab = hc.option_bar(
