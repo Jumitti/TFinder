@@ -176,8 +176,8 @@ def prom_extractor_page():
         result_promoter = []
 
     # Gene ID
-        st.markdown("🔸 :orange[**Step 1.1**] Gene ID:", help='NCBI gene name and NCBI gene ID allowed')
-        gene_id_entry = st.text_area("🔸 :orange[**Step 1.1**] Gene ID:", value="PRKN\n351", label_visibility='collapsed')
+        st.markdown("🔹 :blue[**Step 1.1**] Gene ID:", help='NCBI gene name and NCBI gene ID allowed')
+        gene_id_entry = st.text_area("🔹 :blue[**Step 1.1**] Gene ID:", value="PRKN\n351", label_visibility='collapsed')
         
         # Verify if gene is available for all species
         if st.button('🔎 Check genes avaibility', help='Sometimes genes do not have the same name in all species or do not exist.'):
@@ -202,22 +202,22 @@ def prom_extractor_page():
         with tab1:
             
         # Species
-            st.markdown("🔸 :orange[**Step 1.2**] Select species of gene names:")
-            species = st.selectbox("🔸 :orange[**Step 1.2**] Select species of gene names:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0, label_visibility='collapsed')
+            st.markdown("🔹 :blue[**Step 1.2**] Select species of gene names:")
+            species = st.selectbox("🔹 :blue[**Step 1.2**] Select species of gene names:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0, label_visibility='collapsed')
 
         # Upstream/Downstream Promoter
-            st.markdown("🔸 :orange[**Step 1.3**] Regulatory region:")
-            prom_term = st.radio("🔸 :orange[**Step 1.3**] Regulatory region:",('Promoter', 'Terminator'), label_visibility='collapsed')
+            st.markdown("🔹 :blue[**Step 1.3**] Regulatory region:")
+            prom_term = st.radio("🔹 :blue[**Step 1.3**] Regulatory region:",('Promoter', 'Terminator'), label_visibility='collapsed')
             if prom_term == 'Promoter':
-                st.markdown("🔸 :orange[**Step 1.4**] Upstream/downstream from the TSS (bp)")
-                updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100, label_visibility='collapsed')
+                st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from the TSS (bp)")
+                updown_slide = st.slider("🔹 :blue[**Step 1.4**] Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100, label_visibility='collapsed')
                 st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
                 upstream_entry = -min(updown_slide)
                 downstream_entry = max(updown_slide)
                 st.session_state['upstream_entry'] = upstream_entry
             else:
-                st.markdown("🔸 :orange[**Step 1.4**] Upstream/downstream from gene end (bp)")
-                updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100, label_visibility='collapsed')
+                st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from gene end (bp)")
+                updown_slide = st.slider("🔹 :blue[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100, label_visibility='collapsed')
                 st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
                 upstream_entry = -min(updown_slide)
                 downstream_entry = max(updown_slide)
@@ -225,7 +225,7 @@ def prom_extractor_page():
                 
         # Run Promoter Finder
             if prom_term == 'Promoter':
-                if st.button("🧬 :orange[**Step 1.5**] Extract promoter" ,help='(~5sec/gene)'):
+                if st.button("🧬 :blue[**Step 1.5**] Extract promoter" ,help='(~5sec/gene)'):
                     with st.spinner("Finding promoters..."):
                         gene_ids = gene_id_entry.strip().split("\n")
                         upstream = int(upstream_entry)
@@ -236,7 +236,7 @@ def prom_extractor_page():
                         except Exception as e:
                             st.error(f"Error finding promoters: {str(e)}")
             else:
-                if st.button("🧬 :orange[**Step 1.5**] Extract terminator", help='(~5sec/gene)'):
+                if st.button("🧬 :blue[**Step 1.5**] Extract terminator", help='(~5sec/gene)'):
                     with st.spinner("Finding terminators..."):
                         gene_ids = gene_id_entry.strip().split("\n")
                         upstream = int(upstream_entry)
@@ -265,7 +265,7 @@ def prom_extractor_page():
                 }
             )
             
-            st.markdown('**🔸 :orange[Step 1.2]** Select species for all genes:', help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
+            st.markdown('**🔹 :blue[Step 1.2]** Select species for all genes:', help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
             
             species1, species2, species3, species4, species5 = st.columns(5)
             
@@ -280,7 +280,7 @@ def prom_extractor_page():
             with species5:        
                 all_zebra = st.checkbox("Zebrafish")
             
-            st.markdown('**🔸 :orange[Step 1.2]** Select regions for all genes:', help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
+            st.markdown('**🔹 :blue[Step 1.2]** Select regions for all genes:', help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
             
             region1, region2 = st.columns(2)
             
@@ -304,7 +304,7 @@ def prom_extractor_page():
             if all_term:
                 data_df["term"] = True
                 
-            st.markdown('**🔸 :orange[Step 1.2]** On demand genes table', help="Check the boxes for which you want to extract a sequence. Pay attention that the gene name is equivalent for each species. The choice of species is not available for gene IDs. Parameterize the table last, if you check the boxes above, it resets the whole table.")
+            st.markdown('**🔹 :blue[Step 1.2]** On demand genes table', help="Check the boxes for which you want to extract a sequence. Pay attention that the gene name is equivalent for each species. The choice of species is not available for gene IDs. Parameterize the table last, if you check the boxes above, it resets the whole table.")
                 
             data_dff = st.data_editor(
                 data_df,
@@ -342,14 +342,14 @@ def prom_extractor_page():
                 hide_index=True,
             ) 
             
-            st.markdown("🔸 :red[**Step 1.3**] Upstream/downstream from TSS and gene end (bp)")
-            updown_slide = st.slider("🔸 :red[**Step 1.3**] Upstream/downstream from TSS and gene end (bp)", -10000, 10000, (-2000, 2000), step=100, label_visibility='collapsed')
+            st.markdown("🔹 :blue[**Step 1.3**] Upstream/downstream from TSS and gene end (bp)")
+            updown_slide = st.slider("🔹 :blue[**Step 1.3**] Upstream/downstream from TSS and gene end (bp)", -10000, 10000, (-2000, 2000), step=100, label_visibility='collapsed')
             st.write("Upstream: ", min(updown_slide), " bp from TSS and gene end | Downstream: ", max(updown_slide), " bp from TSS and gene end")
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
             st.session_state['upstream_entry'] = upstream_entry
             
-            if st.button("🧬 :red[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
+            if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
                 with st.spinner("Finding sequences..."):
                     for i, gene_info in data_dff.iterrows():
                         gene_name = gene_info["Gene"]
@@ -465,11 +465,11 @@ def prom_extractor_page():
     # Promoter output state
     st.divider()
     if 'result_promoter' not in st.session_state:
-        st.markdown("🔸 :orange[**Step 2.1**] Sequences:")
-        result_promoter = st.text_area("🔸 :orange[**Step 2.1**] Sequences:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).", label_visibility='collapsed')
+        st.markdown("🔹 :blue[**Step 2.1**] Sequences:")
+        result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).", label_visibility='collapsed')
     else:
-        st.markdown("🔸 :orange[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
+        st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
         result_promoter_text = "\n".join(st.session_state['result_promoter'])
-        result_promoter = st.text_area("🔸 :orange[**Step 2.1**] Sequences:", value=result_promoter_text, label_visibility='collapsed')
+        result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text, label_visibility='collapsed')
         current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         st.download_button(label="💾 Download sequences (.txt)",data=result_promoter,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")

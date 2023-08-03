@@ -182,19 +182,19 @@ def aio_page():
             raise Exception(f"Error retrieving gene information: {str(e)} for species {species}")
 
     #Disposition
-    st.subheader(':orange[Step 1] Promoter and Terminator Extractor')
+    st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
     colprom1, colprom2 = st.columns([0.8,1.2] , gap="small")
     
     # Promoter Finder
     with colprom1:
-        st.info("💡 If you have a FASTA sequence, go to :orange[**Step 2**]")
+        st.info("💡 If you have a FASTA sequence, go to :blue[**Step 2**]")
         
         result_promoter = []
         upstream_entry = []
 
     # Gene ID
-        st.markdown("🔸 :orange[**Step 1.1**] Gene ID:", help='NCBI gene name and NCBI gene ID allowed')
-        gene_id_entry = st.text_area("🔸 :orange[**Step 1.1**] Gene ID:", value="PRKN\n351", label_visibility='collapsed')
+        st.markdown("🔹 :blue[**Step 1.1**] Gene ID:", help='NCBI gene name and NCBI gene ID allowed')
+        gene_id_entry = st.text_area("🔹 :blue[**Step 1.1**] Gene ID:", value="PRKN\n351", label_visibility='collapsed')
         
         # Verify if gene is available for all species
         if st.button('🔎 Check genes avaibility', help='Sometimes genes do not have the same name in all species or do not exist.'):
@@ -219,28 +219,28 @@ def aio_page():
         with tab1:
             
         # Species
-            st.markdown("🔸 :orange[**Step 1.2**] Select species of gene names:")
-            species = st.selectbox("🔸 :orange[**Step 1.2**] Select species of gene names:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0, label_visibility='collapsed')
+            st.markdown("🔹 :blue[**Step 1.2**] Select species of gene names:")
+            species = st.selectbox("🔹 :blue[**Step 1.2**] Select species of gene names:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0, label_visibility='collapsed')
 
         # Upstream/Downstream Promoter
-            st.markdown("🔸 :orange[**Step 1.3**] Regulatory region:")
-            prom_term = st.radio("🔸 :orange[**Step 1.3**] Regulatory region:",('Promoter', 'Terminator'), label_visibility='collapsed')
+            st.markdown("🔹 :blue[**Step 1.3**] Regulatory region:")
+            prom_term = st.radio("🔹 :blue[**Step 1.3**] Regulatory region:",('Promoter', 'Terminator'), label_visibility='collapsed')
             if prom_term == 'Promoter':
-                st.markdown("🔸 :orange[**Step 1.4**] Upstream/downstream from the TSS (bp)")
-                updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100, label_visibility='collapsed')
+                st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from the TSS (bp)")
+                updown_slide = st.slider("🔹 :blue[**Step 1.4**] Upstream/downstream from the TSS (bp)", -10000, 10000, (-2000, 500), step=100, label_visibility='collapsed')
                 st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide), " bp from TSS")
                 upstream_entry = -min(updown_slide)
                 downstream_entry = max(updown_slide)
             else:
-                st.markdown("🔸 :orange[**Step 1.4**] Upstream/downstream from gene end (bp)")
-                updown_slide = st.slider("🔸 :orange[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100, label_visibility='collapsed')
+                st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from gene end (bp)")
+                updown_slide = st.slider("🔹 :blue[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000, (-500, 2000), step=100, label_visibility='collapsed')
                 st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide), " bp from gene end")
                 upstream_entry = -min(updown_slide)
                 downstream_entry = max(updown_slide)
                 
         # Run Promoter Finder
             if prom_term == 'Promoter':
-                if st.button("🧬 :orange[**Step 1.5**] Extract promoter" ,help='(~5sec/gene)'):
+                if st.button("🧬 :blue[**Step 1.5**] Extract promoter" ,help='(~5sec/gene)'):
                     with st.spinner("Finding promoters..."):
                         gene_ids = gene_id_entry.strip().split("\n")
                         upstream = int(upstream_entry)
@@ -252,7 +252,7 @@ def aio_page():
                         except Exception as e:
                             st.error(f"Error finding promoters: {str(e)}")
             else:
-                if st.button("🧬 :orange[**Step 1.5**] Extract terminator", help='(~5sec/gene)'):
+                if st.button("🧬 :blue[**Step 1.5**] Extract terminator", help='(~5sec/gene)'):
                     with st.spinner("Finding terminators..."):
                         gene_ids = gene_id_entry.strip().split("\n")
                         upstream = int(upstream_entry)
@@ -281,7 +281,7 @@ def aio_page():
                 }
             )
             
-            st.markdown('**🔸 :orange[Step 1.2]** Select species for all genes:', help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
+            st.markdown('**🔹 :blue[Step 1.2]** Select species for all genes:', help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
             
             species1, species2, species3, species4, species5 = st.columns(5)
             
@@ -296,7 +296,7 @@ def aio_page():
             with species5:        
                 all_zebra = st.checkbox("Zebrafish")
             
-            st.markdown('**🔸 :orange[Step 1.2]** Select regions for all genes:', help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
+            st.markdown('**🔹 :blue[Step 1.2]** Select regions for all genes:', help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
             
             region1, region2 = st.columns(2)
             
@@ -320,7 +320,7 @@ def aio_page():
             if all_term:
                 data_df["term"] = True
                 
-            st.markdown('**🔸 :orange[Step 1.2]** On demand genes table', help="Check the boxes for which you want to extract a sequence. Pay attention that the gene name is equivalent for each species. The choice of species is not available for gene IDs. Parameterize the table last, if you check the boxes above, it resets the whole table.")
+            st.markdown('**🔹 :blue[Step 1.2]** On demand genes table', help="Check the boxes for which you want to extract a sequence. Pay attention that the gene name is equivalent for each species. The choice of species is not available for gene IDs. Parameterize the table last, if you check the boxes above, it resets the whole table.")
                 
             data_dff = st.data_editor(
                 data_df,
@@ -358,13 +358,13 @@ def aio_page():
                 hide_index=True,
             ) 
             
-            st.markdown("🔸 :red[**Step 1.3**] Upstream/downstream from TSS and gene end (bp)")
-            updown_slide = st.slider("🔸 :red[**Step 1.3**] Upstream/downstream from TSS and gene end (bp)", -10000, 10000, (-2000, 2000), step=100, label_visibility='collapsed')
+            st.markdown("🔹 :blue[**Step 1.3**] Upstream/downstream from TSS and gene end (bp)")
+            updown_slide = st.slider("🔹 :blue[**Step 1.3**] Upstream/downstream from TSS and gene end (bp)", -10000, 10000, (-2000, 2000), step=100, label_visibility='collapsed')
             st.write("Upstream: ", min(updown_slide), " bp from TSS and gene end | Downstream: ", max(updown_slide), " bp from TSS and gene end")
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
             
-            if st.button("🧬 :red[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
+            if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
                 with st.spinner("Finding sequences..."):
                     st.session_state['upstream'] = upstream_entry
                     for i, gene_info in data_dff.iterrows():
@@ -480,14 +480,14 @@ def aio_page():
 
     # Promoter output state
     st.divider()
-    st.subheader(':orange[Step 2] Binding Sites Finder')
+    st.subheader(':blue[Step 2] Binding Sites Finder')
     if 'result_promoter' not in st.session_state:
-        st.markdown("🔸 :orange[**Step 2.1**] Sequences:")
-        result_promoter = st.text_area("🔸 :orange[**Step 2.1**] Sequences:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).", label_visibility='collapsed')
+        st.markdown("🔹 :blue[**Step 2.1**] Sequences:")
+        result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).", label_visibility='collapsed')
     else:
-        st.markdown("🔸 :orange[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
+        st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
         result_promoter_text = "\n".join(st.session_state['result_promoter'])
-        result_promoter = st.text_area("🔸 :orange[**Step 2.1**] Sequences:", value=result_promoter_text, label_visibility='collapsed')
+        result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text, label_visibility='collapsed')
 
     # Responsive-Elements-Finder
         
@@ -711,12 +711,12 @@ def aio_page():
     # RE entry
     REcol1, REcol2 = st.columns([0.30,0.70])
     with REcol1:
-        st.markdown('🔸 :orange[**Step 2.2**] Responsive elements type:')
-        jaspar = st.radio('🔸 :orange[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','PWM'), label_visibility='collapsed')
+        st.markdown('🔹 :blue[**Step 2.2**] Responsive elements type:')
+        jaspar = st.radio('🔹 :blue[**Step 2.2**] Responsive elements type:', ('Manual sequence','JASPAR_ID','PWM'), label_visibility='collapsed')
     if jaspar == 'JASPAR_ID':
         with REcol1:
-            st.markdown("🔸 :orange[**Step 2.3**] JASPAR ID:")
-            entry_sequence = st.text_input("🔸 :orange[**Step 2.3**] JASPAR ID:", value="MA0106.1", label_visibility='collapsed')
+            st.markdown("🔹 :blue[**Step 2.3**] JASPAR ID:")
+            entry_sequence = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:", value="MA0106.1", label_visibility='collapsed')
             url = f"https://jaspar.genereg.net/api/v1/matrix/{entry_sequence}/"
             response = requests.get(url)
             response_data = response.json()
@@ -727,17 +727,17 @@ def aio_page():
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
     elif jaspar == 'PWM':
         with REcol1:
-            st.markdown('🔸 :orange[**Step 2.2bis**] Matrix:')
-            matrix_type = st.radio('🔸 :orange[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'), label_visibility='collapsed')
+            st.markdown('🔹 :blue[**Step 2.2bis**] Matrix:')
+            matrix_type = st.radio('🔹 :blue[**Step 2.2bis**] Matrix:', ('With FASTA sequences','With PWM'), label_visibility='collapsed')
         if matrix_type == 'With PWM':
             isUIPAC = True
             with REcol2:
-                st.markdown("🔸 :orange[**Step 2.3**] Matrix:", help="Only PWM generated with our tools are allowed")
-                matrix_text = st.text_area("🔸 :orange[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]", label_visibility='collapsed')
+                st.markdown("🔹 :blue[**Step 2.3**] Matrix:", help="Only PWM generated with our tools are allowed")
+                matrix_text = st.text_area("🔹 :blue[**Step 2.3**] Matrix:", value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]", label_visibility='collapsed')
         else:
             with REcol1:
-                st.markdown("🔸 :orange[**Step 2.3**] Sequences:", help='Put FASTA sequences. Same sequence length required ⚠️')
-                fasta_text = st.text_area("🔸 :orange[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", label_visibility='collapsed')
+                st.markdown("🔹 :blue[**Step 2.3**] Sequences:", help='Put FASTA sequences. Same sequence length required ⚠️')
+                fasta_text = st.text_area("🔹 :blue[**Step 2.3**] Sequences:", value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG", label_visibility='collapsed')
             isUIPAC = True
             
             # Generate matrix
@@ -831,8 +831,8 @@ def aio_page():
           
     else:
         with REcol1:
-            st.markdown("🔸 :orange[**Step 2.3**] Responsive element:", help="IUPAC authorized")
-            IUPAC = st.text_input("🔸 :orange[**Step 2.3**] Responsive element (IUPAC authorized):", value="GGGRNYYYCC", label_visibility='collapsed')
+            st.markdown("🔹 :blue[**Step 2.3**] Responsive element:", help="IUPAC authorized")
+            IUPAC = st.text_input("🔹 :blue[**Step 2.3**] Responsive element (IUPAC authorized):", value="GGGRNYYYCC", label_visibility='collapsed')
         
         IUPAC_code = ['A','T','G','C','R','Y','M','K','W','S','B','D','H','V','N']
         
@@ -966,20 +966,20 @@ def aio_page():
     BSFcol1, BSFcol2, BSFcol3 = st.columns([2,2,1], gap="medium")
     with BSFcol1:
         if 'upstream' not in st.session_state:
-            st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", -10000, 10000, 0, label_visibility="collapsed")
+            st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
+            entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", -10000, 10000, 0, label_visibility="collapsed")
         else:
-            st.markdown("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
-            entry_tis = st.number_input("🔸 :orange[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", -10000, 10000, st.session_state['upstream'], label_visibility="collapsed")
+            st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
+            entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", -10000, 10000, st.session_state['upstream'], label_visibility="collapsed")
 
     # Threshold pvalue
     
     with BSFcol2:
-        st.markdown("🔸 :orange[**Step 2.5**] Relative Score threshold")
-        threshold_entry = st.slider("🔸 :orange[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
+        st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
+        threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
         
     with BSFcol3:
-        st.markdown("🔸 :orange[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
+        st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
         calc_pvalue = st.checkbox('_p-value_')
 
     # Run Responsive Elements finder
@@ -1017,7 +1017,7 @@ def aio_page():
         if 'table2' in locals():
             if len(table2) > 0:
                 current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                st.subheader(':orange[Results]')
+                st.subheader(':blue[Results]')
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
                 response = requests.get(url)
@@ -1133,7 +1133,7 @@ def aio_page():
         if 'table2' in locals():
             if len(table2) > 0:
                 current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                st.subheader(':orange[Results]')
+                st.subheader(':blue[Results]')
                 colres1,colres2,colres3, colres4, colres5 = st.columns([1,0.5,0.5,1,1])
                 with colres1:
                     st.success(f"Finding responsive elements done")
