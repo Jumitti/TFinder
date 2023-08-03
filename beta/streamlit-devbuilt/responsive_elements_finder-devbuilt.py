@@ -180,10 +180,10 @@ st.sidebar.table(df)
 st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract regions via NCBI/use the JASPAR_IDs')
 st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
 
-st.sidebar.tittle("Report an issue/bug ⚠")
+st.sidebar.title("Report an issue/bug ⚠")
 
 st.sidebar.markdown("[Issue ⚠](https://github.com/Jumitti/TFinder/issues/new/choose)")
 
-st.sidebar.tittle("Want to talk ? 🙋🏼‍♂️")
+st.sidebar.title("Want to talk ? 🙋🏼‍♂️")
 
 st.sidebar.markdown("[Discussions 🙋🏼‍♂️](https://github.com/Jumitti/TFinder/discussions)")
