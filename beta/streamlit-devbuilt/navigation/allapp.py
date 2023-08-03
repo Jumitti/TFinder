@@ -53,7 +53,7 @@ option_data = [
    
 ]
 
-over_theme = {'txc_inactive': 'black','menu_background':'#ECECEC','txc_active':'white','option_active':'#fab947'}
+over_theme = {'txc_inactive': 'black','menu_background':'#F6F4EB','txc_active':'white','option_active':'#91C8E4'}
 font_fmt = {'font-class':'h3','font-size':'50%'}
 
 def allapp_page():
