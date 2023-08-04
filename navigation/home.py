@@ -24,6 +24,7 @@ import datetime
 
 def home_page():
     st.divider()
+    st.markdown("<h3 style='text-align: center; color: black;'>TFinder: a Python web tool for predicting Transcription Factor Binding Sites</h1>", unsafe_allow_html=True)  
     st.markdown('<div style="text-align: center;">**TFinder: a Python web tool for predicting Transcription Factor Binding Sites**</div>', unsafe_allow_html=True)
     colhome1, colhome2 = st.columns ([1.5, 0.5])
     with colhome1:
