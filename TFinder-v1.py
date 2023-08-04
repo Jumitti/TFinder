@@ -127,7 +127,6 @@ if submit_button:
 average_rating = sum(ratings) / len(ratings) if ratings else 0
 num_ratings = len(ratings)
 with colrate2:
-    st.write(f"Average rating:")
     st.write(f"{average_rating:.2f} ⭐ ({num_ratings} votes)")
 
 #Help
