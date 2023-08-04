@@ -109,6 +109,7 @@ for i in range(4):
 st.markdown(footer,unsafe_allow_html=True)
 
 # Credit rating
+st.sidebar.image("https://raw.githubusercontent.com/Jumitti/TFinder/main/img/REF.png")
 try:
     with open("ratings.pkl", "rb") as file:
         ratings = pickle.load(file)
@@ -125,7 +126,7 @@ if submit_button:
     st.sidebar.success("Thank you for rating the application!")
 average_rating = sum(ratings) / len(ratings) if ratings else 0
 num_ratings = len(ratings)
-with colrate2
+with colrate2:
     st.write(f"Average rating:")
     st.write(f"{average_rating:.2f} ⭐ ({num_ratings} votes)")
 
