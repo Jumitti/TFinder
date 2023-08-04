@@ -161,7 +161,7 @@ with st.sidebar.expander("Binding Sites Finder"):
     st.write('The p-value calculation takes time so it is optional. it represents the probability that a random generated sequence of the lenght of the PWM with the nucleotide proportions of the sequence has a score greater than or equal to the element found.')
 
 url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term=nos2[Gene%20Name]+AND+human[Organism]&retmode=json&rettype=xml'
-url1 = 'https://jaspar.genereg.net/api/v1/matrix/MA0106.1/'
+url1 = 'https://jaspar.genereg.net/api/v1/matrix/MA0106.1'
 response = requests.get(url, timeout=15)
 response1 = requests.get(url1, timeout=15)
 
