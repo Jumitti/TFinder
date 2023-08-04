@@ -23,7 +23,7 @@ from PIL import Image
 import datetime
 
 def home_page():
-    st.header('TFinder 🧬🔎')
+    st.divider()
     colhome1, colhome2 = st.columns ([1.5, 0.5])
     with colhome1:
         st.image('https://raw.githubusercontent.com/Jumitti/TFinder/main/img/Graph%20WebUI.png', caption='Just a test')
