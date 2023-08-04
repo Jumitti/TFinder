@@ -185,9 +185,6 @@ if ['ncbi_status','jaspar_status'] not in st.session_state:
 
     st.sidebar.table(df)
     
-    st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract regions via NCBI/use the JASPAR_IDs')
-    st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
-    
     if st.sidebar.button("Refresh"):
         del st.session_state['ncbi_status']
         del st.session_state['jaspar_status']
@@ -201,9 +198,6 @@ else:
     df = pd.DataFrame(data, index=["Servers status"])
 
     st.sidebar.table(df)
-    
-    st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract regions via NCBI/use the JASPAR_IDs')
-    st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
     
     if st.sidebar.button("Refresh"):
         del st.session_state['ncbi_status']
