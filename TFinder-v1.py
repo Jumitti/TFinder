@@ -180,7 +180,7 @@ if ['ncbi_status','jaspar_status'] not in st.session_state:
         "JASPAR": [jaspar_status]
     }
 
-    sercol1, sercol2 = st.sidebar.columns([1.5, 0.5])
+    sercol1, sercol2 = st.sidebar.columns([1.2, 0.8])
     with sercol1:
         st.title("Servers status")
     df = pd.DataFrame(data, index=["Servers status"])
@@ -200,7 +200,7 @@ else:
         "JASPAR": [jaspar_status]
     }
     
-    sercol1, sercol2 = st.sidebar.columns([1.5, 0.5])
+    sercol1, sercol2 = st.sidebar.columns([1.2, 0.8])
     with sercol1:
         st.title("Servers status")
     df = pd.DataFrame(data, index=["Servers status"])
