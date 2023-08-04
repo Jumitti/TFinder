@@ -25,6 +25,7 @@ import datetime
 def home_page():
     st.divider()
     st.markdown("<h3 style='text-align: center; color: black;'>TFinder: a Python web tool for predicting Transcription Factor Binding Sites</h1>", unsafe_allow_html=True)
+    st.markdown('')
     colhome1, colhome2 = st.columns ([1.5, 0.5])
     with colhome1:
         st.image('https://raw.githubusercontent.com/Jumitti/TFinder/main/img/Graph%20WebUI.png', caption='Just a test')
