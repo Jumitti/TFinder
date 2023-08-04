@@ -171,6 +171,9 @@ if ['ncbi_status','jaspar_status'] not in st.session_state:
 
     ncbi_status = "✅" if response.status_code == 200 else "❌"
     jaspar_status = "✅" if response1.status_code == 200 else "❌"
+    
+    st.sessesion_state['ncbi_status'] = ncbi_status
+    st.sessesion_state['jaspar_status'] = jaspar_status
 
     data = {
         "NCBI": [ncbi_status],
