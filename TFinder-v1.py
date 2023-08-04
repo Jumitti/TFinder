@@ -180,7 +180,7 @@ if ['ncbi_status','jaspar_status'] not in st.session_state:
         "JASPAR": [jaspar_status]
     }
 
-    st.title("Servers status", help='✅: servers are reachable. You can use extract regions via NCBI/use the JASPAR_IDs\n\n❌: servers are unreachable. You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
+    st.sidebar.title("Servers status", help='✅: servers are reachable. You can use extract regions via NCBI/use the JASPAR_IDs\n\n❌: servers are unreachable. You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
     df = pd.DataFrame(data, index=["Servers status"])
 
     st.sidebar.table(df)
@@ -197,7 +197,7 @@ else:
         "JASPAR": [jaspar_status]
     }
     
-    st.title("Servers status", help='✅: servers are reachable. You can use extract regions via NCBI/use the JASPAR_IDs\n\n❌: servers are unreachable. You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
+    st.sidebar.title("Servers status", help='✅: servers are reachable. You can use extract regions via NCBI/use the JASPAR_IDs\n\n❌: servers are unreachable. You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
     df = pd.DataFrame(data, index=["Servers status"])
 
     st.sidebar.table(df)
