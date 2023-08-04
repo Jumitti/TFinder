@@ -108,14 +108,16 @@ for i in range(4):
     st.markdown('#')
 st.markdown(footer,unsafe_allow_html=True)
 
-# Credit Eastereggs
+# Credit rating
 try:
     with open("ratings.pkl", "rb") as file:
         ratings = pickle.load(file)
 except FileNotFoundError:
     ratings = []
 rating = st.sidebar.slider("Rate it 😊 (1-5 ⭐)", 1, 5, 5)
-submit_button = st.sidebar.button("Submit Rating")
+colrate1, colrate2 = st.sidebare.columns(2)
+with colrate1:
+    submit_button = st.button("Submit Rating")
 if submit_button:
     ratings.append(rating)
     with open("ratings.pkl", "wb") as file:
@@ -123,7 +125,9 @@ if submit_button:
     st.sidebar.success("Thank you for rating the application!")
 average_rating = sum(ratings) / len(ratings) if ratings else 0
 num_ratings = len(ratings)
-st.sidebar.write(f"Average rating: {average_rating:.2f} ⭐ ({num_ratings} votes)")
+with colrate2
+    st.write(f"Average rating:")
+    st.write(f"{average_rating:.2f} ⭐ ({num_ratings} votes)")
 
 #Help
 
