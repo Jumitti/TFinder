@@ -188,7 +188,7 @@ if ['ncbi_status','jaspar_status'] not in st.session_state:
     st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
     
     with sercol2:
-        if st.sidebar.button("Reset Servers Status"):
+        if st.sidebar.button("Refresh"):
             del st.session_state['ncbi_status']
             del st.session_state['jaspar_status']
 else:
@@ -208,7 +208,7 @@ else:
     st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
     
     with sercol2:
-        if st.sidebar.button("Reset Servers Status"):
+        if st.sidebar.button("Refresh"):
             del st.session_state['ncbi_status']
             del st.session_state['jaspar_status']
     
