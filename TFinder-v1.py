@@ -182,7 +182,7 @@ if ['ncbi_status','jaspar_status'] not in st.session_state:
 
     sercol1, sercol2 = st.sidebar.columns([1.2, 0.8])
     with sercol1:
-        st.title("Servers status")
+        st.title("Servers status", help='✅: servers are reachable. You can use extract regions via NCBI/use the JASPAR_IDs\n❌: servers are unreachable. You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
     df = pd.DataFrame(data, index=["Servers status"])
 
     st.sidebar.table(df)
@@ -202,7 +202,7 @@ else:
     
     sercol1, sercol2 = st.sidebar.columns([1.2, 0.8])
     with sercol1:
-        st.title("Servers status")
+        st.title("Servers status", help='✅: servers are reachable. You can use extract regions via NCBI/use the JASPAR_IDs\n❌: servers are unreachable. You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
     df = pd.DataFrame(data, index=["Servers status"])
 
     st.sidebar.table(df)
