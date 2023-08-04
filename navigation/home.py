@@ -24,8 +24,9 @@ import datetime
 
 def home_page():
     st.header('TFinder 🧬🔎')
-    st.subheader('Schema')
-    st.text('schema')
-    st.subheader('Abstract')
-    st.text('Lorem ipsum')
+    colhome1, colhome2 = st.columns ([1.7, 0.3])
+    with colhome1:
+        st.image('https://github.com/Jumitti/TFinder/blob/main/img/coordinates.png?raw=true', caption='Figure 8: Chromosic coordinates on a genetic map from NCBI')
+    with colhome2:
+        st.text('TFinder is a Python easy-to-use web tool for identification of putative Transcription Factor Binding Sites (TFBS) in a sequence. It allows extracting directly the promoter or terminal regions of a gene via the NCBI API for 5 different species, with no limit on the number of genes. The reference pattern (ex: a TFBS) accepts both IUPAC codes and JASPAR entries. It is also possible to generate and to use a Position Weight Matrix (PWM). Finally, the data are presented in tabular form, along with a graph showing the relevance of the TFBSs found as a function of their relative position on the sequence.')
     
