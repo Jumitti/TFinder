@@ -116,7 +116,7 @@ try:
 except FileNotFoundError:
     ratings = []
 rating = st.sidebar.slider("Rate it 😊 (1-5 ⭐)", 1, 5, 5)
-colrate1, colrate2 = st.sidebare.columns(2)
+colrate1, colrate2 = st.sidebar.columns(2)
 with colrate1:
     submit_button = st.button("Submit Rating")
 if submit_button:
