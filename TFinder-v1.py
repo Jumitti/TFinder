@@ -166,8 +166,8 @@ with st.sidebar.expander("Binding Sites Finder"):
 
 url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term=nos2[Gene%20Name]+AND+human[Organism]&retmode=json&rettype=xml'
 url1 = 'https://jaspar.genereg.net/api/v1/matrix/MA0106.1'
-response = requests.get(url, timeout=15)
-response1 = requests.get(url1, timeout=15)
+response = requests.get('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term=nos2[Gene%20Name]+AND+human[Organism]&retmode=json&rettype=xml')
+response1 = requests.get('https://jaspar.genereg.net/api/v1/matrix/MA0106.1')
 
 ncbi_status = "✅" if response.status_code == 200 else "❌"
 jaspar_status = "✅" if response1.status_code == 200 else "❌"
