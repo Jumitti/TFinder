@@ -165,25 +165,37 @@ with st.sidebar.expander("Binding Sites Finder"):
     st.subheader('_p-value_')
     st.write('The p-value calculation takes time so it is optional. it represents the probability that a random generated sequence of the lenght of the PWM with the nucleotide proportions of the sequence has a score greater than or equal to the element found.')
 
-url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term=nos2[Gene%20Name]+AND+human[Organism]&retmode=json&rettype=xml'
-url1 = 'https://jaspar.genereg.net/api/v1/matrix/MA0106.1'
-response = requests.get('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term=nos2[Gene%20Name]+AND+human[Organism]&retmode=json&rettype=xml')
-response1 = requests.get('https://jaspar.genereg.net/api/v1/matrix/MA0106.1')
+if ['ncbi_status','jaspar_status'] not in st.session_state:
+    response = requests.get('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term=nos2[Gene%20Name]+AND+human[Organism]&retmode=json&rettype=xml')
+    response1 = requests.get('https://jaspar.genereg.net/api/v1/matrix/MA0106.1')
 
-ncbi_status = "✅" if response.status_code == 200 else "❌"
-jaspar_status = "✅" if response1.status_code == 200 else "❌"
+    ncbi_status = "✅" if response.status_code == 200 else "❌"
+    jaspar_status = "✅" if response1.status_code == 200 else "❌"
 
-data = {
-    "NCBI": [ncbi_status],
-    "JASPAR": [jaspar_status]
-}
+    data = {
+        "NCBI": [ncbi_status],
+        "JASPAR": [jaspar_status]
+    }
 
-st.sidebar.title("Servers status")
-df = pd.DataFrame(data, index=["Servers status"])
+    st.sidebar.title("Servers status")
+    df = pd.DataFrame(data, index=["Servers status"])
 
-st.sidebar.table(df)
-st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract regions via NCBI/use the JASPAR_IDs')
-st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
+    st.sidebar.table(df)
+    st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract regions via NCBI/use the JASPAR_IDs')
+    st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
+else:
+    data = {
+        "NCBI": [ncbi_status],
+        "JASPAR": [jaspar_status]
+    }
+
+    st.sidebar.title("Servers status")
+    df = pd.DataFrame(data, index=["Servers status"])
+
+    st.sidebar.table(df)
+    st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract regions via NCBI/use the JASPAR_IDs')
+    st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
+    
 
 st.sidebar.title("More")
 st.sidebar.markdown("Report an issue/bug 🆘 -> [Click here](https://github.com/Jumitti/TFinder/issues/new/choose)")
