@@ -156,9 +156,11 @@ with st.sidebar.expander("Binding Sites Finder"):
     st.write('Note: If you use Step 1 , it will be defined automatically.')
     st.subheader("Relative Score Threshold:")
     st.write('Eliminates responsive element with Relative Score < threshold')
-    st.write('Relative Score = (TFBS-min)/(max-min) where TFBS is the score of the element found, min is the minimum score obtainable with the PWM and max is the maximum score obtainable with the PWM.')
+    st.write('The Relative Score represents the Score calculated for each k-mer of the length of the PWM in the given sequence where each corresponding probability is added according to each nucleotide. This Score is then normalized to the maximum and minimum PWM Score.')
+    st.latex(r'''Relative  \space  Score = \frac {Score - Min \space Score \space PWM}{Max \space Score \space PWM - Min \space Score \space PWM}''')
     st.subheader('_p-value_')
     st.write('The p-value calculation takes time so it is optional. it represents the probability that a random generated sequence of the lenght of the PWM with the nucleotide proportions of the sequence has a score greater than or equal to the element found.')
+    st.latex(r'''p \space value = \frac {Nb \space Rel \space Score \space random \space kmer \geq Rel \space Score \space TFBS}{Nb \space random \space kmer}''')
 
 url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term=nos2[Gene%20Name]+AND+human[Organism]&retmode=json&rettype=xml'
 url1 = 'https://jaspar.genereg.net/api/v1/matrix/MA0106.1/'
