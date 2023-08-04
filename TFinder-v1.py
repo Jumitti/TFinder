@@ -180,16 +180,13 @@ if ['ncbi_status','jaspar_status'] not in st.session_state:
         "JASPAR": [jaspar_status]
     }
 
-    sercol1, sercol2 = st.sidebar.columns([1.2, 0.8])
-    with sercol1:
-        st.title("Servers status", help='✅: servers are reachable. You can use extract regions via NCBI/use the JASPAR_IDs\n❌: servers are unreachable. You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
+    st.title("Servers status", help='✅: servers are reachable. You can use extract regions via NCBI/use the JASPAR_IDs\n\n❌: servers are unreachable. You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
     df = pd.DataFrame(data, index=["Servers status"])
 
     st.sidebar.table(df)
     
     st.sidebar.markdown('✅: servers are reachable. ',help='You can use extract regions via NCBI/use the JASPAR_IDs')
     st.sidebar.markdown('❌: servers are unreachable. ',help='You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
-    
     
     if st.button("Refresh"):
         del st.session_state['ncbi_status']
@@ -200,9 +197,7 @@ else:
         "JASPAR": [jaspar_status]
     }
     
-    sercol1, sercol2 = st.sidebar.columns([1.2, 0.8])
-    with sercol1:
-        st.title("Servers status", help='✅: servers are reachable. You can use extract regions via NCBI/use the JASPAR_IDs\n❌: servers are unreachable. You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
+    st.title("Servers status", help='✅: servers are reachable. You can use extract regions via NCBI/use the JASPAR_IDs\n\n❌: servers are unreachable. You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
     df = pd.DataFrame(data, index=["Servers status"])
 
     st.sidebar.table(df)
