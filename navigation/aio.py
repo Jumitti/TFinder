@@ -482,7 +482,7 @@ def aio_page():
                             gene_ids = gene_name.strip().split('\n')
                             upstream = int(upstream_entry)
                             downstream = int(downstream_entry)
-                            species = 'zebrafish'
+                            species = 'human' # If isdigit then it means that it is an NCBI gene accession number (GENE_ID), so the species is already associated by default. The program needs this parameter but it will not take it into account. It's a holdover from a spaghetti coding
                             try:
                                 result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             except Exception as e:
@@ -492,7 +492,7 @@ def aio_page():
                             gene_ids = gene_name.strip().split('\n')
                             upstream = int(upstream_entry)
                             downstream = int(downstream_entry)
-                            species = 'zebrafish'
+                            species = 'human' # If isdigit then it means that it is an NCBI gene accession number (GENE_ID), so the species is already associated by default. The program needs this parameter but it will not take it into account. It's a holdover from a spaghetti coding
                             try:
                                 result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             except Exception as e:
