@@ -183,7 +183,7 @@ def prom_extractor_page():
         if st.button('🔎 Check genes avaibility', help='Sometimes genes do not have the same name in all species or do not exist.'):
             with st.spinner("Checking genes avaibility..."):
                 gene_list = gene_id_entry.strip().split('\n')
-                species_list = ['human','mouse','rat','drosophila','zebrafish']
+                species_list = ['Human','Mouse','Rat','Drosophila','Zebrafish']
                 results_gene_list = []
                 data = []
                 for gene_input in gene_list:
@@ -206,8 +206,7 @@ def prom_extractor_page():
 
                 species_columns = ['Gene'] + species_list
                 df = pd.DataFrame(data, columns=species_columns)
-
-                st.dataframe(df)
+                st.dataframe(df, hide_index=True)
     
     with colprom2:
         tab1, tab2 = st.tabs(['Default','Advance'])
