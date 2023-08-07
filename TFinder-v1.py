@@ -179,9 +179,7 @@ if st.sidebar.button("Check"):
     
     df = pd.DataFrame(data, index=["Servers status"])
 
-    st.sidebar.table(df)
-    
-    
+    st.sidebar.table(df)   
 
 st.sidebar.title("More")
 st.sidebar.markdown("Report an issue/bug 🆘 -> [Click here](https://github.com/Jumitti/TFinder/issues/new/choose)")
