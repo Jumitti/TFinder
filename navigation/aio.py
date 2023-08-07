@@ -477,7 +477,7 @@ def aio_page():
                                 result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             except Exception as e:
                                 st.error(f"Error finding promoters: {str(e)}")
-                        if i.isdigit() and prom_checked == True:
+                        if gene_name.isdigit() and prom_checked == True:
                             prom_term = 'Promoter'
                             gene_ids = gene_name.strip().split('\n')
                             upstream = int(upstream_entry)
@@ -487,7 +487,7 @@ def aio_page():
                                 result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             except Exception as e:
                                 st.error(f"Error finding promoters: {str(e)}")
-                        if i.isdigit() and term_checked == True:
+                        if gene_name.isdigit() and term_checked == True:
                             prom_term = 'Terminator'
                             gene_ids = gene_name.strip().split('\n')
                             upstream = int(upstream_entry)
