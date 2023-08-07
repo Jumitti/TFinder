@@ -624,7 +624,7 @@ def BSF_page():
                 with colres4:
                     email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉', label_visibility='collapsed')
                 subject = f'Results TFinder - {current_date_time}'
-                body = f"Hello ☺\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
+                body = f"Hello ☺\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team\n\n\n\nN.B: Sometimes the WebLogo is not sent correctly. A small bug that I did not have time to fix (soon...). You can always right click 'Save Image' on the WebLogo on TFinder directly."
                 password = st.secrets['password']
                 attachment_excel = excel_file
                 attachment_text = txt_output
@@ -748,7 +748,7 @@ def BSF_page():
                     if matrix_type == 'With FASTA sequences':
                         body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
                 else:
-                    body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
+                    body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team\n\n\n\nN.B: Sometimes the WebLogo is not sent correctly. A small bug that I did not have time to fix (soon...). You can always right click 'Save Image' on the WebLogo on TFinder directly."
                     
                 password = st.secrets['password']
                 attachment_excel = excel_file
