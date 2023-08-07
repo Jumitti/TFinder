@@ -200,32 +200,31 @@ def aio_page():
         if st.button('🔎 Check genes avaibility', help='Sometimes genes do not have the same name in all species or do not exist.'):
             with st.spinner("Checking genes avaibility..."):
                 gene_list = gene_id_entry.strip().split('\n')
+                species_list = ['human','mouse','rat','drosophila','zebrafish']
+                results_gene_list = []
                 for gene_input in gene_list:
+                    data = []
                     if not gene_input.isdigit():
-                        species_list = ['human','mouse','rat','drosophila','zebrafish']
-                        results_gene_list = []
-                        data = []
-                        for gene in gene_input:
-                            row = [gene]
+                        row = [gene_input]
 
-                            for species_test in species_list:
-                                url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
-                                response = requests.get(url)
+                        for species_test in species_list:
+                            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
+                            response = requests.get(url)
 
-                                if response.status_code == 200:
-                                    response_data = response.json()
+                            if response.status_code == 200:
+                                response_data = response.json()
 
-                                    if response_data['esearchresult']['count'] != '0':
-                                        row.append("Yes")
-                                    else:
-                                        row.append("No")
+                                if response_data['esearchresult']['count'] != '0':
+                                    row.append("Yes")
+                                else:
+                                    row.append("No")
 
-                            data.append(row)
+                        data.append(row)
 
-                        species_columns = ['Gene'] + species_list
-                        df = pd.DataFrame(data, columns=species_columns)
+                    species_columns = ['Gene'] + species_list
+                    df = pd.DataFrame(data, columns=species_columns)
 
-                        st.dataframe(df)
+                    st.dataframe(df)
     
     with colprom2:
         tab1, tab2 = st.tabs(['Default','Advance'])
