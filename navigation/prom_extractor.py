@@ -192,7 +192,7 @@ def prom_extractor_page():
 
                         for species_test in species_list:
                             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
-                            response = requests.get(url)
+                            response = requests.get(url, timeout=10)
 
                             if response.status_code == 200:
                                 response_data = response.json()
