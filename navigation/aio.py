@@ -208,7 +208,7 @@ def aio_page():
                         row = [gene_input]
 
                         for species_test in species_list:
-                            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
+                            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
                             response = requests.get(url)
 
                             if response.status_code == 200:
