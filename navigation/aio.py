@@ -202,8 +202,8 @@ def aio_page():
                 gene_list = gene_id_entry.strip().split('\n')
                 species_list = ['human','mouse','rat','drosophila','zebrafish']
                 results_gene_list = []
+                data = []
                 for gene_input in gene_list:
-                    data = []
                     if not gene_input.isdigit():
                         row = [gene_input]
 
@@ -221,10 +221,10 @@ def aio_page():
 
                         data.append(row)
 
-                    species_columns = ['Gene'] + species_list
-                    df = pd.DataFrame(data, columns=species_columns)
+                species_columns = ['Gene'] + species_list
+                df = pd.DataFrame(data, columns=species_columns)
 
-                    st.dataframe(df)
+                st.dataframe(df)
     
     with colprom2:
         tab1, tab2 = st.tabs(['Default','Advance'])
