@@ -186,6 +186,7 @@ def prom_extractor_page():
                 for gene_input in gene_list:
                     if not gene_input.isdigit():
                         species_list = ['human','mouse','rat','drosophila','zebrafish']
+                        results_gene_list = []
                         for species_test in species_list:
                             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
                             response = requests.get(url)
@@ -194,12 +195,12 @@ def prom_extractor_page():
                                 response_data = response.json()
 
                                 if response_data['esearchresult']['count'] != '0':
-                                    results.append("✅")
+                                    results_gene_list.append("✅")
                                 else:
-                                    results.append("❌")
+                                    results_gene_list.append("❌")
 
                         species_columns = ['Species'] + species_list
-                        data = [[species] for species in species_columns] + [["Results"] + results]
+                        data = [[species] for species in species_columns] + [["Results"] + results_gene_list]
 
                         df = pd.DataFrame(data, columns=species_columns)
 
