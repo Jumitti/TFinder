@@ -204,21 +204,25 @@ def aio_page():
                     if not gene_input.isdigit():
                         species_list = ['human','mouse','rat','drosophila','zebrafish']
                         results_gene_list = []
-                        for species_test in species_list:
-                            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
-                            response = requests.get(url)
+                        data = []
+                        for gene in gene_input:
+                            row = [gene]
 
-                            if response.status_code == 200:
-                                response_data = response.json()
+                            for species_test in species_list:
+                                url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
+                                response = requests.get(url)
 
-                                if response_data['esearchresult']['count'] != '0':
-                                    results_gene_list.append("✅")
-                                else:
-                                    results_gene_list.append("❌")
+                                if response.status_code == 200:
+                                    response_data = response.json()
 
-                        species_columns = ['Species'] + species_list
-                        data = [[species] for species in species_columns] + [["Results"] + results_gene_list]
+                                    if response_data['esearchresult']['count'] != '0':
+                                        row.append("Yes")
+                                    else:
+                                        row.append("No")
 
+                            data.append(row)
+
+                        species_columns = ['Gene'] + species_list
                         df = pd.DataFrame(data, columns=species_columns)
 
                         st.dataframe(df)
