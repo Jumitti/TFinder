@@ -215,9 +215,9 @@ def aio_page():
                                 response_data = response.json()
 
                                 if response_data['esearchresult']['count'] != '0':
-                                    row.append("Yes")
+                                    row.append("✅")
                                 else:
-                                    row.append("No")
+                                    row.append("❌")
 
                         data.append(row)
 
