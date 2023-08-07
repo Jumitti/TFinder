@@ -183,10 +183,13 @@ def prom_extractor_page():
         if st.button('🔎 Check genes avaibility', help='Sometimes genes do not have the same name in all species or do not exist.'):
             with st.spinner("Checking genes avaibility..."):
                 gene_list = gene_id_entry.strip().split('\n')
+                species_list = ['human','mouse','rat','drosophila','zebrafish']
+                results_gene_list = []
+                data = []
                 for gene_input in gene_list:
                     if not gene_input.isdigit():
-                        species_list = ['human','mouse','rat','drosophila','zebrafish']
-                        results_gene_list = []
+                        row = [gene_input]
+
                         for species_test in species_list:
                             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
                             response = requests.get(url)
@@ -195,16 +198,16 @@ def prom_extractor_page():
                                 response_data = response.json()
 
                                 if response_data['esearchresult']['count'] != '0':
-                                    results_gene_list.append("✅")
+                                    row.append("Yes")
                                 else:
-                                    results_gene_list.append("❌")
+                                    row.append("No")
 
-                        species_columns = ['Species'] + species_list
-                        data = [[species] for species in species_columns] + [["Results"] + results_gene_list]
+                        data.append(row)
 
-                        df = pd.DataFrame(data, columns=species_columns)
+                species_columns = ['Gene'] + species_list
+                df = pd.DataFrame(data, columns=species_columns)
 
-                        st.dataframe(df)
+                st.dataframe(df)
     
     with colprom2:
         tab1, tab2 = st.tabs(['Default','Advance'])
