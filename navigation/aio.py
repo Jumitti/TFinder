@@ -211,7 +211,7 @@ def aio_page():
                                 response_data = response.json()
 
                                 if response_data['esearchresult']['count'] == '0':
-                                    st.warning(f"{gene_input} gene not found or wrong name for {species_test}", icon="⚠️")
+                                    st.warning(f"**{gene_input}** gene not found or wrong name for **{species_test}**", icon="⚠️")
     
     with colprom2:
         tab1, tab2 = st.tabs(['Default','Advance'])
