@@ -21,9 +21,11 @@
 import streamlit as st
 
 def resource_page():
+    st.divider()
     st.markdown("<h3 style='text-align: center; color: black;'>Introduction</h1>", unsafe_allow_html=True)
     st.markdown('')
     st.markdown('<div style="text-align: justify;"><p style="text-indent: 2em;">TFinder is a Python easy-to-use web tool for the identification of putative Transcription Factor Binding Sites (TFBS) in a sequence. It allows the extraction of the promoter or terminal regions of an unlimited number of genes via the NCBI API of up to five different species. The reference pattern (ex: a TFBS) accepts both IUPAC codes and JASPAR entries. It is also possible to generate and to use a Position Weight Matrix (PWM). Finally, the data may be recovered in either a tabular or graphic formats, showing the relevance score of the TFBSs found as a function of their relative position in the sequence. In this document, we will detail each part of TFinder, the methodology used and the resulting advantages and limitations of the software. TFinder is composed of two main modules that are structured in different sub-modules necessary for its functioning. We will not go into the specific details of the underlying code but will explain the principles and processes. We will first describe how to retrieve a nucleotide sequence on NCBI, then how to find a specific pattern in a nucleotide sequence.</p></div>', unsafe_allow_html=True)
+    st.divider()
     st.markdown("<h3 style='text-align: center; color: black;'>Extraction of gene regulatory sequences (promoter/terminator) 🧬</h1>", unsafe_allow_html=True)
     st.markdown('')
     st.markdown('<div style="text-align: justify;"><p style="text-indent: 2em;">TFinder makes it easy to extract gene regulatory regions by simply providing the gene name or its Gene ID (<strong>Fig.1 Step 1.1, Fig.2, Fig.3</strong>). We have added an option to check if the gene is accessible for each species ("Check genes availability" button Fig.2). Since the ID gene already takes in account the species, it is not necessary to configure the species analyzed. This also implies that you are not limited to the five species proposed by the program. However, if you use the gene name, then the species will be required (<strong>Fig.1 Step 1.1 and 1.2</strong>). TFinder allows mixing of gene name and gene ID. Please select the desired species. You can therefore easily compare the same regulatory region of 2 or more different species with the gene ID for the same gene.</p></div>', unsafe_allow_html=True) 
@@ -48,7 +50,8 @@ def resource_page():
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/coordinates.png?raw=true', caption='Figure 8: Chromosic coordinates on a genetic map from NCBI')
     with tab7:
         st.code('>PRKN | Homo sapiens | NC_000006.12 | Promoter | TSS (on chromosome): 162727765\nATGAATACAGGTTTAGGAAAAAACAGAAAAGAACCCCAACCAGTAAAAAAAAAATTAAAGTATAACATTAAAAAACATCAAAATTGTAAATATTGTGTAGAAGAAAAACTAAATGATTAACCTGAATGGTTATGGTATTGCTGATAAATGCATCATCTTGA\n\n>APP | Homo sapiens | NC_000021.9 | Terminaotr | Gene end (on chromosome): 26171127\nACGCCATTCTCCTGCCTCAGCCTCCCCAGTAGCTGGGACTACAGGCGCCCGCCACGACGCCCGGCTAATTTTTTGTATTTTTAGTAGAGACGGGGTTTCACCGTGTTAGCCAGGATGGTGTTGATCTCCTGACCTCGTGATCCGCCCGCCTCAGCCTCCCAA')
-
+        
+    st.divider()
     st.markdown("<h3 style='text-align: center; color: black;'>Transcription Factors Binding Site 🔎</h1>", unsafe_allow_html=True)
     st.markdown('')
     st.markdown('<div style="text-align: justify;"><p style="text-indent: 2em;">TFinder allows you to search for specific patterns in the desired sequences. The sequences must be put in <strong>Step 2.1</strong> (<strong>Fig.1</strong>). The FASTA format is authorized for multiple sequences.')
