@@ -210,8 +210,17 @@ def aio_page():
                             if response.status_code == 200:
                                 response_data = response.json()
 
-                                if response_data['esearchresult']['count'] == '0':
-                                    st.warning(f"**{gene_input}** gene not found or wrong name for **{species_test}**", icon="⚠️")
+                                if response_data['esearchresult']['count'] != '0':
+                                    results.append("✅")
+                                else:
+                                    results.append("❌")
+
+                        species_columns = ['Species'] + species_list
+                        data = [[species] for species in species_columns] + [["Results"] + results]
+
+                        df = pd.DataFrame(data, columns=species_columns)
+
+                        st.dataframe(df)
     
     with colprom2:
         tab1, tab2 = st.tabs(['Default','Advance'])
