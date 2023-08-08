@@ -1053,16 +1053,17 @@ def aio_page():
                     st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
                     
                 if not filtered_df.empty:
-                    filtered_df['Gene_Region'] = filtered_df['Gene'] + " " + filtered_df['Region']
-                    score_range = filtered_df['Rel Score'].astype(float)
+                    source = filtered_df
+                    score_range = source['Rel Score'].astype(float)
                     ystart = score_range.min() - 0.02
-                    ystop = score_range.max() + 0.02 
+                    ystop = score_range.max() + 0.02
+                    source['Gene_Region'] = source['Gene'] + " " + source['Region']
                     scale = alt.Scale(scheme='category10')
                     color_scale = alt.Color("Gene_Region:N", scale=scale)
                     gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
                     
                     if calc_pvalue:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1072,7 +1073,7 @@ def aio_page():
                         st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                         st.altair_chart(chart, theme=None, use_container_width=True)
                     else:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
