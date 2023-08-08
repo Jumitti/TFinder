@@ -1001,18 +1001,14 @@ def aio_page():
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
     
-    # Threshold pvalue
     
-    with BSFcol2:
-        st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
-        threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
     
     st.divider()
     # RE output
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
             if len(table2) > 0:
-                threshold = str(threshold_entry)
+                
                 current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 st.subheader(':blue[Results]')
                 jaspar_id = sequence_consensus_input
@@ -1032,6 +1028,13 @@ def aio_page():
                 with colres3:
                     txt_output = f"JASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
                     st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
+                
+                # Threshold pvalue
+    
+                with BSFcol2:
+                    st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
+                    threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
+                    threshold = str(threshold_entry)
                     
                 filtered_df = df[df["Rel Score"] >= threshold]
                 st.markdown('**Table**')
