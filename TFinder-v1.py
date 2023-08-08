@@ -31,8 +31,6 @@ from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 
-from streamlit.hashing import _CodeHasher
-
 st.set_page_config(
         page_title='TFinder by Minniti Julien',
         page_icon="./img/REF.png",
@@ -205,23 +203,16 @@ class SessionState:
         else:
             super().__setattr__(key, value)
 
-def get_session(run_hash):
-    return SessionState(st.session, run_hash)
-
-# Load previous user count from pickle file
 try:
     with open("user_count.pkl", "rb") as file:
         user_count = pickle.load(file)
 except FileNotFoundError:
     user_count = 0
 
-# Create a session state with a hash based on the script
-session_state = get_session(_CodeHasher.get_session_id())
-
-# Increment user count and save it to pickle file
-if not hasattr(session_state, "user_count_incremented"):
+# Create a session state to track if the user count has been incremented
+if "user_count_incremented" not in st.session_state:
     user_count += 1
-    session_state.user_count_incremented = True
+    st.session_state.user_count_incremented = True
 
     with open("user_count.pkl", "wb") as file:
         pickle.dump(user_count, file)
