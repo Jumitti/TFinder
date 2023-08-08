@@ -31,6 +31,8 @@ from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 
+from streamlit.hashing import _CodeHasher
+
 st.set_page_config(
         page_title='TFinder by Minniti Julien',
         page_icon="./img/REF.png",
@@ -191,15 +193,38 @@ st.sidebar.markdown("Report an issue/bug 🆘 -> [Click here](https://github.com
 
 st.sidebar.markdown("Want to talk ? 🙋🏼‍♂️ -> [Chat Room](https://github.com/Jumitti/TFinder/discussions)")
 
+class SessionState:
+    def __init__(self, session, run_hash):
+        self.__dict__["_custom_hashes"] = {}
+        self._session = session
+        self._run_hash = run_hash
+
+    def __setattr__(self, key, value):
+        if hasattr(self, "_run_hash") and self._run_hash != _CodeHasher.get_session_id():
+            raise RuntimeError("Cannot modify session state outside of session state callbacks.")
+        else:
+            super().__setattr__(key, value)
+
+def get_session(run_hash):
+    return SessionState(st.session, run_hash)
+
+# Load previous user count from pickle file
 try:
     with open("user_count.pkl", "rb") as file:
         user_count = pickle.load(file)
 except FileNotFoundError:
     user_count = 0
-    
-user_count += 1
 
-with open("user_count.pkl", "wb") as file:
-    pickle.dump(user_count, file)
+# Create a session state with a hash based on the script
+session_state = get_session(_CodeHasher.get_session_id())
 
+# Increment user count and save it to pickle file
+if not hasattr(session_state, "user_count_incremented"):
+    user_count += 1
+    session_state.user_count_incremented = True
+
+    with open("user_count.pkl", "wb") as file:
+        pickle.dump(user_count, file)
+
+# Display total users count in the sidebar
 st.sidebar.markdown(f"Total users 👥: {user_count}")
