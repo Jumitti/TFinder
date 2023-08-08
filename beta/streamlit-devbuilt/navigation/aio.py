@@ -1020,10 +1020,10 @@ def aio_page():
                 response = requests.get(url)
                 response_data = response.json()
                 TF_name = response_data['name']
+                df = pd.DataFrame(table2[1:], columns=table2[0])
                 colres1,colres2,colres3, colres4, colres5 = st.columns([1,0.5,0.5,1,1])
                 with colres1:
                     st.success(f"Finding responsive elements done for {TF_name}")
-                df = pd.DataFrame(table2[1:], columns=table2[0])
                 with colres2:
                     excel_file = io.BytesIO()
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
