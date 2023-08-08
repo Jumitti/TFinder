@@ -1033,7 +1033,7 @@ def aio_page():
                     txt_output = f"JASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
                     st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
                     
-                filtered_df = df["Rel Score"] >= threshold
+                filtered_df = df[df["Rel Score"] >= threshold]
                 st.markdown('**Table**')
                 st.dataframe(filtered_df, hide_index=True)
                     
