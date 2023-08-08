@@ -209,7 +209,6 @@ try:
 except FileNotFoundError:
     user_count = 0
 
-# Create a session state to track if the user count has been incremented
 if "user_count_incremented" not in st.session_state:
     user_count += 1
     st.session_state.user_count_incremented = True
@@ -217,5 +216,4 @@ if "user_count_incremented" not in st.session_state:
     with open("user_count.pkl", "wb") as file:
         pickle.dump(user_count, file)
 
-# Display total users count in the sidebar
 st.sidebar.markdown(f"Total users 👥: {user_count}")
