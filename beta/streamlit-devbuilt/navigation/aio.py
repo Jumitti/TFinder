@@ -1028,6 +1028,7 @@ def aio_page():
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
             if len(table2) > 0:
+                threshold = float(threshold_entry)
                 current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 st.subheader(':blue[Results]')
                 jaspar_id = sequence_consensus_input
@@ -1039,7 +1040,7 @@ def aio_page():
                 with colres1:
                     st.success(f"Finding responsive elements done for {TF_name}")
                 df = pd.DataFrame(table2[1:], columns=table2[0])
-                filtered_df = df.loc[df["Rel Score"] >= threshold_entry]
+                filtered_df = df.loc[df["Rel Score"] >= threshold]
                 st.session_state['filtered_df'] = filtered_df
                 st.markdown('**Table**')
                 st.dataframe(filtered_df, hide_index=True)
