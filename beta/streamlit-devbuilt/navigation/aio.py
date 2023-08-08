@@ -683,13 +683,19 @@ def aio_page():
                             sequence_with_context = ''.join(sequence_parts)
                             tis_position = position - tis_value
                             
-                            if normalized_score >= threshold:
-                                row = [str(position).ljust(8),
-                                       str(tis_position).ljust(15),
-                                       sequence_with_context,
-                                       "{:.6f}".format(normalized_score).ljust(12),
-                                       shortened_promoter_name, region]
-                                table2.append(row)
+                            # if normalized_score >= threshold:
+                                # row = [str(position).ljust(8),
+                                       # str(tis_position).ljust(15),
+                                       # sequence_with_context,
+                                       # "{:.6f}".format(normalized_score).ljust(12),
+                                       # shortened_promoter_name, region]
+                                # table2.append(row)
+                            row = [str(position).ljust(8),
+                                   str(tis_position).ljust(15),
+                                   sequence_with_context,
+                                   "{:.6f}".format(normalized_score).ljust(12),
+                                   shortened_promoter_name, region]
+                            table2.append(row)
 
         if len(table2) > 0:
             if calc_pvalue :
@@ -1027,9 +1033,10 @@ def aio_page():
                 with colres1:
                     st.success(f"Finding responsive elements done for {TF_name}")
                 df = pd.DataFrame(table2[1:], columns=table2[0])
-                st.session_state['df'] = df
+                filtered_df = df.loc[df["Rel Score"] >= threshold]
+                st.session_state['filtered_df'] = filtered_df
                 st.markdown('**Table**')
-                st.dataframe(df, hide_index=True)
+                st.dataframe(filtered_df, hide_index=True)
                 with colres2:
                     excel_file = io.BytesIO()
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
@@ -1039,7 +1046,7 @@ def aio_page():
                     txt_output = f"JASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
                     st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
             
-                source = df
+                source = filtered_df
                 score_range = source['Rel Score'].astype(float)
                 ystart = score_range.min() - 0.02
                 ystop = score_range.max() + 0.02
