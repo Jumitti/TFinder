@@ -1018,6 +1018,14 @@ def aio_page():
                 TF_name = response_data['name']
                 df = pd.DataFrame(table2[1:], columns=table2[0])
                 colres1,colres2,colres3, colres4, colres5 = st.columns([1,0.5,0.5,1,1])
+                
+                # Threshold pvalue
+    
+                with BSFcol2:
+                    st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
+                    threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
+                    threshold = str(threshold_entry)
+                    
                 with colres1:
                     st.success(f"Finding responsive elements done for {TF_name}")
                 with colres2:
@@ -1028,13 +1036,6 @@ def aio_page():
                 with colres3:
                     txt_output = f"JASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
                     st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
-                
-                # Threshold pvalue
-    
-                with BSFcol2:
-                    st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
-                    threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
-                    threshold = str(threshold_entry)
                     
                 filtered_df = df[df["Rel Score"] >= threshold]
                 st.markdown('**Table**')
