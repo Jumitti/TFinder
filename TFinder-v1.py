@@ -202,4 +202,4 @@ user_count += 1
 with open("user_count.pkl", "wb") as file:
     pickle.dump(user_count, file)
 
-st.sidebar.write(f"Total users : {user_count}")
+st.sidebar.markdown(f"Total users : {user_count}")
