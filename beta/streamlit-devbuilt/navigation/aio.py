@@ -1024,9 +1024,6 @@ def aio_page():
                 with colres1:
                     st.success(f"Finding responsive elements done for {TF_name}")
                 df = pd.DataFrame(table2[1:], columns=table2[0])
-                filtered_df = df.loc[df["Rel Score"] >= threshold]
-                st.markdown('**Table**')
-                st.dataframe(filtered_df, hide_index=True)
                 with colres2:
                     excel_file = io.BytesIO()
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
@@ -1035,6 +1032,10 @@ def aio_page():
                 with colres3:
                     txt_output = f"JASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
                     st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
+                    
+                filtered_df = df.loc[df["Rel Score"] >= threshold]
+                st.markdown('**Table**')
+                st.dataframe(filtered_df, hide_index=True)
                     
                 if not filtered_df.empty:
                     filtered_df.loc[:, 'Gene_Region'] = filtered_df['Gene'] + " " + filtered_df['Region']
