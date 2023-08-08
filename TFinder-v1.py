@@ -110,7 +110,11 @@ for i in range(4):
 st.markdown(footer,unsafe_allow_html=True)
 
 # Credit rating
-st.sidebar.image("https://raw.githubusercontent.com/Jumitti/TFinder/main/img/REF.png")
+image = Image.open("https://raw.githubusercontent.com/Jumitti/TFinder/main/img/REF.png")
+new_size = (300, 300)
+resized_image = image.resize(new_size, Image.ANTIALIAS)
+st.sidebar.image(resized_image, caption="Image redimensionnée", use_column_width=True)
+
 try:
     with open("ratings.pkl", "rb") as file:
         ratings = pickle.load(file)
