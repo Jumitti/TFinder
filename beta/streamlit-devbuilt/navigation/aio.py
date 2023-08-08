@@ -1041,6 +1041,7 @@ def aio_page():
                     st.success(f"Finding responsive elements done for {TF_name}")
                 df = pd.DataFrame(table2[1:], columns=table2[0])
                 filtered_df = df.loc[df["Rel Score"] >= threshold]
+                st.session_state['df'] = df
                 st.session_state['filtered_df'] = filtered_df
                 st.markdown('**Table**')
                 st.dataframe(filtered_df, hide_index=True)
