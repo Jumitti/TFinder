@@ -660,13 +660,20 @@ def aio_page():
                             sequence_with_context = ''.join(sequence_parts)
                             tis_position = position - tis_value
                             
-                            if normalized_score >= threshold:
-                                row = [str(position).ljust(8),
-                                       str(tis_position).ljust(15),
-                                       sequence_with_context,
-                                       "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
-                                       shortened_promoter_name, region]
-                                table2.append(row)
+                            # if normalized_score >= threshold:
+                                # row = [str(position).ljust(8),
+                                       # str(tis_position).ljust(15),
+                                       # sequence_with_context,
+                                       # "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
+                                       # shortened_promoter_name, region]
+                                # table2.append(row)
+                            
+                            row = [str(position).ljust(8),
+                                   str(tis_position).ljust(15),
+                                   sequence_with_context,
+                                   "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
+                                   shortened_promoter_name, region]
+                            table2.append(row)
                     else:
                         for position, seq, normalized_score in found_positions:
                             start_position = max(0, position - 3)
