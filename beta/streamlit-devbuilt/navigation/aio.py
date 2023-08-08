@@ -1053,7 +1053,7 @@ def aio_page():
                     st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
                     
                 if not filtered_df.empty:
-                    filtered_df.loc[:, 'Gene_Region'] = filtered_df['Gene'] + " " + filtered_df['Region']
+                    filtered_df[:, 'Gene_Region'] = filtered_df['Gene'] + " " + filtered_df['Region']
                     score_range = filtered_df['Rel Score'].astype(float)
                     ystart = score_range.min() - 0.02
                     ystop = score_range.max() + 0.02 
