@@ -116,9 +116,9 @@ url = "https://raw.githubusercontent.com/Jumitti/TFinder/main/img/REF.png"
 response = requests.get(url)
 image_data = io.BytesIO(response.content)
 image = Image.open(image_data)
-new_size = (300, 300)
+new_size = (150, 150)
 resized_image = image.resize(new_size, Image.ANTIALIAS)
-st.sidebar.image(resized_image, caption="Image redimensionnée", use_column_width=True)
+st.sidebar.image(resized_image, use_column_width=True)
 
 try:
     with open("ratings.pkl", "rb") as file:
