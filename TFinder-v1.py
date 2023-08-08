@@ -190,3 +190,16 @@ st.sidebar.title("More")
 st.sidebar.markdown("Report an issue/bug 🆘 -> [Click here](https://github.com/Jumitti/TFinder/issues/new/choose)")
 
 st.sidebar.markdown("Want to talk ? 🙋🏼‍♂️ -> [Chat Room](https://github.com/Jumitti/TFinder/discussions)")
+
+try:
+    with open("user_count.pkl", "rb") as file:
+        user_count = pickle.load(file)
+except FileNotFoundError:
+    user_count = 0
+    
+user_count += 1
+
+with open("user_count.pkl", "wb") as file:
+    pickle.dump(user_count, file)
+
+st.sidebar.write(f"Total users : {user_count}")
