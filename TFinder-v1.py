@@ -31,6 +31,7 @@ from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 from PIL import Image
+import io
 
 st.set_page_config(
         page_title='TFinder by Minniti Julien',
@@ -111,7 +112,10 @@ for i in range(4):
 st.markdown(footer,unsafe_allow_html=True)
 
 # Credit rating
-image = Image.open("https://raw.githubusercontent.com/Jumitti/TFinder/main/img/REF.png")
+url = "https://raw.githubusercontent.com/Jumitti/TFinder/main/img/REF.png"
+response = requests.get(url)
+image_data = io.BytesIO(response.content)
+image = Image.open(image_data)
 new_size = (300, 300)
 resized_image = image.resize(new_size, Image.ANTIALIAS)
 st.sidebar.image(resized_image, caption="Image redimensionnée", use_column_width=True)
