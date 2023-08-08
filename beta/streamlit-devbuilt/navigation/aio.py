@@ -1053,7 +1053,7 @@ def aio_page():
                     txt_output = f"JASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
                     st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
                     
-                if filtered_df != 0:
+                if not filtered_df.empty:
                     filtered_df['Gene_Region'] = filtered_df['Gene'] + " " + filtered_df['Region']
                     score_range = filtered_df['Rel Score'].astype(float)
                     ystart = score_range.min() - 0.02
