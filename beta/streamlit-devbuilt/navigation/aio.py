@@ -1057,7 +1057,7 @@ def aio_page():
                     filtered_df.loc[:, 'Gene_Region'] = filtered_df['Gene'] + " " + filtered_df['Region']
                     score_range = filtered_df['Rel Score'].astype(float)
                     ystart = score_range.min() - 0.02
-                    ystop = score_range.max() + 0.02
+                    ystop = score_range.max() + 0.02 
                     scale = alt.Scale(scheme='category10')
                     color_scale = alt.Color("Gene_Region:N", scale=scale)
                     gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
