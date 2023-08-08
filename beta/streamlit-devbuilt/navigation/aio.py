@@ -533,7 +533,7 @@ def aio_page():
         return score
 
     # Find with JASPAR and manual matrix
-    def search_sequence(threshold, tis_value, result_promoter, matrices):
+    def search_sequence(tis_value, result_promoter, matrices):
         global table2
         table2 = []
         
@@ -999,12 +999,11 @@ def aio_page():
     if result_promoter.startswith(("A", "T", "G", "C", ">")):
         with st.spinner("Finding responsive elements..."):
             tis_value = int(entry_tis)
-            threshold = float(threshold_entry)
             try:
                 if jaspar == 'JASPAR_ID':
                     sequence_consensus_input = entry_sequence
                     matrices = matrix_extraction(sequence_consensus_input)
-                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                    table2 = search_sequence(tis_value, result_promoter, matrices)
                 else:
                     if isUIPAC == False:
                         st.error("Please use IUPAC code for Responsive Elements")
@@ -1019,7 +1018,7 @@ def aio_page():
                                 values = [float(value) for value in values]
                                 matrix[key.strip()] = values
                         matrices = transform_matrix(matrix)
-                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
+                        table2 = search_sequence(tis_value, result_promoter, matrices)            
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
     
@@ -1040,7 +1039,7 @@ def aio_page():
                 with colres1:
                     st.success(f"Finding responsive elements done for {TF_name}")
                 df = pd.DataFrame(table2[1:], columns=table2[0])
-                filtered_df = df.loc[df["Rel Score"] >= threshold]
+                filtered_df = df.loc[df["Rel Score"] >= threshold_entry]
                 st.session_state['filtered_df'] = filtered_df
                 st.markdown('**Table**')
                 st.dataframe(filtered_df, hide_index=True)
