@@ -1017,8 +1017,14 @@ def aio_page():
                 response = requests.get(url)
                 response_data = response.json()
                 TF_name = response_data['name']
+                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                
                 df = pd.DataFrame(table2[1:], columns=table2[0])
-                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")   
+                
+                filtered_df = df.loc[df["Rel Score"] >= threshold]
+                st.markdown('**Table**')
+                st.dataframe(filtered_df, hide_index=True)
+                
                 colres1,colres2,colres3, colres4, colres5 = st.columns([1,0.5,0.5,1,1]) 
                 with colres1:
                     st.success(f"Finding responsive elements done for {TF_name}")
@@ -1030,10 +1036,6 @@ def aio_page():
                 with colres3:
                     txt_output = f"JASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
                     st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
-                    
-                filtered_df = df[df["Rel Score"] >= threshold]
-                st.markdown('**Table**')
-                st.dataframe(filtered_df, hide_index=True)
                     
                 if not filtered_df.empty:
                     score_range = filtered_df['Rel Score'].astype(float)
