@@ -41,6 +41,8 @@ import datetime
 import matplotlib.pyplot as plt
 from PIL import Image
 
+from reactive import reactive
+
 def aio_page():
     # Reverse complement
     def reverse_complement(sequence):
@@ -1005,8 +1007,6 @@ def aio_page():
     
     st.divider()
     # RE output
-    if 'table2' in locals():
-        df = pd.DataFrame(table2[1:], columns=table2[0])
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
             if len(table2) > 0:
@@ -1018,6 +1018,7 @@ def aio_page():
                 TF_name = response_data['name']
                 current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 
+                df = pd.DataFrame(table2[1:], columns=table2[0])
                 
                 with BSFcol2:
                     st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
@@ -1025,6 +1026,10 @@ def aio_page():
                     threshold = float(threshold_entry)   
                 
                 filtered_table2 = [row for row in table2[1:] if float(row[3]) >= threshold]
+                @reactive
+                def update_filtered_table():
+                    return [row for row in table2[1:] if float(row[1]) >= threshold]
+                    
                 filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
                 
                 colres1,colres2,colres3, colres4, colres5 = st.columns([1,0.5,0.5,1,1]) 
