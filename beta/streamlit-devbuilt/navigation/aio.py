@@ -1026,10 +1026,6 @@ def aio_page():
                     threshold = float(threshold_entry)   
                 
                 filtered_table2 = [row for row in table2[1:] if float(row[3]) >= threshold]
-                @reactive
-                def update_filtered_table():
-                    return [row for row in table2[1:] if float(row[3]) >= threshold]
-                    
                 filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
                 
                 colres1,colres2,colres3, colres4, colres5 = st.columns([1,0.5,0.5,1,1]) 
@@ -1045,7 +1041,7 @@ def aio_page():
                     st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
                     
                 st.markdown('**Table**')
-                st.table(pd.DataFrame(filtered_table2, columns=table2[0]))
+                st.dataframe(filtered_df, hide_index=True)
                     
                 if not filtered_df.empty:
                     score_range = filtered_df['Rel Score'].astype(float)
