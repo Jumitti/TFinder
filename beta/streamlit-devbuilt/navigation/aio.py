@@ -1019,7 +1019,6 @@ def aio_page():
                 current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 
                 
-                
                 with BSFcol2:
                     st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
                     threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
