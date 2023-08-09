@@ -1002,19 +1002,18 @@ def aio_page():
                         table2 = search_sequence(tis_value, result_promoter, matrices)            
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
-    
-    
+                
+    with BSFcol2:
+                    st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
+                    threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
+                    threshold = str(threshold_entry)
+                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     
     st.divider()
     # RE output
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
             if len(table2) > 0:
-                with BSFcol2:
-                    st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
-                    threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
-                    threshold = str(threshold_entry)
-                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 st.subheader(':blue[Results]')
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
