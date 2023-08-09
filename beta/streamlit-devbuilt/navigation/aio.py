@@ -1007,7 +1007,7 @@ def aio_page():
                     st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
                     threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
                     threshold = str(threshold_entry)
-                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                
     
     st.divider()
     # RE output
@@ -1021,7 +1021,7 @@ def aio_page():
                 response_data = response.json()
                 TF_name = response_data['name']
                 colres1,colres2,colres3, colres4, colres5 = st.columns([1,0.5,0.5,1,1])               
-                    
+                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")    
                 with colres1:
                     st.success(f"Finding responsive elements done for {TF_name}")
                 with colres2:
