@@ -1028,7 +1028,7 @@ def aio_page():
                 filtered_table2 = [row for row in table2[1:] if float(row[3]) >= threshold]
                 @reactive
                 def update_filtered_table():
-                    return [row for row in table2[1:] if float(row[1]) >= threshold]
+                    return [row for row in table2[1:] if float(row[3]) >= threshold]
                     
                 filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
                 
