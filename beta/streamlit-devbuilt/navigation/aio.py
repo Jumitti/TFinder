@@ -1021,7 +1021,7 @@ def aio_page():
                 
                 df = pd.DataFrame(table2[1:], columns=table2[0])
                 
-                filtered_table2 = [row for row in table2[1:] if float(row[4]) >= threshold]
+                filtered_table2 = [row for row in table2[1:] if float(row[3]) >= threshold]
                 filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
                 st.markdown('**Table**')
                 st.dataframe(filtered_df, hide_index=True)
