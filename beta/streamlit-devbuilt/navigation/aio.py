@@ -694,10 +694,12 @@ def aio_page():
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
                 header = ["Position", "Rel Position", "Sequence", "Rel Score", "p-value", "Gene", "Region"]
                 table2.insert(0, header)
+                df = pd.DataFrame(table2[1:], columns=table2[0])
             else:
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
                 header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Region"]
                 table2.insert(0, header)
+                df = pd.DataFrame(table2[1:], columns=table2[0])
             
         else:
             no_consensus = "No consensus sequence found with the specified threshold."
@@ -1015,8 +1017,6 @@ def aio_page():
                 response_data = response.json()
                 TF_name = response_data['name']
                 current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                
-                df = pd.DataFrame(table2[1:], columns=table2[0])
                 
                 with BSFcol2:
                     st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
