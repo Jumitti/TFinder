@@ -1000,10 +1000,10 @@ def aio_page():
     BSFcol1, BSFcol2, BSFcol3 = st.columns([2,2,1], gap="medium")
     with BSFcol1:
         if 'upstream' not in st.session_state:
-            st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
+            st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. If you use Step 1, don't modify. It will be defined automatically")
             entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", -10000, 10000, 0, label_visibility="collapsed")
         else:
-            st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
+            st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. If you use Step 1, don't modify. It will be defined automatically")
             entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", -10000, 10000, st.session_state['upstream'], label_visibility="collapsed")
 
     # Threshold pvalue
