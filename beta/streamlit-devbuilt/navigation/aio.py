@@ -531,11 +531,12 @@ def aio_page():
                 base_score = matrix[base]
                 score += base_score[i]
         return score
-
+        
+    table2 = []
     # Find with JASPAR and manual matrix
     def search_sequence(tis_value, result_promoter, matrices):
         global table2
-        table2 = []
+        
         
         # Promoter input type
         lines = result_promoter
