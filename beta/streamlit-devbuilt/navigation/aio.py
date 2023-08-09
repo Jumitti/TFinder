@@ -1045,7 +1045,7 @@ def aio_page():
                     st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
                     
                 st.markdown('**Table**')
-                st.dataframe(filtered_df, hide_index=True)
+                st.table(pd.DataFrame(filtered_table2, columns=table2[0]))
                     
                 if not filtered_df.empty:
                     score_range = filtered_df['Rel Score'].astype(float)
