@@ -1014,7 +1014,7 @@ def aio_page():
     # RE output
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
-            if len(table2) > 0:
+            if len(table2) > 1:
                 st.subheader(':blue[Results]')
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
