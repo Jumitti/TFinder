@@ -695,11 +695,13 @@ def aio_page():
                 header = ["Position", "Rel Position", "Sequence", "Rel Score", "p-value", "Gene", "Region"]
                 table2.insert(0, header)
                 df = pd.DataFrame(table2[1:], columns=table2[0])
+                st.session_state['df'] = df
             else:
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
                 header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Region"]
                 table2.insert(0, header)
                 df = pd.DataFrame(table2[1:], columns=table2[0])
+                st.session_state['df'] = df
             
         else:
             no_consensus = "No consensus sequence found with the specified threshold."
@@ -1004,10 +1006,9 @@ def aio_page():
                 st.error(f"Error finding responsive elements: {str(e)}")
                 
     with BSFcol2:
-                    st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
-                    threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
-                    threshold = str(threshold_entry)
-                
+        st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
+        threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
+        threshold = str(threshold_entry)   
     
     st.divider()
     # RE output
