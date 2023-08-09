@@ -531,12 +531,11 @@ def aio_page():
                 base_score = matrix[base]
                 score += base_score[i]
         return score
-        
-    table2 = []
+
     # Find with JASPAR and manual matrix
     def search_sequence(tis_value, result_promoter, matrices):
         global table2
-        
+        table2 = []
         
         # Promoter input type
         lines = result_promoter
@@ -1002,10 +1001,7 @@ def aio_page():
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
                 
-    with BSFcol2:
-        st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
-        threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
-        threshold = float(threshold_entry)   
+    
     
     st.divider()
     # RE output
@@ -1021,6 +1017,11 @@ def aio_page():
                 current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 
                 df = pd.DataFrame(table2[1:], columns=table2[0])
+                
+                with BSFcol2:
+                    st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
+                    threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
+                    threshold = float(threshold_entry)   
                 
                 filtered_table2 = [row for row in table2[1:] if float(row[3]) >= threshold]
                 filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
