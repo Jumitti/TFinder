@@ -1034,7 +1034,7 @@ def aio_page():
                 response_data = response.json()
                 TF_name = response_data['name']
             
-                colres1, colres2, colres3, colres4 = st.columns([1,0.5,,1,1]) 
+                colres1, colres2, colres3, colres4 = st.columns([1,0.5,1,1]) 
                 with colres1:
                     st.success(f"Finding responsive elements done for {TF_name}")
                 with colres2:
