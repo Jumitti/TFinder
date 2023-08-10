@@ -1048,7 +1048,7 @@ def aio_page():
                 st.dataframe(filtered_df, hide_index=True)
                 
                 st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-                graphcol1, graphcol2 = st.columns(2, gap='small')
+                graphcol1, graphcol2 = st.columns([0.1,0.9], gap='small')
                 with graphcol1:
                     st.markdown('**X axis:**')
                 with graphcol2:    
