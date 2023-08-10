@@ -981,11 +981,6 @@ def aio_page():
         else:
             st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
             entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", -10000, 10000, st.session_state['upstream'], label_visibility="collapsed")
-    
-    with BSFcol2:
-        st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
-        threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
-        threshold = float(threshold_entry)   
         
     with BSFcol3:
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
@@ -1023,6 +1018,10 @@ def aio_page():
     st.divider()
     # RE output
     if jaspar == 'JASPAR_ID':
+        with BSFcol2:
+            st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
+            threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
+            threshold = float(threshold_entry)   
         if 'table2' in locals():
             st.subheader(':blue[Results]')
             
@@ -1164,6 +1163,10 @@ def aio_page():
                 st.error(f"No consensus sequence found with the specified threshold for {TF_name}")
                 
     else:
+        with BSFcol2:
+            st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
+            threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
+            threshold = float(threshold_entry) 
         if 'table2' in locals():
             st.subheader(':blue[Results]')
             
