@@ -41,8 +41,6 @@ import datetime
 import matplotlib.pyplot as plt
 from PIL import Image
 
-from reactive import reactive
-
 def aio_page():
     # Reverse complement
     def reverse_complement(sequence):
@@ -479,6 +477,26 @@ def aio_page():
                                 result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             except Exception as e:
                                 st.error(f"Error finding promoters: {str(e)}")
+                        if gene_name.isdigit() and prom_checked == True:
+                            prom_term = 'Promoter'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
+                            species = 'human' # If isdigit then it means that it is an NCBI gene accession number (GENE_ID), so the species is already associated by default. The program needs this parameter but it will not take it into account. It's a holdover from a spaghetti coding
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if gene_name.isdigit() and term_checked == True:
+                            prom_term = 'Terminator'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
+                            species = 'human' # If isdigit then it means that it is an NCBI gene accession number (GENE_ID), so the species is already associated by default. The program needs this parameter but it will not take it into account. It's a holdover from a spaghetti coding
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
 
     # Promoter output state
     st.divider()
@@ -671,7 +689,6 @@ def aio_page():
 
                             sequence_with_context = ''.join(sequence_parts)
                             tis_position = position - tis_value
-                            
                             row = [str(position).ljust(8),
                                    str(tis_position).ljust(15),
                                    sequence_with_context,
