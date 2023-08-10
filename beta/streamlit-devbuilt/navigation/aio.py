@@ -656,7 +656,7 @@ def aio_page():
 
                     random_scores = np.array(matrix_random_scores)
 
-                for i in range(len(promoter_region) - seq_length + 1):
+                for i in range(len(promoter_region) - seq_length):
                     seq = promoter_region[i:i + seq_length]
                     score = calculate_score(seq, matrix)
                     normalized_score = (score - min_score)/(max_score - min_score)
