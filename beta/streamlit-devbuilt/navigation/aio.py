@@ -1027,8 +1027,10 @@ def aio_page():
             st.subheader(':blue[Results]')
             
             df = pd.DataFrame(table2[1:], columns=table2[0])
+            st.session_state['df'] = df
             filtered_table2 = [row for row in table2[1:] if float(row[3]) >= threshold]
             filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
+            st.session_state['filtered_df'] = filtered_df
             
             if len(filtered_df) > 0:
                 jaspar_id = sequence_consensus_input
@@ -1052,53 +1054,52 @@ def aio_page():
                 st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                 reference = st.radio('X axis:', ('Beginning of the sequence','TSS or gene end'), horizontal=True, help='Position of the patterns turned according to either the beginning of the sequence or the configured TSS/gene end')
                     
-                if not filtered_df.empty:
-                    score_range = filtered_df['Rel Score'].astype(float)
-                    ystart = score_range.min() - 0.02
-                    ystop = score_range.max() + 0.02 
-                    scale = alt.Scale(scheme='category10')
-                    filtered_df['Gene_Region'] = filtered_df['Gene'] + " " + filtered_df['Region']
-                    color_scale = alt.Color("Gene_Region:N", scale=scale)
-                    gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
-                    
-                    if reference == 'TSS or gene end':
-                        if calc_pvalue:
-                            chart = alt.Chart(filtered_df).mark_circle().encode(
-                                x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
-                                y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                                color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                                tooltip=['Position','Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
-                            ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-                            
-                            st.altair_chart(chart, theme=None, use_container_width=True)
-                        else:
-                            chart = alt.Chart(filtered_df).mark_circle().encode(
-                                x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
-                                y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                                color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                                tooltip=['Position','Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
-                            ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-                            
-                            st.altair_chart(chart, theme=None, use_container_width=True)
+                score_range = filtered_df['Rel Score'].astype(float)
+                ystart = score_range.min() - 0.02
+                ystop = score_range.max() + 0.02 
+                scale = alt.Scale(scheme='category10')
+                filtered_df['Gene_Region'] = filtered_df['Gene'] + " " + filtered_df['Region']
+                color_scale = alt.Color("Gene_Region:N", scale=scale)
+                gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
+                
+                if reference == 'TSS or gene end':
+                    if calc_pvalue:
+                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
+                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                            tooltip=['Position','Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+                        
+                        st.altair_chart(chart, theme=None, use_container_width=True)
                     else:
-                        if calc_pvalue:
-                            chart = alt.Chart(filtered_df).mark_circle().encode(
-                                x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
-                                y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                                color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                                tooltip=['Position','Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
-                            ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
+                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                            tooltip=['Position','Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
+                        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+                        
+                        st.altair_chart(chart, theme=None, use_container_width=True)
+                else:
+                    if calc_pvalue:
+                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                            x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
+                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                            tooltip=['Position','Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
 
-                            st.altair_chart(chart, theme=None, use_container_width=True)
-                        else:
-                            chart = alt.Chart(filtered_df).mark_circle().encode(
-                                x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
-                                y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                                color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                                tooltip=['Position','Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
-                            ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-                            
-                            st.altair_chart(chart, theme=None, use_container_width=True)
+                        st.altair_chart(chart, theme=None, use_container_width=True)
+                    else:
+                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                            x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
+                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                            tooltip=['Position','Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
+                        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+                        
+                        st.altair_chart(chart, theme=None, use_container_width=True)
                         
                     
                 email_sender = st.secrets['sender']
@@ -1135,23 +1136,23 @@ def aio_page():
                             server.login(email_sender, password)
                             server.sendmail(email_sender, email_receiver, msg.as_string())
                             server.quit()
+                            
                             with colres4:
                                 st.success('Email sent successfully! 🚀')
-                                
                         except smtplib.SMTPAuthenticationError:
-                            with colres5:
+                            with colres4:
                                 st.error("Failed to authenticate. Please check your email and password.")
                         except smtplib.SMTPServerDisconnected:
-                            with colres5:
+                            with colres4:
                                 st.error("Failed to connect to the SMTP server. Please check your internet connection.")
                         except smtplib.SMTPRecipientsRefused:
-                            with colres5:
+                            with colres4:
                                 st.error(f"Error sending email: {email_receiver}")
                         except smtplib.SMTPException as e:
-                            with colres5:
+                            with colres4:
                                 st.error(f"Error sending email: {e}")
                         except Exception as e:
-                            with colres5:
+                            with colres4:
                                 st.error(f"Unknown error occurred: {e}")
                                 
             else: 
@@ -1164,79 +1165,94 @@ def aio_page():
                 
     else:
         if 'table2' in locals():
-            if len(table2) > 0:
-                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                st.subheader(':blue[Results]')
-                colres1,colres2,colres3, colres4, colres5 = st.columns([1,0.5,0.5,1,1])
+            st.subheader(':blue[Results]')
+            
+            df = pd.DataFrame(table2[1:], columns=table2[0])
+            st.session_state['df'] = df
+            filtered_table2 = [row for row in table2[1:] if float(row[3]) >= threshold]
+            filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
+            st.session_state['filtered_df'] = filtered_df
+            
+            if len(filtered_df) > 0:
+                colres1, colres2, colres3, colres4 = st.columns([1,0.5,1,1])
                 with colres1:
                     st.success(f"Finding responsive elements done")
-                df = pd.DataFrame(table2[1:], columns=table2[0])
-                st.session_state['df'] = df
-                st.markdown('**Table**')
-                st.dataframe(df, hide_index=True)
                 with colres2:
                     excel_file = io.BytesIO()
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
                     st.download_button("💾 Download table (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xlsx', mime="application/vnd.ms-excel", key='download-excel')
-                with colres3:
-                    if jaspar == 'PWM':
-                        if matrix_type == 'With PWM':
-                            txt_output = f"Position Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
-                        if matrix_type == 'With FASTA sequences':
-                            txt_output = f"Responsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
-                    else:
-                        txt_output = f"Responsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
-                    st.download_button(label="💾 Download sequences (.fasta)",data=txt_output,file_name=f"Sequences_{current_date_time}.fasta",mime="text/plain")
-             
-                source = df
-                score_range = source['Rel Score'].astype(float)
+                
+                st.markdown('**Table**')
+                st.dataframe(filtered_df, hide_index=True)
+                
+                st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
+                reference = st.radio('X axis:', ('Beginning of the sequence','TSS or gene end'), horizontal=True, help='Position of the patterns turned according to either the beginning of the sequence or the configured TSS/gene end')
+
+                score_range = filtered_df['Rel Score'].astype(float)
                 ystart = score_range.min() - 0.02
                 ystop = score_range.max() + 0.02
-                source['Gene_Region'] = source['Gene'] + " " + source['Region']
+                filtered_df['Gene_Region'] = filtered_df['Gene'] + " " + filtered_df['Region']
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Gene_Region:N", scale=scale)
                 gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
                 
-                if calc_pvalue:
-                    chart = alt.Chart(source).mark_circle().encode(
-                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                        color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                        tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
-                    ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-                    
-                    st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-                    st.altair_chart(chart, theme=None, use_container_width=True)
+                if reference == 'TSS or gene end':
+                    if calc_pvalue:
+                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
+                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                            tooltip=['Position','Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+                        
+                        st.altair_chart(chart, theme=None, use_container_width=True)
+                    else:
+                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
+                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                            tooltip=['Position','Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
+                        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+                        
+                        st.altair_chart(chart, theme=None, use_container_width=True)
                 else:
-                    chart = alt.Chart(source).mark_circle().encode(
-                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                        color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                        tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
-                    ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-                    
-                    st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-                    st.altair_chart(chart, theme=None, use_container_width=True)
-                    
+                    if calc_pvalue:
+                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                            x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
+                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                            tooltip=['Position','Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+
+                        st.altair_chart(chart, theme=None, use_container_width=True)
+                    else:
+                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                            x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
+                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                            tooltip=['Position','Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
+                        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+                        
+                        st.altair_chart(chart, theme=None, use_container_width=True)  
                     
                 email_sender = st.secrets['sender']
-                with colres4:
+                with colres3:
                     email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉', label_visibility='collapsed')
                 subject = f'Results TFinder - {current_date_time}'
                 if jaspar == 'PWM':
                     if matrix_type == 'With PWM':
-                        body = f"Hello ☺\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
+                        body = f"Hello ☺\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
                     if matrix_type == 'With FASTA sequences':
-                        body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
+                        body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
                 else:
-                    body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
+                    body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
                     
                 password = st.secrets['password']
                 attachment_excel = excel_file
                 attachment_text = txt_output
                 
-                with colres4:
+                with colres3:
                     if st.button("Send ✉", help='Included:\n\nTable of complete results\n\nSequences in FASTA format\n\nPattern searched, PWM and corresponding WebLogo'):
                         try:
                             msg = MIMEMultipart()
@@ -1270,22 +1286,22 @@ def aio_page():
                             server.sendmail(email_sender, email_receiver, msg.as_string())
                             server.quit()
                             
-                            with colres5:
+                            with colres4:
                                 st.success('Email sent successfully! 🚀')
                         except smtplib.SMTPAuthenticationError:
-                            with colres5:
+                            with colres4:
                                 st.error("Failed to authenticate. Please check your email and password.")
                         except smtplib.SMTPServerDisconnected:
-                            with colres5:
+                            with colres4:
                                 st.error("Failed to connect to the SMTP server. Please check your internet connection.")
                         except smtplib.SMTPRecipientsRefused:
-                            with colres5:
+                            with colres4:
                                 st.error(f"Error sending email: {email_receiver}")
                         except smtplib.SMTPException as e:
-                            with colres5:
+                            with colres4:
                                 st.error(f"Error sending email: {e}")
                         except Exception as e:
-                            with colres5:
+                            with colres4:
                                 st.error(f"Unknown error occurred: {e}")
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
