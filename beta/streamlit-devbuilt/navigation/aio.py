@@ -1045,7 +1045,7 @@ def aio_page():
             
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
-            filtered_table2 = [row for row in table2[0:] if float(row[3]) >= threshold]
+            filtered_table2 = [row for row in table2 if float(row[3]) >= threshold]
             filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
             st.session_state['filtered_df'] = filtered_df
             
@@ -1186,7 +1186,7 @@ def aio_page():
             
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
-            filtered_table2 = [row for row in table2[0:] if float(row[3]) >= threshold]
+            filtered_table2 = [row for row in table2 if float(row[3]) >= threshold]
             filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
             st.session_state['filtered_df'] = filtered_df
             
