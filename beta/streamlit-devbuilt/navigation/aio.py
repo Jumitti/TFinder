@@ -496,7 +496,7 @@ def aio_page():
         if 'result_promoter' in st.session_state:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             txt_output = f"{result_promoter}"
-            st.download_button(label="💾 Download sequences (.fasta)",data=txt_output,file_name=f"Sequences_{current_date_time}.fasta",mime="text/plain")
+            st.download_button(label="💾 Download (.fasta)",data=txt_output,file_name=f"Sequences_{current_date_time}.fasta",mime="text/plain")
 
     # Responsive-Elements-Finder
         
@@ -980,9 +980,9 @@ def aio_page():
             entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", -10000, 10000, st.session_state['upstream'], label_visibility="collapsed")
     
     with BSFcol2:
-                    st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
-                    threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
-                    threshold = float(threshold_entry)   
+        st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
+        threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
+        threshold = float(threshold_entry)   
         
     with BSFcol3:
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
@@ -1022,7 +1022,6 @@ def aio_page():
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
             st.subheader(':blue[Results]')
-            # current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             
             df = pd.DataFrame(table2[1:], columns=table2[0])
             filtered_table2 = [row for row in table2[1:] if float(row[3]) >= threshold]
@@ -1087,7 +1086,7 @@ def aio_page():
                 attachment_text = txt_output
                 
                 with colres3:
-                    if st.button("Send ✉"):
+                    if st.button("Send ✉", help='Included:\n\nTable of complete results\n\nSequences in FASTA format\n\nTranscription factor informations'):
                         try:
                             msg = MIMEMultipart()
                             msg['From'] = email_sender
@@ -1213,7 +1212,7 @@ def aio_page():
                 attachment_text = txt_output
                 
                 with colres4:
-                    if st.button("Send ✉"):
+                    if st.button("Send ✉", help='Included:\n\nTable of complete results\n\nSequences in FASTA format\n\nPattern searched, PWM and corresponding WebLogo'):
                         try:
                             msg = MIMEMultipart()
                             msg['From'] = email_sender
