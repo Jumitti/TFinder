@@ -495,6 +495,7 @@ def aio_page():
     with promcol2:
         if 'result_promoter' in st.session_state:
             st.markdown('')
+            st.markdown('')
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             txt_output = f"{result_promoter}"
             st.download_button(label="💾 Download (.fasta)",data=txt_output,file_name=f"Sequences_{current_date_time}.fasta",mime="text/plain")
@@ -1050,9 +1051,9 @@ def aio_page():
                 st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                 graphcol1, graphcol2 = st.columns([0.1,0.9], gap='small')
                 with graphcol1:
-                    st.markdown('**X axis:**')
+                    st.markdown('**X axis:**', help='Position of the patterns turned according to either the beginning of the sequence or the configured TSS/gene end')
                 with graphcol2:    
-                    reference = st.radio('reference:', ('Beginning of the sequence','TSS or gene end'), horizontal=True, label_visibility="collapsed", help='Position of the patterns turned according to either the beginning of the sequence or the configured TSS/gene end')
+                    reference = st.radio('reference:', ('Beginning of the sequence','TSS or gene end'), horizontal=True, label_visibility="collapsed")
                     
                 if not filtered_df.empty:
                     score_range = filtered_df['Rel Score'].astype(float)
