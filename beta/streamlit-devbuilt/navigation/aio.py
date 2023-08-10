@@ -1048,7 +1048,7 @@ def aio_page():
                 
                 graphcol1, graphcol2 = st.columns(2)
                 with graphcol1:
-                    st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.') st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
+                    st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                     st.markdown('')
                 with graphcol2:
                     st.markdown('**X axis:**', help='Position of the patterns turned according to either the beginning of the sequence or the configured TSS/gene end')
