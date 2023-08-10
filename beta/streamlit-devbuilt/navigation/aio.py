@@ -200,9 +200,13 @@ def aio_page():
         if st.button('🔎 Check genes avaibility', help='Sometimes genes do not have the same name in all species or do not exist.'):
             with st.spinner("Checking genes avaibility..."):
                 gene_list = gene_id_entry.strip().split('\n')
+                species_list = ['Human','Mouse','Rat','Drosophila','Zebrafish']
+                results_gene_list = []
+                data = []
                 for gene_input in gene_list:
                     if not gene_input.isdigit():
-                        species_list = ['human','mouse','rat','drosophila','zebrafish']
+                        row = [gene_input]
+
                         for species_test in species_list:
                             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
                             response = requests.get(url)
@@ -210,8 +214,16 @@ def aio_page():
                             if response.status_code == 200:
                                 response_data = response.json()
 
-                                if response_data['esearchresult']['count'] == '0':
-                                    st.warning(f"{gene_input} gene not found or wrong name for {species_test}", icon="⚠️")
+                                if response_data['esearchresult']['count'] != '0':
+                                    row.append("✅")
+                                else:
+                                    row.append("❌")
+
+                        data.append(row)
+
+                species_columns = ['Gene'] + species_list
+                df = pd.DataFrame(data, columns=species_columns)
+                st.dataframe(df, hide_index=True)
     
     with colprom2:
         tab1, tab2 = st.tabs(['Default','Advance'])
