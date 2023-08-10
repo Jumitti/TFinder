@@ -1050,6 +1050,7 @@ def aio_page():
     
     
     st.divider()
+    current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     # RE output
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
