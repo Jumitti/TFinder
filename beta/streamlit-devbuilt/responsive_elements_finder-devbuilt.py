@@ -32,7 +32,8 @@ from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 
 st.set_page_config(
-        page_title='TFinder by Minniti Julien',
+        page_title='TFinder-devbuilt',
+        page_icon="./.streamlit/REF.png",
         initial_sidebar_state="expanded"
 )
 

@@ -33,7 +33,7 @@ from navigation.allapp import allapp_page
 
 st.set_page_config(
         page_title='TFinder by Minniti Julien',
-        page_icon="./img/REF.png",
+        page_icon="./.streamlit/REF.png",
         initial_sidebar_state="expanded"
 )
 
