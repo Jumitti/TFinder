@@ -1038,7 +1038,7 @@ def aio_page():
                     st.download_button("💾 Download table (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xlsx', mime="application/vnd.ms-excel", key='download-excel')
                 with colres3:
                     txt_output = f"JASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
-                    st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
+                    st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.fasta",mime="text/plain")
                     
                 st.markdown('**Table**')
                 st.dataframe(filtered_df, hide_index=True)
@@ -1077,7 +1077,7 @@ def aio_page():
                 with colres4:
                     email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉', label_visibility='collapsed')
                 subject = f'Results TFinder - {current_date_time}'
-                body = f"Hello ☺\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
+                body = f"Hello ☺\n\nResults obtained with TFinder for:\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
                 password = st.secrets['password']
                 attachment_excel = excel_file
                 attachment_text = txt_output
