@@ -494,6 +494,7 @@ def aio_page():
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text, label_visibility='collapsed')
     with promcol2:
         if 'result_promoter' in st.session_state:
+            current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             txt_output = f"{result_promoter}"
             st.download_button(label="💾 Download sequences (.fasta)",data=txt_output,file_name=f"Sequences_{current_date_time}.fasta",mime="text/plain")
 
@@ -1021,7 +1022,7 @@ def aio_page():
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
             st.subheader(':blue[Results]')
-            current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            # current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             
             df = pd.DataFrame(table2[1:], columns=table2[0])
             filtered_table2 = [row for row in table2[1:] if float(row[3]) >= threshold]
