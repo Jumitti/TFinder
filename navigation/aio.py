@@ -200,9 +200,13 @@ def aio_page():
         if st.button('🔎 Check genes avaibility', help='Sometimes genes do not have the same name in all species or do not exist.'):
             with st.spinner("Checking genes avaibility..."):
                 gene_list = gene_id_entry.strip().split('\n')
+                species_list = ['Human','Mouse','Rat','Drosophila','Zebrafish']
+                results_gene_list = []
+                data = []
                 for gene_input in gene_list:
                     if not gene_input.isdigit():
-                        species_list = ['human','mouse','rat','drosophila','zebrafish']
+                        row = [gene_input]
+
                         for species_test in species_list:
                             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
                             response = requests.get(url)
@@ -210,8 +214,16 @@ def aio_page():
                             if response.status_code == 200:
                                 response_data = response.json()
 
-                                if response_data['esearchresult']['count'] == '0':
-                                    st.warning(f"{gene_input} gene not found or wrong name for {species_test}", icon="⚠️")
+                                if response_data['esearchresult']['count'] != '0':
+                                    row.append("✅")
+                                else:
+                                    row.append("❌")
+
+                        data.append(row)
+
+                species_columns = ['Gene'] + species_list
+                df = pd.DataFrame(data, columns=species_columns)
+                st.dataframe(df, hide_index=True)
     
     with colprom2:
         tab1, tab2 = st.tabs(['Default','Advance'])
@@ -497,27 +509,19 @@ def aio_page():
                                 result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             except Exception as e:
                                 st.error(f"Error finding promoters: {str(e)}")
-                                
+                        
+                        
+
     # Promoter output state
     st.divider()
     st.subheader(':blue[Step 2] Binding Sites Finder')
-    promcol1, promcol2 = st.columns([0.9,0.1], gap='small')
-    with promcol1:
-        if 'result_promoter' not in st.session_state:
-            st.markdown("🔹 :blue[**Step 2.1**] Sequences:")
-            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).", label_visibility='collapsed')
-        else:
-            st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-            result_promoter_text = "\n".join(st.session_state['result_promoter'])
-            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text, label_visibility='collapsed')
-    with promcol2:
-        if 'result_promoter' in st.session_state:
-            st.markdown('')
-            st.markdown('')
-            st.markdown('')
-            current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            txt_output = f"{result_promoter}"
-            st.download_button(label="💾 Download (.fasta)",data=txt_output,file_name=f"Sequences_{current_date_time}.fasta",mime="text/plain")
+    if 'result_promoter' not in st.session_state:
+        st.markdown("🔹 :blue[**Step 2.1**] Sequences:")
+        result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).", label_visibility='collapsed')
+    else:
+        st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
+        result_promoter_text = "\n".join(st.session_state['result_promoter'])
+        result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text, label_visibility='collapsed')
 
     # Responsive-Elements-Finder
         
@@ -563,7 +567,7 @@ def aio_page():
         return score
 
     # Find with JASPAR and manual matrix
-    def search_sequence(tis_value, result_promoter, matrices):
+    def search_sequence(threshold, tis_value, result_promoter, matrices):
         global table2
         table2 = []
         
@@ -690,12 +694,13 @@ def aio_page():
                             sequence_with_context = ''.join(sequence_parts)
                             tis_position = position - tis_value
                             
-                            row = [str(position).ljust(8),
-                                   str(tis_position).ljust(15),
-                                   sequence_with_context,
-                                   "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
-                                   shortened_promoter_name, region]
-                            table2.append(row)
+                            if normalized_score >= threshold:
+                                row = [str(position).ljust(8),
+                                       str(tis_position).ljust(15),
+                                       sequence_with_context,
+                                       "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
+                                       shortened_promoter_name, region]
+                                table2.append(row)
                     else:
                         for position, seq, normalized_score in found_positions:
                             start_position = max(0, position - 3)
@@ -712,12 +717,13 @@ def aio_page():
                             sequence_with_context = ''.join(sequence_parts)
                             tis_position = position - tis_value
                             
-                            row = [str(position).ljust(8),
-                                   str(tis_position).ljust(15),
-                                   sequence_with_context,
-                                   "{:.6f}".format(normalized_score).ljust(12),
-                                   shortened_promoter_name, region]
-                            table2.append(row)
+                            if normalized_score >= threshold:
+                                row = [str(position).ljust(8),
+                                       str(tis_position).ljust(15),
+                                       sequence_with_context,
+                                       "{:.6f}".format(normalized_score).ljust(12),
+                                       shortened_promoter_name, region]
+                                table2.append(row)
 
         if len(table2) > 0:
             if calc_pvalue :
@@ -994,16 +1000,17 @@ def aio_page():
     BSFcol1, BSFcol2, BSFcol3 = st.columns([2,2,1], gap="medium")
     with BSFcol1:
         if 'upstream' not in st.session_state:
-            st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
+            st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. If you use Step 1, don't modify. It will be defined automatically")
             entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", -10000, 10000, 0, label_visibility="collapsed")
         else:
-            st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
+            st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", help="Distance of TSS and gene end from begin of sequences. If you use Step 1, don't modify. It will be defined automatically")
             entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):", -10000, 10000, st.session_state['upstream'], label_visibility="collapsed")
+
+    # Threshold pvalue
     
     with BSFcol2:
         st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
         threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
-        threshold = float(threshold_entry)   
         
     with BSFcol3:
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
@@ -1013,11 +1020,12 @@ def aio_page():
     if result_promoter.startswith(("A", "T", "G", "C", ">")):
         with st.spinner("Finding responsive elements..."):
             tis_value = int(entry_tis)
+            threshold = float(threshold_entry)
             try:
                 if jaspar == 'JASPAR_ID':
                     sequence_consensus_input = entry_sequence
                     matrices = matrix_extraction(sequence_consensus_input)
-                    table2 = search_sequence(tis_value, result_promoter, matrices)
+                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                 else:
                     if isUIPAC == False:
                         st.error("Please use IUPAC code for Responsive Elements")
@@ -1032,105 +1040,80 @@ def aio_page():
                                 values = [float(value) for value in values]
                                 matrix[key.strip()] = values
                         matrices = transform_matrix(matrix)
-                        table2 = search_sequence(tis_value, result_promoter, matrices)            
+                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
-                
     
     
     st.divider()
     # RE output
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
-            st.subheader(':blue[Results]')
-            
-            df = pd.DataFrame(table2[1:], columns=table2[0])
-            st.session_state['df'] = df
-            filtered_table2 = [row for row in table2[1:] if float(row[3]) >= threshold]
-            filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
-            st.session_state['filtered_df'] = filtered_df
-            
-            if len(filtered_df) > 0:
+            if len(table2) > 0:
+                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                st.subheader(':blue[Results]')
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
                 response = requests.get(url)
                 response_data = response.json()
                 TF_name = response_data['name']
-            
-                colres1, colres2, colres3, colres4 = st.columns([1,0.5,1,1]) 
+                colres1,colres2,colres3, colres4, colres5 = st.columns([1,0.5,0.5,1,1])
                 with colres1:
                     st.success(f"Finding responsive elements done for {TF_name}")
+                df = pd.DataFrame(table2[1:], columns=table2[0])
+                st.session_state['df'] = df
+                st.markdown('**Table**')
+                st.dataframe(df, hide_index=True)
                 with colres2:
                     excel_file = io.BytesIO()
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
-                    st.download_button("💾 Download table (.xlsx)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xlsx', mime="application/vnd.ms-excel", key='download-excel')
-                    
-                st.markdown('**Table**')
-                st.dataframe(filtered_df, hide_index=True)
-                
-                st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-                reference = st.radio('X axis:', ('Beginning of the sequence','TSS or gene end'), horizontal=True, help='Position of the patterns turned according to either the beginning of the sequence or the configured TSS/gene end')
-                    
-                score_range = filtered_df['Rel Score'].astype(float)
+                    st.download_button("💾 Download table (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xlsx', mime="application/vnd.ms-excel", key='download-excel')
+                with colres3:
+                    txt_output = f"JASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
+                    st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
+            
+                source = df
+                score_range = source['Rel Score'].astype(float)
                 ystart = score_range.min() - 0.02
-                ystop = score_range.max() + 0.02 
+                ystop = score_range.max() + 0.02
+                source['Gene_Region'] = source['Gene'] + " " + source['Region']
                 scale = alt.Scale(scheme='category10')
-                filtered_df['Gene_Region'] = filtered_df['Gene'] + " " + filtered_df['Region']
                 color_scale = alt.Color("Gene_Region:N", scale=scale)
                 gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
                 
-                if reference == 'TSS or gene end':
-                    if calc_pvalue:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
-                            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
-                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                            tooltip=['Position','Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
-                        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-                        
-                        st.altair_chart(chart, theme=None, use_container_width=True)
-                    else:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
-                            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
-                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                            tooltip=['Position','Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
-                        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-                        
-                        st.altair_chart(chart, theme=None, use_container_width=True)
+                if calc_pvalue:
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                        tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                    ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+                    
+                    st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
+                    st.altair_chart(chart, theme=None, use_container_width=True)
                 else:
-                    if calc_pvalue:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
-                            x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
-                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                            tooltip=['Position','Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
-                        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-
-                        st.altair_chart(chart, theme=None, use_container_width=True)
-                    else:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
-                            x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
-                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                            tooltip=['Position','Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
-                        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-                        
-                        st.altair_chart(chart, theme=None, use_container_width=True)
-                        
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                        tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
+                    ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+                    
+                    st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
+                    st.altair_chart(chart, theme=None, use_container_width=True)
                     
                 email_sender = st.secrets['sender']
-                with colres3:
+                with colres4:
                     email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉', label_visibility='collapsed')
                 subject = f'Results TFinder - {current_date_time}'
-                body = f"Hello ☺\n\nResults obtained with TFinder for:\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
+                body = f"Hello ☺\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team\n\n\n\nN.B: Sometimes the WebLogo is not sent correctly. A small bug that I did not have time to fix (soon...). You can always right click 'Save Image' on the WebLogo on TFinder directly."
                 password = st.secrets['password']
                 attachment_excel = excel_file
                 attachment_text = txt_output
                 
-                with colres3:
-                    if st.button("Send ✉", help='Included:\n\nTable of complete results\n\nSequences in FASTA format\n\nTranscription factor informations'):
+                with colres4:
+                    if st.button("Send ✉"):
                         try:
                             msg = MIMEMultipart()
                             msg['From'] = email_sender
@@ -1146,7 +1129,7 @@ def aio_page():
                             msg.attach(attachment_excel)
 
                             attachment_text = MIMEText(attachment_text, 'plain', 'utf-8')
-                            attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.fasta')
+                            attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.txt')
                             msg.attach(attachment_text)
 
                             server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -1154,23 +1137,22 @@ def aio_page():
                             server.login(email_sender, password)
                             server.sendmail(email_sender, email_receiver, msg.as_string())
                             server.quit()
-                            
-                            with colres4:
+                            with colres5:
                                 st.success('Email sent successfully! 🚀')
                         except smtplib.SMTPAuthenticationError:
-                            with colres4:
+                            with colres5:
                                 st.error("Failed to authenticate. Please check your email and password.")
                         except smtplib.SMTPServerDisconnected:
-                            with colres4:
+                            with colres5:
                                 st.error("Failed to connect to the SMTP server. Please check your internet connection.")
                         except smtplib.SMTPRecipientsRefused:
-                            with colres4:
+                            with colres5:
                                 st.error(f"Error sending email: {email_receiver}")
                         except smtplib.SMTPException as e:
-                            with colres4:
+                            with colres5:
                                 st.error(f"Error sending email: {e}")
                         except Exception as e:
-                            with colres4:
+                            with colres5:
                                 st.error(f"Unknown error occurred: {e}")
                                 
             else: 
@@ -1183,95 +1165,80 @@ def aio_page():
                 
     else:
         if 'table2' in locals():
-            st.subheader(':blue[Results]')
-            
-            df = pd.DataFrame(table2[1:], columns=table2[0])
-            st.session_state['df'] = df
-            filtered_table2 = [row for row in table2[1:] if float(row[3]) >= threshold]
-            filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
-            st.session_state['filtered_df'] = filtered_df
-            
-            if len(filtered_df) > 0:
-                colres1, colres2, colres3, colres4 = st.columns([1,0.5,1,1])
+            if len(table2) > 0:
+                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                st.subheader(':blue[Results]')
+                colres1,colres2,colres3, colres4, colres5 = st.columns([1,0.5,0.5,1,1])
                 with colres1:
                     st.success(f"Finding responsive elements done")
+                df = pd.DataFrame(table2[1:], columns=table2[0])
+                st.session_state['df'] = df
+                st.markdown('**Table**')
+                st.dataframe(df, hide_index=True)
                 with colres2:
                     excel_file = io.BytesIO()
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
-                    st.download_button("💾 Download table (.xlsx)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xlsx', mime="application/vnd.ms-excel", key='download-excel')
-                
-                st.markdown('**Table**')
-                st.dataframe(filtered_df, hide_index=True)
-                
-                st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-                reference = st.radio('X axis:', ('Beginning of the sequence','TSS or gene end'), horizontal=True, help='Position of the patterns turned according to either the beginning of the sequence or the configured TSS/gene end')
-
-                score_range = filtered_df['Rel Score'].astype(float)
+                    st.download_button("💾 Download table (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xlsx', mime="application/vnd.ms-excel", key='download-excel')
+                with colres3:
+                    if jaspar == 'PWM':
+                        if matrix_type == 'With PWM':
+                            txt_output = f"Position Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
+                        if matrix_type == 'With FASTA sequences':
+                            txt_output = f"Responsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
+                    else:
+                        txt_output = f"Responsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
+                    st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
+             
+                source = df
+                score_range = source['Rel Score'].astype(float)
                 ystart = score_range.min() - 0.02
                 ystop = score_range.max() + 0.02
-                filtered_df['Gene_Region'] = filtered_df['Gene'] + " " + filtered_df['Region']
+                source['Gene_Region'] = source['Gene'] + " " + source['Region']
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Gene_Region:N", scale=scale)
                 gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
                 
-                if reference == 'TSS or gene end':
-                    if calc_pvalue:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
-                            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
-                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                            tooltip=['Position','Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
-                        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-                        
-                        st.altair_chart(chart, theme=None, use_container_width=True)
-                    else:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
-                            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
-                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                            tooltip=['Position','Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
-                        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-                        
-                        st.altair_chart(chart, theme=None, use_container_width=True)
+                if calc_pvalue:
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                        tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                    ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+                    
+                    st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
+                    st.altair_chart(chart, theme=None, use_container_width=True)
                 else:
-                    if calc_pvalue:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
-                            x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
-                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                            tooltip=['Position','Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
-                        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-
-                        st.altair_chart(chart, theme=None, use_container_width=True)
-                    else:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
-                            x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
-                            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
-                            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                            tooltip=['Position','Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
-                        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-                        
-                        st.altair_chart(chart, theme=None, use_container_width=True)  
+                    chart = alt.Chart(source).mark_circle().encode(
+                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+                        color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                        tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
+                    ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+                    
+                    st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
+                    st.altair_chart(chart, theme=None, use_container_width=True)
+                    
                     
                 email_sender = st.secrets['sender']
-                with colres3:
+                with colres4:
                     email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉', label_visibility='collapsed')
                 subject = f'Results TFinder - {current_date_time}'
                 if jaspar == 'PWM':
                     if matrix_type == 'With PWM':
-                        body = f"Hello ☺\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
+                        body = f"Hello ☺\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
                     if matrix_type == 'With FASTA sequences':
-                        body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
+                        body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
                 else:
-                    body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
+                    body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team\n\n\n\nN.B: Sometimes the WebLogo is not sent correctly. A small bug that I did not have time to fix (soon...). You can always right click 'Save Image' on the WebLogo on TFinder directly."
                     
                 password = st.secrets['password']
                 attachment_excel = excel_file
                 attachment_text = txt_output
                 
-                with colres3:
-                    if st.button("Send ✉", help='Included:\n\nTable of complete results\n\nSequences in FASTA format\n\nPattern searched, PWM and corresponding WebLogo'):
+                with colres4:
+                    if st.button("Send ✉"):
                         try:
                             msg = MIMEMultipart()
                             msg['From'] = email_sender
@@ -1287,7 +1254,7 @@ def aio_page():
                             msg.attach(attachment_excel)
 
                             attachment_text = MIMEText(attachment_text, 'plain', 'utf-8')
-                            attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.fasta')
+                            attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.txt')
                             msg.attach(attachment_text)
                             
                             if jaspar == 'PWM':
@@ -1304,22 +1271,22 @@ def aio_page():
                             server.sendmail(email_sender, email_receiver, msg.as_string())
                             server.quit()
                             
-                            with colres4:
+                            with colres5:
                                 st.success('Email sent successfully! 🚀')
                         except smtplib.SMTPAuthenticationError:
-                            with colres4:
+                            with colres5:
                                 st.error("Failed to authenticate. Please check your email and password.")
                         except smtplib.SMTPServerDisconnected:
-                            with colres4:
+                            with colres5:
                                 st.error("Failed to connect to the SMTP server. Please check your internet connection.")
                         except smtplib.SMTPRecipientsRefused:
-                            with colres4:
+                            with colres5:
                                 st.error(f"Error sending email: {email_receiver}")
                         except smtplib.SMTPException as e:
-                            with colres4:
+                            with colres5:
                                 st.error(f"Error sending email: {e}")
                         except Exception as e:
-                            with colres4:
+                            with colres5:
                                 st.error(f"Unknown error occurred: {e}")
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
