@@ -1038,7 +1038,7 @@ def aio_page():
                     st.download_button("💾 Download table (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xlsx', mime="application/vnd.ms-excel", key='download-excel')
                 with colres3:
                     txt_output = f"JASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
-                    st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.fasta",mime="text/plain")
+                    st.download_button(label="💾 Download sequences (.fasta)",data=txt_output,file_name=f"Sequences_{current_date_time}.fasta",mime="text/plain")
                     
                 st.markdown('**Table**')
                 st.dataframe(filtered_df, hide_index=True)
@@ -1099,7 +1099,7 @@ def aio_page():
                             msg.attach(attachment_excel)
 
                             attachment_text = MIMEText(attachment_text, 'plain', 'utf-8')
-                            attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.txt')
+                            attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.fasta')
                             msg.attach(attachment_text)
 
                             server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -1158,7 +1158,7 @@ def aio_page():
                             txt_output = f"Responsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
                     else:
                         txt_output = f"Responsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
-                    st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
+                    st.download_button(label="💾 Download sequences (.fasta)",data=txt_output,file_name=f"Sequences_{current_date_time}.fasta",mime="text/plain")
              
                 source = df
                 score_range = source['Rel Score'].astype(float)
@@ -1224,7 +1224,7 @@ def aio_page():
                             msg.attach(attachment_excel)
 
                             attachment_text = MIMEText(attachment_text, 'plain', 'utf-8')
-                            attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.txt')
+                            attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.fasta')
                             msg.attach(attachment_text)
                             
                             if jaspar == 'PWM':
