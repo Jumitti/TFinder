@@ -483,13 +483,19 @@ def aio_page():
     # Promoter output state
     st.divider()
     st.subheader(':blue[Step 2] Binding Sites Finder')
-    if 'result_promoter' not in st.session_state:
-        st.markdown("🔹 :blue[**Step 2.1**] Sequences:")
-        result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).", label_visibility='collapsed')
-    else:
-        st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-        result_promoter_text = "\n".join(st.session_state['result_promoter'])
-        result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text, label_visibility='collapsed')
+    promcol1, promcol2 = st.columns([0.9,0.1], gap='small')
+    with promcol1:
+        if 'result_promoter' not in st.session_state:
+            st.markdown("🔹 :blue[**Step 2.1**] Sequences:")
+            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).", label_visibility='collapsed')
+        else:
+            st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
+            result_promoter_text = "\n".join(st.session_state['result_promoter'])
+            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text, label_visibility='collapsed')
+    with promcol2:
+        if 'result_promoter' in st.session_state:
+            txt_output = f"{result_promoter}"
+            st.download_button(label="💾 Download sequences (.fasta)",data=txt_output,file_name=f"Sequences_{current_date_time}.fasta",mime="text/plain")
 
     # Responsive-Elements-Finder
         
@@ -1028,7 +1034,7 @@ def aio_page():
                 response_data = response.json()
                 TF_name = response_data['name']
             
-                colres1,colres2,colres3, colres4, colres5 = st.columns([1,0.5,0.5,1,1]) 
+                colres1, colres2, colres3, colres4 = st.columns([1,0.5,,1,1]) 
                 with colres1:
                     st.success(f"Finding responsive elements done for {TF_name}")
                 with colres2:
@@ -1036,9 +1042,6 @@ def aio_page():
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
                     st.download_button("💾 Download table (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xlsx', mime="application/vnd.ms-excel", key='download-excel')
-                with colres3:
-                    txt_output = f"JASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
-                    st.download_button(label="💾 Download sequences (.fasta)",data=txt_output,file_name=f"Sequences_{current_date_time}.fasta",mime="text/plain")
                     
                 st.markdown('**Table**')
                 st.dataframe(filtered_df, hide_index=True)
@@ -1074,7 +1077,7 @@ def aio_page():
                         st.altair_chart(chart, theme=None, use_container_width=True)
                     
                 email_sender = st.secrets['sender']
-                with colres4:
+                with colres3:
                     email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉', label_visibility='collapsed')
                 subject = f'Results TFinder - {current_date_time}'
                 body = f"Hello ☺\n\nResults obtained with TFinder for:\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
@@ -1082,7 +1085,7 @@ def aio_page():
                 attachment_excel = excel_file
                 attachment_text = txt_output
                 
-                with colres4:
+                with colres3:
                     if st.button("Send ✉"):
                         try:
                             msg = MIMEMultipart()
@@ -1107,8 +1110,9 @@ def aio_page():
                             server.login(email_sender, password)
                             server.sendmail(email_sender, email_receiver, msg.as_string())
                             server.quit()
-                            with colres5:
+                            with colres4:
                                 st.success('Email sent successfully! 🚀')
+                                
                         except smtplib.SMTPAuthenticationError:
                             with colres5:
                                 st.error("Failed to authenticate. Please check your email and password.")
