@@ -1002,7 +1002,7 @@ def aio_page():
     with BSFcol2:
         st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
         threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
-        threshold = float(threshold_entry)   
+        threshold = str(threshold_entry)   
         
     with BSFcol3:
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
@@ -1045,7 +1045,7 @@ def aio_page():
             
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
-            filtered_table2 = [row for row in table2 if float(row[3]) >= threshold]
+            filtered_table2 = [row for row in table2 if str(row[3]) >= threshold]
             filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
             st.session_state['filtered_df'] = filtered_df
             
@@ -1186,7 +1186,7 @@ def aio_page():
             
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
-            filtered_table2 = [row for row in table2 if float(row[3]) >= threshold]
+            filtered_table2 = [row for row in table2 if str(row[3]) >= threshold]
             filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
             st.session_state['filtered_df'] = filtered_df
             
