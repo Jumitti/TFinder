@@ -1014,22 +1014,20 @@ def aio_page():
     # RE output
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
-            if len(table2) > 0:
-                st.subheader(':blue[Results]')
+            st.subheader(':blue[Results]')
+            current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            
+            df = pd.DataFrame(table2[1:], columns=table2[0])
+            filtered_table2 = [row for row in table2[1:] if float(row[3]) >= threshold]
+            filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
+            
+            if len(filtered_df) > 0:
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
                 response = requests.get(url)
                 response_data = response.json()
                 TF_name = response_data['name']
-                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                
-                df = pd.DataFrame(table2[1:], columns=table2[0])
-                
-                filtered_table2 = [row for row in table2[1:] if float(row[3]) >= threshold]
-                filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
-                if len(filtered_df) > 0:
-                    st.success('ok')
-                
+            
                 colres1,colres2,colres3, colres4, colres5 = st.columns([1,0.5,0.5,1,1]) 
                 with colres1:
                     st.success(f"Finding responsive elements done for {TF_name}")
