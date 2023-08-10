@@ -1049,7 +1049,7 @@ def aio_page():
                 st.dataframe(filtered_df, hide_index=True)
                 
                 st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-                reference = st.radio('reference:', ('Beginning of the sequence','TSS or gene end'), horizontal=True, help='Position of the patterns turned according to either the beginning of the sequence or the configured TSS/gene end')
+                reference = st.radio('X axis:', ('Beginning of the sequence','TSS or gene end'), horizontal=True, help='Position of the patterns turned according to either the beginning of the sequence or the configured TSS/gene end')
                     
                 if not filtered_df.empty:
                     score_range = filtered_df['Rel Score'].astype(float)
