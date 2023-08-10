@@ -1052,7 +1052,7 @@ def aio_page():
                     st.markdown('')
                 with graphcol2:
                     st.markdown('**X axis:**', help='Position of the patterns turned according to either the beginning of the sequence or the configured TSS/gene end')
-                    reference = st.radio('Referencel:', ('Beginning of the sequence','TSS or gene end') ,horizontal=true, label_visibility="collapsed")
+                    reference = st.radio('Referencel:', ('Beginning of the sequence','TSS or gene end'), horizontal=True, label_visibility="collapsed")
                     
                 if not filtered_df.empty:
                     score_range = filtered_df['Rel Score'].astype(float)
