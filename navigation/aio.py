@@ -575,9 +575,11 @@ def aio_page():
         return score
 
     # Find with JASPAR and manual matrix
-    def search_sequence(tis_value, result_promoter, matrices):
+    def search_sequence(threshold, tis_value, result_promoter, matrices):
         global table2
         table2 = []
+        global table_filter
+        table_filter = []
         
         # Promoter input type
         lines = result_promoter
@@ -707,6 +709,14 @@ def aio_page():
                                    "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
                                    shortened_promoter_name, region]
                             table2.append(row)
+                            
+                            if normalized_score >= threshold:
+                                row = [str(position).ljust(8),
+                                       str(tis_position).ljust(15),
+                                       sequence_with_context,
+                                       "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
+                                       shortened_promoter_name, region]
+                                table_filter.append(row)
                     else:
                         for position, seq, normalized_score in found_positions:
                             start_position = max(0, position - 3)
@@ -729,6 +739,14 @@ def aio_page():
                                    "{:.6f}".format(normalized_score).ljust(12),
                                    shortened_promoter_name, region]
                             table2.append(row)
+                            
+                            if normalized_score >= threshold:
+                                row = [str(position).ljust(8),
+                                       str(tis_position).ljust(15),
+                                       sequence_with_context,
+                                       "{:.6f}".format(normalized_score).ljust(12),
+                                       shortened_promoter_name, region]
+                                table_filter.append(row)
 
         if len(table2) > 0:
             if calc_pvalue :
@@ -739,6 +757,16 @@ def aio_page():
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
                 header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Region"]
                 table2.insert(0, header)
+                
+        elif len(table_filter) > 0:
+            if calc_pvalue :
+                table_filter.sort(key=lambda x: float(x[3]), reverse=True)
+                header = ["Position", "Rel Position", "Sequence", "Rel Score", "p-value", "Gene", "Region"]
+                table_filter.insert(0, header)
+            else:
+                table_filter.sort(key=lambda x: float(x[3]), reverse=True)
+                header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Region"]
+                table_filter.insert(0, header)
             
         else:
             no_consensus = "No consensus sequence found with the specified threshold."
@@ -1014,7 +1042,7 @@ def aio_page():
     with BSFcol2:
         st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
         threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
-        threshold = str(threshold_entry)   
+        threshold = str(threshold_entry)
         
     with BSFcol3:
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
@@ -1024,6 +1052,7 @@ def aio_page():
     if result_promoter.startswith(("A", "T", "G", "C", ">")):
         with st.spinner("Finding responsive elements..."):
             tis_value = int(entry_tis)
+            threshold = float(threshold_entry)
             try:
                 if jaspar == 'JASPAR_ID':
                     sequence_consensus_input = entry_sequence
@@ -1043,7 +1072,7 @@ def aio_page():
                                 values = [float(value) for value in values]
                                 matrix[key.strip()] = values
                         matrices = transform_matrix(matrix)
-                        table2 = search_sequence(tis_value, result_promoter, matrices)            
+                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
                 
@@ -1058,8 +1087,7 @@ def aio_page():
             
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
-            filtered_table2 = [row for row in table2 if str(row[3]) >= threshold]
-            filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
+            filtered_df = pd.DataFrame(table_filter[1:], columns=table_filter[0])
             st.session_state['filtered_df'] = filtered_df
             
             if len(filtered_df) > 0:
@@ -1199,8 +1227,7 @@ def aio_page():
             
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
-            filtered_table2 = [row for row in table2 if str(row[3]) >= threshold]
-            filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
+            filtered_df = pd.DataFrame(table_filter[1:], columns=table_filter[0])
             st.session_state['filtered_df'] = filtered_df
             
             if len(filtered_df) > 0:
