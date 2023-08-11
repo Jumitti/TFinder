@@ -385,7 +385,7 @@ def aio_page():
                     
                     # for percent_complete in range(len(gene_list)):
                         
-                    for i, gene_info in data_dff.iterrows():
+                    for i, gene_info in data_dff.iterrows() and range(len(data_dff.iterrows()):
                         my_bar.progress(i + 1, text=progress_text)
                         gene_name = gene_info["Gene"]
                         human_checked = gene_info["human"]
