@@ -1074,7 +1074,7 @@ def aio_page():
                 response = requests.get(url)
                 response_data = response.json()
                 TF_name = response_data['name']
-                colres1,colres2,colres3, colres4, colres5 = st.columns([1,0.5,0.5,1,1])
+                colres1,colres2,colres3, colres4 = st.columns([1,0.5,1,1])
                 with colres1:
                     st.success(f"Finding responsive elements done for {TF_name}")
                 df = pd.DataFrame(table_filter[1:], columns=table_filter[0])
@@ -1086,9 +1086,6 @@ def aio_page():
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
                     st.download_button("💾 Download table (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xlsx', mime="application/vnd.ms-excel", key='download-excel')
-                with colres3:
-                    txt_output = f"JASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
-                    st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
             
                 source = df
                 score_range = source['Rel Score'].astype(float)
@@ -1121,7 +1118,7 @@ def aio_page():
                     st.altair_chart(chart, theme=None, use_container_width=True)
                     
                 email_sender = st.secrets['sender']
-                with colres4:
+                with colres3:
                     email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉', label_visibility='collapsed')
                 subject = f'Results TFinder - {current_date_time}'
                 body = f"Hello ☺\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team\n\n\n\nN.B: Sometimes the WebLogo is not sent correctly. A small bug that I did not have time to fix (soon...). You can always right click 'Save Image' on the WebLogo on TFinder directly."
@@ -1129,7 +1126,7 @@ def aio_page():
                 attachment_excel = excel_file
                 attachment_text = txt_output
                 
-                with colres4:
+                with colres3:
                     if st.button("Send ✉"):
                         try:
                             msg = MIMEMultipart()
@@ -1154,22 +1151,22 @@ def aio_page():
                             server.login(email_sender, password)
                             server.sendmail(email_sender, email_receiver, msg.as_string())
                             server.quit()
-                            with colres5:
+                            with colres4:
                                 st.success('Email sent successfully! 🚀')
                         except smtplib.SMTPAuthenticationError:
-                            with colres5:
+                            with colres4:
                                 st.error("Failed to authenticate. Please check your email and password.")
                         except smtplib.SMTPServerDisconnected:
-                            with colres5:
+                            with colres4:
                                 st.error("Failed to connect to the SMTP server. Please check your internet connection.")
                         except smtplib.SMTPRecipientsRefused:
-                            with colres5:
+                            with colres4:
                                 st.error(f"Error sending email: {email_receiver}")
                         except smtplib.SMTPException as e:
-                            with colres5:
+                            with colres4:
                                 st.error(f"Error sending email: {e}")
                         except Exception as e:
-                            with colres5:
+                            with colres4:
                                 st.error(f"Unknown error occurred: {e}")
                                 
             else: 
@@ -1185,7 +1182,7 @@ def aio_page():
             if len(table_filter) > 0:
                 current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 st.subheader(':blue[Results]')
-                colres1,colres2,colres3, colres4, colres5 = st.columns([1,0.5,0.5,1,1])
+                colres1,colres2,colres3, colres4 = st.columns([1,0.5,1,1])
                 with colres1:
                     st.success(f"Finding responsive elements done")
                 df = pd.DataFrame(table_filter[1:], columns=table_filter[0])
@@ -1197,15 +1194,6 @@ def aio_page():
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
                     st.download_button("💾 Download table (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xlsx', mime="application/vnd.ms-excel", key='download-excel')
-                with colres3:
-                    if jaspar == 'PWM':
-                        if matrix_type == 'With PWM':
-                            txt_output = f"Position Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
-                        if matrix_type == 'With FASTA sequences':
-                            txt_output = f"Responsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
-                    else:
-                        txt_output = f"Responsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
-                    st.download_button(label="💾 Download sequences (.txt)",data=txt_output,file_name=f"Sequences_{current_date_time}.txt",mime="text/plain")
              
                 source = df
                 score_range = source['Rel Score'].astype(float)
@@ -1239,7 +1227,7 @@ def aio_page():
                     
                     
                 email_sender = st.secrets['sender']
-                with colres4:
+                with colres3:
                     email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉', label_visibility='collapsed')
                 subject = f'Results TFinder - {current_date_time}'
                 if jaspar == 'PWM':
@@ -1254,7 +1242,7 @@ def aio_page():
                 attachment_excel = excel_file
                 attachment_text = txt_output
                 
-                with colres4:
+                with colres3:
                     if st.button("Send ✉"):
                         try:
                             msg = MIMEMultipart()
@@ -1288,22 +1276,22 @@ def aio_page():
                             server.sendmail(email_sender, email_receiver, msg.as_string())
                             server.quit()
                             
-                            with colres5:
+                            with colres4:
                                 st.success('Email sent successfully! 🚀')
                         except smtplib.SMTPAuthenticationError:
-                            with colres5:
+                            with colres4:
                                 st.error("Failed to authenticate. Please check your email and password.")
                         except smtplib.SMTPServerDisconnected:
-                            with colres5:
+                            with colres4:
                                 st.error("Failed to connect to the SMTP server. Please check your internet connection.")
                         except smtplib.SMTPRecipientsRefused:
-                            with colres5:
+                            with colres4:
                                 st.error(f"Error sending email: {email_receiver}")
                         except smtplib.SMTPException as e:
-                            with colres5:
+                            with colres4:
                                 st.error(f"Error sending email: {e}")
                         except Exception as e:
-                            with colres5:
+                            with colres4:
                                 st.error(f"Unknown error occurred: {e}")
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
