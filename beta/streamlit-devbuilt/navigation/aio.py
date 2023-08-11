@@ -170,10 +170,10 @@ def aio_page():
 
                 # Append the result to the result_promoter
                 if prom_term == 'Promoter':
-                    result_promoter.append(f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
+                    result_promoter.append(f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {upstream}\n{dna_sequence}\n")
                     st.session_state['result_promoter'] = result_promoter
                 else:
-                    result_promoter.append(f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop}\n{dna_sequence}\n")
+                    result_promoter.append(f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {upstream}\n{dna_sequence}\n")
                     st.session_state['result_promoter'] = result_promoter
 
             return result_promoter
@@ -575,9 +575,11 @@ def aio_page():
         return score
 
     # Find with JASPAR and manual matrix
-    def search_sequence(tis_value, result_promoter, matrices):
+    def search_sequence(threshold, tis_value, result_promoter, matrices):
         global table2
         table2 = []
+        global table_filter
+        table_filter = []
         
         # Promoter input type
         lines = result_promoter
@@ -707,6 +709,14 @@ def aio_page():
                                    "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
                                    shortened_promoter_name, region]
                             table2.append(row)
+                            
+                            if normalized_score >= threshold:
+                                row = [str(position).ljust(8),
+                                       str(tis_position).ljust(15),
+                                       sequence_with_context,
+                                       "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
+                                       shortened_promoter_name, region]
+                                table_filter.append(row)
                     else:
                         for position, seq, normalized_score in found_positions:
                             start_position = max(0, position - 3)
@@ -729,7 +739,28 @@ def aio_page():
                                    "{:.6f}".format(normalized_score).ljust(12),
                                    shortened_promoter_name, region]
                             table2.append(row)
-
+                            
+                            if normalized_score >= threshold:
+                                row = [str(position).ljust(8),
+                                       str(tis_position).ljust(15),
+                                       sequence_with_context,
+                                       "{:.6f}".format(normalized_score).ljust(12),
+                                       shortened_promoter_name, region]
+                                table_filter.append(row)
+                
+        if len(table_filter) > 0:
+            if calc_pvalue :
+                table_filter.sort(key=lambda x: float(x[3]), reverse=True)
+                header = ["Position", "Rel Position", "Sequence", "Rel Score", "p-value", "Gene", "Region"]
+                table_filter.insert(0, header)
+            else:
+                table_filter.sort(key=lambda x: float(x[3]), reverse=True)
+                header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Region"]
+                table_filter.insert(0, header)
+            
+        else:
+            no_consensus = "No consensus sequence found with the specified threshold."
+        
         if len(table2) > 0:
             if calc_pvalue :
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
@@ -740,10 +771,7 @@ def aio_page():
                 header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Region"]
                 table2.insert(0, header)
             
-        else:
-            no_consensus = "No consensus sequence found with the specified threshold."
-            
-        return table2
+        return table_filter
         
     # Responsive Elements Finder
 
@@ -1014,7 +1042,7 @@ def aio_page():
     with BSFcol2:
         st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
         threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0 ,0.85, step= 0.05, label_visibility="collapsed")
-        threshold = str(threshold_entry)   
+        threshold = str(threshold_entry)
         
     with BSFcol3:
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
@@ -1024,11 +1052,12 @@ def aio_page():
     if result_promoter.startswith(("A", "T", "G", "C", ">")):
         with st.spinner("Finding responsive elements..."):
             tis_value = int(entry_tis)
+            threshold = float(threshold_entry)
             try:
                 if jaspar == 'JASPAR_ID':
                     sequence_consensus_input = entry_sequence
                     matrices = matrix_extraction(sequence_consensus_input)
-                    table2 = search_sequence(tis_value, result_promoter, matrices)
+                    table_filter = search_sequence(tis_value, result_promoter, matrices)
                 else:
                     if isUIPAC == False:
                         st.error("Please use IUPAC code for Responsive Elements")
@@ -1043,7 +1072,7 @@ def aio_page():
                                 values = [float(value) for value in values]
                                 matrix[key.strip()] = values
                         matrices = transform_matrix(matrix)
-                        table2 = search_sequence(tis_value, result_promoter, matrices)            
+                        table_filter = search_sequence(threshold, tis_value, result_promoter, matrices)            
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
                 
@@ -1052,16 +1081,14 @@ def aio_page():
     st.divider()
     # RE output
     if jaspar == 'JASPAR_ID':
-        if 'table2' in locals():
+        if 'table_filter' in locals():
+            current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
-            
-            df = pd.DataFrame(table2[1:], columns=table2[0])
-            st.session_state['df'] = df
-            filtered_table2 = [row for row in table2 if str(row[3]) >= threshold]
-            filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
-            st.session_state['filtered_df'] = filtered_df
-            
             if len(filtered_df) > 0:
+                # df = pd.DataFrame(table2[1:], columns=table2[0])
+                # st.session_state['df'] = df
+                filtered_df = pd.DataFrame(table_filter[1:], columns=table_filter[0])
+                st.session_state['filtered_df'] = filtered_df
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
                 response = requests.get(url)
@@ -1082,18 +1109,19 @@ def aio_page():
                 
                 st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                 reference = st.radio('X axis:', ('Beginning of the sequence','TSS or gene end'), horizontal=True, help='Position of the patterns turned according to either the beginning of the sequence or the configured TSS/gene end')
-                    
-                score_range = filtered_df['Rel Score'].astype(float)
+                
+                source = filtered_df
+                score_range = source['Rel Score'].astype(float)
                 ystart = score_range.min() - 0.02
                 ystop = score_range.max() + 0.02 
                 scale = alt.Scale(scheme='category10')
-                filtered_df['Gene_Region'] = filtered_df['Gene'] + " " + filtered_df['Region']
+                source['Gene_Region'] = source['Gene'] + " " + source['Region']
                 color_scale = alt.Color("Gene_Region:N", scale=scale)
                 gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
                 
                 if reference == 'TSS or gene end':
                     if calc_pvalue:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1102,7 +1130,7 @@ def aio_page():
                         
                         st.altair_chart(chart, theme=None, use_container_width=True)
                     else:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1112,7 +1140,7 @@ def aio_page():
                         st.altair_chart(chart, theme=None, use_container_width=True)
                 else:
                     if calc_pvalue:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1121,7 +1149,7 @@ def aio_page():
 
                         st.altair_chart(chart, theme=None, use_container_width=True)
                     else:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1193,16 +1221,14 @@ def aio_page():
                 st.error(f"No consensus sequence found with the specified threshold for {TF_name}")
                 
     else:
-        if 'table2' in locals():
+        if 'table_filter' in locals():
+            current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
-            
-            df = pd.DataFrame(table2[1:], columns=table2[0])
-            st.session_state['df'] = df
-            filtered_table2 = [row for row in table2 if str(row[3]) >= threshold]
-            filtered_df = pd.DataFrame(filtered_table2[1:], columns=table2[0])
-            st.session_state['filtered_df'] = filtered_df
-            
             if len(filtered_df) > 0:
+                # df = pd.DataFrame(table2[1:], columns=table2[0])
+                # st.session_state['df'] = df
+                filtered_df = pd.DataFrame(table_filter[1:], columns=table_filter[0])
+                st.session_state['filtered_df'] = filtered_df
                 colres1, colres2, colres3, colres4 = st.columns([1,0.5,1,1])
                 with colres1:
                     st.success(f"Finding responsive elements done")
@@ -1218,17 +1244,18 @@ def aio_page():
                 st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                 reference = st.radio('X axis:', ('Beginning of the sequence','TSS or gene end'), horizontal=True, help='Position of the patterns turned according to either the beginning of the sequence or the configured TSS/gene end')
 
-                score_range = filtered_df['Rel Score'].astype(float)
+                source = filtered_df
+                score_range = source['Rel Score'].astype(float)
                 ystart = score_range.min() - 0.02
-                ystop = score_range.max() + 0.02
-                filtered_df['Gene_Region'] = filtered_df['Gene'] + " " + filtered_df['Region']
+                ystop = score_range.max() + 0.02 
                 scale = alt.Scale(scheme='category10')
+                source['Gene_Region'] = source['Gene'] + " " + source['Region']
                 color_scale = alt.Color("Gene_Region:N", scale=scale)
                 gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
                 
                 if reference == 'TSS or gene end':
                     if calc_pvalue:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1237,7 +1264,7 @@ def aio_page():
                         
                         st.altair_chart(chart, theme=None, use_container_width=True)
                     else:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1247,7 +1274,7 @@ def aio_page():
                         st.altair_chart(chart, theme=None, use_container_width=True)
                 else:
                     if calc_pvalue:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1256,7 +1283,7 @@ def aio_page():
 
                         st.altair_chart(chart, theme=None, use_container_width=True)
                     else:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
