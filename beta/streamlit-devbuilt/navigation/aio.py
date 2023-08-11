@@ -587,6 +587,7 @@ def aio_page():
         if first_line.startswith(("A", "T", "C", "G")):
             shortened_promoter_name = "n.d."
             promoter_region = lines
+            found_species = "n.d"
             region = "n.d"
             promoters.append((shortened_promoter_name, promoter_region, region))
         else:
@@ -603,7 +604,7 @@ def aio_page():
                         if species in promoter_name:
                             found_species = species
                         else:
-                            found_species = 'n.d'
+                            found_species = "n.d"
                     if "promoter" in promoter_name.lower():
                         region = "Prom."
                     elif "terminator" in promoter_name.lower():
@@ -620,7 +621,7 @@ def aio_page():
             for matrix_name, matrix in matrices.items():
                 seq_length = len(matrix['A'])
             
-            for shortened_promoter_name, promoter_region, region, found_species in promoters:
+            for shortened_promoter_name, promoter_region, found_species, region in promoters:
                 length_prom = len(promoter_region)
                         
                 def generate_random_sequence(length, probabilities):
@@ -661,7 +662,7 @@ def aio_page():
             min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
 
             # REF
-            for shortened_promoter_name, promoter_region, region, found_species in promoters:
+            for shortened_promoter_name, promoter_region, found_species, region in promoters:
                 found_positions = []
                 length_prom = len(promoter_region)
 
