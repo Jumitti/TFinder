@@ -1079,10 +1079,10 @@ def aio_page():
     
     
     st.divider()
-    current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     # RE output
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
+            current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
             
             df = pd.DataFrame(table2[1:], columns=table2[0])
@@ -1224,6 +1224,7 @@ def aio_page():
                 
     else:
         if 'table2' in locals():
+            current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
             
             df = pd.DataFrame(table2[1:], columns=table2[0])
