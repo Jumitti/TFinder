@@ -1085,8 +1085,8 @@ def aio_page():
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
             
-            df = pd.DataFrame(table2[1:], columns=table2[0])
-            st.session_state['df'] = df
+            # df = pd.DataFrame(table2[1:], columns=table2[0])
+            # st.session_state['df'] = df
             filtered_df = pd.DataFrame(table_filter[1:], columns=table_filter[0])
             st.session_state['filtered_df'] = filtered_df
             
@@ -1227,8 +1227,8 @@ def aio_page():
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
             
-            df = pd.DataFrame(table2[1:], columns=table2[0])
-            st.session_state['df'] = df
+            # df = pd.DataFrame(table2[1:], columns=table2[0])
+            # st.session_state['df'] = df
             filtered_df = pd.DataFrame(table_filter[1:], columns=table_filter[0])
             st.session_state['filtered_df'] = filtered_df
             
