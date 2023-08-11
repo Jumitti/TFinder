@@ -383,7 +383,7 @@ def aio_page():
                     
                     st.session_state['upstream'] = upstream_entry
                     
-                    for percent_complete in len(gene_list):
+                    for percent_complete in range(len(gene_list)):
                         
                         for i, gene_info in data_dff.iterrows():
                             my_bar.progress(percent_complete + 1, text=progress_text)
