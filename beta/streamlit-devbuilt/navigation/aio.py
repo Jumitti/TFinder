@@ -380,7 +380,7 @@ def aio_page():
                 with st.spinner("Finding sequences..."):
                     
                     st.session_state['upstream'] = upstream_entry
-                    st.success(len(data_dff)) 
+                    st.success(len(data_dff))
                     for i, gene_info in data_dff.iterrows():
                         gene_name = gene_info["Gene"]
                         human_checked = gene_info["human"]
