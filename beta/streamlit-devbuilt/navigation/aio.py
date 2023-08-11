@@ -152,7 +152,7 @@ def aio_page():
     # Promoter Finder
     def find_promoters(gene_ids, species, upstream, downstream):
         try:
-            st.success(len(gene_ids))
+            st.success(progress_bar)
             for gene_id in gene_ids:
                 if gene_id.isdigit():
                     entrez_id = gene_id
@@ -255,11 +255,12 @@ def aio_page():
                 if st.button("🧬 :blue[**Step 1.5**] Extract promoter" ,help='(~5sec/gene)'):
                     with st.spinner("Finding promoters..."):
                         gene_ids = gene_id_entry.strip().split("\n")
+                        progress_bar = len(gene_ids)
                         upstream = int(upstream_entry)
                         st.session_state['upstream'] = upstream
                         downstream = int(downstream_entry)
                         try:
-                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            result_promoter = find_promoters(gene_ids, species, upstream, downstream, progress_bar)
                             st.success("Promoters extraction complete!")
                         except Exception as e:
                             st.error(f"Error finding promoters: {str(e)}")
@@ -271,7 +272,7 @@ def aio_page():
                         st.session_state['upstream'] = upstream
                         downstream = int(downstream_entry)
                         try:
-                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            result_promoter = find_promoters(gene_ids, species, upstream, downstream, progress_bar)
                             st.success("Terminators extraction complete!")
                         except Exception as e:
                             st.error(f"Error finding terminators: {str(e)}")   
@@ -279,6 +280,7 @@ def aio_page():
             
             # Advance mode extraction
             gene_list = gene_id_entry.strip().split('\n')
+            progress_bar = len(gene_list)
         
             data_df = pd.DataFrame(
                 {
@@ -396,7 +398,7 @@ def aio_page():
                             downstream = int(downstream_entry)
                             species = 'human'
                             try:
-                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream, progress_bar)
                             except Exception as e:
                                 st.error(f"Error finding promoters: {str(e)}")
                         if mouse_checked == True and prom_checked == True:
@@ -406,7 +408,7 @@ def aio_page():
                             downstream = int(downstream_entry)
                             species = 'mouse'
                             try:
-                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream, progress_bar)
                             except Exception as e:
                                 st.error(f"Error finding promoters: {str(e)}")
                         if rat_checked == True and prom_checked == True:
@@ -416,7 +418,7 @@ def aio_page():
                             downstream = int(downstream_entry)
                             species = 'rat'
                             try:
-                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream, progress_bar)
                             except Exception as e:
                                 st.error(f"Error finding promoters: {str(e)}")
                         if droso_checked == True and prom_checked == True:
@@ -426,7 +428,7 @@ def aio_page():
                             downstream = int(downstream_entry)
                             species = 'drosophila'
                             try:
-                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream, progress_bar)
                             except Exception as e:
                                 st.error(f"Error finding promoters: {str(e)}")
                         if zebra_checked == True and prom_checked == True:
@@ -436,7 +438,7 @@ def aio_page():
                             downstream = int(downstream_entry)
                             species = 'zebrafish'
                             try:
-                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream, progress_bar)
                             except Exception as e:
                                 st.error(f"Error finding promoters: {str(e)}")
                         if human_checked == True and term_checked == True:
@@ -446,7 +448,7 @@ def aio_page():
                             downstream = int(downstream_entry)
                             species = 'human'
                             try:
-                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream, progress_bar)
                             except Exception as e:
                                 st.error(f"Error finding promoters: {str(e)}")
                         if mouse_checked == True and term_checked == True:
@@ -456,7 +458,7 @@ def aio_page():
                             downstream = int(downstream_entry)
                             species = 'mouse'
                             try:
-                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream, progress_bar)
                             except Exception as e:
                                 st.error(f"Error finding promoters: {str(e)}")
                         if rat_checked == True and term_checked == True:
@@ -466,7 +468,7 @@ def aio_page():
                             downstream = int(downstream_entry)
                             species = 'rat'
                             try:
-                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream, progress_bar)
                             except Exception as e:
                                 st.error(f"Error finding promoters: {str(e)}")
                         if droso_checked == True and term_checked == True:
@@ -476,7 +478,7 @@ def aio_page():
                             downstream = int(downstream_entry)
                             species = 'drosophila'
                             try:
-                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream, progress_bar)
                             except Exception as e:
                                 st.error(f"Error finding promoters: {str(e)}")
                         if zebra_checked == True and term_checked == True:
@@ -486,7 +488,7 @@ def aio_page():
                             downstream = int(downstream_entry)
                             species = 'zebrafish'
                             try:
-                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream, progress_bar)
                             except Exception as e:
                                 st.error(f"Error finding promoters: {str(e)}")
                         if gene_name.isdigit() and prom_checked == True:
@@ -496,7 +498,7 @@ def aio_page():
                             downstream = int(downstream_entry)
                             species = 'human' # If isdigit then it means that it is an NCBI gene accession number (GENE_ID), so the species is already associated by default. The program needs this parameter but it will not take it into account. It's a holdover from a spaghetti coding
                             try:
-                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream, progress_bar)
                             except Exception as e:
                                 st.error(f"Error finding promoters: {str(e)}")
                         if gene_name.isdigit() and term_checked == True:
@@ -506,7 +508,7 @@ def aio_page():
                             downstream = int(downstream_entry)
                             species = 'human' # If isdigit then it means that it is an NCBI gene accession number (GENE_ID), so the species is already associated by default. The program needs this parameter but it will not take it into account. It's a holdover from a spaghetti coding
                             try:
-                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream, progress_bar)
                             except Exception as e:
                                 st.error(f"Error finding promoters: {str(e)}")
 
