@@ -587,6 +587,7 @@ def aio_page():
         if first_line.startswith(("A", "T", "C", "G")):
             shortened_promoter_name = "n.d."
             promoter_region = lines
+            found_species = "n.d"
             region = "n.d"
             promoters.append((shortened_promoter_name, promoter_region, region))
         else:
@@ -595,8 +596,16 @@ def aio_page():
             while i < len(lines):
                 line = lines[i]
                 if line.startswith(">"):
+                    species_prom = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster', 'Danio rerio']
                     promoter_name = line[1:]
-                    shortened_promoter_name = promoter_name[:15] if len(promoter_name) > 10 else promoter_name
+                    words = promoter_name.lstrip('>').split()
+                    shortened_promoter_name = words[0]
+                    for species in species_prom:
+                        if species in promoter_name:
+                            found_species = species
+                            break
+                        else:
+                            found_species = "n.d"
                     if "promoter" in promoter_name.lower():
                         region = "Prom."
                     elif "terminator" in promoter_name.lower():
@@ -604,7 +613,7 @@ def aio_page():
                     else:
                         region = "n.d"
                     promoter_region = lines[i + 1]
-                    promoters.append((shortened_promoter_name, promoter_region, region))
+                    promoters.append((shortened_promoter_name, promoter_region, found_species, region))
                     i += 2
                 else:
                     i += 1
@@ -613,7 +622,7 @@ def aio_page():
             for matrix_name, matrix in matrices.items():
                 seq_length = len(matrix['A'])
             
-            for shortened_promoter_name, promoter_region, region in promoters:
+            for shortened_promoter_name, promoter_region, found_species, region in promoters:
                 length_prom = len(promoter_region)
                         
                 def generate_random_sequence(length, probabilities):
@@ -654,7 +663,7 @@ def aio_page():
             min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
 
             # REF
-            for shortened_promoter_name, promoter_region, region in promoters:
+            for shortened_promoter_name, promoter_region, found_species, region in promoters:
                 found_positions = []
                 length_prom = len(promoter_region)
 
@@ -707,7 +716,7 @@ def aio_page():
                                        str(tis_position).ljust(15),
                                        sequence_with_context,
                                        "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
-                                       shortened_promoter_name, region]
+                                       shortened_promoter_name, found_species, region]
                                 table_filter.append(row)
                     else:
                         for position, seq, normalized_score in found_positions:
@@ -730,17 +739,17 @@ def aio_page():
                                        str(tis_position).ljust(15),
                                        sequence_with_context,
                                        "{:.6f}".format(normalized_score).ljust(12),
-                                       shortened_promoter_name, region]
+                                       shortened_promoter_name, found_species, region]
                                 table_filter.append(row)
                 
         if len(table_filter) > 0:
             if calc_pvalue :
                 table_filter.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Rel Position", "Sequence", "Rel Score", "p-value", "Gene", "Region"]
+                header = ["Position", "Rel Position", "Sequence", "Rel Score", "p-value", "Gene", "Species", "Region"]
                 table_filter.insert(0, header)
             else:
                 table_filter.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Region"]
+                header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Species", "Region"]
                 table_filter.insert(0, header)
             
         else:
@@ -1085,7 +1094,7 @@ def aio_page():
                 score_range = source['Rel Score'].astype(float)
                 ystart = score_range.min() - 0.02
                 ystop = score_range.max() + 0.02
-                source['Gene_Region'] = source['Gene'] + " " + source['Region']
+                source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Gene_Region:N", scale=scale)
                 gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
@@ -1095,7 +1104,7 @@ def aio_page():
                         x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                        tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                        tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Species', 'Region']
                     ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
                     
                     st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
@@ -1105,7 +1114,7 @@ def aio_page():
                         x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                        tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
+                        tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Species', 'Region']
                     ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
                     
                     st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
@@ -1202,7 +1211,7 @@ def aio_page():
                 score_range = source['Rel Score'].astype(float)
                 ystart = score_range.min() - 0.02
                 ystop = score_range.max() + 0.02
-                source['Gene_Region'] = source['Gene'] + " " + source['Region']
+                source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Gene_Region:N", scale=scale)
                 gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
@@ -1212,7 +1221,7 @@ def aio_page():
                         x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                        tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                        tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Species', 'Region']
                     ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
                     
                     st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
@@ -1222,7 +1231,7 @@ def aio_page():
                         x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                        tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
+                        tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Species', 'Region']
                     ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
                     
                     st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
