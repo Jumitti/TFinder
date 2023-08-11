@@ -150,7 +150,7 @@ def aio_page():
             raise Exception(f"Error: {str(e)}")
 
     # Promoter Finder
-    def find_promoters(gene_ids, species, upstream, downstream):
+    def find_promoters(gene_ids, species, upstream, downstream, progress_bar):
         try:
             st.success(progress_bar)
             for gene_id in gene_ids:
