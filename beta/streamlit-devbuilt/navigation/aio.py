@@ -575,11 +575,11 @@ def aio_page():
         return score
 
     # Find with JASPAR and manual matrix
-    global table2
-    table2 = []
     def search_sequence(threshold, tis_value, result_promoter, matrices):
         global table_filter
         table_filter = []
+        global table2
+        table2 = []
         
         # Promoter input type
         lines = result_promoter
@@ -1210,7 +1210,7 @@ def aio_page():
                 st.dataframe(df, hide_index=True)
                 with colres2:
                     df_full = pd.DataFrame(table2[1:], columns=table2[0])
-                    st.session_state['df'] = df_full
+                    st.session_state['df_full'] = df_full
                     excel_file = io.BytesIO()
                     df_full.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
