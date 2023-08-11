@@ -596,7 +596,8 @@ def aio_page():
                 line = lines[i]
                 if line.startswith(">"):
                     promoter_name = line[1:]
-                    shortened_promoter_name = promoter_name[:15] if len(promoter_name) > 10 else promoter_name
+                    words = line.lstrip('>').split()
+                    shortened_promoter_name = words[0]
                     if "promoter" in promoter_name.lower():
                         region = "Prom."
                     elif "terminator" in promoter_name.lower():
