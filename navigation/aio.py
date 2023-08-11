@@ -771,7 +771,7 @@ def aio_page():
                 header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Region"]
                 table2.insert(0, header)
             
-        return table2
+        return table_filter
         
     # Responsive Elements Finder
 
@@ -1057,7 +1057,7 @@ def aio_page():
                 if jaspar == 'JASPAR_ID':
                     sequence_consensus_input = entry_sequence
                     matrices = matrix_extraction(sequence_consensus_input)
-                    table2 = search_sequence(tis_value, result_promoter, matrices)
+                    table_filter = search_sequence(tis_value, result_promoter, matrices)
                 else:
                     if isUIPAC == False:
                         st.error("Please use IUPAC code for Responsive Elements")
@@ -1072,7 +1072,7 @@ def aio_page():
                                 values = [float(value) for value in values]
                                 matrix[key.strip()] = values
                         matrices = transform_matrix(matrix)
-                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
+                        table_filter = search_sequence(threshold, tis_value, result_promoter, matrices)            
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
                 
