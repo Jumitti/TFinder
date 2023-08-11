@@ -1206,11 +1206,11 @@ def aio_page():
                     st.success(f"Finding responsive elements done")
                 df = pd.DataFrame(table_filter[1:], columns=table_filter[0])
                 st.session_state['df'] = df
-                df_full = pd.DataFrame(table2[1:], columns=table2[0])
-                st.session_state['df'] = df_full
                 st.markdown('**Table**')
                 st.dataframe(df, hide_index=True)
                 with colres2:
+                    df_full = pd.DataFrame(table2[1:], columns=table2[0])
+                    st.session_state['df'] = df_full
                     excel_file = io.BytesIO()
                     df_full.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
