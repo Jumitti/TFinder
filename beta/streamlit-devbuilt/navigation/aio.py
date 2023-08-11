@@ -576,7 +576,7 @@ def aio_page():
 
     # Find with JASPAR and manual matrix
     global table2
-     table2 = []
+    table2 = []
     def search_sequence(threshold, tis_value, result_promoter, matrices):
         global table_filter
         table_filter = []
