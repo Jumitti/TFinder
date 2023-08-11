@@ -1084,13 +1084,11 @@ def aio_page():
         if 'table_filter' in locals():
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
-            
-            # df = pd.DataFrame(table2[1:], columns=table2[0])
-            # st.session_state['df'] = df
-            filtered_df = pd.DataFrame(table_filter[1:], columns=table_filter[0])
-            st.session_state['filtered_df'] = filtered_df
-            
             if len(filtered_df) > 0:
+                # df = pd.DataFrame(table2[1:], columns=table2[0])
+                # st.session_state['df'] = df
+                filtered_df = pd.DataFrame(table_filter[1:], columns=table_filter[0])
+                st.session_state['filtered_df'] = filtered_df
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
                 response = requests.get(url)
@@ -1226,13 +1224,11 @@ def aio_page():
         if 'table_filter' in locals():
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
-            
-            # df = pd.DataFrame(table2[1:], columns=table2[0])
-            # st.session_state['df'] = df
-            filtered_df = pd.DataFrame(table_filter[1:], columns=table_filter[0])
-            st.session_state['filtered_df'] = filtered_df
-            
             if len(filtered_df) > 0:
+                # df = pd.DataFrame(table2[1:], columns=table2[0])
+                # st.session_state['df'] = df
+                filtered_df = pd.DataFrame(table_filter[1:], columns=table_filter[0])
+                st.session_state['filtered_df'] = filtered_df
                 colres1, colres2, colres3, colres4 = st.columns([1,0.5,1,1])
                 with colres1:
                     st.success(f"Finding responsive elements done")
