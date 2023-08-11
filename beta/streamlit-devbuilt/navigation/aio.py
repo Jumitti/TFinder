@@ -771,7 +771,7 @@ def aio_page():
                 header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Region"]
                 table2.insert(0, header)
             
-        return table_filter
+        return table_filter, table2
         
     # Responsive Elements Finder
 
@@ -1057,7 +1057,7 @@ def aio_page():
                 if jaspar == 'JASPAR_ID':
                     sequence_consensus_input = entry_sequence
                     matrices = matrix_extraction(sequence_consensus_input)
-                    table_filter = search_sequence(tis_value, result_promoter, matrices)
+                    table_filter, table2 = search_sequence(tis_value, result_promoter, matrices)
                 else:
                     if isUIPAC == False:
                         st.error("Please use IUPAC code for Responsive Elements")
@@ -1072,7 +1072,7 @@ def aio_page():
                                 values = [float(value) for value in values]
                                 matrix[key.strip()] = values
                         matrices = transform_matrix(matrix)
-                        table_filter = search_sequence(threshold, tis_value, result_promoter, matrices)            
+                        table_filter, table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
                 
@@ -1098,6 +1098,8 @@ def aio_page():
                 st.markdown('**Table**')
                 st.dataframe(df, hide_index=True)
                 with colres2:
+                    df_full = pd.DataFrame(table2[1:], columns=table2[0])
+                    st.session_state['df_full'] = df_full
                     excel_file = io.BytesIO()
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
