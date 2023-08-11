@@ -1081,7 +1081,7 @@ def aio_page():
     st.divider()
     # RE output
     if jaspar == 'JASPAR_ID':
-        if 'table2' in locals():
+        if 'table_filter' in locals():
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
             
@@ -1223,7 +1223,7 @@ def aio_page():
                 st.error(f"No consensus sequence found with the specified threshold for {TF_name}")
                 
     else:
-        if 'table2' in locals():
+        if 'table_filter' in locals():
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
             
