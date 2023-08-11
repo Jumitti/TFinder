@@ -589,7 +589,7 @@ def aio_page():
             promoter_region = lines
             found_species = "n.d"
             region = "n.d"
-            promoters.append((shortened_promoter_name, promoter_region, region))
+            promoters.append((shortened_promoter_name, promoter_region, found_species, region))
         else:
             lines = result_promoter.split("\n")
             i = 0
