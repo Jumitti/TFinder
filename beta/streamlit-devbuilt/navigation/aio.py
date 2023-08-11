@@ -168,7 +168,7 @@ def aio_page():
 
                 dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
                 
-                st.toast('Your edited image was saved!', icon='😍')
+                st.toast(f'{gene_name} of {species_API} extracted', icon='😍')
 
                 # Append the result to the result_promoter
                 if prom_term == 'Promoter':
