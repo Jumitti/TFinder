@@ -378,15 +378,10 @@ def aio_page():
             
             if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
                 with st.spinner("Finding sequences..."):
-                    progress_text = "Operation in progress. Please wait."
-                    my_bar = st.progress(0, text=progress_text)
                     
                     st.session_state['upstream'] = upstream_entry
-                    
-                    # for percent_complete in range(len(gene_list)):
-                        
+                    st.success(len(data_dff))
                     for i, gene_info in data_dff.iterrows():
-                        my_bar.progress(i + 1, text=progress_text)
                         gene_name = gene_info["Gene"]
                         human_checked = gene_info["human"]
                         mouse_checked = gene_info["mouse"]
