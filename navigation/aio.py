@@ -1111,18 +1111,19 @@ def aio_page():
                 
                 st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                 reference = st.radio('X axis:', ('Beginning of the sequence','TSS or gene end'), horizontal=True, help='Position of the patterns turned according to either the beginning of the sequence or the configured TSS/gene end')
-                    
-                score_range = filtered_df['Rel Score'].astype(float)
+                
+                source = filtered_df
+                score_range = source['Rel Score'].astype(float)
                 ystart = score_range.min() - 0.02
                 ystop = score_range.max() + 0.02 
                 scale = alt.Scale(scheme='category10')
-                filtered_df['Gene_Region'] = filtered_df['Gene'] + " " + filtered_df['Region']
+                source['Gene_Region'] = source['Gene'] + " " + source['Region']
                 color_scale = alt.Color("Gene_Region:N", scale=scale)
                 gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
                 
                 if reference == 'TSS or gene end':
                     if calc_pvalue:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1131,7 +1132,7 @@ def aio_page():
                         
                         st.altair_chart(chart, theme=None, use_container_width=True)
                     else:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1141,7 +1142,7 @@ def aio_page():
                         st.altair_chart(chart, theme=None, use_container_width=True)
                 else:
                     if calc_pvalue:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1150,7 +1151,7 @@ def aio_page():
 
                         st.altair_chart(chart, theme=None, use_container_width=True)
                     else:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1246,17 +1247,18 @@ def aio_page():
                 st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                 reference = st.radio('X axis:', ('Beginning of the sequence','TSS or gene end'), horizontal=True, help='Position of the patterns turned according to either the beginning of the sequence or the configured TSS/gene end')
 
-                score_range = filtered_df['Rel Score'].astype(float)
+                source = filtered_df
+                score_range = source['Rel Score'].astype(float)
                 ystart = score_range.min() - 0.02
-                ystop = score_range.max() + 0.02
-                filtered_df['Gene_Region'] = filtered_df['Gene'] + " " + filtered_df['Region']
+                ystop = score_range.max() + 0.02 
                 scale = alt.Scale(scheme='category10')
+                source['Gene_Region'] = source['Gene'] + " " + source['Region']
                 color_scale = alt.Color("Gene_Region:N", scale=scale)
                 gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
                 
                 if reference == 'TSS or gene end':
                     if calc_pvalue:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1265,7 +1267,7 @@ def aio_page():
                         
                         st.altair_chart(chart, theme=None, use_container_width=True)
                     else:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position to TSS or gene end(bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1275,7 +1277,7 @@ def aio_page():
                         st.altair_chart(chart, theme=None, use_container_width=True)
                 else:
                     if calc_pvalue:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1284,7 +1286,7 @@ def aio_page():
 
                         st.altair_chart(chart, theme=None, use_container_width=True)
                     else:
-                        chart = alt.Chart(filtered_df).mark_circle().encode(
+                        chart = alt.Chart(source).mark_circle().encode(
                             x=alt.X('Position:Q', axis=alt.Axis(title='Position to beginning of the sequence (bp)'), sort='ascending'),
                             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
                             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
