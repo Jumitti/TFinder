@@ -733,13 +733,6 @@ def aio_page():
                             sequence_with_context = ''.join(sequence_parts)
                             tis_position = position - tis_value
                             
-                            row = [str(position).ljust(8),
-                                   str(tis_position).ljust(15),
-                                   sequence_with_context,
-                                   "{:.6f}".format(normalized_score).ljust(12),
-                                   shortened_promoter_name, region]
-                            table2.append(row)
-                            
                             if normalized_score >= threshold:
                                 row = [str(position).ljust(8),
                                        str(tis_position).ljust(15),
@@ -760,18 +753,8 @@ def aio_page():
             
         else:
             no_consensus = "No consensus sequence found with the specified threshold."
-        
-        if len(table2) > 0:
-            if calc_pvalue :
-                table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Rel Position", "Sequence", "Rel Score", "p-value", "Gene", "Region"]
-                table2.insert(0, header)
-            else:
-                table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Region"]
-                table2.insert(0, header)
             
-        return table_filter, table2
+        return table_filter
         
     # Responsive Elements Finder
 
@@ -1057,7 +1040,7 @@ def aio_page():
                 if jaspar == 'JASPAR_ID':
                     sequence_consensus_input = entry_sequence
                     matrices = matrix_extraction(sequence_consensus_input)
-                    table_filter, table2 = search_sequence(tis_value, result_promoter, matrices)
+                    table_filter = search_sequence(tis_value, result_promoter, matrices)
                 else:
                     if isUIPAC == False:
                         st.error("Please use IUPAC code for Responsive Elements")
@@ -1072,7 +1055,7 @@ def aio_page():
                                 values = [float(value) for value in values]
                                 matrix[key.strip()] = values
                         matrices = transform_matrix(matrix)
-                        table_filter, table2 = search_sequence(threshold, tis_value, result_promoter, matrices)            
+                        table_filter = search_sequence(threshold, tis_value, result_promoter, matrices)            
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
                 
@@ -1098,10 +1081,8 @@ def aio_page():
                 st.markdown('**Table**')
                 st.dataframe(df, hide_index=True)
                 with colres2:
-                    df_full = pd.DataFrame(table2[1:], columns=table2[0])
-                    st.session_state['df_full'] = df_full
                     excel_file = io.BytesIO()
-                    df_full.to_excel(excel_file, index=False, sheet_name='Sheet1')
+                    df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
                     st.download_button("💾 Download table (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xlsx', mime="application/vnd.ms-excel", key='download-excel')
                 with colres3:
@@ -1211,10 +1192,8 @@ def aio_page():
                 st.markdown('**Table**')
                 st.dataframe(df, hide_index=True)
                 with colres2:
-                    df_full = pd.DataFrame(table2[1:], columns=table2[0])
-                    st.session_state['df_full'] = df_full
                     excel_file = io.BytesIO()
-                    df_full.to_excel(excel_file, index=False, sheet_name='Sheet1')
+                    df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
                     st.download_button("💾 Download table (.xls)", excel_file, file_name=f'Results_TFinder_{current_date_time}.xlsx', mime="application/vnd.ms-excel", key='download-excel')
                 with colres3:
