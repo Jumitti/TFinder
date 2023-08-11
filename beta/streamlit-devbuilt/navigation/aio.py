@@ -595,11 +595,11 @@ def aio_page():
             while i < len(lines):
                 line = lines[i]
                 if line.startswith(">"):
-                    species_list = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster', 'Danio rerio']
+                    species_prom = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster', 'Danio rerio']
                     promoter_name = line[1:]
                     words = promoter_name.lstrip('>').split()
                     shortened_promoter_name = words[0]
-                    for species in species_list:
+                    for species in species_prom:
                         if species in promoter_name:
                             found_species = species
                         else:
