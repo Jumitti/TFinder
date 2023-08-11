@@ -747,18 +747,8 @@ def aio_page():
                                        "{:.6f}".format(normalized_score).ljust(12),
                                        shortened_promoter_name, region]
                                 table_filter.append(row)
-
-        if len(table2) > 0:
-            if calc_pvalue :
-                table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Rel Position", "Sequence", "Rel Score", "p-value", "Gene", "Region"]
-                table2.insert(0, header)
-            else:
-                table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Region"]
-                table2.insert(0, header)
                 
-        elif len(table_filter) > 0:
+        if len(table_filter) > 0:
             if calc_pvalue :
                 table_filter.sort(key=lambda x: float(x[3]), reverse=True)
                 header = ["Position", "Rel Position", "Sequence", "Rel Score", "p-value", "Gene", "Region"]
@@ -770,6 +760,16 @@ def aio_page():
             
         else:
             no_consensus = "No consensus sequence found with the specified threshold."
+        
+        if len(table2) > 0:
+            if calc_pvalue :
+                table2.sort(key=lambda x: float(x[3]), reverse=True)
+                header = ["Position", "Rel Position", "Sequence", "Rel Score", "p-value", "Gene", "Region"]
+                table2.insert(0, header)
+            else:
+                table2.sort(key=lambda x: float(x[3]), reverse=True)
+                header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Region"]
+                table2.insert(0, header)
             
         return table2
         
