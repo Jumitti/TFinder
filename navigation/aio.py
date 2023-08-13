@@ -1049,7 +1049,7 @@ def aio_page():
     
     st.divider()
     # RE output
-    def email(excel_file, attachment_text, txt_output, email_receiver):
+    def email(excel_file, txt_output, email_receiver, body):
         try:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             email_sender = st.secrets['sender']
@@ -1158,7 +1158,7 @@ def aio_page():
                 
                 with colres4:
                     if st.button("Send ✉"):
-                        email(excel_file, current_date_time, attachment_text, txt_output, email_receiver)
+                        email(excel_file, txt_output, email_receiver, body):
                                 
             else: 
                 jaspar_id = sequence_consensus_input
