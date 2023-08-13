@@ -277,6 +277,7 @@ def aio_page():
                             st.success("Terminators extraction complete!")
                         except Exception as e:
                             st.error(f"Error finding terminators: {str(e)}")   
+                            
         with tab2:
             
             # Advance mode extraction
@@ -1077,7 +1078,7 @@ def aio_page():
             server.login(email_sender, password)
             server.sendmail(email_sender, email_receiver, msg.as_string())
             server.quit()
-            st.toast('Email sent successfully!', icon='🚀')
+            st.toast('Email sent successfully !', icon='🚀')
             
         except smtplib.SMTPAuthenticationError:
             with colres5:
@@ -1224,9 +1225,7 @@ def aio_page():
                     
                     st.markdown('**Graph**',help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                     st.altair_chart(chart, theme=None, use_container_width=True)
-                    
-                    
-                email_sender = st.secrets['sender']
+
                 with colres4:
                     email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉', label_visibility='collapsed')
                 subject = f'Results TFinder - {current_date_time}'
@@ -1238,60 +1237,9 @@ def aio_page():
                 else:
                     body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team\n\n\n\nN.B: Sometimes the WebLogo is not sent correctly. A small bug that I did not have time to fix (soon...). You can always right click 'Save Image' on the WebLogo on TFinder directly."
                     
-                password = st.secrets['password']
-                attachment_excel = excel_file
-                attachment_text = txt_output
-                
                 with colres4:
                     if st.button("Send ✉"):
-                        try:
-                            msg = MIMEMultipart()
-                            msg['From'] = email_sender
-                            msg['To'] = email_receiver
-                            msg['Subject'] = subject
-
-                            msg.attach(MIMEText(body, 'plain'))
-
-                            attachment_excel = MIMEBase('application', 'octet-stream')
-                            attachment_excel.set_payload(excel_file.getvalue())
-                            encoders.encode_base64(attachment_excel)
-                            attachment_excel.add_header('Content-Disposition', 'attachment', filename=f'Results_TFinder_{current_date_time}.xlsx')
-                            msg.attach(attachment_excel)
-
-                            attachment_text = MIMEText(attachment_text, 'plain', 'utf-8')
-                            attachment_text.add_header('Content-Disposition', 'attachment', filename=f'Sequences_{current_date_time}.txt')
-                            msg.attach(attachment_text)
-                            
-                            if jaspar == 'PWM':
-                                if matrix_type == 'With FASTA sequences':
-                                    image = MIMEImage(buffer.read(), name=f'LOGOMAKER_{current_date_time}.jpg')
-                                    msg.attach(image)
-                            elif jaspar == 'Manual sequence':
-                                image = MIMEImage(buffer.read(), name=f'LOGOMAKER_{current_date_time}.jpg')
-                                msg.attach(image)
-
-                            server = smtplib.SMTP('smtp.gmail.com', 587)
-                            server.starttls()
-                            server.login(email_sender, password)
-                            server.sendmail(email_sender, email_receiver, msg.as_string())
-                            server.quit()
-                            
-                            with colres5:
-                                st.success('Email sent successfully! 🚀')
-                        except smtplib.SMTPAuthenticationError:
-                            with colres5:
-                                st.error("Failed to authenticate. Please check your email and password.")
-                        except smtplib.SMTPServerDisconnected:
-                            with colres5:
-                                st.error("Failed to connect to the SMTP server. Please check your internet connection.")
-                        except smtplib.SMTPRecipientsRefused:
-                            with colres5:
-                                st.error(f"Error sending email: {email_receiver}")
-                        except smtplib.SMTPException as e:
-                            with colres5:
-                                st.error(f"Error sending email: {e}")
-                        except Exception as e:
-                            with colres5:
-                                st.error(f"Unknown error occurred: {e}")
+                        email(excel_file, txt_output, email_receiver, body)
+                        
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
