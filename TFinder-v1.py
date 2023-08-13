@@ -124,7 +124,8 @@ if submit_button:
     ratings.append(rating)
     with open("ratings.pkl", "wb") as file:
         pickle.dump(ratings, file)
-    st.sidebar.success("Thank you for rating the application!")
+    st.toast("Thank you for rating the application!", icon='😍')
+    st.balloons()
 average_rating = sum(ratings) / len(ratings) if ratings else 0
 num_ratings = len(ratings)
 with colrate2:
