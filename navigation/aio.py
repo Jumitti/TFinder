@@ -1158,7 +1158,7 @@ def aio_page():
                 
                 with colres4:
                     if st.button("Send ✉"):
-                        email(excel_file, txt_output, email_receiver, body):
+                        email(excel_file, txt_output, email_receiver, body)
                                 
             else: 
                 jaspar_id = sequence_consensus_input
