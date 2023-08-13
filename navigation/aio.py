@@ -1049,8 +1049,9 @@ def aio_page():
     
     st.divider()
     # RE output
-    def email(excel_file, current_date_time, attachment_text, txt_output, email_receiver):
+    def email(excel_file, attachment_text, txt_output, email_receiver):
         try:
+            current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             email_sender = st.secrets['sender']
             password = st.secrets['password']
             
@@ -1097,7 +1098,6 @@ def aio_page():
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
             if len(table2) > 0:
-                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 st.subheader(':blue[Results]')
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
