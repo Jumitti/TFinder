@@ -394,14 +394,6 @@ def aio_page():
                      " bp from TSS and gene end")
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
-            gene_name = gene_info["Gene"]
-            human_checked = gene_info["human"]
-            mouse_checked = gene_info["mouse"]
-            rat_checked = gene_info["rat"]
-            droso_checked = gene_info["drosophila"]
-            zebra_checked = gene_info["zebrafish"]
-            prom_checked = gene_info["promoter"]
-            term_checked = gene_info["terminator"]
 
             if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
                 with st.spinner("Finding sequences..."):
@@ -412,6 +404,13 @@ def aio_page():
 
                     for gene_info in data_dff.itertuples(index=False):
                         gene_name = gene_info.Gene
+                        human_checked = gene_info["human"]
+                        mouse_checked = gene_info["mouse"]
+                        rat_checked = gene_info["rat"]
+                        droso_checked = gene_info["drosophila"]
+                        zebra_checked = gene_info["zebrafish"]
+                        prom_checked = gene_info["promoter"]
+                        term_checked = gene_info["terminator"]
                         for species in species_list:
                             for search_type in search_types:
                                 if getattr(gene_info, f'{species}_checked') and getattr(gene_info,
