@@ -300,10 +300,10 @@ def aio_page():
                     "human": [False] * len(gene_list),
                     "mouse": [False] * len(gene_list),
                     "rat": [False] * len(gene_list),
-                    "droso": [False] * len(gene_list),
-                    "zebra": [False] * len(gene_list),
-                    "prom": [False] * len(gene_list),
-                    "term": [False] * len(gene_list),
+                    "drosophila": [False] * len(gene_list),
+                    "zebrafish": [False] * len(gene_list),
+                    "promoter": [False] * len(gene_list),
+                    "terminator": [False] * len(gene_list),
                 }
             )
 
@@ -340,13 +340,13 @@ def aio_page():
             if all_rat:
                 data_df["rat"] = True
             if all_droso:
-                data_df["droso"] = True
+                data_df["drosophila"] = True
             if all_zebra:
-                data_df["zebra"] = True
+                data_df["zebrafish"] = True
             if all_prom:
-                data_df["prom"] = True
+                data_df["promoter"] = True
             if all_term:
-                data_df["term"] = True
+                data_df["terminator"] = True
 
             st.markdown('**🔹 :blue[Step 1.2]** On demand genes table',
                         help="Check the boxes for which you want to extract a sequence. Pay attention that the gene name is equivalent for each species. The choice of species is not available for gene IDs. Parameterize the table last, if you check the boxes above, it resets the whole table.")
@@ -366,19 +366,19 @@ def aio_page():
                         "Rat",
                         default=False,
                     ),
-                    "droso": st.column_config.CheckboxColumn(
+                    "drosophila": st.column_config.CheckboxColumn(
                         "Drosophila",
                         default=False,
                     ),
-                    "zebra": st.column_config.CheckboxColumn(
+                    "zebrafish": st.column_config.CheckboxColumn(
                         "Zebrafish",
                         default=False,
                     ),
-                    "prom": st.column_config.CheckboxColumn(
+                    "promoter": st.column_config.CheckboxColumn(
                         "Promoter",
                         default=False,
                     ),
-                    "term": st.column_config.CheckboxColumn(
+                    "terminator": st.column_config.CheckboxColumn(
                         "Terminator",
                         default=False,
                     )
@@ -394,6 +394,14 @@ def aio_page():
                      " bp from TSS and gene end")
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
+            gene_name = gene_info["Gene"]
+            human_checked = gene_info["human"]
+            mouse_checked = gene_info["mouse"]
+            rat_checked = gene_info["rat"]
+            droso_checked = gene_info["drosophila"]
+            zebra_checked = gene_info["zebrafish"]
+            prom_checked = gene_info["promoter"]
+            term_checked = gene_info["terminator"]
 
             if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
                 with st.spinner("Finding sequences..."):
