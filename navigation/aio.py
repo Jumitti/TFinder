@@ -402,6 +402,7 @@ def aio_page():
                     st.session_state['upstream'] = upstream_entry
                     for gene_info in data_dff.itertuples(index=False):
                         gene_name = gene_info.Gene
+                        st.toast(gene_name)
                         for species in species_list:
                             for search_type in search_types:
                                 if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
@@ -410,7 +411,7 @@ def aio_page():
                                     upstream = int(upstream_entry)
                                     downstream = int(downstream_entry)
                                     try:
-                                        species = 'human' if gene_ids.isdigit() else species
+                                        species = 'human' if gene_name.isdigit() else species
                                         result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                                     except Exception as e:
                                         st.error(f"Error finding {prom_term.lower()}: {str(e)}")
