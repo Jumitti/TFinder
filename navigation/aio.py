@@ -407,14 +407,13 @@ def aio_page():
                         human_checked = gene_info["human"]
                         mouse_checked = gene_info["mouse"]
                         rat_checked = gene_info["rat"]
-                        droso_checked = gene_info["drosophila"]
-                        zebra_checked = gene_info["zebrafish"]
-                        prom_checked = gene_info["promoter"]
-                        term_checked = gene_info["terminator"]
+                        drosophila_checked = gene_info["drosophila"]
+                        zebrafish_checked = gene_info["zebrafish"]
+                        promoter_checked = gene_info["promoter"]
+                        terminator_checked = gene_info["terminator"]
                         for species in species_list:
                             for search_type in search_types:
-                                if getattr(gene_info, f'{species}_checked') and getattr(gene_info,
-                                                                                        f'{search_type.lower()}_checked'):
+                                if getattr(f'{species}_checked') and getattr(f'{search_type.lower()}_checked'):
                                     prom_term = search_type
                                     gene_ids = gene_name.strip().split('\n')
                                     upstream = int(upstream_entry)
