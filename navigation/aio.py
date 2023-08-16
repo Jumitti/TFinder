@@ -402,7 +402,7 @@ def aio_page():
                     species_list = ['human', 'mouse', 'rat', 'drosophila', 'zebrafish']
                     search_types = ['Promoter', 'Terminator']
 
-                    for gene_info in data_dff.iterrows():
+                    for i, gene_info in data_dff.iterrows():
                         gene_name = gene_info["Gene"]
                         human_checked = gene_info["human"]
                         mouse_checked = gene_info["mouse"]
