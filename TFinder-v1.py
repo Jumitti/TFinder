@@ -22,8 +22,6 @@ import streamlit as st
 import hydralit_components as hc
 import requests
 import pandas as pd
-import altair as alt
-import math
 import pickle
 from utils.components import footer_style, footer
 from navigation.home import home_page

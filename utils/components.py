@@ -34,7 +34,6 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-
 footer_style = f"""
     <style>
         MainMenu {{visibility: hidden;}}
@@ -50,7 +49,6 @@ footer_style = f"""
         }}
     </style>
 """
-
 
 hide_menu_style = """
         <style>
@@ -128,8 +126,8 @@ icons = """<style>
         <a href="https://github.com/Jumitti"><img class="image2" src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
                 alt="github" width="60" height="60">
 </div>
-""" ## Footer
-footer="""<style>
+"""
+footer = """<style>
 img {
             max-width: 100%;
         
@@ -203,15 +201,6 @@ text-align: center;
 <a href="https://www.inserm.fr/"><img class="image2" src="https://raw.githubusercontent.com/Jumitti/TFinder/main/img/logo%20inserm.png"alt="github" width="100" height="70"></a>
 <a href="https://univ-cotedazur.fr/"><img class="image2" src="https://raw.githubusercontent.com/Jumitti/TFinder/main/img/logo%20univ%20cote%20dazur.png"alt="github" width="70" height="70"></a>
 </a><a href="https://github.com/Jumitti"><img class="image2" src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="github" width="70" height="70"></a>
-"""
-
-# """        """
-
-footer_style = """
-    <style>
-        MainMenu {visibility: hidden;}
-        footer {visibility: hidden;}
-    </style>
 """
 
 color_style = """
