@@ -300,10 +300,10 @@ def aio_page():
                     "human": [False] * len(gene_list),
                     "mouse": [False] * len(gene_list),
                     "rat": [False] * len(gene_list),
-                    "drosophila": [False] * len(gene_list),
-                    "zebrafish": [False] * len(gene_list),
-                    "promoter": [False] * len(gene_list),
-                    "terminator": [False] * len(gene_list),
+                    "droso": [False] * len(gene_list),
+                    "zebra": [False] * len(gene_list),
+                    "prom": [False] * len(gene_list),
+                    "term": [False] * len(gene_list),
                 }
             )
 
@@ -340,13 +340,13 @@ def aio_page():
             if all_rat:
                 data_df["rat"] = True
             if all_droso:
-                data_df["drosophila"] = True
+                data_df["droso"] = True
             if all_zebra:
-                data_df["zebrafish"] = True
+                data_df["zebra"] = True
             if all_prom:
-                data_df["promoter"] = True
+                data_df["prom"] = True
             if all_term:
-                data_df["terminator"] = True
+                data_df["term"] = True
 
             st.markdown('**🔹 :blue[Step 1.2]** On demand genes table',
                         help="Check the boxes for which you want to extract a sequence. Pay attention that the gene name is equivalent for each species. The choice of species is not available for gene IDs. Parameterize the table last, if you check the boxes above, it resets the whole table.")
@@ -366,19 +366,19 @@ def aio_page():
                         "Rat",
                         default=False,
                     ),
-                    "drosophila": st.column_config.CheckboxColumn(
+                    "droso": st.column_config.CheckboxColumn(
                         "Drosophila",
                         default=False,
                     ),
-                    "zebrafish": st.column_config.CheckboxColumn(
+                    "zebra": st.column_config.CheckboxColumn(
                         "Zebrafish",
                         default=False,
                     ),
-                    "promoter": st.column_config.CheckboxColumn(
+                    "prom": st.column_config.CheckboxColumn(
                         "Promoter",
                         default=False,
                     ),
-                    "terminator": st.column_config.CheckboxColumn(
+                    "term": st.column_config.CheckboxColumn(
                         "Terminator",
                         default=False,
                     )
@@ -398,34 +398,136 @@ def aio_page():
             if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
                 with st.spinner("Finding sequences..."):
                     st.session_state['upstream'] = upstream_entry
-
-                    species_list = ['human', 'mouse', 'rat', 'drosophila', 'zebrafish']
-                    search_types = ['Promoter', 'Terminator']
-
                     for i, gene_info in data_dff.iterrows():
                         gene_name = gene_info["Gene"]
                         human_checked = gene_info["human"]
                         mouse_checked = gene_info["mouse"]
                         rat_checked = gene_info["rat"]
-                        drosophila_checked = gene_info["drosophila"]
-                        zebrafish_checked = gene_info["zebrafish"]
-                        promoter_checked = gene_info["promoter"]
-                        terminator_checked = gene_info["terminator"]
-                        for species in species_list:
-                            for search_type in search_types:
-                                if getattr(f'{species}_checked') and getattr(f'{search_type.lower()}_checked'):
-                                    prom_term = search_type
-                                    gene_ids = gene_name.strip().split('\n')
-                                    upstream = int(upstream_entry)
-                                    downstream = int(downstream_entry)
+                        droso_checked = gene_info["droso"]
+                        zebra_checked = gene_info["zebra"]
+                        prom_checked = gene_info["prom"]
+                        term_checked = gene_info["term"]
 
-                                    if gene_name.isdigit():
-                                        species = 'human'  # If isdigit then it means that it is an NCBI gene accession number (GENE_ID), so the species is already associated by default.
-
-                                    try:
-                                        result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                                    except Exception as e:
-                                        st.error(f"Error finding {prom_term.lower()}: {str(e)}")
+                        if human_checked == True and prom_checked == True:
+                            prom_term = 'Promoter'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
+                            species = 'human'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if mouse_checked == True and prom_checked == True:
+                            prom_term = 'Promoter'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
+                            species = 'mouse'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if rat_checked == True and prom_checked == True:
+                            prom_term = 'Promoter'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
+                            species = 'rat'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if droso_checked == True and prom_checked == True:
+                            prom_term = 'Promoter'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
+                            species = 'drosophila'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if zebra_checked == True and prom_checked == True:
+                            prom_term = 'Promoter'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
+                            species = 'zebrafish'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if human_checked == True and term_checked == True:
+                            prom_term = 'Terminator'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
+                            species = 'human'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if mouse_checked == True and term_checked == True:
+                            prom_term = 'Terminator'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
+                            species = 'mouse'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if rat_checked == True and term_checked == True:
+                            prom_term = 'Terminator'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
+                            species = 'rat'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if droso_checked == True and term_checked == True:
+                            prom_term = 'Terminator'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
+                            species = 'drosophila'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if zebra_checked == True and term_checked == True:
+                            prom_term = 'Terminator'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
+                            species = 'zebrafish'
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if gene_name.isdigit() and prom_checked == True:
+                            prom_term = 'Promoter'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
+                            species = 'human'  # If isdigit then it means that it is an NCBI gene accession number (GENE_ID), so the species is already associated by default. The program needs this parameter but it will not take it into account. It's a holdover from a spaghetti coding
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
+                        if gene_name.isdigit() and term_checked == True:
+                            prom_term = 'Terminator'
+                            gene_ids = gene_name.strip().split('\n')
+                            upstream = int(upstream_entry)
+                            downstream = int(downstream_entry)
+                            species = 'human'  # If isdigit then it means that it is an NCBI gene accession number (GENE_ID), so the species is already associated by default. The program needs this parameter but it will not take it into account. It's a holdover from a spaghetti coding
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            except Exception as e:
+                                st.error(f"Error finding promoters: {str(e)}")
 
     # Promoter output state
     st.divider()
