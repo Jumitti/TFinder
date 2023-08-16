@@ -410,7 +410,7 @@ def aio_page():
                                     upstream = int(upstream_entry)
                                     downstream = int(downstream_entry)
                                     try:
-                                        species = 'human' if gene_name.isdigit() else species
+                                        species = 'human' if gene_ids.isdigit() else species
                                         result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                                     except Exception as e:
                                         st.error(f"Error finding {prom_term.lower()}: {str(e)}")
