@@ -38,8 +38,7 @@ footer_style = f"""
     <style>
         MainMenu {{visibility: hidden;}}
         footer {{visibility: hidden;}}
-        footer:after {{
-            content:'Copyright @2023 Minniti Julien'; 
+        footer:after {{ 
             visibility: visible;
             display: block;
             position: relative;
@@ -120,13 +119,9 @@ icons = """<style>
             padding: 100px;
             top: 0px;
         }
-</style
-<div class="footer">
-        </a>
-        <a href="https://github.com/Jumitti"><img class="image2" src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
-                alt="github" width="60" height="60">
-</div>
+</style>
 """
+
 footer = """<style>
 img {
             max-width: 100%;
