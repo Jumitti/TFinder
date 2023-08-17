@@ -507,11 +507,13 @@ def aio_page():
         if first_line.startswith(("A", "T", "C", "G", "a", "t", "c", "g")):
             promoter_region = lines.upper()
             if all(char in DNA_code for char in promoter_region):
+                isDNA = True
                 shortened_promoter_name = "n.d."
                 found_species = "n.d"
                 region = "n.d"
                 promoters.append((shortened_promoter_name, promoter_region, found_species, region))
             else:
+                isDNA = False
                 st.error("Please use ONLY A, T, G, C")
         else:
             lines = result_promoter.split("\n")
@@ -523,6 +525,7 @@ def aio_page():
                                     'Danio rerio']
                     promoter_region = lines[i + 1].upper()
                     if all(char in DNA_code for char in promoter_region):
+                        isDNA = True
                         promoter_name = line[1:]
                         words = promoter_name.lstrip('>').split()
                         shortened_promoter_name = words[0]
@@ -542,6 +545,7 @@ def aio_page():
                         promoters.append((shortened_promoter_name, promoter_region, found_species, region))
                         i += 1
                     else:
+                        isDNA = False
                         st.error("Please use ONLY A, T, G, C")
                         i += 1
                 else:
@@ -1121,7 +1125,7 @@ def aio_page():
                     if st.button("Send ✉"):
                         email(excel_file, txt_output, email_receiver, body)
 
-            else:
+            elif isDNA == True:
                 jaspar_id = sequence_consensus_input
                 url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
                 response = requests.get(url)
@@ -1165,5 +1169,5 @@ def aio_page():
                 with colres4:
                     if st.button("Send ✉"):
                         email(excel_file, txt_output, email_receiver, body)
-            else:
+            elif isDNA == True:
                 st.error(f"No consensus sequence found with the specified threshold")
