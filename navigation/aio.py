@@ -52,29 +52,25 @@ def aio_page():
 
     # Convert gene to ENTREZ_GENE_ID
     def convert_gene_to_entrez_id(gene, species):
-        try:
-            if gene.isdigit():
-                return gene  # Already an ENTREZ_GENE_ID
+        if gene.isdigit():
+            return gene  # Already an ENTREZ_GENE_ID
 
-            # Request for ENTREZ_GENE_ID
-            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml"
-            response = requests.get(url)
+        # Request for ENTREZ_GENE_ID
+        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml"
+        response = requests.get(url)
 
-            if response.status_code == 200:
-                response_data = response.json()
+        if response.status_code == 200:
+            response_data = response.json()
 
-                if response_data['esearchresult']['count'] == '0':
-                    raise Exception(f"No gene found for name: {gene}")
-
-                else:
-                    gene_id = response_data['esearchresult']['idlist'][0]
-                    return gene_id
+            if response_data['esearchresult']['count'] == '0':
+                raise Exception(f"No gene found for name: {gene}")
 
             else:
-                raise Exception(f"Error during gene search: {response.status_code}")
+                gene_id = response_data['esearchresult']['idlist'][0]
+                return gene_id
 
-        except Exception as e:
-            raise Exception(f"Error: {str(e)}")
+        else:
+            raise Exception(f"Error during gene search: {response.status_code}")
 
     # Get gene information
     def get_gene_info(gene_id):
