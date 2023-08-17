@@ -1103,7 +1103,7 @@ def aio_page():
                         help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
             st.altair_chart(chart, theme=None, use_container_width=True)
 
-        return excel_file
+        return df
 
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
@@ -1127,9 +1127,17 @@ def aio_page():
 
                 result_table_output()
 
+                with colres2:
+                    excel_file = io.BytesIO()
+                    df.to_excel(excel_file, index=False, sheet_name='Sheet1')
+                    excel_file.seek(0)
+                    st.download_button("💾 Download table (.xlsx)", excel_file,
+                                       file_name=f'Results_TFinder_{current_date_time}.xlsx',
+                                       mime="application/vnd.ms-excel", key='download-excel')
+
                 with colres4:
                     if st.button("Send ✉"):
-                        email(excel_file, txt_output, email_receiver, subject, body)
+                        email(excel_file, txt_output if txt_output in locals(), email_receiver, subject, body)
 
             else:
                 jaspar_id = sequence_consensus_input
