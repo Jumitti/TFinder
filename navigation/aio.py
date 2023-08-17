@@ -522,8 +522,6 @@ def aio_page():
                 seq_length = len(matrix['A'])
 
             for shortened_promoter_name, promoter_region, region in promoters:
-                length_prom = len(promoter_region)
-
                 def generate_random_sequence(length, probabilities):
                     nucleotides = ['A', 'C', 'G', 'T']
                     sequence = random.choices(nucleotides, probabilities, k=length)
@@ -564,7 +562,6 @@ def aio_page():
             # REF
             for shortened_promoter_name, promoter_region, region in promoters:
                 found_positions = []
-                length_prom = len(promoter_region)
 
                 if calc_pvalue:
 
