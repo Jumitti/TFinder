@@ -1102,8 +1102,6 @@ def aio_page():
                         help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
             st.altair_chart(chart, theme=None, use_container_width=True)
 
-        return df
-
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
             if len(table2) > 0:
