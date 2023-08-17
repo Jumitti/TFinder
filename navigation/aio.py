@@ -157,7 +157,7 @@ def aio_page():
                     entrez_id = gene_id
                 else:
                     entrez_id = convert_gene_to_entrez_id(gene_id, species)
-                    if gene_id != 'not_found':
+                    if entrez_id != 'not_found':
                         pass
                     else:
                         break
