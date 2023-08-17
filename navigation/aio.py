@@ -644,15 +644,12 @@ def aio_page():
                                 table2.append(row)
 
         if len(table2) > 0:
+            table2.sort(key=lambda x: float(x[3]), reverse=True)
             if calc_pvalue:
-                table2.sort(key=lambda x: float(x[3]), reverse=True)
                 header = ["Position", "Rel Position", "Sequence", "Rel Score", "p-value", "Gene", "Species", "Region"]
-                table2.insert(0, header)
             else:
-                table2.sort(key=lambda x: float(x[3]), reverse=True)
                 header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Species", "Region"]
-                table2.insert(0, header)
-
+            table2.insert(0, header)
         else:
             "No consensus sequence found with the specified threshold."
 
