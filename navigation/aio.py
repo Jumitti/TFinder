@@ -65,6 +65,7 @@ def aio_page():
 
                 if response_data['esearchresult']['count'] == '0':
                     st.error(f"No gene found for name: {gene}")
+                    break
 
                 else:
                     gene_id = response_data['esearchresult']['idlist'][0]
