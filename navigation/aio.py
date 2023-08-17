@@ -440,14 +440,13 @@ def aio_page():
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text,
                                            label_visibility='collapsed')
     with promcol2:
-        if 'result_promoter' in st.session_state:
-            st.markdown('')
-            st.markdown('')
-            st.markdown('')
-            current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            txt_output = f"{result_promoter}"
-            st.download_button(label="💾 Download (.fasta)", data=txt_output,
-                               file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain")
+        st.markdown('')
+        st.markdown('')
+        st.markdown('')
+        current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        txt_output = f"{result_promoter}"
+        st.download_button(label="💾 Download (.fasta)", data=txt_output,
+                           file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain")
 
     # Responsive-Elements-Finder
 
@@ -612,46 +611,31 @@ def aio_page():
 
                 # Creating a results table
                 if len(found_positions) > 0:
-                    if calc_pvalue:
-                        for position, seq, normalized_score, p_value in found_positions:
-                            start_position = max(0, position - 3)
-                            end_position = min(len(promoter_region), position + len(seq) + 3)
-                            sequence_with_context = promoter_region[start_position:end_position]
+                    for position, seq, normalized_score, p_value in found_positions:
+                        start_position = max(0, position - 3)
+                        end_position = min(len(promoter_region), position + len(seq) + 3)
+                        sequence_with_context = promoter_region[start_position:end_position]
 
-                            sequence_parts = []
-                            for j in range(start_position, end_position):
-                                if j < position or j >= position + len(seq):
-                                    sequence_parts.append(sequence_with_context[j - start_position].lower())
-                                else:
-                                    sequence_parts.append(sequence_with_context[j - start_position].upper())
+                        sequence_parts = []
+                        for j in range(start_position, end_position):
+                            if j < position or j >= position + len(seq):
+                                sequence_parts.append(sequence_with_context[j - start_position].lower())
+                            else:
+                                sequence_parts.append(sequence_with_context[j - start_position].upper())
 
-                            sequence_with_context = ''.join(sequence_parts)
-                            tis_position = position - tis_value
+                        sequence_with_context = ''.join(sequence_parts)
+                        tis_position = position - tis_value
 
-                            if normalized_score >= threshold:
+                        if normalized_score >= threshold:
+                            if calc_pvalue:
                                 row = [str(position).ljust(8),
                                        str(tis_position).ljust(15),
                                        sequence_with_context,
                                        "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
                                        shortened_promoter_name, found_species, region]
-                                table_filter.append(row)
-                    else:
-                        for position, seq, normalized_score in found_positions:
-                            start_position = max(0, position - 3)
-                            end_position = min(len(promoter_region), position + len(seq) + 3)
-                            sequence_with_context = promoter_region[start_position:end_position]
+                                table2.append(row)
 
-                            sequence_parts = []
-                            for j in range(start_position, end_position):
-                                if j < position or j >= position + len(seq):
-                                    sequence_parts.append(sequence_with_context[j - start_position].lower())
-                                else:
-                                    sequence_parts.append(sequence_with_context[j - start_position].upper())
-
-                            sequence_with_context = ''.join(sequence_parts)
-                            tis_position = position - tis_value
-
-                            if normalized_score >= threshold:
+                            else:
                                 row = [str(position).ljust(8),
                                        str(tis_position).ljust(15),
                                        sequence_with_context,
@@ -1104,6 +1088,7 @@ def aio_page():
                 colres1, colres2, colres3, colres4, colres5 = st.columns([1, 0.5, 0.5, 1, 1])
                 with colres1:
                     st.success(f"Finding responsive elements done for {TF_name}")
+
                 df = pd.DataFrame(table2[1:], columns=table2[0])
                 st.session_state['df'] = df
                 st.markdown('**Table**')
@@ -1156,39 +1141,7 @@ def aio_page():
                                        file_name=f'Results_TFinder_{current_date_time}.xlsx',
                                        mime="application/vnd.ms-excel", key='download-excel')
 
-                source = df
-                score_range = source['Rel Score'].astype(float)
-                ystart = score_range.min() - 0.02
-                ystop = score_range.max() + 0.02
-                source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
-                scale = alt.Scale(scheme='category10')
-                color_scale = alt.Color("Gene_Region:N", scale=scale)
-                gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
-
-                if calc_pvalue:
-                    chart = alt.Chart(source).mark_circle().encode(
-                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
-                                scale=alt.Scale(domain=[ystart, ystop])),
-                        color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                        tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Species', 'Region']
-                    ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-
-                    st.markdown('**Graph**',
-                                help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-                    st.altair_chart(chart, theme=None, use_container_width=True)
-                else:
-                    chart = alt.Chart(source).mark_circle().encode(
-                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
-                                scale=alt.Scale(domain=[ystart, ystop])),
-                        color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                        tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Species', 'Region']
-                    ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-
-                    st.markdown('**Graph**',
-                                help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-                    st.altair_chart(chart, theme=None, use_container_width=True)
+                result_table_output(df)
 
                 with colres4:
                     email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
