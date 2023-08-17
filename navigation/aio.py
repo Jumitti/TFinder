@@ -969,10 +969,7 @@ def aio_page():
                 if jaspar == 'JASPAR_ID':
                     sequence_consensus_input = entry_sequence
                     matrices = matrix_extraction(sequence_consensus_input)
-                    try:
-                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-                    except CustomBreakException:
-                        st.error(e)
+                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                 else:
                     if not isUIPAC:
                         st.error("Please use IUPAC code for Responsive Elements")
@@ -987,10 +984,7 @@ def aio_page():
                                 values = [float(value) for value in values]
                                 matrix[key.strip()] = values
                         matrices = transform_matrix(matrix)
-                        try:
-                            table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-                        except CustomBreakException:
-                            st.error(e)
+                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
 
