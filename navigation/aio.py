@@ -494,6 +494,9 @@ def aio_page():
 
     # Find with JASPAR and manual matrix
     def search_sequence(threshold, tis_value, result_promoter, matrices):
+        global table2
+        table2 = []
+
         DNA_code = ["A", "T", "C", "G", "a", "t", "c", "g"]
 
         # Promoter input type
@@ -543,9 +546,6 @@ def aio_page():
                         i += 1
                 else:
                     i += 1
-
-        global table2
-        table2 = []
 
         if calc_pvalue:
             for matrix_name, matrix in matrices.items():
