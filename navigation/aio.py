@@ -540,9 +540,10 @@ def aio_page():
                             region = "n.d"
 
                         promoters.append((shortened_promoter_name, promoter_region, found_species, region))
-                        i += 2
+                        i += 1
                     else:
                         st.error("Please use ONLY A, T, G, C")
+                        i += 1
                 else:
                     i += 1
 
