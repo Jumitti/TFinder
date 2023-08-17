@@ -440,14 +440,13 @@ def aio_page():
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text,
                                            label_visibility='collapsed')
     with promcol2:
-        if 'result_promoter' in st.session_state:
-            st.markdown('')
-            st.markdown('')
-            st.markdown('')
-            current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            txt_output = f"{result_promoter}"
-            st.download_button(label="💾 Download (.fasta)", data=txt_output,
-                               file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain")
+        st.markdown('')
+        st.markdown('')
+        st.markdown('')
+        current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        txt_output = f"{result_promoter}"
+        st.download_button(label="💾 Download (.fasta)", data=txt_output,
+                           file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain")
 
     # Responsive-Elements-Finder
 
@@ -1137,7 +1136,7 @@ def aio_page():
 
                 with colres4:
                     if st.button("Send ✉"):
-                        email(excel_file, txt_output if txt_output in locals(), email_receiver, subject, body)
+                        email(excel_file, txt_output, email_receiver, subject, body)
 
             else:
                 jaspar_id = sequence_consensus_input
