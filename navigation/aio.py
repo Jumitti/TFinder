@@ -531,7 +531,7 @@ def aio_page():
                         region = "Term."
                     else:
                         region = "n.d"
-                    promoter_region = lines[i + 1]
+                    promoter_region = lines[i + 1].upper()
                     promoters.append((shortened_promoter_name, promoter_region, found_species, region))
                     i += 2
                 else:
