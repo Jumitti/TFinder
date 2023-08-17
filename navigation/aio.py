@@ -1128,7 +1128,7 @@ def aio_page():
 
                 with colres2:
                     excel_file = io.BytesIO()
-                    df.to_excel(excel_file, index=False, sheet_name='Sheet1')
+                    st.session_state['df'].to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
                     st.download_button("💾 Download table (.xlsx)", excel_file,
                                        file_name=f'Results_TFinder_{current_date_time}.xlsx',
