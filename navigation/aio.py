@@ -601,10 +601,10 @@ def aio_page():
 
                     if calc_pvalue:
                         p_value = (random_scores >= normalized_score).sum() / num_random_seqs
-
-                        found_positions.append((position, seq, normalized_score, p_value))
                     else:
-                        found_positions.append((position, seq, normalized_score))
+                        p_value = 0
+
+                found_positions.append((position, seq, normalized_score, p_value))
 
                 # Sort positions in descending order of score percentage
                 found_positions.sort(key=lambda x: x[1], reverse=True)
