@@ -662,11 +662,11 @@ def aio_page():
         if len(table2) > 0:
             if calc_pvalue:
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Rel Position", "Sequence", "Rel Score", "p-value", "Gene", "Region"]
+                header = ["Position", "Rel Position", "Sequence", "Rel Score", "p-value", "Gene", "Species", "Region"]
                 table2.insert(0, header)
             else:
                 table2.sort(key=lambda x: float(x[3]), reverse=True)
-                header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Region"]
+                header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Species", "Region"]
                 table2.insert(0, header)
 
         else:
@@ -1081,7 +1081,7 @@ def aio_page():
                 score_range = source['Rel Score'].astype(float)
                 ystart = score_range.min() - 0.02
                 ystop = score_range.max() + 0.02
-                source['Gene_Region'] = source['Gene'] + " " + source['Region']
+                source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Gene_Region:N", scale=scale)
                 gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
@@ -1092,7 +1092,7 @@ def aio_page():
                         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                                 scale=alt.Scale(domain=[ystart, ystop])),
                         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                        tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                        tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Species', 'Region']
                     ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
 
                     st.markdown('**Graph**',
@@ -1104,7 +1104,7 @@ def aio_page():
                         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                                 scale=alt.Scale(domain=[ystart, ystop])),
                         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                        tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
+                        tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Species', 'Region']
                     ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
 
                     st.markdown('**Graph**',
@@ -1163,7 +1163,7 @@ def aio_page():
                 score_range = source['Rel Score'].astype(float)
                 ystart = score_range.min() - 0.02
                 ystop = score_range.max() + 0.02
-                source['Gene_Region'] = source['Gene'] + " " + source['Region']
+                source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
                 scale = alt.Scale(scheme='category10')
                 color_scale = alt.Color("Gene_Region:N", scale=scale)
                 gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
@@ -1174,7 +1174,7 @@ def aio_page():
                         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                                 scale=alt.Scale(domain=[ystart, ystop])),
                         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                        tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Region']
+                        tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Species', 'Region']
                     ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
 
                     st.markdown('**Graph**',
@@ -1186,7 +1186,7 @@ def aio_page():
                         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                                 scale=alt.Scale(domain=[ystart, ystop])),
                         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                        tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Region']
+                        tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Species', 'Region']
                     ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
 
                     st.markdown('**Graph**',
