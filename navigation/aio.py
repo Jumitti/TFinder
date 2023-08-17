@@ -405,25 +405,25 @@ def aio_page():
                     downstream = int(downstream_entry)
                     for gene_info in data_dff.itertuples(index=False):
                         gene_name = gene_info.Gene
-                        st.success(gene_name)
+                        gene_ids = gene_name.strip().split('\n')
                         if gene_name.isdigit():
                             for search_type in search_types:
-                                prom_term = search_type.capitalize()
-                                gene_ids = gene_name.strip().split('\n')
-                                species = 'human'  # This is just a remnant of the past
-                                try:
-                                    result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                                except Exception as e:
-                                    st.error(f"Error finding {gene_ids}: {str(e)}")
-                        for species in species_list:
-                            for search_type in search_types:
-                                if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
+                                if getattr(gene_info, f'{search_type}'):
                                     prom_term = search_type.capitalize()
-                                    gene_ids = gene_name.strip().split('\n')
+                                    species = 'human'  # This is just a remnant of the past
                                     try:
                                         result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                                     except Exception as e:
                                         st.error(f"Error finding {gene_ids}: {str(e)}")
+                        else:
+                            for species in species_list:
+                                for search_type in search_types:
+                                    if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
+                                        prom_term = search_type.capitalize()
+                                        try:
+                                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                        except Exception as e:
+                                            st.error(f"Error finding {gene_ids}: {str(e)}")
 
     # Promoter output state
     st.divider()
