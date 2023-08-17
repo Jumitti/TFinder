@@ -512,7 +512,7 @@ def aio_page():
                 region = "n.d"
                 promoters.append((shortened_promoter_name, promoter_region, found_species, region))
             else:
-                raise CustomBreakException("Please use ONLY A, T, G, C")
+                raise Exception("Please use ONLY A, T, G, C")
         else:
             lines = result_promoter.split("\n")
             i = 0
@@ -542,8 +542,7 @@ def aio_page():
                         promoters.append((shortened_promoter_name, promoter_region, found_species, region))
                         i += 1
                     else:
-                        raise CustomBreakException("Please use ONLY A, T, G, C")
-                        i += 1
+                        raise Exception("Please use ONLY A, T, G, C")
                 else:
                     i += 1
 
