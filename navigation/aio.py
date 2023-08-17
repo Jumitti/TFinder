@@ -512,7 +512,7 @@ def aio_page():
                 region = "n.d"
                 promoters.append((shortened_promoter_name, promoter_region, found_species, region))
             else:
-                st.error("Please use ONLY A, T, G, C")
+                raise CustomBreakException("Please use ONLY A, T, G, C")
         else:
             lines = result_promoter.split("\n")
             i = 0
@@ -542,7 +542,7 @@ def aio_page():
                         promoters.append((shortened_promoter_name, promoter_region, found_species, region))
                         i += 1
                     else:
-                        st.error("Please use ONLY A, T, G, C")
+                        raise CustomBreakException("Please use ONLY A, T, G, C")
                         i += 1
                 else:
                     i += 1
@@ -970,7 +970,10 @@ def aio_page():
                 if jaspar == 'JASPAR_ID':
                     sequence_consensus_input = entry_sequence
                     matrices = matrix_extraction(sequence_consensus_input)
-                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                    try:
+                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                    except CustomBreakException as e:
+                        st.error(e)
                 else:
                     if not isUIPAC:
                         st.error("Please use IUPAC code for Responsive Elements")
@@ -985,7 +988,10 @@ def aio_page():
                                 values = [float(value) for value in values]
                                 matrix[key.strip()] = values
                         matrices = transform_matrix(matrix)
-                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                        try:
+                            table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                        except CustomBreakException as e:
+                            st.error(e)
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
 
