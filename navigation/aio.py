@@ -1025,6 +1025,14 @@ def aio_page():
                                        filename=f'Sequences_{current_date_time}.txt')
             msg.attach(attachment_text)
 
+            if jaspar == 'PWM':
+                if matrix_type == 'With FASTA sequences':
+                    image = MIMEImage(buffer.read(), name=f'LOGOMAKER_{current_date_time}.jpg')
+                    msg.attach(image)
+            elif jaspar == 'Manual sequence':
+                image = MIMEImage(buffer.read(), name=f'LOGOMAKER_{current_date_time}.jpg')
+                msg.attach(image)
+
             server = smtplib.SMTP('smtp.gmail.com', 587)
             server.starttls()
             server.login(email_sender, password)
