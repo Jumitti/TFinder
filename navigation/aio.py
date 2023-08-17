@@ -502,9 +502,9 @@ def aio_page():
         promoters = []
 
         first_line = lines
-        if first_line.startswith(("A", "T", "C", "G")):
+        if first_line.startswith(("A", "T", "C", "G", "a", "t", "c", "g")):
             shortened_promoter_name = "n.d."
-            promoter_region = lines
+            promoter_region = lines.upper()
             found_species = "n.d"
             region = "n.d"
             promoters.append((shortened_promoter_name, promoter_region, found_species, region))
