@@ -1056,6 +1056,53 @@ def aio_page():
             with colres5:
                 st.toast(f"Unknown error occurred: {e}")
 
+    def result_table_output():
+        df = pd.DataFrame(table2[1:], columns=table2[0])
+        st.session_state['df'] = df
+        st.markdown('**Table**')
+        st.dataframe(df, hide_index=True)
+        with colres2:
+            excel_file = io.BytesIO()
+            df.to_excel(excel_file, index=False, sheet_name='Sheet1')
+            excel_file.seek(0)
+            st.download_button("💾 Download table (.xlsx)", excel_file,
+                               file_name=f'Results_TFinder_{current_date_time}.xlsx',
+                               mime="application/vnd.ms-excel", key='download-excel')
+
+        source = df
+        score_range = source['Rel Score'].astype(float)
+        ystart = score_range.min() - 0.02
+        ystop = score_range.max() + 0.02
+        source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
+        scale = alt.Scale(scheme='category10')
+        color_scale = alt.Color("Gene_Region:N", scale=scale)
+        gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
+
+        if calc_pvalue:
+            chart = alt.Chart(source).mark_circle().encode(
+                x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
+                        scale=alt.Scale(domain=[ystart, ystop])),
+                color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Species', 'Region']
+            ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+
+            st.markdown('**Graph**',
+                        help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
+            st.altair_chart(chart, theme=None, use_container_width=True)
+        else:
+            chart = alt.Chart(source).mark_circle().encode(
+                x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+                y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
+                        scale=alt.Scale(domain=[ystart, ystop])),
+                color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+                tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Species', 'Region']
+            ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+
+            st.markdown('**Graph**',
+                        help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
+            st.altair_chart(chart, theme=None, use_container_width=True)
+
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
             if len(table2) > 0:
@@ -1069,51 +1116,8 @@ def aio_page():
                 colres1, colres2, colres3, colres4, colres5 = st.columns([1, 0.5, 0.5, 1, 1])
                 with colres1:
                     st.success(f"Finding responsive elements done for {TF_name}")
-                df = pd.DataFrame(table2[1:], columns=table2[0])
-                st.session_state['df'] = df
-                st.markdown('**Table**')
-                st.dataframe(df, hide_index=True)
-                with colres2:
-                    excel_file = io.BytesIO()
-                    df.to_excel(excel_file, index=False, sheet_name='Sheet1')
-                    excel_file.seek(0)
-                    st.download_button("💾 Download table (.xlsx)", excel_file,
-                                       file_name=f'Results_TFinder_{current_date_time}.xlsx',
-                                       mime="application/vnd.ms-excel", key='download-excel')
 
-                source = df
-                score_range = source['Rel Score'].astype(float)
-                ystart = score_range.min() - 0.02
-                ystop = score_range.max() + 0.02
-                source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
-                scale = alt.Scale(scheme='category10')
-                color_scale = alt.Color("Gene_Region:N", scale=scale)
-                gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
-
-                if calc_pvalue:
-                    chart = alt.Chart(source).mark_circle().encode(
-                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
-                                scale=alt.Scale(domain=[ystart, ystop])),
-                        color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                        tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Species', 'Region']
-                    ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-
-                    st.markdown('**Graph**',
-                                help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-                    st.altair_chart(chart, theme=None, use_container_width=True)
-                else:
-                    chart = alt.Chart(source).mark_circle().encode(
-                        x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
-                                scale=alt.Scale(domain=[ystart, ystop])),
-                        color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                        tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Species', 'Region']
-                    ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-
-                    st.markdown('**Graph**',
-                                help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-                    st.altair_chart(chart, theme=None, use_container_width=True)
+                result_table_output()
 
                 with colres4:
                     email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
