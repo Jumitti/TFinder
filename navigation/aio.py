@@ -169,7 +169,7 @@ def aio_page():
 
                 dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
 
-                st.toast(f'{gene_name} from {species_API} extracted', icon='🧬')
+                st.toast(f'{prom_term} {gene_name} from {species_API} extracted', icon='🧬')
 
                 # Append the result to the result_promoter
                 if prom_term == 'Promoter':
