@@ -1065,6 +1065,7 @@ def aio_page():
             excel_file = io.BytesIO()
             df.to_excel(excel_file, index=False, sheet_name='Sheet1')
             excel_file.seek(0)
+            return excel_file
             st.download_button("💾 Download table (.xlsx)", excel_file,
                                file_name=f'Results_TFinder_{current_date_time}.xlsx',
                                mime="application/vnd.ms-excel", key='download-excel')
@@ -1117,13 +1118,13 @@ def aio_page():
                 with colres1:
                     st.success(f"Finding responsive elements done for {TF_name}")
 
-                result_table_output()
-
                 with colres4:
                     email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
                                                    label_visibility='collapsed')
                 subject = f'Results TFinder - {current_date_time}'
                 body = f"Hello ☺\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team\n\n\n\nN.B: Sometimes the WebLogo is not sent correctly. A small bug that I did not have time to fix (soon...). You can always right click 'Save Image' on the WebLogo on TFinder directly."
+
+                result_table_output()
 
                 with colres4:
                     if st.button("Send ✉"):
