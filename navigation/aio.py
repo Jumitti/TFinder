@@ -1065,7 +1065,6 @@ def aio_page():
             excel_file = io.BytesIO()
             df.to_excel(excel_file, index=False, sheet_name='Sheet1')
             excel_file.seek(0)
-            return excel_file
             st.download_button("💾 Download table (.xlsx)", excel_file,
                                file_name=f'Results_TFinder_{current_date_time}.xlsx',
                                mime="application/vnd.ms-excel", key='download-excel')
@@ -1103,6 +1102,8 @@ def aio_page():
             st.markdown('**Graph**',
                         help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
             st.altair_chart(chart, theme=None, use_container_width=True)
+
+        return excel_file
 
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
