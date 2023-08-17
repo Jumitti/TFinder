@@ -405,6 +405,7 @@ def aio_page():
                     downstream = int(downstream_entry)
                     for gene_info in data_dff.itertuples(index=False):
                         gene_name = gene_info.Gene
+                        st.success(gene_name)
                         if gene_name.isdigit():
                             for search_type in search_types:
                                 prom_term = search_type.capitalize()
