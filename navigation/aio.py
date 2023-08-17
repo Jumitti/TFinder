@@ -1000,7 +1000,7 @@ def aio_page():
     st.divider()
 
     # RE output
-    def email(excel_file, txt_output, email_receiver, body):
+    def email(excel_file, txt_output, email_receiver, subject, body):
         try:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             email_sender = st.secrets['sender']
@@ -1069,13 +1069,9 @@ def aio_page():
                     excel_file = io.BytesIO()
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
-                    st.download_button("💾 Download table (.xls)", excel_file,
+                    st.download_button("💾 Download table (.xlsx)", excel_file,
                                        file_name=f'Results_TFinder_{current_date_time}.xlsx',
                                        mime="application/vnd.ms-excel", key='download-excel')
-                with colres3:
-                    txt_output = f"JASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
-                    st.download_button(label="💾 Download sequences (.txt)", data=txt_output,
-                                       file_name=f"Sequences_{current_date_time}.txt", mime="text/plain")
 
                 source = df
                 score_range = source['Rel Score'].astype(float)
@@ -1119,7 +1115,7 @@ def aio_page():
 
                 with colres4:
                     if st.button("Send ✉"):
-                        email(excel_file, txt_output, email_receiver, body)
+                        email(excel_file, txt_output, email_receiver, subject, body)
 
             else:
                 jaspar_id = sequence_consensus_input
@@ -1145,19 +1141,9 @@ def aio_page():
                     excel_file = io.BytesIO()
                     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                     excel_file.seek(0)
-                    st.download_button("💾 Download table (.xls)", excel_file,
+                    st.download_button("💾 Download table (.xlsx)", excel_file,
                                        file_name=f'Results_TFinder_{current_date_time}.xlsx',
                                        mime="application/vnd.ms-excel", key='download-excel')
-                with colres3:
-                    if jaspar == 'PWM':
-                        if matrix_type == 'With PWM':
-                            txt_output = f"Position Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
-                        if matrix_type == 'With FASTA sequences':
-                            txt_output = f"Responsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
-                    else:
-                        txt_output = f"Responsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nSequences:\n{result_promoter}"
-                    st.download_button(label="💾 Download sequences (.txt)", data=txt_output,
-                                       file_name=f"Sequences_{current_date_time}.txt", mime="text/plain")
 
                 source = df
                 score_range = source['Rel Score'].astype(float)
@@ -1207,6 +1193,6 @@ def aio_page():
 
                 with colres4:
                     if st.button("Send ✉"):
-                        email(excel_file, txt_output, email_receiver, body)
+                        email(excel_file, txt_output, email_receiver, subject, body)
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
