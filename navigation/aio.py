@@ -400,21 +400,29 @@ def aio_page():
             if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
                 with st.spinner("Finding sequences..."):
                     st.session_state['upstream'] = upstream_entry
+                    upstream = int(upstream_entry)
+                    downstream = int(downstream_entry)
                     for gene_info in data_dff.itertuples(index=False):
                         gene_name = gene_info.Gene
-                        st.toast(gene_name)
+                        st.toast(gene_ids)
+                        if gene_name.isdigit():
+                            for search_type in search_types:
+                                prom_term = search_type.capitalize()
+                                gene_ids = gene_name.strip().split('\n')
+                                species = 'human'  # This is just a remnant of the past
+                                try:
+                                    result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                except Exception as e:
+                                    st.error(f"Error finding {gene_ids}: {str(e)}")
                         for species in species_list:
                             for search_type in search_types:
                                 if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
                                     prom_term = search_type.capitalize()
                                     gene_ids = gene_name.strip().split('\n')
-                                    upstream = int(upstream_entry)
-                                    downstream = int(downstream_entry)
                                     try:
-                                        species = 'human' if gene_name.isdigit() else species
                                         result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                                     except Exception as e:
-                                        st.error(f"Error finding {prom_term.lower()}: {str(e)}")
+                                        st.error(f"Error finding {gene_ids}: {str(e)}")
 
     # Promoter output state
     st.divider()
@@ -644,7 +652,7 @@ def aio_page():
                 table2.insert(0, header)
 
         else:
-            no_consensus = "No consensus sequence found with the specified threshold."
+            "No consensus sequence found with the specified threshold."
 
         return table2
 
@@ -954,7 +962,7 @@ def aio_page():
                     matrices = matrix_extraction(sequence_consensus_input)
                     table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                 else:
-                    if isUIPAC == False:
+                    if not isUIPAC:
                         st.error("Please use IUPAC code for Responsive Elements")
                     else:
                         matrix_lines = matrix_text.split('\n')
