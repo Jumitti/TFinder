@@ -440,13 +440,14 @@ def aio_page():
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text,
                                            label_visibility='collapsed')
     with promcol2:
-        st.markdown('')
-        st.markdown('')
-        st.markdown('')
-        current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        txt_output = f"{result_promoter}"
-        st.download_button(label="💾 Download (.fasta)", data=txt_output,
-                           file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain")
+        if 'result_promoter' in st.session_state:
+            st.markdown('')
+            st.markdown('')
+            st.markdown('')
+            current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            txt_output = f"{result_promoter}"
+            st.download_button(label="💾 Download (.fasta)", data=txt_output,
+                               file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain")
 
     # Responsive-Elements-Finder
 
@@ -1055,19 +1056,7 @@ def aio_page():
             with colres5:
                 st.toast(f"Unknown error occurred: {e}")
 
-    def result_table_output():
-        df = pd.DataFrame(table2[1:], columns=table2[0])
-        st.session_state['df'] = df
-        st.markdown('**Table**')
-        st.dataframe(df, hide_index=True)
-        with colres2:
-            excel_file = io.BytesIO()
-            df.to_excel(excel_file, index=False, sheet_name='Sheet1')
-            excel_file.seek(0)
-            st.download_button("💾 Download table (.xlsx)", excel_file,
-                               file_name=f'Results_TFinder_{current_date_time}.xlsx',
-                               mime="application/vnd.ms-excel", key='download-excel')
-
+    def result_table_output(df):
         source = df
         score_range = source['Rel Score'].astype(float)
         ystart = score_range.min() - 0.02
@@ -1115,22 +1104,25 @@ def aio_page():
                 colres1, colres2, colres3, colres4, colres5 = st.columns([1, 0.5, 0.5, 1, 1])
                 with colres1:
                     st.success(f"Finding responsive elements done for {TF_name}")
+                df = pd.DataFrame(table2[1:], columns=table2[0])
+                st.session_state['df'] = df
+                st.markdown('**Table**')
+                st.dataframe(df, hide_index=True)
+                with colres2:
+                    excel_file = io.BytesIO()
+                    df.to_excel(excel_file, index=False, sheet_name='Sheet1')
+                    excel_file.seek(0)
+                    st.download_button("💾 Download table (.xlsx)", excel_file,
+                                       file_name=f'Results_TFinder_{current_date_time}.xlsx',
+                                       mime="application/vnd.ms-excel", key='download-excel')
+
+                result_table_output(df)
 
                 with colres4:
                     email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
                                                    label_visibility='collapsed')
                 subject = f'Results TFinder - {current_date_time}'
                 body = f"Hello ☺\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team\n\n\n\nN.B: Sometimes the WebLogo is not sent correctly. A small bug that I did not have time to fix (soon...). You can always right click 'Save Image' on the WebLogo on TFinder directly."
-
-                result_table_output()
-
-                with colres2:
-                    excel_file = io.BytesIO()
-                    st.session_state['df'].to_excel(excel_file, index=False, sheet_name='Sheet1')
-                    excel_file.seek(0)
-                    st.download_button("💾 Download table (.xlsx)", excel_file,
-                                       file_name=f'Results_TFinder_{current_date_time}.xlsx',
-                                       mime="application/vnd.ms-excel", key='download-excel')
 
                 with colres4:
                     if st.button("Send ✉"):
