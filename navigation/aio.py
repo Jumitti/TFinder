@@ -978,12 +978,13 @@ def aio_page():
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
 
+    # RE output
     st.divider()
 
-    # RE output
-    def email(excel_file, txt_output, email_receiver, subject, body):
+    def email(excel_file, txt_output, email_receiver, body):
         try:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            subject = f'Results TFinder - {current_date_time}'
             email_sender = st.secrets['sender']
             password = st.secrets['password']
 
@@ -1103,12 +1104,11 @@ def aio_page():
                 with colres4:
                     email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
                                                    label_visibility='collapsed')
-                subject = f'Results TFinder - {current_date_time}'
                 body = f"Hello ☺\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team\n\n\n\nN.B: Sometimes the WebLogo is not sent correctly. A small bug that I did not have time to fix (soon...). You can always right click 'Save Image' on the WebLogo on TFinder directly."
 
                 with colres4:
                     if st.button("Send ✉"):
-                        email(excel_file, txt_output, email_receiver, subject, body)
+                        email(excel_file, txt_output, email_receiver, body)
 
             else:
                 jaspar_id = sequence_consensus_input
@@ -1143,7 +1143,6 @@ def aio_page():
                 with colres4:
                     email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
                                                    label_visibility='collapsed')
-                subject = f'Results TFinder - {current_date_time}'
                 if jaspar == 'PWM':
                     if matrix_type == 'With PWM':
                         body = f"Hello ☺\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
@@ -1154,6 +1153,6 @@ def aio_page():
 
                 with colres4:
                     if st.button("Send ✉"):
-                        email(excel_file, txt_output, email_receiver, subject, body)
+                        email(excel_file, txt_output, email_receiver, body)
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
