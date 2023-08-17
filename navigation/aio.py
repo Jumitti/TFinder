@@ -1086,7 +1086,7 @@ def aio_page():
 
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
-            if len(table2) > 0:
+            if len(table2) > 12:
                 current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 st.subheader(':blue[Results]')
                 jaspar_id = sequence_consensus_input
@@ -1131,7 +1131,7 @@ def aio_page():
 
     else:
         if 'table2' in locals():
-            if len(table2) > 0:
+            if len(table2) > 12:
                 current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 st.subheader(':blue[Results]')
                 colres1, colres2, colres3, colres4, colres5 = st.columns([1, 0.5, 0.5, 1, 1])
