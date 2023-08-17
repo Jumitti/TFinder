@@ -497,17 +497,22 @@ def aio_page():
         global table2
         table2 = []
 
+        DNA_code = ["A", "T", "C", "G", "a", "t", "c", "g"]
+
         # Promoter input type
         lines = result_promoter
         promoters = []
 
         first_line = lines
         if first_line.startswith(("A", "T", "C", "G", "a", "t", "c", "g")):
-            shortened_promoter_name = "n.d."
             promoter_region = lines.upper()
-            found_species = "n.d"
-            region = "n.d"
-            promoters.append((shortened_promoter_name, promoter_region, found_species, region))
+            if all(char in DNA_code for char in promoter_region):
+                shortened_promoter_name = "n.d."
+                found_species = "n.d"
+                region = "n.d"
+                promoters.append((shortened_promoter_name, promoter_region, found_species, region))
+            else:
+                st.error("Please use ONLY A, T, G, C")
         else:
             lines = result_promoter.split("\n")
             i = 0
@@ -516,24 +521,28 @@ def aio_page():
                 if line.startswith(">"):
                     species_prom = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster',
                                     'Danio rerio']
-                    promoter_name = line[1:]
-                    words = promoter_name.lstrip('>').split()
-                    shortened_promoter_name = words[0]
-                    for species in species_prom:
-                        if species in promoter_name:
-                            found_species = species
-                            break
-                        else:
-                            found_species = "n.d"
-                    if "promoter" in promoter_name.lower():
-                        region = "Prom."
-                    elif "terminator" in promoter_name.lower():
-                        region = "Term."
-                    else:
-                        region = "n.d"
                     promoter_region = lines[i + 1].upper()
-                    promoters.append((shortened_promoter_name, promoter_region, found_species, region))
-                    i += 2
+                    if all(char in DNA_code for char in promoter_region):
+                        promoter_name = line[1:]
+                        words = promoter_name.lstrip('>').split()
+                        shortened_promoter_name = words[0]
+                        for species in species_prom:
+                            if species in promoter_name:
+                                found_species = species
+                                break
+                            else:
+                                found_species = "n.d"
+                        if "promoter" in promoter_name.lower():
+                            region = "Prom."
+                        elif "terminator" in promoter_name.lower():
+                            region = "Term."
+                        else:
+                            region = "n.d"
+
+                        promoters.append((shortened_promoter_name, promoter_region, found_species, region))
+                        i += 2
+                    else:
+                        st.error("Please use ONLY A, T, G, C")
                 else:
                     i += 1
 
