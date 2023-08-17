@@ -972,7 +972,7 @@ def aio_page():
                     matrices = matrix_extraction(sequence_consensus_input)
                     try:
                         table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-                    except CustomBreakException as e:
+                    except CustomBreakException:
                         st.error(e)
                 else:
                     if not isUIPAC:
@@ -990,7 +990,7 @@ def aio_page():
                         matrices = transform_matrix(matrix)
                         try:
                             table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-                        except CustomBreakException as e:
+                        except CustomBreakException:
                             st.error(e)
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
