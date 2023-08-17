@@ -427,16 +427,27 @@ def aio_page():
     # Promoter output state
     st.divider()
     st.subheader(':blue[Step 2] Binding Sites Finder')
-    if 'result_promoter' not in st.session_state:
-        st.markdown("🔹 :blue[**Step 2.1**] Sequences:")
-        result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
-                                       value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).",
-                                       label_visibility='collapsed')
-    else:
-        st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-        result_promoter_text = "\n".join(st.session_state['result_promoter'])
-        result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text,
-                                       label_visibility='collapsed')
+    promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
+    with promcol1:
+        if 'result_promoter' not in st.session_state:
+            st.markdown("🔹 :blue[**Step 2.1**] Sequences:")
+            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
+                                           value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).",
+                                           label_visibility='collapsed')
+        else:
+            st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
+            result_promoter_text = "\n".join(st.session_state['result_promoter'])
+            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text,
+                                           label_visibility='collapsed')
+    with promcol2:
+        if 'result_promoter' in st.session_state:
+            st.markdown('')
+            st.markdown('')
+            st.markdown('')
+            current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            txt_output = f"{result_promoter}"
+            st.download_button(label="💾 Download (.fasta)", data=txt_output,
+                               file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain")
 
     # Responsive-Elements-Finder
 
@@ -449,8 +460,7 @@ def aio_page():
             response_data = response.json()
             matrix = response_data['pfm']
         else:
-            messagebox.showerror("Erreur",
-                                 f"Erreur lors de la récupération de la matrice de fréquence : {response.status_code}")
+            st.error(f"Erreur lors de la récupération de la matrice de fréquence : {response.status_code}")
             return
 
         return transform_matrix(matrix)
@@ -484,7 +494,7 @@ def aio_page():
 
     # Find with JASPAR and manual matrix
     def search_sequence(threshold, tis_value, result_promoter, matrices):
-        global table2, body
+        global table2
         table2 = []
 
         # Promoter input type
@@ -495,16 +505,26 @@ def aio_page():
         if first_line.startswith(("A", "T", "C", "G")):
             shortened_promoter_name = "n.d."
             promoter_region = lines
+            found_species = "n.d"
             region = "n.d"
-            promoters.append((shortened_promoter_name, promoter_region, region))
+            promoters.append((shortened_promoter_name, promoter_region, found_species, region))
         else:
             lines = result_promoter.split("\n")
             i = 0
             while i < len(lines):
                 line = lines[i]
                 if line.startswith(">"):
+                    species_prom = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster',
+                                    'Danio rerio']
                     promoter_name = line[1:]
-                    shortened_promoter_name = promoter_name[:15] if len(promoter_name) > 10 else promoter_name
+                    words = promoter_name.lstrip('>').split()
+                    shortened_promoter_name = words[0]
+                    for species in species_prom:
+                        if species in promoter_name:
+                            found_species = species
+                            break
+                        else:
+                            found_species = "n.d"
                     if "promoter" in promoter_name.lower():
                         region = "Prom."
                     elif "terminator" in promoter_name.lower():
@@ -512,7 +532,7 @@ def aio_page():
                     else:
                         region = "n.d"
                     promoter_region = lines[i + 1]
-                    promoters.append((shortened_promoter_name, promoter_region, region))
+                    promoters.append((shortened_promoter_name, promoter_region, found_species, region))
                     i += 2
                 else:
                     i += 1
@@ -521,7 +541,8 @@ def aio_page():
             for matrix_name, matrix in matrices.items():
                 seq_length = len(matrix['A'])
 
-            for shortened_promoter_name, promoter_region, region in promoters:
+            for shortened_promoter_name, promoter_region, found_species, region in promoters:
+
                 def generate_random_sequence(length, probabilities):
                     nucleotides = ['A', 'C', 'G', 'T']
                     sequence = random.choices(nucleotides, probabilities, k=length)
@@ -560,7 +581,7 @@ def aio_page():
             min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
 
             # REF
-            for shortened_promoter_name, promoter_region, region in promoters:
+            for shortened_promoter_name, promoter_region, found_species, region in promoters:
                 found_positions = []
 
                 if calc_pvalue:
@@ -612,8 +633,8 @@ def aio_page():
                                        str(tis_position).ljust(15),
                                        sequence_with_context,
                                        "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
-                                       shortened_promoter_name, region]
-                                table2.append(row)
+                                       shortened_promoter_name, found_species, region]
+                                table_filter.append(row)
                     else:
                         for position, seq, normalized_score in found_positions:
                             start_position = max(0, position - 3)
@@ -635,7 +656,7 @@ def aio_page():
                                        str(tis_position).ljust(15),
                                        sequence_with_context,
                                        "{:.6f}".format(normalized_score).ljust(12),
-                                       shortened_promoter_name, region]
+                                       shortened_promoter_name, found_species, region]
                                 table2.append(row)
 
         if len(table2) > 0:
