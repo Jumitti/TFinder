@@ -64,7 +64,7 @@ def aio_page():
                 response_data = response.json()
 
                 if response_data['esearchresult']['count'] == '0':
-                    raise Exception(f"No gene found for name: {gene}")
+                    st.error(f"No gene found for name: {gene}")
 
                 else:
                     gene_id = response_data['esearchresult']['idlist'][0]
