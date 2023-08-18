@@ -499,6 +499,7 @@ def aio_page():
         return ''.join(sequence)
 
     def isDNA(promoter_region):
+        DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
         if all(char in DNA_code for char in promoter_region):
             shortened_promoter_name = "n.d."
             found_species = "n.d"
