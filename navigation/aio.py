@@ -275,7 +275,6 @@ def aio_page():
                         st.session_state['upstream'] = upstream
                         downstream = int(downstream_entry)
                         try:
-                            del st.session_state[result_promoter_output]
                             result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             st.success("Promoters extraction complete!")
                         except Exception as e:
@@ -443,6 +442,8 @@ def aio_page():
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
                                            value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).",
                                            label_visibility='collapsed')
+            del st.session_state[result_promoter_output]
+
     with promcol2:
         st.markdown('')
         st.markdown('')
