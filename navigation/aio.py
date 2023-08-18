@@ -540,13 +540,11 @@ def aio_page():
                     for species in species_prom:
                         if species in promoter_name:
                             found_species = species
-                            break
                         else:
                             found_species = "n.d"
                     for regions in regions_prom:
                         if regions.lower() in promoter_name.lower():
                             region = regions
-                            break
                         else:
                             region = "n.d"
 
