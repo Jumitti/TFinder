@@ -176,11 +176,13 @@ def aio_page():
                 if prom_term == 'Promoter':
                     result_promoter.append(
                         f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
-                    st.session_state['result_promoter'] = result_promoter
+                    result_promoter_text = "\n".join(result_promoter)
+                    st.session_state['result_promoter'] = result_promoter_text
                 else:
                     result_promoter.append(
                         f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop}\n{dna_sequence}\n")
-                    st.session_state['result_promoter'] = result_promoter
+                    result_promoter_text = "\n".join(result_promoter)
+                    st.session_state['result_promoter'] = result_promoter_text
 
             return result_promoter
 
@@ -437,8 +439,7 @@ def aio_page():
                                            label_visibility='collapsed')
         else:
             st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-            result_promoter_text = "\n".join(st.session_state['result_promoter'])
-            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text,
+            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=st.session_state['result_promoter'],
                                            label_visibility='collapsed')
     with promcol2:
         st.markdown('')
