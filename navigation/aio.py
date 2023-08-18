@@ -751,6 +751,7 @@ def aio_page():
             TF_name = response_data['name']
             TF_species = response_data['species'][0]['name']
             st.success(f"{TF_species} transcription factor {TF_name}")
+            matrix = response_data['pfm']
         with REcol2:
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
     elif jaspar == 'PWM':
@@ -925,7 +926,7 @@ def aio_page():
             try:
                 if jaspar == 'JASPAR_ID':
                     sequence_consensus_input = entry_sequence
-                    matrices = matrix_extraction(sequence_consensus_input)
+                    matrices = transform_matrix(matrix)
                     table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                 else:
                     if not isUIPAC:
@@ -1024,70 +1025,22 @@ def aio_page():
         ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
         st.altair_chart(chart, theme=None, use_container_width=True)
 
-    if jaspar == 'JASPAR_ID':
-        if 'table2' in locals():
-            jaspar_id = sequence_consensus_input
-            url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
-            response = requests.get(url)
-            response_data = response.json()
-            TF_name = response_data['name']
-            if len(table2) > 1:
-                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                st.subheader(':blue[Results]')
+    if 'table2' in locals():
+        if len(table2) > 1:
+            current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            st.subheader(':blue[Results]')
+            if jaspar == 'JASPAR_ID':
+                jaspar_id = sequence_consensus_input
+                url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
+                response = requests.get(url)
+                response_data = response.json()
+                TF_name = response_data['name']
                 st.success(f"Finding responsive elements done for {TF_name}")
 
-                df = pd.DataFrame(table2[1:], columns=table2[0])
-                st.session_state['df'] = df
-                st.markdown('**Table**')
-                st.dataframe(df, hide_index=True)
-                excel_file = io.BytesIO()
-                df.to_excel(excel_file, index=False, sheet_name='Sheet1')
-                excel_file.seek(0)
-                st.download_button("💾 Download table (.xlsx)", excel_file,
-                                   file_name=f'Results_TFinder_{current_date_time}.xlsx',
-                                   mime="application/vnd.ms-excel", key='download-excel')
-
-                st.markdown('**Graph**',
-                            help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-                position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
-
-                result_table_output(df)
-
-                email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
-                                                   label_visibility='collapsed')
                 body = f"Hello ☺\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team\n\n\n\nN.B: Sometimes the WebLogo is not sent correctly. A small bug that I did not have time to fix (soon...). You can always right click 'Save Image' on the WebLogo on TFinder directly."
 
-                if st.button("Send ✉"):
-                    email(excel_file, txt_output, email_receiver, body)
-
             else:
-                st.error(f"No consensus sequence found with the specified threshold for {TF_name}")
-
-    else:
-        if 'table2' in locals():
-            if len(table2) > 1:
-                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                st.subheader(':blue[Results]')
                 st.success(f"Finding responsive elements done")
-                df = pd.DataFrame(table2[1:], columns=table2[0])
-                st.session_state['df'] = df
-                st.markdown('**Table**')
-                st.dataframe(df, hide_index=True)
-                excel_file = io.BytesIO()
-                df.to_excel(excel_file, index=False, sheet_name='Sheet1')
-                excel_file.seek(0)
-                st.download_button("💾 Download table (.xlsx)", excel_file,
-                                   file_name=f'Results_TFinder_{current_date_time}.xlsx',
-                                   mime="application/vnd.ms-excel", key='download-excel')
-
-                st.markdown('**Graph**',
-                            help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-                position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
-
-                result_table_output(df)
-
-                email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
-                                                   label_visibility='collapsed')
                 if jaspar == 'PWM':
                     if matrix_type == 'With PWM':
                         body = f"Hello ☺\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
@@ -1096,7 +1049,27 @@ def aio_page():
                 else:
                     body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team\n\n\n\nN.B: Sometimes the WebLogo is not sent correctly. A small bug that I did not have time to fix (soon...). You can always right click 'Save Image' on the WebLogo on TFinder directly."
 
-                if st.button("Send ✉"):
-                    email(excel_file, txt_output, email_receiver, body)
-            else:
-                st.error(f"No consensus sequence found with the specified threshold")
+
+            df = pd.DataFrame(table2[1:], columns=table2[0])
+            st.session_state['df'] = df
+            st.markdown('**Table**')
+            st.dataframe(df, hide_index=True)
+            excel_file = io.BytesIO()
+            df.to_excel(excel_file, index=False, sheet_name='Sheet1')
+            excel_file.seek(0)
+            st.download_button("💾 Download table (.xlsx)", excel_file,
+                               file_name=f'Results_TFinder_{current_date_time}.xlsx',
+                               mime="application/vnd.ms-excel", key='download-excel')
+
+            st.markdown('**Graph**',
+                        help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
+            position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
+
+            result_table_output(df)
+
+            email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
+                                           label_visibility='collapsed')
+            if st.button("Send ✉"):
+                email(excel_file, txt_output, email_receiver, body)
+        else:
+            st.error(f"No consensus sequence found with the specified threshold")
