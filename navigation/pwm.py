@@ -29,11 +29,6 @@ def pwm_page():
         sequence_length = len(sequences[0])
         num_sequences = len(sequences)
         
-        for sequence in sequences[1:]:
-            if len(sequence) != sequence_length:
-                st.warning("Sequence lengths are not consistent.")
-                break
-        
         pwm = np.zeros((4, sequence_length))
         for i in range(sequence_length):
             counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
@@ -74,6 +69,11 @@ def pwm_page():
             
             sequences = parse_fasta(fasta_text)
             sequences = [seq.upper() for seq in sequences]
+
+            for sequence in sequences[1:]:
+                if len(sequence) != sequence_length:
+                    st.warning("Sequence lengths are not consistent.")
+                    break
 
             if len(sequences) > 0:
                 pwm = calculate_pwm(sequences)
