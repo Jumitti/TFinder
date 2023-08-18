@@ -509,7 +509,7 @@ def aio_page():
         # Promoter input type
         lines = result_promoter.upper()
         promoters = []
-
+        st.write(lines)
         if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
             promoter_region = lines.upper()
             isdna(promoter_region)
