@@ -545,7 +545,7 @@ def aio_page():
                             found_species = "n.d"
                     for regions in regions_prom:
                         if regions in promoter_name:
-                            region = regions[:4]
+                            region = regions
                             break
                         else:
                             region = "n.d"
