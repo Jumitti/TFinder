@@ -182,7 +182,6 @@ def aio_page():
                         f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop}\n{dna_sequence}\n")
                     st.session_state['result_promoter'] = result_promoter
 
-            st.write(result_promoter)
             return result_promoter
 
         except Exception as e:
@@ -438,8 +437,7 @@ def aio_page():
                                            label_visibility='collapsed')
         else:
             st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-            st.write(result_promoter)
-            result_promoter_text = "\n".join(result_promoter)
+            result_promoter_text = "\n".join(st.session_state['result_promoter'])
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text,
                                            label_visibility='collapsed')
     with promcol2:
