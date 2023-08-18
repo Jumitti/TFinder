@@ -120,7 +120,7 @@ with colrate1:
     submit_button = st.button("Submit Rating")
 if submit_button:
     ratings.append(rating)
-    with open("ratings.pkl", "wb") as file:
+    with open(".streamlit/ratings.pkl", "wb") as file:
         pickle.dump(ratings, file)
     st.toast("Thank you for rating the application!", icon='😍')
     st.balloons()
@@ -222,7 +222,7 @@ if "user_count_incremented" not in st.session_state:
     user_count += 1
     st.session_state.user_count_incremented = True
 
-    with open("user_count.pkl", "wb") as file:
+    with open(".streamlit/user_count.pkl", "wb") as file:
         pickle.dump(user_count, file)
 
 st.sidebar.markdown(f"Total users 👥: {user_count}")
