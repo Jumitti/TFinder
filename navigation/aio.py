@@ -275,7 +275,7 @@ def aio_page():
                         st.session_state['upstream'] = upstream
                         downstream = int(downstream_entry)
                         try:
-                            result_promoter.append(find_promoters(gene_ids, species, upstream, downstream))
+                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             st.success("Promoters extraction complete!")
                         except Exception as e:
                             st.error(f"Error finding promoters: {str(e)}")
@@ -514,7 +514,7 @@ def aio_page():
         table2 = []
 
         # Promoter input type
-        lines = result_promoter
+        lines = result_promoter.upper()
         promoters = []
 
         if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
