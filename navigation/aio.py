@@ -285,7 +285,7 @@ def aio_page():
                         st.session_state['upstream'] = upstream
                         downstream = int(downstream_entry)
                         try:
-                            result_promoter.extend(find_promoters(gene_ids, species, upstream, downstream))
+                            find_promoters(gene_ids, species, upstream, downstream)
                             st.success("Terminators extraction complete!")
                         except Exception as e:
                             st.error(f"Error finding terminators: {str(e)}")
@@ -412,7 +412,7 @@ def aio_page():
                                     prom_term = search_type.capitalize()
                                     species = 'human'  # This is just a remnant of the past
                                     try:
-                                        result_promoter.extend(find_promoters(gene_ids, species, upstream, downstream))
+                                        find_promoters(gene_ids, species, upstream, downstream)
                                     except Exception as e:
                                         st.error(f"Error finding {gene_ids}: {str(e)}")
                         else:
@@ -421,7 +421,7 @@ def aio_page():
                                     if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
                                         try:
-                                            result_promoter.extend(find_promoters(gene_ids, species, upstream, downstream))
+                                            find_promoters(gene_ids, species, upstream, downstream)
                                         except Exception as e:
                                             st.error(f"Error finding {gene_ids}: {str(e)}")
 
@@ -437,7 +437,6 @@ def aio_page():
                                            label_visibility='collapsed')
         else:
             st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-            st.write(result_promoter)
             result_promoter_text = "\n".join(st.session_state['result_promoter'])
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text,
                                            label_visibility='collapsed')
