@@ -831,7 +831,7 @@ def aio_page():
                                           label_visibility='collapsed')
             isUIPAC = True
 
-            im(fasta_text)
+            matrix_text = im(fasta_text)
 
     else:
         with REcol1:
@@ -849,7 +849,7 @@ def aio_page():
             for i, seq in enumerate(sequences):
                 fasta_text += f">seq{i + 1}\n{seq}\n"
 
-            im(fasta_text)
+            matrix_text = im(fasta_text)
 
         else:
             isUIPAC = False
