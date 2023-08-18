@@ -276,6 +276,7 @@ def aio_page():
                         downstream = int(downstream_entry)
                         try:
                             result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            st.write(result_promoter)
                             st.success("Promoters extraction complete!")
                         except Exception as e:
                             st.error(f"Error finding promoters: {str(e)}")
