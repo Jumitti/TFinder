@@ -517,14 +517,14 @@ def aio_page():
         lines = result_promoter
         promoters = []
 
-        if lines.startswith("A", "T", "C", "G", "N", "a", "t", "c", "g", "n"):
+        if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
             promoter_region = lines.upper()
             isdna(promoter_region)
             shortened_promoter_name = "n.d."
             found_species = "n.d"
             region = "n.d"
             promoters.append((shortened_promoter_name, promoter_region, found_species, region))
-        else:
+        elif lines.startswith(">"):
             lines = result_promoter.split("\n")
             i = 0
             while i < len(lines):
