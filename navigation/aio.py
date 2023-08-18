@@ -182,6 +182,7 @@ def aio_page():
                         f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop}\n{dna_sequence}\n")
                     st.session_state['result_promoter'] = result_promoter
 
+            st.write(result_promoter)
             return result_promoter
 
         except Exception as e:
