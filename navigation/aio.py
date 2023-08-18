@@ -531,9 +531,6 @@ def aio_page():
                 if line.startswith(">"):
                     species_prom = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster',
                                     'Danio rerio']
-                    regions_prom = ['Promoter', 'Terminator']
-                    promoter_region = lines[i + 1].upper()
-                    isdna(promoter_region)
                     promoter_name = line[1:]
                     words = promoter_name.lstrip('>').split()
                     shortened_promoter_name = words[0]
@@ -543,15 +540,17 @@ def aio_page():
                             break
                         else:
                             found_species = "n.d"
+                    regions_prom = ['Promoter', 'Terminator']
                     for regions in regions_prom:
-                        if regions.lower() in promoter_name.lower():
+                        if regions in promoter_name:
                             region = regions
                             break
                         else:
                             region = "n.d"
-
-                        promoters.append((shortened_promoter_name, promoter_region, found_species, region))
-                        i += 1
+                    promoter_region = lines[i + 1].upper()
+                    isdna(promoter_region)
+                    promoters.append((shortened_promoter_name, promoter_region, found_species, region))
+                    i += 1
                 else:
                     i += 1
 
