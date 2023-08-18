@@ -514,7 +514,7 @@ def aio_page():
         table2 = []
 
         # Promoter input type
-        lines = result_promoter.upper()
+        lines = result_promoter
         promoters = []
 
         if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
