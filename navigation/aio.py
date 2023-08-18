@@ -959,7 +959,7 @@ def aio_page():
         calc_pvalue = st.checkbox('_p-value_')
 
     # Run Responsive Elements finder
-    if result_promoter.startswith(("A", "T", "G", "C", ">" , "a", "t", "c", "g", "n")):
+    if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
         with st.spinner("Finding responsive elements..."):
             tis_value = int(entry_tis)
             threshold = float(threshold_entry)
@@ -1062,7 +1062,7 @@ def aio_page():
             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                     scale=alt.Scale(domain=[ystart, ystop])),
             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-            tooltip=['Rel Position', 'Rel Score', 'p-value' if calc_pvalue, 'Sequence', 'Gene', 'Species', 'Region']
+            tooltip=['Rel Position', 'Rel Score'] + (['p-value'] if calc_pvalue else []) + ['Sequence', 'Gene', 'Species', 'Region']
         ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
 
         st.markdown('**Graph**',
