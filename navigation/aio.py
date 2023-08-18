@@ -517,7 +517,7 @@ def aio_page():
         lines = result_promoter
         promoters = []
 
-        if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
+        if lines.startswith("A", "T", "C", "G", "N", "a", "t", "c", "g", "n"):
             promoter_region = lines.upper()
             isdna(promoter_region)
             shortened_promoter_name = "n.d."
