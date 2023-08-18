@@ -174,10 +174,12 @@ def aio_page():
 
                 # Append the result to the result_promoter
                 if prom_term == 'Promoter':
-                    result_promoter.append(f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {upstream}\n{dna_sequence}\n")
+                    result_promoter.append(
+                        f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {upstream}\n{dna_sequence}\n")
                     st.session_state['result_promoter'] = result_promoter
                 else:
-                    result_promoter.append(f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {upstream}\n{dna_sequence}\n")
+                    result_promoter.append(
+                        f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {upstream}\n{dna_sequence}\n")
                     st.session_state['result_promoter'] = result_promoter
 
             return result_promoter
@@ -430,11 +432,14 @@ def aio_page():
     with promcol1:
         if 'result_promoter' not in st.session_state:
             st.markdown("🔹 :blue[**Step 2.1**] Sequences:")
-            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).", label_visibility='collapsed')
+            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
+                                           value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).",
+                                           label_visibility='collapsed')
         else:
             st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
             result_promoter_text = "\n".join(st.session_state['result_promoter'])
-            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text, label_visibility='collapsed')
+            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text,
+                                           label_visibility='collapsed')
     with promcol2:
         st.markdown('')
         st.markdown('')
@@ -1017,11 +1022,13 @@ def aio_page():
         gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
 
         chart = alt.Chart(source).mark_circle().encode(
-            x=alt.X('Rel Position:Q' if position_type == 'From TSS/gene end' else 'Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+            x=alt.X('Rel Position:Q' if position_type == 'From TSS/gene end' else 'Position:Q',
+                    axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                     scale=alt.Scale(domain=[ystart, ystop])),
             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-            tooltip=['Rel Position' if position_type == 'From TSS/gene end' else 'Position', 'Rel Score'] + (['p-value'] if calc_pvalue else []) + ['Sequence', 'Gene', 'Species', 'Region']
+            tooltip=['Rel Position' if position_type == 'From TSS/gene end' else 'Position', 'Rel Score'] + (
+                ['p-value'] if calc_pvalue else []) + ['Sequence', 'Gene', 'Species', 'Region']
         ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
         st.altair_chart(chart, theme=None, use_container_width=True)
 
@@ -1030,14 +1037,8 @@ def aio_page():
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
             if jaspar == 'JASPAR_ID':
-                jaspar_id = sequence_consensus_input
-                url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
-                response = requests.get(url)
-                response_data = response.json()
-                TF_name = response_data['name']
                 st.success(f"Finding responsive elements done for {TF_name}")
-
-                body = f"Hello ☺\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team\n\n\n\nN.B: Sometimes the WebLogo is not sent correctly. A small bug that I did not have time to fix (soon...). You can always right click 'Save Image' on the WebLogo on TFinder directly."
+                body = f"Hello ☺\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team\n\n\n\nN.B: Sometimes the WebLogo is not sent correctly. A small bug that I did not have time to fix (soon...). You can always right click 'Save Image' on the WebLogo on TFinder directly."
 
             else:
                 st.success(f"Finding responsive elements done")
@@ -1048,7 +1049,6 @@ def aio_page():
                         body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team"
                 else:
                     body = f"Hello ☺\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team\n\n\n\nN.B: Sometimes the WebLogo is not sent correctly. A small bug that I did not have time to fix (soon...). You can always right click 'Save Image' on the WebLogo on TFinder directly."
-
 
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
