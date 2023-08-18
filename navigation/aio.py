@@ -273,7 +273,7 @@ def aio_page():
                         st.session_state['upstream'] = upstream
                         downstream = int(downstream_entry)
                         try:
-                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            result_promoter.extend(find_promoters(gene_ids, species, upstream, downstream))
                             st.success("Promoters extraction complete!")
                         except Exception as e:
                             st.error(f"Error finding promoters: {str(e)}")
@@ -285,7 +285,7 @@ def aio_page():
                         st.session_state['upstream'] = upstream
                         downstream = int(downstream_entry)
                         try:
-                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            result_promoter.extend(find_promoters(gene_ids, species, upstream, downstream))
                             st.success("Terminators extraction complete!")
                         except Exception as e:
                             st.error(f"Error finding terminators: {str(e)}")
