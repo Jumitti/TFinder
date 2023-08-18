@@ -791,7 +791,7 @@ def aio_page():
         return matrix_text, buffer
 
     # RE entry
-    REcol1, REcol2 = st.columns([0.30, 0.69])
+    REcol1, REcol2 = st.columns([0.30, 0.70])
     with REcol1:
         st.markdown('🔹 :blue[**Step 2.2**] Responsive elements type:')
         jaspar = st.radio('🔹 :blue[**Step 2.2**] Responsive elements type:', ('Manual sequence', 'JASPAR_ID', 'PWM'),
@@ -831,7 +831,7 @@ def aio_page():
                                           label_visibility='collapsed')
             isUIPAC = True
 
-            matrix_text = im(fasta_text)
+            matrix_text, buffer = im(fasta_text)
 
     else:
         with REcol1:
@@ -849,7 +849,7 @@ def aio_page():
             for i, seq in enumerate(sequences):
                 fasta_text += f">seq{i + 1}\n{seq}\n"
 
-            matrix_text = im(fasta_text)
+            matrix_text, buffer = im(fasta_text)
 
         else:
             isUIPAC = False
