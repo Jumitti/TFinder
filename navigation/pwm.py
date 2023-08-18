@@ -26,8 +26,6 @@ import logomaker
 
 def pwm_page():
     def calculate_pwm(sequences):
-        sequence_length = len(sequences[0])
-        num_sequences = len(sequences)
         
         pwm = np.zeros((4, sequence_length))
         for i in range(sequence_length):
@@ -70,6 +68,8 @@ def pwm_page():
             sequences = parse_fasta(fasta_text)
             sequences = [seq.upper() for seq in sequences]
 
+            sequence_length = len(sequences[0])
+            num_sequences = len(sequences)
             for sequence in sequences[1:]:
                 if len(sequence) != sequence_length:
                     st.warning("Sequence lengths are not consistent.")
