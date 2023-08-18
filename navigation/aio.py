@@ -174,13 +174,13 @@ def aio_page():
 
                 # Append the result to the result_promoter
                 if prom_term == 'Promoter':
-                    result_promoter_output.append(
+                    result_promoter.append(
                         f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
                 else:
-                    result_promoter_output.append(
+                    result_promoter.append(
                         f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop}\n{dna_sequence}\n")
 
-            return result_promoter_output
+            return result_promoter
 
         except Exception as e:
             raise Exception(f"Error retrieving gene information: {str(e)} for species {species}")
@@ -193,7 +193,7 @@ def aio_page():
     with colprom1:
         st.info("💡 If you have a FASTA sequence, go to :blue[**Step 2**]")
 
-        result_promoter_output = []
+        result_promoter = []
         upstream_entry = []
 
         # Gene ID
@@ -271,9 +271,9 @@ def aio_page():
                         st.session_state['upstream'] = upstream
                         downstream = int(downstream_entry)
                         try:
-                            result_promoter_output = find_promoters(gene_ids, species, upstream, downstream)
-                            st.write(result_promoter_output)
-                            result_promoter_output = "\n".join(result_promoter_output)
+                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            st.write(result_promoter)
+                            result_promoter_output = "\n".join(result_promoter)
                             st.session_state['result_promoter_output'] = result_promoter_output
                             st.success("Promoters extraction complete!")
                         except Exception as e:
