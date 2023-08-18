@@ -184,7 +184,7 @@ def aio_page():
                     result_promoter_output = "\n".join(result_promoter)
                     st.session_state['result_promoter_output'] = result_promoter_output
 
-            return result_promoter
+            return result_promoter_output
 
         except Exception as e:
             raise Exception(f"Error retrieving gene information: {str(e)} for species {species}")
@@ -432,7 +432,7 @@ def aio_page():
     st.subheader(':blue[Step 2] Binding Sites Finder')
     promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
     with promcol1:
-        if 'result_promoter' not in st.session_state:
+        if 'result_promoter_output' not in st.session_state:
             st.markdown("🔹 :blue[**Step 2.1**] Sequences:")
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
                                            value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).",
