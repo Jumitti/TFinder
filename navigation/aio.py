@@ -412,7 +412,7 @@ def aio_page():
                                     prom_term = search_type.capitalize()
                                     species = 'human'  # This is just a remnant of the past
                                     try:
-                                        result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                        updated_promoter.extend(find_promoters(gene_ids, species, upstream, downstream))
                                     except Exception as e:
                                         st.error(f"Error finding {gene_ids}: {str(e)}")
                         else:
@@ -421,9 +421,10 @@ def aio_page():
                                     if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
                                         try:
-                                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                            updated_promoter.extend(find_promoters(gene_ids, species, upstream, downstream))
                                         except Exception as e:
                                             st.error(f"Error finding {gene_ids}: {str(e)}")
+                    result_promoter = updated_promoter
 
     # Promoter output state
     st.divider()
@@ -704,7 +705,7 @@ def aio_page():
 
         return sequences
 
-    #generate Weblogo
+    # generate Weblogo
     def create_web_logo(sequences):
         matrix = logomaker.alignment_to_matrix(sequences)
         logo = logomaker.Logo(matrix, color_scheme='classic')
