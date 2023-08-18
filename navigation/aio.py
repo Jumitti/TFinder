@@ -500,7 +500,7 @@ def aio_page():
 
     # Analyse sequence for non authorized characters
     def isdna(promoter_region):
-        DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
+        DNA_code = ["A", "T", "C", "G", "N"]
         if not all(char in DNA_code for char in promoter_region):
             raise Exception("Please use ONLY A, T, G, C, N in your sequence")
 
