@@ -739,6 +739,57 @@ def aio_page():
 
         return logo
 
+    # Individual motif PWM and weblogo
+    def im(fasta_text):
+        sequences = parse_fasta(fasta_text)
+        sequences = [seq.upper() for seq in sequences]
+
+        if len(sequences) > 0:
+            pwm = calculate_pwm(sequences)
+            bases = ['A', 'T', 'G', 'C']
+            pwm_text = ""
+            for i in range(len(pwm)):
+                base_name = bases[i]
+                base_values = pwm[i]
+
+                base_str = base_name + " ["
+                for value in base_values:
+                    base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+
+                base_str += "]\n"
+                pwm_text += base_str
+
+            with REcol2:
+                matrix_text = st.text_area("PWM:", value=pwm_text,
+                                           help="Select and copy for later use. Don't modify.",
+                                           key="non_editable_text")
+
+        else:
+            st.warning("You forget FASTA sequences :)")
+
+        with REcol2:
+            sequences_text = fasta_text
+            sequences = []
+            current_sequence = ""
+            for line in sequences_text.splitlines():
+                line = line.strip()
+                if line.startswith(">"):
+                    if current_sequence:
+                        sequences.append(current_sequence)
+                    current_sequence = ""
+                else:
+                    current_sequence += line
+
+            sequences.append(current_sequence)
+
+            logo = create_web_logo(sequences)
+            st.pyplot(logo.fig)
+            buffer = io.BytesIO()
+            plt.savefig(buffer, format='jpg')
+            buffer.seek(0)
+
+        return matrix_text
+
     # RE entry
     REcol1, REcol2 = st.columns([0.30, 0.70])
     with REcol1:
@@ -780,55 +831,7 @@ def aio_page():
                                           label_visibility='collapsed')
             isUIPAC = True
 
-            if fasta_text:
-                sequences = parse_fasta(fasta_text)
-                sequences = [seq.upper() for seq in sequences]
-
-                if len(sequences) > 0:
-                    pwm = calculate_pwm(sequences)
-                    bases = ['A', 'T', 'G', 'C']
-                    pwm_text = ""
-                    for i in range(len(pwm)):
-                        base_name = bases[i]
-                        base_values = pwm[i]
-
-                        base_str = base_name + " ["
-                        for value in base_values:
-                            base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
-
-                        base_str += "]\n"
-                        pwm_text += base_str
-
-                    with REcol2:
-                        matrix_text = st.text_area("PWM:", value=pwm_text,
-                                                   help="Select and copy for later use. Don't modify.",
-                                                   key="non_editable_text")
-
-                else:
-                    st.warning("You forget FASTA sequences :)")
-
-                with REcol2:
-                    sequences_text = fasta_text
-                    sequences = []
-                    current_sequence = ""
-                    for line in sequences_text.splitlines():
-                        line = line.strip()
-                        if line.startswith(">"):
-                            if current_sequence:
-                                sequences.append(current_sequence)
-                            current_sequence = ""
-                        else:
-                            current_sequence += line
-
-                    if current_sequence:
-                        sequences.append(current_sequence)
-
-                    if sequences:
-                        logo = create_web_logo(sequences)
-                        st.pyplot(logo.fig)
-                        buffer = io.BytesIO()
-                        plt.savefig(buffer, format='jpg')
-                        buffer.seek(0)
+            im(fasta_text)
 
     else:
         with REcol1:
@@ -846,55 +849,8 @@ def aio_page():
             for i, seq in enumerate(sequences):
                 fasta_text += f">seq{i + 1}\n{seq}\n"
 
-            if fasta_text:
-                sequences = parse_fasta(fasta_text)
-                sequences = [seq.upper() for seq in sequences]
+            im(fasta_text)
 
-                if len(sequences) > 0:
-                    pwm = calculate_pwm(sequences)
-                    bases = ['A', 'T', 'G', 'C']
-                    pwm_text = ""
-                    for i in range(len(pwm)):
-                        base_name = bases[i]
-                        base_values = pwm[i]
-
-                        base_str = base_name + " ["
-                        for value in base_values:
-                            base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
-
-                        base_str += "]\n"
-                        pwm_text += base_str
-
-                    with REcol2:
-                        matrix_text = st.text_area("PWM:", value=pwm_text,
-                                                   help="Select and copy for later use. Dont't modify.",
-                                                   key="non_editable_text")
-
-                else:
-                    st.warning("You forget FASTA sequences :)")
-
-                with REcol2:
-                    sequences_text = fasta_text
-                    sequences = []
-                    current_sequence = ""
-                    for line in sequences_text.splitlines():
-                        line = line.strip()
-                        if line.startswith(">"):
-                            if current_sequence:
-                                sequences.append(current_sequence)
-                            current_sequence = ""
-                        else:
-                            current_sequence += line
-
-                    if current_sequence:
-                        sequences.append(current_sequence)
-
-                    if sequences:
-                        logo = create_web_logo(sequences)
-                        st.pyplot(logo.fig)
-                        buffer = io.BytesIO()
-                        plt.savefig(buffer, format='jpg')
-                        buffer.seek(0)
         else:
             isUIPAC = False
 
@@ -977,7 +933,7 @@ def aio_page():
 
             attachment_text = MIMEText(txt_output, 'plain', 'utf-8')
             attachment_text.add_header('Content-Disposition', 'attachment',
-                                       filename=f'Sequences_{current_date_time}.txt')
+                                       filename=f'Sequences_{current_date_time}.fasta')
             msg.attach(attachment_text)
 
             if jaspar == 'PWM':
