@@ -430,14 +430,14 @@ def aio_page():
     st.subheader(':blue[Step 2] Binding Sites Finder')
     promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
     with promcol1:
-        if 'result_promoter' not in st.session_state:
+        if result_promoter not in locals():
             st.markdown("🔹 :blue[**Step 2.1**] Sequences:")
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
                                            value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).",
                                            label_visibility='collapsed')
         else:
             st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-            result_promoter_text = "\n".join(st.session_state['result_promoter'])
+            result_promoter_text = "\n".join(result_promoter)
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text,
                                            label_visibility='collapsed')
     with promcol2:
