@@ -274,7 +274,7 @@ def aio_page():
                             result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             st.write(result_promoter)
                             result_promoter = "\n".join(result_promoter)
-                            st.session_state['result_promoter'] = result_promoter
+                            st.session_state['result_promoter_output'] = result_promoter
                             st.success("Promoters extraction complete!")
                         except Exception as e:
                             st.error(f"Error finding promoters: {str(e)}")
@@ -431,7 +431,7 @@ def aio_page():
     st.subheader(':blue[Step 2] Binding Sites Finder')
     promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
     with promcol1:
-        if 'result_promoter' not in st.session_state:
+        if 'result_promoter_output' not in st.session_state:
             st.markdown("🔹 :blue[**Step 2.1**] Sequences:")
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
                                            value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).",
@@ -439,7 +439,7 @@ def aio_page():
         else:
             st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
-                                           value=st.session_state['result_promoter'],
+                                           value=st.session_state['result_promoter_output'],
                                            label_visibility='collapsed')
 
     with promcol2:
