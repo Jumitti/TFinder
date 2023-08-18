@@ -174,15 +174,15 @@ def aio_page():
 
                 # Append the result to the result_promoter
                 if prom_term == 'Promoter':
-                    updated_promoter.append(
+                    result_promoter.append(
                         f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
-                    st.session_state['updated_promoter'] = updated_promoter
+                    st.session_state['result_promoter'] = result_promoter
                 else:
                     result_promoter.append(
                         f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop}\n{dna_sequence}\n")
-                    st.session_state['updated_promoter'] = updated_promoter
+                    st.session_state['result_promoter'] = result_promoter
 
-            return updated_promoter
+            return result_promoter
 
         except Exception as e:
             raise Exception(f"Error retrieving gene information: {str(e)} for species {species}")
@@ -195,7 +195,7 @@ def aio_page():
     with colprom1:
         st.info("💡 If you have a FASTA sequence, go to :blue[**Step 2**]")
 
-        updated_promoter = []
+        result_promoter = []
         upstream_entry = []
 
         # Gene ID
@@ -273,11 +273,10 @@ def aio_page():
                         st.session_state['upstream'] = upstream
                         downstream = int(downstream_entry)
                         try:
-                            updated_promoter.extend(find_promoters(gene_ids, species, upstream, downstream))
+                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             st.success("Promoters extraction complete!")
                         except Exception as e:
                             st.error(f"Error finding promoters: {str(e)}")
-                        result_promoter = updated_promoter
             else:
                 if st.button("🧬 :blue[**Step 1.5**] Extract terminator", help='(~5sec/gene)'):
                     with st.spinner("Finding terminators..."):
@@ -286,11 +285,10 @@ def aio_page():
                         st.session_state['upstream'] = upstream
                         downstream = int(downstream_entry)
                         try:
-                            updated_promoter.extend(find_promoters(gene_ids, species, upstream, downstream))
+                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             st.success("Terminators extraction complete!")
                         except Exception as e:
                             st.error(f"Error finding terminators: {str(e)}")
-                        result_promoter = updated_promoter
 
         with tab2:
 
@@ -414,7 +412,7 @@ def aio_page():
                                     prom_term = search_type.capitalize()
                                     species = 'human'  # This is just a remnant of the past
                                     try:
-                                        updated_promoter.extend(find_promoters(gene_ids, species, upstream, downstream))
+                                        result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                                     except Exception as e:
                                         st.error(f"Error finding {gene_ids}: {str(e)}")
                         else:
@@ -423,24 +421,23 @@ def aio_page():
                                     if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
                                         try:
-                                            updated_promoter.extend(find_promoters(gene_ids, species, upstream, downstream))
+                                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                                         except Exception as e:
                                             st.error(f"Error finding {gene_ids}: {str(e)}")
-                    result_promoter = updated_promoter
 
     # Promoter output state
     st.divider()
     st.subheader(':blue[Step 2] Binding Sites Finder')
     promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
     with promcol1:
-        if 'updated_promoter' not in st.session_state:
+        if 'result_promoter' not in st.session_state:
             st.markdown("🔹 :blue[**Step 2.1**] Sequences:")
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
                                            value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).",
                                            label_visibility='collapsed')
         else:
             st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-            result_promoter_text = "\n".join(st.session_state['updated_promoter'])
+            result_promoter_text = "\n".join(st.session_state['result_promoter'])
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text,
                                            label_visibility='collapsed')
     with promcol2:
