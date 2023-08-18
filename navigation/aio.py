@@ -498,27 +498,34 @@ def aio_page():
         sequence = random.choices(nucleotides, probabilities, k=length)
         return ''.join(sequence)
 
+    def isDNA(promoter_region):
+        if all(char in DNA_code for char in promoter_region):
+            shortened_promoter_name = "n.d."
+            found_species = "n.d"
+            region = "n.d"
+            promoters.append((shortened_promoter_name, promoter_region, found_species, region))
+        else:
+            raise Exception("Please use ONLY A, T, G, C, N in your sequence")
+
     # Find with JASPAR and manual matrix
     def search_sequence(threshold, tis_value, result_promoter, matrices):
         global table2
         table2 = []
 
-        DNA_code = ["A", "T", "C", "G", "a", "t", "c", "g"]
+        DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
 
         # Promoter input type
         lines = result_promoter
         promoters = []
 
         first_line = lines
-        if first_line.startswith(("A", "T", "C", "G", "a", "t", "c", "g")):
+        if first_line.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
             promoter_region = lines.upper()
-            if all(char in DNA_code for char in promoter_region):
-                shortened_promoter_name = "n.d."
-                found_species = "n.d"
-                region = "n.d"
-                promoters.append((shortened_promoter_name, promoter_region, found_species, region))
-            else:
-                raise Exception("Please use ONLY A, T, G, C")
+            isDNA(promoter_region)
+            shortened_promoter_name = "n.d."
+            found_species = "n.d"
+            region = "n.d"
+            promoters.append((shortened_promoter_name, promoter_region, found_species, region))
         else:
             lines = result_promoter.split("\n")
             i = 0
@@ -548,7 +555,7 @@ def aio_page():
                         promoters.append((shortened_promoter_name, promoter_region, found_species, region))
                         i += 1
                     else:
-                        raise Exception("Please use ONLY A, T, G, C")
+                        raise Exception("Please use ONLY A, T, G, C, N in your sequence")
                 else:
                     i += 1
 
