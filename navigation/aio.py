@@ -788,7 +788,7 @@ def aio_page():
             plt.savefig(buffer, format='jpg')
             buffer.seek(0)
 
-        return matrix_text
+        return matrix_text, buffer
 
     # RE entry
     REcol1, REcol2 = st.columns([0.30, 0.70])
