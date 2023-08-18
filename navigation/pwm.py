@@ -63,62 +63,59 @@ def pwm_page():
     fasta_text = st.text_area("Put FASTA sequences. Same sequence length required ⚠️", height=300)
 
     if st.button('Generate PWM'):
-        if fasta_text:
-            
-            sequences = parse_fasta(fasta_text)
-            sequences = [seq.upper() for seq in sequences]
+        sequences = parse_fasta(fasta_text)
+        sequences = [seq.upper() for seq in sequences]
 
-            sequence_length = len(sequences[0])
-            num_sequences = len(sequences)
-            for sequence in sequences[1:]:
-                if len(sequence) != sequence_length:
-                    st.warning("Sequence lengths are not consistent.")
-                    break
+        sequence_length = len(sequences[0])
+        num_sequences = len(sequences)
+        for sequence in sequences[1:]:
+            if len(sequence) != sequence_length:
+                raise st.warning("Sequence lengths are not consistent.")
 
-            if len(sequences) > 0:
-                pwm = calculate_pwm(sequences)
+        if len(sequences) > 0:
+            pwm = calculate_pwm(sequences)
 
-                st.subheader("PWM: ")
-                st.info("⬇️ Select and copy")
-                bases = ['A', 'T', 'G', 'C']
-                pwm_text = ""
-                for i in range(len(pwm)):
-                    base_name = bases[i]
-                    base_values = pwm[i]
+            st.subheader("PWM: ")
+            st.info("⬇️ Select and copy")
+            bases = ['A', 'T', 'G', 'C']
+            pwm_text = ""
+            for i in range(len(pwm)):
+                base_name = bases[i]
+                base_values = pwm[i]
 
-                    base_str = base_name + " ["
-                    for value in base_values:
-                        base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+                base_str = base_name + " ["
+                for value in base_values:
+                    base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
 
-                    base_str += "]\n"
-                    pwm_text += base_str
+                base_str += "]\n"
+                pwm_text += base_str
 
-                st.text_area("PWM résultante", value=pwm_text)
-                
+            st.text_area("PWM résultante", value=pwm_text)
+
+        else:
+            st.warning("You forget FASTA sequences :)")
+
+        def create_web_logo(sequences):
+            matrix = logomaker.alignment_to_matrix(sequences)
+            logo = logomaker.Logo(matrix)
+
+            return logo
+
+        sequences_text = fasta_text
+        sequences = []
+        current_sequence = ""
+        for line in sequences_text.splitlines():
+            line = line.strip()
+            if line.startswith(">"):
+                if current_sequence:
+                    sequences.append(current_sequence)
+                current_sequence = ""
             else:
-                st.warning("You forget FASTA sequences :)")
-            
-            def create_web_logo(sequences):
-                matrix = logomaker.alignment_to_matrix(sequences)
-                logo = logomaker.Logo(matrix)
+                current_sequence += line
 
-                return logo
-            
-            sequences_text = fasta_text
-            sequences = []
-            current_sequence = ""
-            for line in sequences_text.splitlines():
-                line = line.strip()
-                if line.startswith(">"):
-                    if current_sequence:
-                        sequences.append(current_sequence)
-                    current_sequence = ""
-                else:
-                    current_sequence += line
+        if current_sequence:
+            sequences.append(current_sequence)
 
-            if current_sequence:
-                sequences.append(current_sequence)
-
-            if sequences:
-                logo = create_web_logo(sequences)
-                st.pyplot(logo.fig)
+        if sequences:
+            logo = create_web_logo(sequences)
+            st.pyplot(logo.fig)
