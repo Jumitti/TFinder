@@ -110,7 +110,7 @@ st.markdown(footer, unsafe_allow_html=True)
 # Credit rating
 st.sidebar.image("https://raw.githubusercontent.com/Jumitti/TFinder/main/img/REF.png")
 try:
-    with open("ratings.pkl", "rb") as file:
+    with open(".streamlit/ratings.pkl", "rb") as file:
         ratings = pickle.load(file)
 except FileNotFoundError:
     ratings = []
@@ -213,7 +213,7 @@ class SessionState:
 
 
 try:
-    with open("user_count.pkl", "rb") as file:
+    with open(".streamlit/user_count.pkl", "rb") as file:
         user_count = pickle.load(file)
 except FileNotFoundError:
     user_count = 0
