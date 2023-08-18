@@ -275,6 +275,7 @@ def aio_page():
                         st.session_state['upstream'] = upstream
                         downstream = int(downstream_entry)
                         try:
+                            del st.session_state[result_promoter_output]
                             result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             st.success("Promoters extraction complete!")
                         except Exception as e:
