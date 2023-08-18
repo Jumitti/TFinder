@@ -1056,19 +1056,19 @@ def aio_page():
         color_scale = alt.Color("Gene_Region:N", scale=scale)
         gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
 
-        if calc_pvalue:
-            chart = alt.Chart(source).mark_circle().encode(
-                x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
-                        scale=alt.Scale(domain=[ystart, ystop])),
-                color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                tooltip=['Rel Position', 'Rel Score', 'p-value', 'Sequence', 'Gene', 'Species', 'Region']
-            ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+        #if calc_pvalue:
+        chart = alt.Chart(source).mark_circle().encode(
+            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
+                    scale=alt.Scale(domain=[ystart, ystop])),
+            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
+            tooltip=['Rel Position', 'Rel Score', 'p-value' if calc_pvalue, 'Sequence', 'Gene', 'Species', 'Region']
+        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
 
-            st.markdown('**Graph**',
-                        help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-            st.altair_chart(chart, theme=None, use_container_width=True)
-        else:
+        st.markdown('**Graph**',
+                    help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
+        st.altair_chart(chart, theme=None, use_container_width=True)
+        '''else:
             chart = alt.Chart(source).mark_circle().encode(
                 x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
                 y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
@@ -1079,7 +1079,7 @@ def aio_page():
 
             st.markdown('**Graph**',
                         help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-            st.altair_chart(chart, theme=None, use_container_width=True)
+            st.altair_chart(chart, theme=None, use_container_width=True)'''
 
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
