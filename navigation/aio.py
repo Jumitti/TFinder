@@ -1056,30 +1056,14 @@ def aio_page():
         color_scale = alt.Color("Gene_Region:N", scale=scale)
         gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
 
-        #if calc_pvalue:
         chart = alt.Chart(source).mark_circle().encode(
-            x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+            x=alt.X('Rel Position:Q' if position_type == 'From TSS/gene end' else 'Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                     scale=alt.Scale(domain=[ystart, ystop])),
             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-            tooltip=['Rel Position', 'Rel Score'] + (['p-value'] if calc_pvalue else []) + ['Sequence', 'Gene', 'Species', 'Region']
+            tooltip=['Rel Position' if position_type == 'From TSS/gene end' else 'Position', 'Rel Score'] + (['p-value'] if calc_pvalue else []) + ['Sequence', 'Gene', 'Species', 'Region']
         ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-
-        st.markdown('**Graph**',
-                    help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
         st.altair_chart(chart, theme=None, use_container_width=True)
-        '''else:
-            chart = alt.Chart(source).mark_circle().encode(
-                x=alt.X('Rel Position:Q', axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
-                y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
-                        scale=alt.Scale(domain=[ystart, ystop])),
-                color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                tooltip=['Rel Position', 'Rel Score', 'Sequence', 'Gene', 'Species', 'Region']
-            ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-
-            st.markdown('**Graph**',
-                        help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-            st.altair_chart(chart, theme=None, use_container_width=True)'''
 
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
@@ -1106,7 +1090,8 @@ def aio_page():
                     st.download_button("💾 Download table (.xlsx)", excel_file,
                                        file_name=f'Results_TFinder_{current_date_time}.xlsx',
                                        mime="application/vnd.ms-excel", key='download-excel')
-
+                st.markdown('**Graph**',
+                            help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                 result_table_output(df)
 
                 with colres4:
@@ -1145,7 +1130,9 @@ def aio_page():
                     st.download_button("💾 Download table (.xlsx)", excel_file,
                                        file_name=f'Results_TFinder_{current_date_time}.xlsx',
                                        mime="application/vnd.ms-excel", key='download-excel')
-
+                st.markdown('**Graph**',
+                            help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
+                position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
                 result_table_output(df)
 
                 with colres4:
