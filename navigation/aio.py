@@ -56,7 +56,7 @@ def aio_page():
             return gene  # Already an ENTREZ_GENE_ID
 
         # Request for ENTREZ_GENE_ID
-        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml"
+        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml "
         response = requests.get(url)
 
         if response.status_code == 200:
@@ -285,7 +285,7 @@ def aio_page():
                         st.session_state['upstream'] = upstream
                         downstream = int(downstream_entry)
                         try:
-                            find_promoters(gene_ids, species, upstream, downstream)
+                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             st.success("Terminators extraction complete!")
                         except Exception as e:
                             st.error(f"Error finding terminators: {str(e)}")
@@ -412,7 +412,7 @@ def aio_page():
                                     prom_term = search_type.capitalize()
                                     species = 'human'  # This is just a remnant of the past
                                     try:
-                                        find_promoters(gene_ids, species, upstream, downstream)
+                                        result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                                     except Exception as e:
                                         st.error(f"Error finding {gene_ids}: {str(e)}")
                         else:
@@ -421,7 +421,7 @@ def aio_page():
                                     if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
                                         try:
-                                            find_promoters(gene_ids, species, upstream, downstream)
+                                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                                         except Exception as e:
                                             st.error(f"Error finding {gene_ids}: {str(e)}")
 
