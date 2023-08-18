@@ -1067,14 +1067,14 @@ def aio_page():
 
     if jaspar == 'JASPAR_ID':
         if 'table2' in locals():
+            jaspar_id = sequence_consensus_input
+            url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
+            response = requests.get(url)
+            response_data = response.json()
+            TF_name = response_data['name']
             if len(table2) > 1:
                 current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 st.subheader(':blue[Results]')
-                jaspar_id = sequence_consensus_input
-                url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
-                response = requests.get(url)
-                response_data = response.json()
-                TF_name = response_data['name']
                 st.success(f"Finding responsive elements done for {TF_name}")
 
                 df = pd.DataFrame(table2[1:], columns=table2[0])
@@ -1102,11 +1102,6 @@ def aio_page():
                     email(excel_file, txt_output, email_receiver, body)
 
             else:
-                jaspar_id = sequence_consensus_input
-                url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
-                response = requests.get(url)
-                response_data = response.json()
-                TF_name = response_data['name']
                 st.error(f"No consensus sequence found with the specified threshold for {TF_name}")
 
     else:
