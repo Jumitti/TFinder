@@ -507,9 +507,8 @@ def aio_page():
         table2 = []
 
         # Promoter input type
-        lines = result_promoter.upper()
+        lines = result_promoter
         promoters = []
-        st.write(lines)
         if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
             promoter_region = lines.upper()
             isdna(promoter_region)
@@ -960,7 +959,7 @@ def aio_page():
         calc_pvalue = st.checkbox('_p-value_')
 
     # Run Responsive Elements finder
-    if result_promoter.startswith(("A", "T", "G", "C", ">")):
+    if result_promoter.startswith(("A", "T", "G", "C", ">" , "a", "t", "c", "g", "n")):
         with st.spinner("Finding responsive elements..."):
             tis_value = int(entry_tis)
             threshold = float(threshold_entry)
