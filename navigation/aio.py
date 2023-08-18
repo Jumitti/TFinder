@@ -483,7 +483,7 @@ def aio_page():
             'Reversed Complement': reversed_complement_matrix
         }
 
-    # Calculate score with JASPAR
+    # Calculate matrix score
     def calculate_score(sequence, matrix):
         score = 0
         for i, base in enumerate(sequence):
@@ -491,6 +491,12 @@ def aio_page():
                 base_score = matrix[base]
                 score += base_score[i]
         return score
+
+    # Generat random sequences
+    def generate_random_sequence(length, probabilities):
+        nucleotides = ['A', 'C', 'G', 'T']
+        sequence = random.choices(nucleotides, probabilities, k=length)
+        return ''.join(sequence)
 
     # Find with JASPAR and manual matrix
     def search_sequence(threshold, tis_value, result_promoter, matrices):
@@ -551,11 +557,6 @@ def aio_page():
                 seq_length = len(matrix['A'])
 
             for shortened_promoter_name, promoter_region, found_species, region in promoters:
-
-                def generate_random_sequence(length, probabilities):
-                    nucleotides = ['A', 'C', 'G', 'T']
-                    sequence = random.choices(nucleotides, probabilities, k=length)
-                    return ''.join(sequence)
 
                 # Generate random sequences
                 motif_length = seq_length
@@ -667,6 +668,49 @@ def aio_page():
 
     # Responsive Elements Finder
 
+    # Calculate PWM
+    def calculate_pwm(sequences):
+        num_sequences = len(sequences)
+        sequence_length = len(sequences[0])
+        pwm = np.zeros((4, sequence_length))
+        for i in range(sequence_length):
+            counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
+            for sequence in sequences:
+                nucleotide = sequence[i]
+                if nucleotide in counts:
+                    counts[nucleotide] += 1
+            pwm[0, i] = counts['A'] / num_sequences
+            pwm[1, i] = counts['T'] / num_sequences
+            pwm[2, i] = counts['G'] / num_sequences
+            pwm[3, i] = counts['C'] / num_sequences
+
+        return pwm
+
+    # PWM with multiple FASTA
+    def parse_fasta(fasta_text):
+        sequences = []
+        current_sequence = ""
+
+        for line in fasta_text.splitlines():
+            if line.startswith(">"):
+                if current_sequence:
+                    sequences.append(current_sequence)
+                current_sequence = ""
+            else:
+                current_sequence += line
+
+        if current_sequence:
+            sequences.append(current_sequence)
+
+        return sequences
+
+    #generate Weblogo
+    def create_web_logo(sequences):
+        matrix = logomaker.alignment_to_matrix(sequences)
+        logo = logomaker.Logo(matrix, color_scheme='classic')
+
+        return logo
+
     # RE entry
     REcol1, REcol2 = st.columns([0.30, 0.70])
     with REcol1:
@@ -707,41 +751,6 @@ def aio_page():
                                           label_visibility='collapsed')
             isUIPAC = True
 
-            # Generate matrix
-            def calculate_pwm(sequences):
-                num_sequences = len(sequences)
-                sequence_length = len(sequences[0])
-                pwm = np.zeros((4, sequence_length))
-                for i in range(sequence_length):
-                    counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
-                    for sequence in sequences:
-                        nucleotide = sequence[i]
-                        if nucleotide in counts:
-                            counts[nucleotide] += 1
-                    pwm[0, i] = counts['A'] / num_sequences
-                    pwm[1, i] = counts['T'] / num_sequences
-                    pwm[2, i] = counts['G'] / num_sequences
-                    pwm[3, i] = counts['C'] / num_sequences
-
-                return pwm
-
-            def parse_fasta(fasta_text):
-                sequences = []
-                current_sequence = ""
-
-                for line in fasta_text.splitlines():
-                    if line.startswith(">"):
-                        if current_sequence:
-                            sequences.append(current_sequence)
-                        current_sequence = ""
-                    else:
-                        current_sequence += line
-
-                if current_sequence:
-                    sequences.append(current_sequence)
-
-                return sequences
-
             if fasta_text:
                 sequences = parse_fasta(fasta_text)
                 sequences = [seq.upper() for seq in sequences]
@@ -768,12 +777,6 @@ def aio_page():
 
                 else:
                     st.warning("You forget FASTA sequences :)")
-
-                def create_web_logo(sequences):
-                    matrix = logomaker.alignment_to_matrix(sequences)
-                    logo = logomaker.Logo(matrix, color_scheme='classic')
-
-                    return logo
 
                 with REcol2:
                     sequences_text = fasta_text
