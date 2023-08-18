@@ -440,12 +440,11 @@ def aio_page():
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
                                            value=st.session_state['result_promoter_output'],
                                            label_visibility='collapsed')
-        '''
         elif not result_promoter:
             st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
                                            value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).",
-                                           label_visibility='collapsed')'''
+                                           label_visibility='collapsed')
 
     with promcol2:
         st.markdown('')
