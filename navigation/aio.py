@@ -952,20 +952,15 @@ def aio_page():
             st.toast('Email sent successfully !', icon='🚀')
 
         except smtplib.SMTPAuthenticationError:
-            with colres5:
-                st.toast("Failed to authenticate. Please check your email and password.")
+            st.toast("Failed to authenticate. Please check your email and password.")
         except smtplib.SMTPServerDisconnected:
-            with colres5:
-                st.toast("Failed to connect to the SMTP server. Please check your internet connection.")
+            st.toast("Failed to connect to the SMTP server. Please check your internet connection.")
         except smtplib.SMTPRecipientsRefused:
-            with colres5:
-                st.toast(f"Error sending email: {email_receiver}")
+            st.toast(f"Error sending email: {email_receiver}")
         except smtplib.SMTPException as e:
-            with colres5:
-                st.toast(f"Error sending email: {e}")
+            st.toast(f"Error sending email: {e}")
         except Exception as e:
-            with colres5:
-                st.toast(f"Unknown error occurred: {e}")
+            st.toast(f"Unknown error occurred: {e}")
 
     def result_table_output(df):
         source = df
