@@ -504,6 +504,8 @@ def aio_page():
         if not all(char in DNA_code for char in promoter_region):
             raise Exception("Please use ONLY A, T, G, C, N in your sequence")
 
+        return
+
     # Find with JASPAR and manual matrix
     def search_sequence(threshold, tis_value, result_promoter, matrices):
         global table2
