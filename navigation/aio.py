@@ -663,6 +663,34 @@ def aio_page():
 
     # Responsive Elements Finder
 
+    # IUPAC code
+    def generate_iupac_variants(sequence):
+        iupac_codes = {
+            "R": ["A", "G"],
+            "Y": ["C", "T"],
+            "M": ["A", "C"],
+            "K": ["G", "T"],
+            "W": ["A", "T"],
+            "S": ["C", "G"],
+            "B": ["C", "G", "T"],
+            "D": ["A", "G", "T"],
+            "H": ["A", "C", "T"],
+            "V": ["A", "C", "G"],
+            "N": ["A", "C", "G", "T"]
+        }
+
+        sequences = [sequence]
+        for i, base in enumerate(sequence):
+            if base.upper() in iupac_codes:
+                new_sequences = []
+                for seq in sequences:
+                    for alternative in iupac_codes[base.upper()]:
+                        new_sequence = seq[:i] + alternative + seq[i + 1:]
+                        new_sequences.append(new_sequence)
+                sequences = new_sequences
+
+        return sequences
+
     # Calculate PWM
     def calculate_pwm(sequences):
         num_sequences = len(sequences)
@@ -807,73 +835,10 @@ def aio_page():
         if all(char in IUPAC_code for char in IUPAC):
             isUIPAC = True
 
-            # IUPAC code
-            def generate_iupac_variants(sequence):
-                iupac_codes = {
-                    "R": ["A", "G"],
-                    "Y": ["C", "T"],
-                    "M": ["A", "C"],
-                    "K": ["G", "T"],
-                    "W": ["A", "T"],
-                    "S": ["C", "G"],
-                    "B": ["C", "G", "T"],
-                    "D": ["A", "G", "T"],
-                    "H": ["A", "C", "T"],
-                    "V": ["A", "C", "G"],
-                    "N": ["A", "C", "G", "T"]
-                }
-
-                sequences = [sequence]
-                for i, base in enumerate(sequence):
-                    if base.upper() in iupac_codes:
-                        new_sequences = []
-                        for seq in sequences:
-                            for alternative in iupac_codes[base.upper()]:
-                                new_sequence = seq[:i] + alternative + seq[i + 1:]
-                                new_sequences.append(new_sequence)
-                        sequences = new_sequences
-
-                return sequences
-
             sequences = generate_iupac_variants(IUPAC)
             fasta_text = ""
             for i, seq in enumerate(sequences):
                 fasta_text += f">seq{i + 1}\n{seq}\n"
-
-            # Generate matrix            
-            def calculate_pwm(sequences):
-                num_sequences = len(sequences)
-                sequence_length = len(sequences[0])
-                pwm = np.zeros((4, sequence_length))
-                for i in range(sequence_length):
-                    counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
-                    for sequence in sequences:
-                        nucleotide = sequence[i]
-                        if nucleotide in counts:
-                            counts[nucleotide] += 1
-                    pwm[0, i] = counts['A'] / num_sequences
-                    pwm[1, i] = counts['T'] / num_sequences
-                    pwm[2, i] = counts['G'] / num_sequences
-                    pwm[3, i] = counts['C'] / num_sequences
-
-                return pwm
-
-            def parse_fasta(fasta_text):
-                sequences = []
-                current_sequence = ""
-
-                for line in fasta_text.splitlines():
-                    if line.startswith(">"):
-                        if current_sequence:
-                            sequences.append(current_sequence)
-                        current_sequence = ""
-                    else:
-                        current_sequence += line
-
-                if current_sequence:
-                    sequences.append(current_sequence)
-
-                return sequences
 
             if fasta_text:
                 sequences = parse_fasta(fasta_text)
@@ -901,12 +866,6 @@ def aio_page():
 
                 else:
                     st.warning("You forget FASTA sequences :)")
-
-                def create_web_logo(sequences):
-                    matrix = logomaker.alignment_to_matrix(sequences)
-                    logo = logomaker.Logo(matrix, color_scheme='classic')
-
-                    return logo
 
                 with REcol2:
                     sequences_text = fasta_text
