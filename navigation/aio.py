@@ -500,12 +500,7 @@ def aio_page():
 
     def isDNA(promoter_region):
         DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
-        if all(char in DNA_code for char in promoter_region):
-            shortened_promoter_name = "n.d."
-            found_species = "n.d"
-            region = "n.d"
-            promoters.append((shortened_promoter_name, promoter_region, found_species, region))
-        else:
+        if not all(char in DNA_code for char in promoter_region):
             raise Exception("Please use ONLY A, T, G, C, N in your sequence")
 
     # Find with JASPAR and manual matrix
