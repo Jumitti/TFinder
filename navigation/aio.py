@@ -536,7 +536,7 @@ def aio_page():
                     regions_prom = ['Promoter', 'Terminator']
                     for regions in regions_prom:
                         if regions.lower() in promoter_name.lower():
-                            region = regions
+                            region = regions[:4] + "."
                             break
                         else:
                             region = "n.d"
@@ -1090,8 +1090,10 @@ def aio_page():
                     st.download_button("💾 Download table (.xlsx)", excel_file,
                                        file_name=f'Results_TFinder_{current_date_time}.xlsx',
                                        mime="application/vnd.ms-excel", key='download-excel')
+
                 st.markdown('**Graph**',
                             help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
+                position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
                 result_table_output(df)
 
                 with colres4:
@@ -1130,6 +1132,7 @@ def aio_page():
                     st.download_button("💾 Download table (.xlsx)", excel_file,
                                        file_name=f'Results_TFinder_{current_date_time}.xlsx',
                                        mime="application/vnd.ms-excel", key='download-excel')
+
                 st.markdown('**Graph**',
                             help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
                 position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
