@@ -437,6 +437,8 @@ def aio_page():
                                            label_visibility='collapsed')
         else:
             st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
+            st.write(result_promoter)
+            st.write(st.session_state['result_promoter'])
             result_promoter_text = "\n".join(st.session_state['result_promoter'])
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text,
                                            label_visibility='collapsed')
