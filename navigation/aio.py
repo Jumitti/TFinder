@@ -825,7 +825,7 @@ def aio_page():
         else:
             with REcol1:
                 st.markdown("🔹 :blue[**Step 2.3**] Sequences:",
-                            help='Put FASTA sequences. Same sequence length required ⚠️')
+                            help='Put FASTA sequences. Same sequence length required ⚠')
                 fasta_text = st.text_area("🔹 :blue[**Step 2.3**] Sequences:",
                                           value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG",
                                           label_visibility='collapsed')

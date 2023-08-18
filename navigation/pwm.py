@@ -32,7 +32,7 @@ def pwm_page():
         for sequence in sequences[1:]:
             if len(sequence) != sequence_length:
                 st.warning("Sequence lengths are not consistent.")
-                return None
+                break
         
         pwm = np.zeros((4, sequence_length))
         for i in range(sequence_length):
