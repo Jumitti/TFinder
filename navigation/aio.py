@@ -174,11 +174,11 @@ def aio_page():
 
                 # Append the result to the result_promoter
                 if prom_term == 'Promoter':
-                    result_promoter.append(
-                        f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart}\n{dna_sequence}\n")
+                    result_promoter.append(f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {upstream}\n{dna_sequence}\n")
+                    st.session_state['result_promoter'] = result_promoter
                 else:
-                    result_promoter.append(
-                        f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop}\n{dna_sequence}\n")
+                    result_promoter.append(f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {upstream}\n{dna_sequence}\n")
+                    st.session_state['result_promoter'] = result_promoter
 
             return result_promoter
 
@@ -271,9 +271,7 @@ def aio_page():
                         st.session_state['upstream'] = upstream
                         downstream = int(downstream_entry)
                         try:
-                            find_promoters(gene_ids, species, upstream, downstream)
-                            result_promoter_output = "\n".join(result_promoter)
-                            st.session_state['result_promoter_output'] = result_promoter_output
+                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             st.success("Promoters extraction complete!")
                         except Exception as e:
                             st.error(f"Error finding promoters: {str(e)}")
@@ -430,17 +428,13 @@ def aio_page():
     st.subheader(':blue[Step 2] Binding Sites Finder')
     promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
     with promcol1:
-        if 'result_promoter_output' not in st.session_state:
+        if 'result_promoter' not in st.session_state:
             st.markdown("🔹 :blue[**Step 2.1**] Sequences:")
-            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
-                                           value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).",
-                                           label_visibility='collapsed')
+            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).", label_visibility='collapsed')
         else:
             st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
-                                           value=st.session_state['result_promoter_output'],
-                                           label_visibility='collapsed')
-
+            result_promoter_text = "\n".join(st.session_state['result_promoter'])
+            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text, label_visibility='collapsed')
     with promcol2:
         st.markdown('')
         st.markdown('')
