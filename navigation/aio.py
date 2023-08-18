@@ -791,7 +791,7 @@ def aio_page():
         return matrix_text, buffer
 
     # RE entry
-    REcol1, REcol2 = st.columns([0.30, 0.70])
+    REcol1, REcol2 = st.columns([0.30, 0.69])
     with REcol1:
         st.markdown('🔹 :blue[**Step 2.2**] Responsive elements type:')
         jaspar = st.radio('🔹 :blue[**Step 2.2**] Responsive elements type:', ('Manual sequence', 'JASPAR_ID', 'PWM'),
