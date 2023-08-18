@@ -110,7 +110,7 @@ st.markdown(footer, unsafe_allow_html=True)
 # Credit rating
 st.sidebar.image("https://raw.githubusercontent.com/Jumitti/TFinder/main/img/REF.png")
 try:
-    with open("utils/ratings.pkl", "rb") as file:
+    with open("ratings.pkl", "rb") as file:
         ratings = pickle.load(file)
 except FileNotFoundError:
     ratings = []
@@ -120,7 +120,7 @@ with colrate1:
     submit_button = st.button("Submit Rating")
 if submit_button:
     ratings.append(rating)
-    with open("utils/ratings.pkl", "wb") as file:
+    with open("ratings.pkl", "wb") as file:
         pickle.dump(ratings, file)
     st.toast("Thank you for rating the application!", icon='😍')
     st.balloons()
@@ -213,7 +213,7 @@ class SessionState:
 
 
 try:
-    with open("utils/user_count.pkl", "rb") as file:
+    with open("user_count.pkl", "rb") as file:
         user_count = pickle.load(file)
 except FileNotFoundError:
     user_count = 0
@@ -222,7 +222,7 @@ if "user_count_incremented" not in st.session_state:
     user_count += 1
     st.session_state.user_count_incremented = True
 
-    with open("utils/user_count.pkl", "wb") as file:
+    with open("user_count.pkl", "wb") as file:
         pickle.dump(user_count, file)
 
 st.sidebar.markdown(f"Total users 👥: {user_count}")
