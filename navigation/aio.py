@@ -535,14 +535,14 @@ def aio_page():
                     promoter_name = line[1:]
                     words = promoter_name.lstrip('>').split()
                     shortened_promoter_name = words[0]
-                    for species in species_prom.lower():
-                        if species in promoter_name.lower():
+                    for species in species_prom:
+                        if species in promoter_name:
                             found_species = species
                             break
                         else:
                             found_species = "n.d"
                     for regions in region_prom:
-                        if regions.lowers() in promoter_name.lower():
+                        if regions in promoter_name:
                             region = f"{regions[:4]}."
                             break
                         else:
