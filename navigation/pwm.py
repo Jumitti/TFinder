@@ -26,7 +26,6 @@ import logomaker
 
 def pwm_page():
     def calculate_pwm(sequences):
-        
         pwm = np.zeros((4, sequence_length))
         for i in range(sequence_length):
             counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
@@ -60,7 +59,7 @@ def pwm_page():
 
     def create_web_logo(sequences):
         matrix = logomaker.alignment_to_matrix(sequences)
-        logo = logomaker.Logo(matrix)
+        logo = logomaker.Logo(matrix, color_scheme='classic')
 
         return logo
 
