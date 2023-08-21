@@ -994,16 +994,7 @@ def aio_page():
         source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
         scale = alt.Scale(scheme='category10')
         color_scale = alt.Color("Gene_Region:N", scale=scale)
-        gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
-
-        search_input = alt.param(
-            value='',
-            bind=alt.binding(
-                input='search',
-                placeholder="Gene",
-                name='Search ',
-            )
-        )
+        gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
 
         chart = alt.Chart(source).mark_circle().encode(
             x=alt.X('Rel Position:Q' if position_type == 'From TSS/gene end' else 'Position:Q',
@@ -1013,11 +1004,8 @@ def aio_page():
             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
             tooltip=['Rel Position' if position_type == 'From TSS/gene end' else 'Position', 'Rel Score'] + (
                 ['p-value'] if calc_pvalue else []) + ['Sequence', 'Gene', 'Species', 'Region'],
-            opacity=alt.condition(
-                alt.expr.test(alt.expr.regexp(search_input, 'i'), alt.datum.Gene_Region),
-                alt.value(1),
-                alt.value(0.05))
-        ).properties(width=600, height=400).interactive().add_selection(gene_region_selection).add_params(search_input)
+            opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
+        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
         st.altair_chart(chart, theme=None, use_container_width=True)
 
     if 'table2' in locals():
