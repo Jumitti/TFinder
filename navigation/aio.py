@@ -1018,8 +1018,8 @@ def aio_page():
 
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
+            st.markdown('**Table**')
             with tablecol1:
-                st.markdown('**Table**')
                 st.dataframe(df, hide_index=True)
 
             excel_file = io.BytesIO()

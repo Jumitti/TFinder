@@ -41,12 +41,15 @@ import datetime
 import matplotlib.pyplot as plt
 from PIL import Image
 
+
 def BSF_page():
     # Promoter output state
 
     st.subheader('🔎 Binding Sites Finder')
     st.markdown("🔹 :blue[**Step 2.1**] Sequences:")
-    result_promoter = st.text_area("🔹 :blue[**Step 1.1**] Sequence:", value="Paste sequences here (FASTA required for multiple sequences).", label_visibility='collapsed')
+    result_promoter = st.text_area("🔹 :blue[**Step 1.1**] Sequence:",
+                                   value="Paste sequences here (FASTA required for multiple sequences).",
+                                   label_visibility='collapsed')
 
     # Responsive-Elements-Finder
 
@@ -622,8 +625,8 @@ def BSF_page():
 
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
+            st.markdown('**Table**')
             with tablecol1:
-                st.markdown('**Table**')
                 st.dataframe(df, hide_index=True)
 
             excel_file = io.BytesIO()
