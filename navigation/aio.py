@@ -997,8 +997,12 @@ def aio_page():
         gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
 
         chart = alt.Chart(source).mark_circle().encode(
-            x=alt.X('Rel Position:Q' if position_type == 'From TSS/gene end' else 'Position:Q',
-                    axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+            x=alt.X('Position:Q', axis=alt.Axis(title='Relative position from beginning of sequence (bp)'),
+                    sort='ascending'),
+            x2=alt.X2('Rel Position:Q' if position_type == 'From TSS/gene end' else 'Position:Q',
+                      axis=alt.Axis(
+                          title='Relative position from TSS/gene end (bp)' if position_type == 'From TSS/gene end' else ''),
+                      sort='ascending'),
             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                     scale=alt.Scale(domain=[ystart, ystop])),
             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1009,10 +1013,10 @@ def aio_page():
         st.altair_chart(chart, theme=None, use_container_width=True)
 
     if 'table2' in locals():
-        tablecol1, tablecol2 = st.columns([0.75, 0.25])
         if len(table2) > 1:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
+            tablecol1, tablecol2 = st.columns([0.75, 0.25])
             with tablecol2:
                 if jaspar == 'JASPAR_ID':
                     st.success(f"Finding responsive elements done for {TF_name}")
@@ -1044,7 +1048,7 @@ def aio_page():
 
             st.markdown('**Graph**',
                         help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-            position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
+            position_type = st.radio('X axis', 'From TSS/gene end', horizontal=True, label_visibility='collapsed')
 
             result_table_output(df)
             with tablecol2:
