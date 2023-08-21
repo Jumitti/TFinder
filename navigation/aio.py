@@ -600,28 +600,21 @@ def aio_page():
                         tis_position = position - tis_value
 
                         if normalized_score >= threshold:
+                            row = [str(position).ljust(8),
+                                   str(tis_position).ljust(15),
+                                   sequence_with_context,
+                                   "{:.6f}".format(normalized_score).ljust(12)]
                             if calc_pvalue:
-                                row = [str(position).ljust(8),
-                                       str(tis_position).ljust(15),
-                                       sequence_with_context,
-                                       "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
-                                       shortened_promoter_name, found_species, region]
-                                table2.append(row)
-
-                            else:
-                                row = [str(position).ljust(8),
-                                       str(tis_position).ljust(15),
-                                       sequence_with_context,
-                                       "{:.6f}".format(normalized_score).ljust(12),
-                                       shortened_promoter_name, found_species, region]
-                                table2.append(row)
+                                row.append("{:.3e}".format(p_value).ljust(12))
+                            row += [shortened_promoter_name, found_species, region]
+                            table2.append(row)
 
         if len(table2) > 0:
             table2.sort(key=lambda x: float(x[3]), reverse=True)
+            header = ["Position", "Rel Position", "Sequence", "Rel Score"]
             if calc_pvalue:
-                header = ["Position", "Rel Position", "Sequence", "Rel Score", "p-value", "Gene", "Species", "Region"]
-            else:
-                header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Species", "Region"]
+                header.append("p-value")
+            header += ["Gene", "Species", "Region"]
             table2.insert(0, header)
         else:
             "No consensus sequence found with the specified threshold."
