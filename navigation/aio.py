@@ -910,7 +910,7 @@ def aio_page():
                 else:
                     if not isUIPAC:
                         st.error("Please use IUPAC code for Responsive Elements")
-                    if not inconsistent_lengths:
+                    if inconsistent_lengths == False:
                         matrix_lines = matrix_text.split('\n')
                         matrix = {}
                         for line in matrix_lines:
