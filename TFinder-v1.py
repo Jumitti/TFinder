@@ -22,8 +22,6 @@ import streamlit as st
 import hydralit_components as hc
 import requests
 import pandas as pd
-import altair as alt
-import math
 import pickle
 from utils.components import footer_style, footer
 from navigation.home import home_page
@@ -32,9 +30,9 @@ from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 
 st.set_page_config(
-        page_title='TFinder by Minniti Julien',
-        page_icon="./.streamlit/REF.png",
-        initial_sidebar_state="expanded"
+    page_title='TFinder by Minniti Julien',
+    page_icon="./img/REF.png",
+    initial_sidebar_state="expanded"
 )
 
 max_width_str = f"max-width: {75}%;"
@@ -44,8 +42,8 @@ st.markdown(f"""
         .appview-container .main .block-container{{{max_width_str}}}
         </style>
         """,
-        unsafe_allow_html=True,
-    )
+            unsafe_allow_html=True,
+            )
 
 st.markdown("""
         <style>
@@ -55,13 +53,13 @@ st.markdown("""
                     
                 }
         </style>
-        """, unsafe_allow_html=True)       
+        """, unsafe_allow_html=True)
 
-#Footer
+# Footer
 
-st.markdown(footer_style, unsafe_allow_html=True) ## Footer
+st.markdown(footer_style, unsafe_allow_html=True)
 
-#NavBar
+# NavBar
 
 HOME = 'Home'
 APPLICATION = 'Tools/Software'
@@ -76,15 +74,15 @@ tabs = [
 ]
 
 option_data = [
-   {'icon': "🏠", 'label':HOME},
-   {'icon': "🖥️", 'label':APPLICATION},
-   {'icon':"📑",'label':RESOURCE},
-   {'icon':"✉️",'label':CONTACT}
-   
+    {'icon': "🏠", 'label': HOME},
+    {'icon': "🖥️", 'label': APPLICATION},
+    {'icon': "📑", 'label': RESOURCE},
+    {'icon': "✉️", 'label': CONTACT}
+
 ]
 
-over_theme = {'txc_inactive': 'black','menu_background':'#D6E5FA','txc_active':'white','option_active':'#749BC2'}
-font_fmt = {'font-class':'h3','font-size':'50%'}
+over_theme = {'txc_inactive': 'black', 'menu_background': '#D6E5FA', 'txc_active': 'white', 'option_active': '#749BC2'}
+font_fmt = {'font-class': 'h3', 'font-size': '50%'}
 
 chosen_tab = hc.option_bar(
     option_definition=option_data,
@@ -96,18 +94,18 @@ chosen_tab = hc.option_bar(
 if chosen_tab == HOME:
     home_page()
 
-elif chosen_tab == APPLICATION: 
-    allapp_page() 
-    
-elif chosen_tab == RESOURCE: 
+elif chosen_tab == APPLICATION:
+    allapp_page()
+
+elif chosen_tab == RESOURCE:
     resource_page()
-    
-elif chosen_tab == CONTACT: 
+
+elif chosen_tab == CONTACT:
     contact_page()
-    
+
 for i in range(4):
     st.markdown('#')
-st.markdown(footer,unsafe_allow_html=True)
+st.markdown(footer, unsafe_allow_html=True)
 
 # Credit rating
 st.sidebar.image("https://raw.githubusercontent.com/Jumitti/TFinder/main/img/REF.png")
@@ -125,22 +123,24 @@ if submit_button:
     ratings.append(rating)
     with open("ratings.pkl", "wb") as file:
         pickle.dump(ratings, file)
-    st.sidebar.success("Thank you for rating the application!")
+    st.toast("Thank you for rating the application!", icon='😍')
+    st.balloons()
 average_rating = sum(ratings) / len(ratings) if ratings else 0
 num_ratings = len(ratings)
 with colrate2:
     st.write(f"{average_rating:.2f} ⭐ ({num_ratings} votes)")
 
-#Help
+# Help
 
 st.sidebar.title("Help")
 with st.sidebar.expander("Video tutorials"):
     st.write('coming soon')
-    
+
 with st.sidebar.expander("Promoter & Terminator Extractor"):
     st.subheader("Gene ID:")
     st.write("ENTREZ_GENE_ID of NCBI and gene names are allowed.")
-    st.write("There is no limit to the number of gene names/ENTREZ_GENE_ID. Add them with a line break (like those displayed by default). You can mix ENTREZ_GENE_ID and gene names as long as they are of the same species.")
+    st.write(
+        "There is no limit to the number of gene names/ENTREZ_GENE_ID. Add them with a line break (like those displayed by default). You can mix ENTREZ_GENE_ID and gene names as long as they are of the same species.")
     st.subheader("Species:")
     st.write("Human, mouse, rat, drosophila and zebrafish are allowed.")
     st.write("If you use several ENTREZ_GENE_ID/gene names, make sure you select the correct species.")
@@ -148,13 +148,16 @@ with st.sidebar.expander("Promoter & Terminator Extractor"):
     st.write("Distance to Transcription Start Site (TSS) or gene end in bp.")
     st.image("https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/whatisagene.png")
     st.subheader("Promoter & Terminator:")
-    st.write('Use "Find promoter/extractor" button or paste your sequences. FASTA format allowed and required for multiple sequences.')
-    st.write('FASTA format: All sequences must have the TSS at the same distance, otherwise you assume the inconsistency of the positions of found sequences')
-    
+    st.write(
+        'Use "Find promoter/extractor" button or paste your sequences. FASTA format allowed and required for multiple sequences.')
+    st.write(
+        'FASTA format: All sequences must have the TSS at the same distance, otherwise you assume the inconsistency of the positions of found sequences')
+
 with st.sidebar.expander("Binding Sites Finder"):
     st.subheader("Responsive element:")
     st.write('IUPAC code is authorized for manual sequences')
-    st.write('You can generate a PWM with several sequences in FASTA format (same lenght required) or use a PWM already generated with our tools')
+    st.write(
+        'You can generate a PWM with several sequences in FASTA format (same lenght required) or use a PWM already generated with our tools')
     st.write("For JASPAR option, use the JASPAR_ID of your transcription factor.")
     st.image("https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/IUPAC.png")
     st.subheader("Transcription Start Site (TSS) or gene end:")
@@ -162,14 +165,18 @@ with st.sidebar.expander("Binding Sites Finder"):
     st.write('Note: If you use Step 1 , it will be defined automatically.')
     st.subheader("Relative Score Threshold:")
     st.write('Eliminates responsive element with Relative Score < threshold')
-    st.write('The Relative Score represents the Score calculated for each k-mer of the length of the PWM in the given sequence where each corresponding probability is added according to each nucleotide. This Score is then normalized to the maximum and minimum PWM Score.')
+    st.write(
+        'The Relative Score represents the Score calculated for each k-mer of the length of the PWM in the given sequence where each corresponding probability is added according to each nucleotide. This Score is then normalized to the maximum and minimum PWM Score.')
     st.subheader('_p-value_')
-    st.write('The p-value calculation takes time so it is optional. it represents the probability that a random generated sequence of the lenght of the PWM with the nucleotide proportions of the sequence has a score greater than or equal to the element found.')
+    st.write(
+        'The p-value calculation takes time so it is optional. it represents the probability that a random generated sequence of the lenght of the PWM with the nucleotide proportions of the sequence has a score greater than or equal to the element found.')
 
-st.sidebar.title("Servers status", help='✅: servers are reachable. You can use extract regions via NCBI/use the JASPAR_IDs\n\n❌: servers are unreachable. You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
+st.sidebar.title("Servers status",
+                 help='✅: servers are reachable. You can use extract regions via NCBI/use the JASPAR_IDs\n\n❌: servers are unreachable. You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
 
 if st.sidebar.button("Check"):
-    response = requests.get('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term=nos2[Gene%20Name]+AND+human[Organism]&retmode=json&rettype=xml')
+    response = requests.get(
+        'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term=nos2[Gene%20Name]+AND+human[Organism]&retmode=json&rettype=xml')
     response1 = requests.get('https://jaspar.genereg.net/api/v1/matrix/MA0106.1')
 
     ncbi_status = "✅" if response.status_code == 200 else "❌"
@@ -182,15 +189,16 @@ if st.sidebar.button("Check"):
         "NCBI": [ncbi_status],
         "JASPAR": [jaspar_status]
     }
-    
+
     df = pd.DataFrame(data, index=["Servers status"])
 
-    st.sidebar.table(df) 
+    st.sidebar.table(df)
 
 st.sidebar.title("More")
 st.sidebar.markdown("Report an issue/bug 🆘 -> [Click here](https://github.com/Jumitti/TFinder/issues/new/choose)")
 
 st.sidebar.markdown("Want to talk ? 🙋🏼‍♂️ -> [Chat Room](https://github.com/Jumitti/TFinder/discussions)")
+
 
 class SessionState:
     def __init__(self, session, run_hash):
@@ -203,6 +211,7 @@ class SessionState:
             raise RuntimeError("Cannot modify session state outside of session state callbacks.")
         else:
             super().__setattr__(key, value)
+
 
 try:
     with open("user_count.pkl", "rb") as file:

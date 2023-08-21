@@ -26,14 +26,6 @@ import logomaker
 
 def pwm_page():
     def calculate_pwm(sequences):
-        sequence_length = len(sequences[0])
-        num_sequences = len(sequences)
-        
-        for sequence in sequences[1:]:
-            if len(sequence) != sequence_length:
-                st.warning("Sequence lengths are not consistent.")
-                return None
-        
         pwm = np.zeros((4, sequence_length))
         for i in range(sequence_length):
             counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
@@ -65,17 +57,33 @@ def pwm_page():
 
         return sequences
 
+    def create_web_logo(sequences):
+        matrix = logomaker.alignment_to_matrix(sequences)
+        logo = logomaker.Logo(matrix, color_scheme='classic')
+
+        return logo
+
     st.subheader("🧮 PWM generator")
 
     fasta_text = st.text_area("Put FASTA sequences. Same sequence length required ⚠️", height=300)
 
     if st.button('Generate PWM'):
-        if fasta_text:
-            
-            sequences = parse_fasta(fasta_text)
-            sequences = [seq.upper() for seq in sequences]
+        sequences = parse_fasta(fasta_text)
+        sequences = [seq.upper() for seq in sequences]
 
-            if len(sequences) > 0:
+        if len(sequences) > 0:
+            sequence_length = len(sequences[0])
+            num_sequences = len(sequences)
+            inconsistent_lengths = False
+
+            for sequence in sequences[1:]:
+                if len(sequence) != sequence_length:
+                    inconsistent_lengths = True
+                    break
+
+            if inconsistent_lengths:
+                st.error("Sequence lengths are not consistent.")
+            else:
                 pwm = calculate_pwm(sequences)
 
                 st.subheader("PWM: ")
@@ -94,31 +102,23 @@ def pwm_page():
                     pwm_text += base_str
 
                 st.text_area("PWM résultante", value=pwm_text)
-                
-            else:
-                st.warning("You forget FASTA sequences :)")
-            
-            def create_web_logo(sequences):
-                matrix = logomaker.alignment_to_matrix(sequences)
-                logo = logomaker.Logo(matrix)
 
-                return logo
-            
-            sequences_text = fasta_text
-            sequences = []
-            current_sequence = ""
-            for line in sequences_text.splitlines():
-                line = line.strip()
-                if line.startswith(">"):
-                    if current_sequence:
-                        sequences.append(current_sequence)
-                    current_sequence = ""
-                else:
-                    current_sequence += line
+                sequences_text = fasta_text
+                sequences = []
+                current_sequence = ""
+                for line in sequences_text.splitlines():
+                    line = line.strip()
+                    if line.startswith(">"):
+                        if current_sequence:
+                            sequences.append(current_sequence)
+                        current_sequence = ""
+                    else:
+                        current_sequence += line
 
-            if current_sequence:
                 sequences.append(current_sequence)
 
-            if sequences:
                 logo = create_web_logo(sequences)
                 st.pyplot(logo.fig)
+
+        else:
+            st.warning("You forgot FASTA sequences :)")
