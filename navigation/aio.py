@@ -739,6 +739,9 @@ def aio_page():
 
     # Individual motif PWM and weblogo
     def im(fasta_text):
+        sequences = parse_fasta(fasta_text)
+        sequences = [seq.upper() for seq in sequences]
+
         if len(sequences) > 0:
             sequence_length = len(sequences[0])
             num_sequences = len(sequences)
