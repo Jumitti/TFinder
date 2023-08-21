@@ -996,16 +996,6 @@ def aio_page():
         color_scale = alt.Color("Gene_Region:N", scale=scale)
         gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click')
 
-        dropdown = alt.binding_select(
-            options=['Position', 'Rel Position'],
-            name='X-axis position: '
-        )
-
-        xcol_param = alt.param(
-            value=dropdown,
-            bind=dropdown
-        )
-
         search_input = alt.param(
             value='',
             bind=alt.binding(
@@ -1016,7 +1006,8 @@ def aio_page():
         )
 
         chart = alt.Chart(source).mark_circle().encode(
-            x=alt.X('xcol_param:Q').title(''),
+            x=alt.X('Rel Position:Q' if position_type == 'From TSS/gene end' else 'Position:Q',
+                    axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                     scale=alt.Scale(domain=[ystart, ystop])),
             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1027,20 +1018,6 @@ def aio_page():
                 alt.value(1),
                 alt.value(0.05))
         ).properties(width=600, height=400).interactive().add_selection(gene_region_selection).add_params(search_input)
-        '''
-        chart = alt.Chart(source).mark_circle().encode(
-            x=alt.X('x:Q').title(''),
-            y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
-                    scale=alt.Scale(domain=[ystart, ystop])),
-            color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-            tooltip=['Rel Position' if position_type == 'From TSS/gene end' else 'Position', 'Rel Score'] + (
-                ['p-value'] if calc_pvalue else []) + ['Sequence', 'Gene', 'Species', 'Region'],
-            opacity=alt.condition(
-                alt.expr.test(alt.expr.regexp(search_input, 'i'), alt.datum.Name),
-                alt.value(1),
-                alt.value(0.05))).properties(width=600, height=400).interactive().add_params(
-            gene_region_selection).transform_calculate(
-            x=f'datum[{xcol_param.name}]').add_params(xcol_param).add_params(search_input)'''
         st.altair_chart(chart, theme=None, use_container_width=True)
 
     if 'table2' in locals():
