@@ -621,8 +621,6 @@ def aio_page():
 
         return table2
 
-    # Responsive Elements Finder
-
     # IUPAC code
     def generate_iupac_variants(sequence):
         iupac_codes = {
@@ -836,14 +834,12 @@ def aio_page():
     # TSS entry
     BSFcol1, BSFcol2, BSFcol3 = st.columns([2, 2, 1], gap="medium")
     with BSFcol1:
+        st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
+                    help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
         if 'upstream' not in st.session_state:
-            st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
-                        help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
             entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
                                         -10000, 10000, 0, label_visibility="collapsed")
         else:
-            st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
-                        help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
             entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
                                         -10000, 10000, st.session_state['upstream'], label_visibility="collapsed")
 
@@ -915,11 +911,7 @@ def aio_page():
                                        filename=f'Sequences_{current_date_time}.fasta')
             msg.attach(attachment_text)
 
-            if jaspar == 'PWM':
-                if matrix_type == 'With FASTA sequences':
-                    image = MIMEImage(st.session_state['buffer'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
-                    msg.attach(image)
-            elif jaspar == 'Manual sequence':
+            if matrix_type == 'With FASTA sequences' or jaspar == 'Manual sequence':
                 image = MIMEImage(st.session_state['buffer'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
                 msg.attach(image)
 
