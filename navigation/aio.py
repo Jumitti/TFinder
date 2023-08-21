@@ -797,7 +797,7 @@ def aio_page():
                     plt.savefig(buffer, format='jpg')
                     buffer.seek(0)
 
-                    return matrix_text, buffer
+                    return matrix_text, buffer, inconsistent_lengths
 
         else:
             raise Exception(f"You forget FASTA sequences :)")
@@ -844,7 +844,7 @@ def aio_page():
             isUIPAC = True
 
             try:
-                matrix_text, buffer = im(fasta_text)
+                matrix_text, buffer, inconsistent_lengths = im(fasta_text)
             except Exception as e:
                 st.error(e)
 
@@ -865,7 +865,7 @@ def aio_page():
                 fasta_text += f">seq{i + 1}\n{seq}\n"
 
             try:
-                matrix_text, buffer = im(fasta_text)
+                matrix_text, buffer, inconsistent_lengths = im(fasta_text)
             except Exception as e:
                 st.error(e)
 
