@@ -70,7 +70,8 @@ def pwm_page():
         num_sequences = len(sequences)
         for sequence in sequences[1:]:
             if len(sequence) != sequence_length:
-                raise Exception("Sequence lengths are not consistent.")
+                except Exception as e:
+                    st.error("Sequence lengths are not consistent.")
 
         if len(sequences) > 0:
             pwm = calculate_pwm(sequences)
