@@ -1035,6 +1035,7 @@ def aio_page():
                         help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
             position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
 
+            st.markdown("")
             result_table_output(df)
             with tablecol2:
                 email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
