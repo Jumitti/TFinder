@@ -845,9 +845,9 @@ def aio_page():
 
             try:
                 matrix_text, buffer = im(fasta_text)
-                error_input_im = False
-            except Exception as e:
                 error_input_im = True
+            except Exception as e:
+                error_input_im = False
                 st.error(e)
 
     else:
@@ -868,9 +868,9 @@ def aio_page():
 
             try:
                 matrix_text, buffer = im(fasta_text)
-                error_input_im = False
-            except Exception as e:
                 error_input_im = True
+            except Exception as e:
+                error_input_im = False
                 st.error(e)
 
         else:
