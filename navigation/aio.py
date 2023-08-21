@@ -845,8 +845,8 @@ def aio_page():
 
             try:
                 matrix_text, buffer = im(fasta_text)
-            except Exception:
-                raise Exception
+            except Exception as e:
+                raise Exception({str(e)})
 
     else:
         with REcol1:
@@ -866,8 +866,8 @@ def aio_page():
 
             try:
                 matrix_text, buffer = im(fasta_text)
-            except Exception:
-                raise Exception
+            except Exception as e:
+                raise Exception({str(e)})
 
         else:
             isUIPAC = False
