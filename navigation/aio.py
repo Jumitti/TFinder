@@ -1009,7 +1009,7 @@ def aio_page():
         st.altair_chart(chart, theme=None, use_container_width=True)
 
     if 'table2' in locals():
-        tablecol1, tablecol2 = st.columns([0.7, 0.3])
+        tablecol1, tablecol2 = st.columns([0.75, 0.25])
         if len(table2) > 1:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
