@@ -1002,8 +1002,8 @@ def aio_page():
         )
 
         xcol_param = alt.param(
-            select=dropdown,
-            name='X-axis position: '
+            value=dropdown,
+            bind=dropdown
         )
 
         search_input = alt.param(
@@ -1016,7 +1016,7 @@ def aio_page():
         )
 
         chart = alt.Chart(source).mark_circle().encode(
-            x=alt.X('x:Q').title(''),
+            x=alt.X('xcol_param:Q').title(''),
             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                     scale=alt.Scale(domain=[ystart, ystop])),
             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1026,9 +1026,7 @@ def aio_page():
                 alt.expr.test(alt.expr.regexp(search_input, 'i'), alt.datum.Name),
                 alt.value(1),
                 alt.value(0.05))
-        ).properties(width=600, height=400).interactive().add_selection(gene_region_selection).transform_calculate(
-            x=alt.expr.if_(xcol_param.selection, f'datum[{xcol_param.name}]', '0')
-        ).add_params(search_input)
+        ).properties(width=600, height=400).interactive().add_selection(gene_region_selection).add_params(search_input)
         '''
         chart = alt.Chart(source).mark_circle().encode(
             x=alt.X('x:Q').title(''),
