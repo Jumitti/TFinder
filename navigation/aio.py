@@ -698,7 +698,8 @@ def aio_page():
 
     # Calculate PWM
     def calculate_pwm(sequences):
-
+        num_sequences = len(sequences)
+        sequence_length = len(sequences[0])
         pwm = np.zeros((4, sequence_length))
         for i in range(sequence_length):
             counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
@@ -706,10 +707,10 @@ def aio_page():
                 nucleotide = sequence[i]
                 if nucleotide in counts:
                     counts[nucleotide] += 1
-            pwm[0, i] = counts['A'] / num_sequences * 100
-            pwm[1, i] = counts['T'] / num_sequences * 100
-            pwm[2, i] = counts['G'] / num_sequences * 100
-            pwm[3, i] = counts['C'] / num_sequences * 100
+            pwm[0, i] = counts['A'] / num_sequences
+            pwm[1, i] = counts['T'] / num_sequences
+            pwm[2, i] = counts['G'] / num_sequences
+            pwm[3, i] = counts['C'] / num_sequences
 
         return pwm
 
