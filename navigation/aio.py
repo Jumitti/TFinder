@@ -1004,6 +1004,14 @@ def aio_page():
             value=['Position', 'Rel Position'],
             bind=dropdown
         )
+        search_input = alt.param(
+            value='',
+            bind=alt.binding(
+                input='search',
+                placeholder="Gene",
+                name='Search ',
+            )
+        )
 
         chart = alt.Chart(source).mark_circle().encode(
             x=alt.X('x:Q').title(''),
@@ -1011,9 +1019,13 @@ def aio_page():
                     scale=alt.Scale(domain=[ystart, ystop])),
             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
             tooltip=['Rel Position' if position_type == 'From TSS/gene end' else 'Position', 'Rel Score'] + (
-                ['p-value'] if calc_pvalue else []) + ['Sequence', 'Gene', 'Species', 'Region']
-        ).properties(width=600, height=400).interactive().add_params(gene_region_selection).transform_calculate(
-            x=f'datum[{xcol_param.name}]').add_params(xcol_param)
+                ['p-value'] if calc_pvalue else []) + ['Sequence', 'Gene', 'Species', 'Region'],
+            opacity=alt.condition(
+                alt.expr.test(alt.expr.regexp(search_input, 'i'), alt.datum.Name),
+                alt.value(1),
+                alt.value(0.05))).properties(width=600, height=400).interactive().add_params(
+            gene_region_selection).transform_calculate(
+            x=f'datum[{xcol_param.name}]').add_params(xcol_param).add_params(search_input)
         st.altair_chart(chart, theme=None, use_container_width=True)
 
     if 'table2' in locals():
