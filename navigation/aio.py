@@ -848,7 +848,8 @@ def aio_page():
                 error_input_im = True
             except Exception as e:
                 error_input_im = False
-                st.error(e)
+                with REcol2:
+                    st.error(e)
 
     else:
         with REcol1:
@@ -871,7 +872,8 @@ def aio_page():
                 error_input_im = True
             except Exception as e:
                 error_input_im = False
-                st.error(e)
+                with REcol2:
+                    st.error(e)
 
         else:
             isUIPAC = False
