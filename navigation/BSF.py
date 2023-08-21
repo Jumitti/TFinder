@@ -638,6 +638,7 @@ def BSF_page():
                                file_name=f'Results_TFinder_{current_date_time}.xlsx',
                                mime="application/vnd.ms-excel", key='download-excel')
 
+            st.markdown("")
             st.markdown('**Graph**',
                         help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
             position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
