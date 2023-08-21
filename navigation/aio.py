@@ -265,30 +265,18 @@ def aio_page():
                 downstream_entry = max(updown_slide)
 
             # Run Promoter Finder
-            if prom_term == 'Promoter':
-                if st.button("🧬 :blue[**Step 1.5**] Extract promoter", help='(~5sec/gene)'):
-                    with st.spinner("Finding promoters..."):
-                        gene_ids = gene_id_entry.strip().split("\n")
-                        upstream = int(upstream_entry)
-                        st.session_state['upstream'] = upstream
-                        downstream = int(downstream_entry)
-                        try:
-                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                            st.success("Promoters extraction complete!")
-                        except Exception as e:
-                            st.error(f"Error finding promoters: {str(e)}")
-            else:
-                if st.button("🧬 :blue[**Step 1.5**] Extract terminator", help='(~5sec/gene)'):
-                    with st.spinner("Finding terminators..."):
-                        gene_ids = gene_id_entry.strip().split("\n")
-                        upstream = int(upstream_entry)
-                        st.session_state['upstream'] = upstream
-                        downstream = int(downstream_entry)
-                        try:
-                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                            st.success("Terminators extraction complete!")
-                        except Exception as e:
-                            st.error(f"Error finding terminators: {str(e)}")
+            if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
+                with st.spinner("Finding promoters..."):
+                    gene_ids = gene_id_entry.strip().split("\n")
+                    upstream = int(upstream_entry)
+                    st.session_state['upstream'] = upstream
+                    downstream = int(downstream_entry)
+                    try:
+                        result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                        st.success(f"{prom_term} extraction complete!")
+                        st.toast(f"{prom_term} extraction complete!", icon='😊')
+                    except Exception as e:
+                        st.error(f"Error finding {prom_term}: {str(e)}")
 
         with tab2:
 
