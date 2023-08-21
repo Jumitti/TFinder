@@ -734,7 +734,7 @@ def aio_page():
 
     # generate Weblogo
     def create_web_logo(sequences):
-        matrix = logomaker.alignment_to_matrix(sequences)
+        matrix = logomaker.alignment_to_matrix(sequences, to_type='weight')
         logo = logomaker.Logo(matrix, color_scheme='classic')
 
         return logo
@@ -1030,8 +1030,8 @@ def aio_page():
 
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
-            st.markdown('**Table**')
             with tablecol1:
+                st.markdown('**Table**')
                 st.dataframe(df, hide_index=True)
 
             excel_file = io.BytesIO()
