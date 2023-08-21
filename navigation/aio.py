@@ -797,6 +797,8 @@ def aio_page():
                     plt.savefig(buffer, format='jpg')
                     buffer.seek(0)
 
+                    st.session_state['buffer'] = buffer
+
                     return matrix_text, buffer
 
         else:
@@ -960,10 +962,10 @@ def aio_page():
 
             if jaspar == 'PWM':
                 if matrix_type == 'With FASTA sequences':
-                    image = MIMEImage(buffer.read(), name=f'LOGOMAKER_{current_date_time}.jpg')
+                    image = MIMEImage(st.session_state['buffer'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
                     msg.attach(image)
             elif jaspar == 'Manual sequence':
-                image = MIMEImage(buffer.read(), name=f'LOGOMAKER_{current_date_time}.jpg')
+                image = MIMEImage(st.session_state['buffer'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
                 msg.attach(image)
 
             server = smtplib.SMTP('smtp.gmail.com', 587)
