@@ -914,7 +914,7 @@ def aio_page():
                 else:
                     if not isUIPAC:
                         st.error("Please use IUPAC code for Responsive Elements")
-                    if error_input_im:
+                    elif error_input_im:
                         matrix_lines = matrix_text.split('\n')
                         matrix = {}
                         for line in matrix_lines:
