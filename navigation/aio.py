@@ -143,6 +143,8 @@ def aio_page():
                 species_API = gene_info['organism']['scientificname']
 
                 dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
+                
+                st.toast(f'{gene_name} of {species_API} extracted', icon='😍')
 
                 st.toast(f'{prom_term} **{gene_name}** from **{species_API}** extracted', icon='🧬')
 
@@ -472,7 +474,7 @@ def aio_page():
     def search_sequence(threshold, tis_value, result_promoter, matrices):
         global table2
         table2 = []
-
+    
         # Promoter input type
         lines = result_promoter
         promoters = []
@@ -849,7 +851,6 @@ def aio_page():
         st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
         threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0, 0.85, step=0.05,
                                     label_visibility="collapsed")
-
     with BSFcol3:
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
         calc_pvalue = st.checkbox('_p-value_')

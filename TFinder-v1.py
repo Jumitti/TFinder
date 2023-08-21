@@ -119,6 +119,7 @@ colrate1, colrate2 = st.sidebar.columns(2)
 with colrate1:
     submit_button = st.button("Submit Rating")
 if submit_button:
+    st.balloons()
     ratings.append(rating)
     with open("ratings.pkl", "wb") as file:
         pickle.dump(ratings, file)
