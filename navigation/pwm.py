@@ -58,6 +58,12 @@ def pwm_page():
 
         return sequences
 
+    def create_web_logo(sequences):
+        matrix = logomaker.alignment_to_matrix(sequences)
+        logo = logomaker.Logo(matrix)
+
+        return logo
+
     st.subheader("🧮 PWM generator")
 
     fasta_text = st.text_area("Put FASTA sequences. Same sequence length required ⚠️", height=300)
@@ -110,18 +116,10 @@ def pwm_page():
                     else:
                         current_sequence += line
 
-                if current_sequence:
-                    sequences.append(current_sequence)
+                sequences.append(current_sequence)
 
-                if sequences:
-                    logo = create_web_logo(sequences)
-                    st.pyplot(logo.fig)
+                logo = create_web_logo(sequences)
+                st.pyplot(logo.fig)
 
         else:
             st.warning("You forgot FASTA sequences :)")
-
-        def create_web_logo(sequences):
-            matrix = logomaker.alignment_to_matrix(sequences)
-            logo = logomaker.Logo(matrix)
-
-            return logo
