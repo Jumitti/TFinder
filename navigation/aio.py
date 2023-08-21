@@ -175,12 +175,12 @@ def aio_page():
         # Gene ID
         st.markdown("🔹 :blue[**Step 1.1**] Gene ID:", help='NCBI gene name and NCBI gene ID allowed')
         gene_id_entry = st.text_area("🔹 :blue[**Step 1.1**] Gene ID:", value="PRKN\n351", label_visibility='collapsed')
+        gene_list = gene_id_entry.strip().split('\n')
 
         # Verify if gene is available for all species
         if st.button('🔎 Check genes avaibility',
                      help='Sometimes genes do not have the same name in all species or do not exist.'):
             with st.spinner("Checking genes avaibility..."):
-                gene_list = gene_id_entry.strip().split('\n')
                 species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
                 results_gene_list = []
                 data = []
@@ -223,20 +223,20 @@ def aio_page():
                                  label_visibility='collapsed')
             if prom_term == 'Promoter':
                 st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from the TSS (bp)")
-                updown_slide = st.slider("🔹 :blue[**Step 1.4**] Upstream/downstream from the TSS (bp)", -10000, 10000,
-                                         (-2000, 500), step=100, label_visibility='collapsed')
-                st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide),
-                         " bp from TSS")
-                upstream_entry = -min(updown_slide)
-                downstream_entry = max(updown_slide)
             else:
                 st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from gene end (bp)")
-                updown_slide = st.slider("🔹 :blue[**Step 1.4**] Upstream/downstream from gene end (bp)", -10000, 10000,
-                                         (-500, 2000), step=100, label_visibility='collapsed')
+
+            updown_slide = st.slider("🔹 :blue[**Step 1.4**] Upstream/downstream", -10000, 10000,
+                                     (-2000, 2000), step=100, label_visibility='collapsed')
+            if prom_term == 'Promoter':
+                st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide),
+                         " bp from TSS")
+            else:
                 st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide),
                          " bp from gene end")
-                upstream_entry = -min(updown_slide)
-                downstream_entry = max(updown_slide)
+
+            upstream_entry = -min(updown_slide)
+            downstream_entry = max(updown_slide)
 
             # Run Promoter Finder
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
@@ -254,10 +254,7 @@ def aio_page():
                             st.error(f"Error finding {prom_term}: {str(e)}")
 
         with tab2:
-
             # Advance mode extraction
-            gene_list = gene_id_entry.strip().split('\n')
-
             data_df = pd.DataFrame(
                 {
                     "Gene": gene_list,
@@ -385,7 +382,8 @@ def aio_page():
                                         if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
                                             prom_term = search_type.capitalize()
                                             try:
-                                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                                result_promoter = find_promoters(gene_ids, species, upstream,
+                                                                                 downstream)
                                             except Exception as e:
                                                 st.error(f"Error finding {gene_ids}: {str(e)}")
 
