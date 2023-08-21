@@ -98,6 +98,25 @@ def pwm_page():
 
                 st.text_area("PWM résultante", value=pwm_text)
 
+                sequences_text = fasta_text
+                sequences = []
+                current_sequence = ""
+                for line in sequences_text.splitlines():
+                    line = line.strip()
+                    if line.startswith(">"):
+                        if current_sequence:
+                            sequences.append(current_sequence)
+                        current_sequence = ""
+                    else:
+                        current_sequence += line
+
+                if current_sequence:
+                    sequences.append(current_sequence)
+
+                if sequences:
+                    logo = create_web_logo(sequences)
+                    st.pyplot(logo.fig)
+
         else:
             st.warning("You forgot FASTA sequences :)")
 
@@ -106,22 +125,3 @@ def pwm_page():
             logo = logomaker.Logo(matrix)
 
             return logo
-
-        sequences_text = fasta_text
-        sequences = []
-        current_sequence = ""
-        for line in sequences_text.splitlines():
-            line = line.strip()
-            if line.startswith(">"):
-                if current_sequence:
-                    sequences.append(current_sequence)
-                current_sequence = ""
-            else:
-                current_sequence += line
-
-        if current_sequence:
-            sequences.append(current_sequence)
-
-        if sequences:
-            logo = create_web_logo(sequences)
-            st.pyplot(logo.fig)
