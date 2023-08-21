@@ -754,7 +754,8 @@ def aio_page():
                     break
 
             if inconsistent_lengths:
-                st.error("Sequence lengths are not consistent.")
+                raise Exception(f"Sequence lengths are not consistent.")
+
             else:
                 pwm = calculate_pwm(sequences)
                 bases = ['A', 'T', 'G', 'C']
@@ -799,6 +800,7 @@ def aio_page():
                     return matrix_text, buffer
 
         else:
+            raise Exception(f"You forget FASTA sequences :)")
             st.warning("You forget FASTA sequences :)")
 
     # RE entry
@@ -842,7 +844,10 @@ def aio_page():
                                           label_visibility='collapsed')
             isUIPAC = True
 
-            matrix_text, buffer = im(fasta_text)
+            try:
+                matrix_text, buffer = im(fasta_text)
+            except Exception as e:
+                raise Exception(e)
 
     else:
         with REcol1:
@@ -860,7 +865,8 @@ def aio_page():
             for i, seq in enumerate(sequences):
                 fasta_text += f">seq{i + 1}\n{seq}\n"
 
-            matrix_text, buffer = im(fasta_text)
+            try:
+                matrix_text, buffer = im(fasta_text)
 
         else:
             isUIPAC = False
