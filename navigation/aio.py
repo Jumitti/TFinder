@@ -1000,10 +1000,12 @@ def aio_page():
             options=['Position', 'Rel Position'],
             name='X-axis position: '
         )
-        xcol_param = alt.binding_param(
+
+        xcol_param = alt.param(
             select=dropdown,
             name='X-axis position: '
         )
+
         search_input = alt.param(
             value='',
             bind=alt.binding(
@@ -1012,6 +1014,7 @@ def aio_page():
                 name='Search ',
             )
         )
+
         chart = alt.Chart(source).mark_circle().encode(
             x=alt.X('x:Q').title(''),
             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
