@@ -801,7 +801,6 @@ def aio_page():
 
         else:
             raise Exception(f"You forget FASTA sequences :)")
-            st.warning("You forget FASTA sequences :)")
 
     # RE entry
     REcol1, REcol2 = st.columns([0.30, 0.70])
@@ -867,6 +866,8 @@ def aio_page():
 
             try:
                 matrix_text, buffer = im(fasta_text)
+            except Exception as e:
+                raise Exception(e)
 
         else:
             isUIPAC = False
