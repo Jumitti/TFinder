@@ -997,12 +997,8 @@ def aio_page():
         gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
 
         chart = alt.Chart(source).mark_circle().encode(
-            x=alt.X('Position:Q', axis=alt.Axis(title='Relative position from beginning of sequence (bp)'),
-                    sort='ascending'),
-            x2=alt.X2('Rel Position:Q' if position_type == 'From TSS/gene end' else 'Position:Q',
-                      axis=alt.Axis(
-                          title='Relative position from TSS/gene end (bp)' if position_type == 'From TSS/gene end' else ''),
-                      sort='ascending'),
+            x=alt.X('Rel Position:Q' if position_type == 'From TSS/gene end' else 'Position:Q',
+                    axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                     scale=alt.Scale(domain=[ystart, ystop])),
             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -1048,7 +1044,7 @@ def aio_page():
 
             st.markdown('**Graph**',
                         help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-            position_type = st.checkbox('X axis', 'From TSS/gene end', label_visibility='collapsed')
+            position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
 
             result_table_output(df)
             with tablecol2:
