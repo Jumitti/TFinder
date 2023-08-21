@@ -1048,7 +1048,7 @@ def aio_page():
 
             st.markdown('**Graph**',
                         help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-            position_type = st.radio('X axis', 'From TSS/gene end', horizontal=True, label_visibility='collapsed')
+            position_type = st.checkbox('X axis', 'From TSS/gene end', label_visibility='collapsed')
 
             result_table_output(df)
             with tablecol2:
