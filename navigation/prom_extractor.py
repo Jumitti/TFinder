@@ -179,7 +179,6 @@ def prom_extractor_page():
 
     # Promoter Finder
     with colprom1:
-        st.info("💡 If you have a FASTA sequence, go to :blue[**Step 2**]")
 
         result_promoter = []
         upstream_entry = []
