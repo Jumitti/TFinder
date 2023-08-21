@@ -266,18 +266,18 @@ def aio_page():
 
             # Run Promoter Finder
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
-                with st.spinner("Finding promoters..."):
-                    gene_ids = gene_id_entry.strip().split("\n")
-                    upstream = int(upstream_entry)
-                    st.session_state['upstream'] = upstream
-                    downstream = int(downstream_entry)
-                    try:
-                        result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                        with colprom1:
+                with colprom1:
+                    with st.spinner("Finding promoters..."):
+                        gene_ids = gene_id_entry.strip().split("\n")
+                        upstream = int(upstream_entry)
+                        st.session_state['upstream'] = upstream
+                        downstream = int(downstream_entry)
+                        try:
+                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             st.success(f"{prom_term} extraction complete !")
-                        st.toast(f"{prom_term} extraction complete !", icon='😊')
-                    except Exception as e:
-                        st.error(f"Error finding {prom_term}: {str(e)}")
+                            st.toast(f"{prom_term} extraction complete !", icon='😊')
+                        except Exception as e:
+                            st.error(f"Error finding {prom_term}: {str(e)}")
 
         with tab2:
 
@@ -388,31 +388,32 @@ def aio_page():
             downstream_entry = max(updown_slide)
 
             if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
-                with st.spinner("Finding sequences..."):
-                    st.session_state['upstream'] = upstream_entry
-                    upstream = int(upstream_entry)
-                    downstream = int(downstream_entry)
-                    for gene_info in data_dff.itertuples(index=False):
-                        gene_name = gene_info.Gene
-                        gene_ids = gene_name.strip().split('\n')
-                        if gene_name.isdigit():
-                            for search_type in search_types:
-                                if getattr(gene_info, f'{search_type}'):
-                                    prom_term = search_type.capitalize()
-                                    species = 'human'  # This is just a remnant of the past
-                                    try:
-                                        result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                                    except Exception as e:
-                                        st.error(f"Error finding {gene_ids}: {str(e)}")
-                        else:
-                            for species in species_list:
+                with colprom1:
+                    with st.spinner("Finding sequences..."):
+                        st.session_state['upstream'] = upstream_entry
+                        upstream = int(upstream_entry)
+                        downstream = int(downstream_entry)
+                        for gene_info in data_dff.itertuples(index=False):
+                            gene_name = gene_info.Gene
+                            gene_ids = gene_name.strip().split('\n')
+                            if gene_name.isdigit():
                                 for search_type in search_types:
-                                    if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
+                                    if getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
+                                        species = 'human'  # This is just a remnant of the past
                                         try:
                                             result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                                         except Exception as e:
                                             st.error(f"Error finding {gene_ids}: {str(e)}")
+                            else:
+                                for species in species_list:
+                                    for search_type in search_types:
+                                        if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
+                                            prom_term = search_type.capitalize()
+                                            try:
+                                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                            except Exception as e:
+                                                st.error(f"Error finding {gene_ids}: {str(e)}")
 
     # Promoter output state
     st.divider()
