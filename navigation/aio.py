@@ -96,22 +96,12 @@ def aio_page():
     def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
         try:
             # Determine sens of gene + coordinate for upstream and downstream
-            if prom_term == 'Promoter':
-                if chrstop > chrstart:
-                    start = chrstart - upstream
-                    end = chrstart + downstream
-                else:
-                    start = chrstart + upstream
-                    end = chrstart - downstream
-
-            # For terminator
+            if chrstop > chrstart:
+                start = chrstart if prom_term == 'Promoter' else chrstop - upstream
+                end = chrstart if prom_term == 'Promoter' else chrstop + downstream
             else:
-                if chrstop > chrstart:
-                    start = chrstop - upstream
-                    end = chrstop + downstream
-                else:
-                    start = chrstop + upstream
-                    end = chrstop - downstream
+                start = chrstart if prom_term == 'Promoter' else chrstop + upstream
+                end = chrstart if prom_term == 'Promoter' else chrstop - downstream
 
             # Request for DNA sequence
             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
