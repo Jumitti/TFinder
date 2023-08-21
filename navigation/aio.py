@@ -745,48 +745,59 @@ def aio_page():
         sequences = [seq.upper() for seq in sequences]
 
         if len(sequences) > 0:
-            pwm = calculate_pwm(sequences)
-            bases = ['A', 'T', 'G', 'C']
-            pwm_text = ""
-            for i in range(len(pwm)):
-                base_name = bases[i]
-                base_values = pwm[i]
+            sequence_length = len(sequences[0])
+            inconsistent_lengths = False
 
-                base_str = base_name + " ["
-                for value in base_values:
-                    base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+            for sequence in sequences[1:]:
+                if len(sequence) != sequence_length:
+                    inconsistent_lengths = True
+                    break
 
-                base_str += "]\n"
-                pwm_text += base_str
+            if inconsistent_lengths:
+                st.error("Sequence lengths are not consistent.")
+            else:
+                pwm = calculate_pwm(sequences)
+                bases = ['A', 'T', 'G', 'C']
+                pwm_text = ""
+                for i in range(len(pwm)):
+                    base_name = bases[i]
+                    base_values = pwm[i]
 
-            with REcol2:
-                matrix_text = st.text_area("PWM:", value=pwm_text,
-                                           help="Select and copy for later use. Don't modify.",
-                                           key="non_editable_text")
+                    base_str = base_name + " ["
+                    for value in base_values:
+                        base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+
+                    base_str += "]\n"
+                    pwm_text += base_str
+
+                with REcol2:
+                    matrix_text = st.text_area("PWM:", value=pwm_text,
+                                               help="Select and copy for later use. Don't modify.",
+                                               key="non_editable_text")
+
+                with REcol2:
+                    sequences_text = fasta_text
+                    sequences = []
+                    current_sequence = ""
+                    for line in sequences_text.splitlines():
+                        line = line.strip()
+                        if line.startswith(">"):
+                            if current_sequence:
+                                sequences.append(current_sequence)
+                            current_sequence = ""
+                        else:
+                            current_sequence += line
+
+                    sequences.append(current_sequence)
+
+                    logo = create_web_logo(sequences)
+                    st.pyplot(logo.fig)
+                    buffer = io.BytesIO()
+                    plt.savefig(buffer, format='jpg')
+                    buffer.seek(0)
 
         else:
             st.warning("You forget FASTA sequences :)")
-
-        with REcol2:
-            sequences_text = fasta_text
-            sequences = []
-            current_sequence = ""
-            for line in sequences_text.splitlines():
-                line = line.strip()
-                if line.startswith(">"):
-                    if current_sequence:
-                        sequences.append(current_sequence)
-                    current_sequence = ""
-                else:
-                    current_sequence += line
-
-            sequences.append(current_sequence)
-
-            logo = create_web_logo(sequences)
-            st.pyplot(logo.fig)
-            buffer = io.BytesIO()
-            plt.savefig(buffer, format='jpg')
-            buffer.seek(0)
 
         return matrix_text, buffer
 
