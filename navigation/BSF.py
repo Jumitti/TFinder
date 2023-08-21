@@ -62,7 +62,7 @@ def BSF_page():
             response_data = response.json()
             matrix = response_data['pfm']
         else:
-            st.error(f"Erreur lors de la récupération de la matrice de fréquence : {response.status_code}")
+            st.error(f"Error while retrieving PWM : {response.status_code}")
             return
 
         return transform_matrix(matrix)
@@ -94,7 +94,7 @@ def BSF_page():
                 score += base_score[i]
         return score
 
-    # Generat random sequences
+    # Generate random sequences
     def generate_random_sequence(length, probabilities):
         nucleotides = ['A', 'C', 'G', 'T']
         sequence = random.choices(nucleotides, probabilities, k=length)

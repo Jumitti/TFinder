@@ -95,6 +95,7 @@ def aio_page():
     # Get DNA sequence
     def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
         try:
+            # Determine sens of gene + coordinate for upstream and downstream
             if prom_term == 'Promoter':
                 if chrstop > chrstart:
                     start = chrstart - upstream
@@ -103,24 +104,7 @@ def aio_page():
                     start = chrstart + upstream
                     end = chrstart - downstream
 
-                # Request for DNA sequence
-                url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
-                response = requests.get(url)
-
-                if response.status_code == 200:
-                    # Extraction of DNA sequence
-                    dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
-                    if chrstop > chrstart:
-                        sequence = dna_sequence
-                    else:
-                        sequence = reverse_complement(dna_sequence)
-
-                    return sequence
-
-                else:
-                    raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
-
-            # Determine sens of gene + coordinate for upstream and downstream
+            # For terminator
             else:
                 if chrstop > chrstart:
                     start = chrstop - upstream
@@ -129,22 +113,22 @@ def aio_page():
                     start = chrstop + upstream
                     end = chrstop - downstream
 
-                # Request for DNA sequence
-                url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
-                response = requests.get(url)
+            # Request for DNA sequence
+            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
+            response = requests.get(url)
 
-                if response.status_code == 200:
-                    # Extraction of DNA sequence
-                    dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
-                    if chrstop > chrstart:
-                        sequence = dna_sequence
-                    else:
-                        sequence = reverse_complement(dna_sequence)
-
-                    return sequence
-
+            if response.status_code == 200:
+                # Extraction of DNA sequence
+                dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
+                if chrstop > chrstart:
+                    sequence = dna_sequence
                 else:
-                    raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
+                    sequence = reverse_complement(dna_sequence)
+
+                return sequence
+
+            else:
+                raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
         except Exception as e:
             raise Exception(f"Error: {str(e)}")
 
@@ -450,7 +434,7 @@ def aio_page():
             response_data = response.json()
             matrix = response_data['pfm']
         else:
-            st.error(f"Erreur lors de la récupération de la matrice de fréquence : {response.status_code}")
+            st.error(f"Error while retrieving PWM: {response.status_code}")
             return
 
         return transform_matrix(matrix)
@@ -482,7 +466,7 @@ def aio_page():
                 score += base_score[i]
         return score
 
-    # Generat random sequences
+    # Generate random sequences
     def generate_random_sequence(length, probabilities):
         nucleotides = ['A', 'C', 'G', 'T']
         sequence = random.choices(nucleotides, probabilities, k=length)
