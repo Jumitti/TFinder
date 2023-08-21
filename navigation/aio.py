@@ -756,7 +756,7 @@ def aio_page():
 
                     base_str = base_name + " ["
                     for value in base_values:
-                        base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+                        base_str += " " + format(value) + " " if np.isfinite(value) else " " + "NA" + " "
 
                     base_str += "]\n"
                     pwm_text += base_str
