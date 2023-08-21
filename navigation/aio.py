@@ -1014,7 +1014,7 @@ def aio_page():
             tooltip=['Rel Position' if position_type == 'From TSS/gene end' else 'Position', 'Rel Score'] + (
                 ['p-value'] if calc_pvalue else []) + ['Sequence', 'Gene', 'Species', 'Region'],
             opacity=alt.condition(
-                alt.expr.test(alt.expr.regexp(search_input, 'i'), alt.datum.Name),
+                alt.expr.test(alt.expr.regexp(search_input, 'i'), alt.datum.Gene_Region),
                 alt.value(1),
                 alt.value(0.05))
         ).properties(width=600, height=400).interactive().add_selection(gene_region_selection).add_params(search_input)
