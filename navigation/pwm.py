@@ -66,35 +66,40 @@ def pwm_page():
         sequences = parse_fasta(fasta_text)
         sequences = [seq.upper() for seq in sequences]
 
-        sequence_length = len(sequences[0])
-        num_sequences = len(sequences)
-        for sequence in sequences[1:]:
-            if len(sequence) != sequence_length:
-                except Exception as e:
-                    st.error("Sequence lengths are not consistent.")
-
         if len(sequences) > 0:
-            pwm = calculate_pwm(sequences)
+            sequence_length = len(sequences[0])
+            num_sequences = len(sequences)
+            inconsistent_lengths = False
 
-            st.subheader("PWM: ")
-            st.info("⬇️ Select and copy")
-            bases = ['A', 'T', 'G', 'C']
-            pwm_text = ""
-            for i in range(len(pwm)):
-                base_name = bases[i]
-                base_values = pwm[i]
+            for sequence in sequences[1:]:
+                if len(sequence) != sequence_length:
+                    inconsistent_lengths = True
+                    break
 
-                base_str = base_name + " ["
-                for value in base_values:
-                    base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+            if inconsistent_lengths:
+                st.error("Sequence lengths are not consistent.")
+            else:
+                pwm = calculate_pwm(sequences)
 
-                base_str += "]\n"
-                pwm_text += base_str
+                st.subheader("PWM: ")
+                st.info("⬇️ Select and copy")
+                bases = ['A', 'T', 'G', 'C']
+                pwm_text = ""
+                for i in range(len(pwm)):
+                    base_name = bases[i]
+                    base_values = pwm[i]
 
-            st.text_area("PWM résultante", value=pwm_text)
+                    base_str = base_name + " ["
+                    for value in base_values:
+                        base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
+
+                    base_str += "]\n"
+                    pwm_text += base_str
+
+                st.text_area("PWM résultante", value=pwm_text)
 
         else:
-            st.warning("You forget FASTA sequences :)")
+            st.warning("You forgot FASTA sequences :)")
 
         def create_web_logo(sequences):
             matrix = logomaker.alignment_to_matrix(sequences)
