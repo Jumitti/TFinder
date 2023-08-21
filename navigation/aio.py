@@ -1001,7 +1001,7 @@ def aio_page():
             name='X-axis position (bp): '
         )
         xcol_param = alt.param(
-            value='Position',
+            value=['Position', 'Rel Position'],
             bind=dropdown
         )
 
