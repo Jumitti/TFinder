@@ -1008,30 +1008,35 @@ def aio_page():
         st.altair_chart(chart, theme=None, use_container_width=True)
 
     if 'table2' in locals():
+        tablecol1, tablecol2 = st.columns([0.9,0.1])
         if len(table2) > 1:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
-            if jaspar == 'JASPAR_ID':
-                st.success(f"Finding responsive elements done for {TF_name}")
-                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+            with tablecol2:
+                if jaspar == 'JASPAR_ID':
+                    st.success(f"Finding responsive elements done for {TF_name}")
+                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
 
-            else:
-                st.success(f"Finding responsive elements done")
-                if jaspar == 'PWM':
-                    if matrix_type == 'With PWM':
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                    if matrix_type == 'With FASTA sequences':
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                 else:
-                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                    st.success(f"Finding responsive elements done")
+                    if jaspar == 'PWM':
+                        if matrix_type == 'With PWM':
+                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                        if matrix_type == 'With FASTA sequences':
+                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                    else:
+                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
 
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
             st.markdown('**Table**')
-            st.dataframe(df, hide_index=True)
+            with tablecol1:
+                st.dataframe(df, hide_index=True)
+
             excel_file = io.BytesIO()
             df.to_excel(excel_file, index=False, sheet_name='Sheet1')
             excel_file.seek(0)
+
             st.download_button("💾 Download table (.xlsx)", excel_file,
                                file_name=f'Results_TFinder_{current_date_time}.xlsx',
                                mime="application/vnd.ms-excel", key='download-excel')
@@ -1041,10 +1046,10 @@ def aio_page():
             position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
 
             result_table_output(df)
-
-            email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
-                                           label_visibility='collapsed')
-            if st.button("Send ✉"):
-                email(excel_file, txt_output, email_receiver, body)
+            with tablecol2:
+                email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
+                                               label_visibility='collapsed')
+                if st.button("Send ✉"):
+                    email(excel_file, txt_output, email_receiver, body)
         else:
             st.error(f"No consensus sequence found with the specified threshold")
