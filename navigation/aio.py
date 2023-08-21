@@ -1012,11 +1012,12 @@ def aio_page():
             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
             tooltip=['Rel Position' if position_type == 'From TSS/gene end' else 'Position', 'Rel Score'] + (
                 ['p-value'] if calc_pvalue else []) + ['Sequence', 'Gene', 'Species', 'Region']
-        ).properties(width=600, height=400).interactive().add_params(gene_region_selection).transform_calculate(x=f'datum[{xcol_param.name}]').add_params(xcol_param)
+        ).properties(width=600, height=400).interactive().add_params(gene_region_selection).transform_calculate(
+            x=f'datum[{xcol_param.name}]').add_params(xcol_param)
         st.altair_chart(chart, theme=None, use_container_width=True)
 
     if 'table2' in locals():
-        tablecol1, tablecol2 = st.columns([0.9, 0.1])
+        tablecol1, tablecol2 = st.columns([0.7, 0.3])
         if len(table2) > 1:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
