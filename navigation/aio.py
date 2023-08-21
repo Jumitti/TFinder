@@ -724,7 +724,7 @@ def aio_page():
 
     # generate Weblogo
     def create_web_logo(sequences):
-        matrix = logomaker.alignment_to_matrix(sequences, to_type='probability')
+        matrix = logomaker.alignment_to_matrix(sequences)
         logo = logomaker.Logo(matrix, color_scheme='classic')
 
         return logo
@@ -1005,7 +1005,7 @@ def aio_page():
 
             tablecol1, tablecol2 = st.columns([0.75, 0.25])
             with tablecol2:
-                st.success(f"Finding responsive elements done ! 😊")
+                st.success(f"Finding responsive elements done !")
                 if jaspar == 'PWM':
                     if matrix_type == 'With PWM':
                         body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
