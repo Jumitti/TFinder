@@ -919,6 +919,7 @@ def aio_page():
             st.markdown("🔹 :blue[**Step 2.3**] Responsive element:", help="IUPAC authorized")
             IUPAC = st.text_input("🔹 :blue[**Step 2.3**] Responsive element (IUPAC authorized):", value="GGGRNYYYCC",
                                   label_visibility='collapsed')
+            IUPAC = IUPAC.upper()
 
         IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N']
 
