@@ -1022,6 +1022,6 @@ def aio_page():
                                                value='Send results by email ✉',
                                                label_visibility="collapsed")
                 if st.button("Send ✉"):
-                    email(excel_file, txt_output, email_receiver, body)
+                    email(excel_file, txt_output, email_receiver, body, jaspar, matrix_type)
         else:
             st.error(f"No consensus sequence found with the specified threshold")

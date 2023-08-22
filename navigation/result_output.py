@@ -23,7 +23,7 @@ from PIL import Image
 import time
 
 
-def email(excel_file, txt_output, email_receiver, body):
+def email(excel_file, txt_output, email_receiver, body, jaspar, matrix_type):
     try:
         current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         subject = f'Results TFinder - {current_date_time}'
@@ -74,7 +74,6 @@ def email(excel_file, txt_output, email_receiver, body):
         st.toast(f"Error sending email: {e}")
     except Exception as e:
         st.toast(f"Unknown error occurred: {e}")
-
 
 def result_table_output(df, position_type):
     source = df
