@@ -979,11 +979,18 @@ def aio_page():
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
 
-            with st.form("Results"):
-                df = pd.DataFrame(table2[1:], columns=table2[0])
-                st.session_state['df'] = df
-                st.markdown('**Table**')
+            df = pd.DataFrame(table2[1:], columns=table2[0])
+            st.session_state['df'] = df
 
+            excel_file = io.BytesIO()
+            df.to_excel(excel_file, index=False, sheet_name='Sheet1')
+            excel_file.seek(0)
+            st.download_button("💾 Download table (.xlsx)", excel_file,
+                               file_name=f'Results_TFinder_{current_date_time}.xlsx',
+                               mime="application/vnd.ms-excel", key='download-excel')
+
+            with st.form("Results"):
+                st.markdown('**Table**')
                 tablecol1, tablecol2 = st.columns([0.75, 0.25])
                 with tablecol1:
                     st.dataframe(df, hide_index=True)
@@ -999,14 +1006,6 @@ def aio_page():
                         body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                     else:
                         body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-
-                excel_file = io.BytesIO()
-                df.to_excel(excel_file, index=False, sheet_name='Sheet1')
-                excel_file.seek(0)
-
-                st.download_button("💾 Download table (.xlsx)", excel_file,
-                                   file_name=f'Results_TFinder_{current_date_time}.xlsx',
-                                   mime="application/vnd.ms-excel", key='download-excel')
 
                 st.markdown("")
                 st.markdown('**Graph**',
