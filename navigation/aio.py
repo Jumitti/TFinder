@@ -872,8 +872,8 @@ def aio_page():
                                            label_visibility='collapsed')
             url = f"https://jaspar.genereg.net/api/v1/matrix/{entry_sequence}/"
             response = requests.get(url)
-            response_data = response.json()
             try:
+                response_data = response.json()
                 TF_name = response_data['name']
                 TF_species = response_data['species'][0]['name']
                 st.success(f"{TF_species} transcription factor {TF_name}")
