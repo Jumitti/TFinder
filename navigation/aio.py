@@ -889,7 +889,7 @@ def aio_page():
                                            label_visibility='collapsed')
                 error_input_im = True
                 pwm_rows = matrix_text.strip().split('\n')
-                pwm = [list(map(float, row.split())) for row in pwm_rows]
+                pwm = [list(map(str, row.split())) for row in pwm_rows]
 
                 if has_uniform_column_length(pwm):
                     st.write("Chaque nucléotide a le même nombre de valeurs.")
