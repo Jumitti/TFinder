@@ -944,32 +944,33 @@ def aio_page():
         calc_pvalue = st.checkbox('_p-value_')
 
     # Run Responsive Elements finder
-    if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
-        with st.spinner("Finding responsive elements..."):
-            tis_value = int(entry_tis)
-            threshold = float(threshold_entry)
-            try:
-                if jaspar == 'JASPAR_ID':
-                    sequence_consensus_input = entry_sequence
-                    matrices = transform_matrix(matrix)
-                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-                else:
-                    if not isUIPAC:
-                        st.error("Please use IUPAC code for Responsive Elements")
-                    elif error_input_im:
-                        matrix_lines = matrix_text.split('\n')
-                        matrix = {}
-                        for line in matrix_lines:
-                            line = line.strip()
-                            if line:
-                                key, values = line.split('[', 1)
-                                values = values.replace(']', '').split()
-                                values = [float(value) for value in values]
-                                matrix[key.strip()] = values
+    with st.button("test", use_container_width=True):
+        if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
+            with st.spinner("Finding responsive elements..."):
+                tis_value = int(entry_tis)
+                threshold = float(threshold_entry)
+                try:
+                    if jaspar == 'JASPAR_ID':
+                        sequence_consensus_input = entry_sequence
                         matrices = transform_matrix(matrix)
                         table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-            except Exception as e:
-                st.error(f"Error finding responsive elements: {str(e)}")
+                    else:
+                        if not isUIPAC:
+                            st.error("Please use IUPAC code for Responsive Elements")
+                        elif error_input_im:
+                            matrix_lines = matrix_text.split('\n')
+                            matrix = {}
+                            for line in matrix_lines:
+                                line = line.strip()
+                                if line:
+                                    key, values = line.split('[', 1)
+                                    values = values.replace(']', '').split()
+                                    values = [float(value) for value in values]
+                                    matrix[key.strip()] = values
+                            matrices = transform_matrix(matrix)
+                            table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                except Exception as e:
+                    st.error(f"Error finding responsive elements: {str(e)}")
 
     # RE output
     st.divider()
@@ -1018,6 +1019,5 @@ def aio_page():
                 submitted = st.button("Send ✉")
                 if submitted:
                     email(excel_file, txt_output, email_receiver, body)
-                    st.stop()
         else:
             st.error(f"No consensus sequence found with the specified threshold")
