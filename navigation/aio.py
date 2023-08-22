@@ -1019,6 +1019,7 @@ def aio_page():
                                    file_name=f'Results_TFinder_{current_date_time}.xlsx',
                                    mime="application/vnd.ms-excel", key='download-excel')
                 email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉', label_visibility="collapsed")
-                st.button("Send ✉", on_click=email(excel_file, txt_output, email_receiver, body))
+                if st.button("Send ✉"):
+                    email(excel_file, txt_output, email_receiver, body)
         else:
             st.error(f"No consensus sequence found with the specified threshold")
