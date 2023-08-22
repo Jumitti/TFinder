@@ -576,7 +576,7 @@ def aio_page():
         gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
 
         dropdown = alt.binding_select(
-            options=[('Position', 'Label for Position'), ('Rel Position', 'Label for Rel Position')],
+            options=['Position', 'Rel Position'],
             name='(X-axis) Position (bp) from:'
         )
         xcol_param = alt.param(
