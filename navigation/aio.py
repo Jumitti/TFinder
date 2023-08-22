@@ -944,20 +944,20 @@ def aio_page():
         calc_pvalue = st.checkbox('_p-value_')
 
     # Run Responsive Elements finder
-    if st.button("test", use_container_width = True):
-        if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
-            with st.spinner("Finding responsive elements..."):
-                tis_value = int(entry_tis)
-                threshold = float(threshold_entry)
-                try:
-                    if jaspar == 'JASPAR_ID':
-                        sequence_consensus_input = entry_sequence
-                        matrices = transform_matrix(matrix)
-                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-                    else:
-                        if not isUIPAC:
-                            st.error("Please use IUPAC code for Responsive Elements")
-                        elif error_input_im:
+    if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
+        with st.spinner("Finding responsive elements..."):
+            tis_value = int(entry_tis)
+            threshold = float(threshold_entry)
+            try:
+                if jaspar == 'JASPAR_ID':
+                    sequence_consensus_input = entry_sequence
+                    matrices = transform_matrix(matrix)
+                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                else:
+                    if not isUIPAC:
+                        st.error("Please use IUPAC code for Responsive Elements")
+                    elif error_input_im:
+                        if st.button("test", use_container_width=True):
                             matrix_lines = matrix_text.split('\n')
                             matrix = {}
                             for line in matrix_lines:
@@ -969,8 +969,8 @@ def aio_page():
                                     matrix[key.strip()] = values
                             matrices = transform_matrix(matrix)
                             table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-                except Exception as e:
-                    st.error(f"Error finding responsive elements: {str(e)}")
+            except Exception as e:
+                st.error(f"Error finding responsive elements: {str(e)}")
 
     # RE output
     st.divider()
