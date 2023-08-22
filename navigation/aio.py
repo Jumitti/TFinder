@@ -133,11 +133,15 @@ def aio_page():
                         continue
 
                 gene_info = get_gene_info(entrez_id)
-                gene_name = gene_info['name']
-                chraccver = gene_info['genomicinfo'][0]['chraccver']
-                chrstart = gene_info['genomicinfo'][0]['chrstart']
-                chrstop = gene_info['genomicinfo'][0]['chrstop']
-                species_API = gene_info['organism']['scientificname']
+                if 'chraccver' in gene_info:
+                    gene_name = gene_info['name']
+                    chraccver = gene_info['genomicinfo'][0]['chraccver']
+                    chrstart = gene_info['genomicinfo'][0]['chrstart']
+                    chrstop = gene_info['genomicinfo'][0]['chrstop']
+                    species_API = gene_info['organism']['scientificname']
+                else:
+                    st.error(f'Please verify ID of {gene_id}')
+                    continue
 
                 dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
 
