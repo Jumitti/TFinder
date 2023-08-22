@@ -87,7 +87,9 @@ def aio_page():
                 return gene_info
 
             else:
-                raise Exception(f"Error during extraction of gene information: {response.status_code}")
+                gene_info = 'not_found'
+                st.error(f"{gene_id} no found. Please check ID or use Gene Name")
+                return gene_info
 
         except Exception as e:
             raise Exception(f"Error: {str(e)}")
@@ -136,6 +138,10 @@ def aio_page():
                         continue
 
                 gene_info = get_gene_info(entrez_id)
+                if gene_info != 'not_found':
+                    pass
+                else:
+                    continue
                 gene_name = gene_info['name']
                 chraccver = gene_info['genomicinfo'][0]['chraccver']
                 chrstart = gene_info['genomicinfo'][0]['chrstart']
@@ -159,7 +165,7 @@ def aio_page():
             return result_promoter
 
         except Exception as e:
-            raise Exception(f"Error retrieving gene information: {str(e)} for species {species}")
+            raise Exception(f"Error retrieving gene information: {entrez_id}")
 
     # Extract JASPAR matrix
     def matrix_extraction(sequence_consensus_input):
