@@ -576,8 +576,8 @@ def aio_page():
         gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
 
         dropdown = alt.binding_select(
-            options=['Position', 'Rel Position'],
-            name='X-axis column '
+            options=[('Position', 'beginning of sequences'), ('Rel Position', 'TSS/gene_end')],
+            name='(X-axis) Position (bp) from:'
         )
         xcol_param = alt.param(
             value='Position',
@@ -1025,8 +1025,6 @@ def aio_page():
             st.markdown("")
             st.markdown('**Graph**',
                         help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-            position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'],
-                                     horizontal=True)
 
             result_table_output(df)
 
