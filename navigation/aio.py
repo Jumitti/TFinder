@@ -974,12 +974,12 @@ def aio_page():
     # RE output
     st.divider()
 
-    if 'table2' in locals():
-        if len(table2) > 1:
+    if 'table2' in session_state():
+        if len(st.session_state['table2']) > 1:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
 
-            df = pd.DataFrame(table2[1:], columns=table2[0])
+            df = pd.DataFrame(st.session_state['table2'][1:], columns=st.session_state['table2'][0])
             st.session_state['df'] = df
 
             st.markdown('**Table**')
