@@ -1008,7 +1008,7 @@ def aio_page():
             position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'],
                                      horizontal=True)
 
-            result_table_output(df, position_type)
+            result_table_output(df)
 
             with tablecol2:
                 excel_file = io.BytesIO()
