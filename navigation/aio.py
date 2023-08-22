@@ -873,10 +873,16 @@ def aio_page():
             url = f"https://jaspar.genereg.net/api/v1/matrix/{entry_sequence}/"
             response = requests.get(url)
             response_data = response.json()
-            TF_name = response_data['name']
-            TF_species = response_data['species'][0]['name']
-            st.success(f"{TF_species} transcription factor {TF_name}")
-            matrix = response_data['pfm']
+            try:
+                TF_name = response_data['name']
+                TF_species = response_data['species'][0]['name']
+                st.success(f"{TF_species} transcription factor {TF_name}")
+                matrix = response_data['pfm']
+            except:
+                error_input_im = False
+                raise Exception('Wrong JASPAR_ID')
+
+
         with REcol2:
             st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
     elif jaspar == 'PWM':
