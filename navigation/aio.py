@@ -140,9 +140,9 @@ def aio_page():
 
                 gene_info = get_gene_info(entrez_id)
                 if gene_info != 'not_found':
-                    pass
-                else:
                     continue
+                else:
+                    pass
 
                 gene_name = gene_info['name']
                 chraccver = gene_info['genomicinfo'][0]['chraccver']
