@@ -575,19 +575,27 @@ def aio_page():
         color_scale = alt.Color("Gene_Region:N", scale=scale)
         gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
 
+        dropdown = alt.binding_select(
+            options=['Position', 'Rel Position'],
+            name='X-axis column '
+        )
+        xcol_param = alt.param(
+            value=dropdown,
+            bind=dropdown
+        )
+
         if 'p-value' in source:
             ispvalue = True
 
         chart = alt.Chart(source).mark_circle().encode(
-            x=alt.X('Rel Position:Q' if position_type == 'From TSS/gene end' else 'Position:Q',
-                    axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
+            x=alt.X('x:Q').title(''),
             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                     scale=alt.Scale(domain=[ystart, ystop])),
             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
             tooltip=['Rel Position' if position_type == 'From TSS/gene end' else 'Position', 'Rel Score'] + (
                 ['p-value'] if 'p-value' in source else []) + ['Sequence', 'Gene', 'Species', 'Region'],
             opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
-        ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+        ).transform_calculate(x=f'datum[{xcol_param.name}]').properties(width=600, height=400).interactive().add_params(gene_region_selection).add_params(xcol_param)
         st.altair_chart(chart, theme=None, use_container_width=True)
 
     # Disposition
