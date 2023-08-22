@@ -623,6 +623,11 @@ def aio_page():
                                     row.append("❌")
 
                         data.append(row)
+                    if gene_input.disgit():
+                        gene_id = gene_input
+                        gene_info = get_gene_info(gene_id)
+                        if not 'chraccver' in str(gene_info):
+                            st.error(f'Please verify ID of {gene_id}')
 
                 species_columns = ['Gene'] + species_list
                 df = pd.DataFrame(data, columns=species_columns)
