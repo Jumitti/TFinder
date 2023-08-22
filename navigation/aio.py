@@ -580,7 +580,7 @@ def aio_page():
             name='X-axis column '
         )
         xcol_param = alt.param(
-            value=dropdown,
+            value='Position',
             bind=dropdown
         )
 
