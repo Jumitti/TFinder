@@ -905,6 +905,7 @@ def aio_page():
                 fasta_text = st.text_area("🔹 :blue[**Step 2.3**] Sequences:",
                                           value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG",
                                           label_visibility='collapsed')
+                fasta_text = fasta_text.upper()
             isUIPAC = True
 
             try:
