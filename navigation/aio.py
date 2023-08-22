@@ -598,21 +598,6 @@ def aio_page():
                 ['p-value'] if 'p-value' in source else []) + ['Sequence', 'Gene', 'Species', 'Region'],
             opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
         ).transform_calculate(x=f'datum[{xcol_param.name}]').properties(width=600, height=400).interactive().add_params(gene_region_selection).add_params(xcol_param)
-
-        position_switch = alt.Chart(
-            {'Position Type': ['Beginning of sequences', 'From TSS/gene end']}).mark_text().encode(
-            text='Position Type:N',
-            opacity=alt.condition(dropdown, alt.value(1), alt.value(0.4)),
-            size=alt.value(14)
-        ).add_selection(dropdown)
-
-        # Empilez verticalement le sélecteur et le graphique
-        stacked_chart = alt.vconcat(position_switch, chart)
-
-        # Affichez le graphique avec le sélecteur au-dessus
-        st.altair_chart(stacked_chart, theme=None, use_container_width=True)
-
-
         st.altair_chart(chart, theme=None, use_container_width=True)
 
     # Disposition
