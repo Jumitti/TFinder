@@ -571,16 +571,18 @@ def aio_page():
         ystart = score_range.min() - 0.02
         ystop = score_range.max() + 0.02
         source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
+        source['Beginning of sequences'] = source['Position']
+        source['From TSS/gene end'] = source['Rel Position']
         scale = alt.Scale(scheme='category10')
         color_scale = alt.Color("Gene_Region:N", scale=scale)
         gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
 
         dropdown = alt.binding_select(
-            options=['Position', 'Rel Position'],
+            options=['Beginning of sequences', 'From TSS/gene end'],
             name='(X-axis) Position (bp) from:'
         )
         xcol_param = alt.param(
-            value='Position',
+            value='Beginning of sequences',
             bind=dropdown
         )
 
