@@ -878,9 +878,9 @@ def aio_page():
                 TF_species = response_data['species'][0]['name']
                 st.success(f"{TF_species} transcription factor {TF_name}")
                 matrix = response_data['pfm']
-                button = True
-            except:
                 button = False
+            except:
+                button = True
                 error_input_im = False
                 st.error('Wrong JASPAR_ID')
 
