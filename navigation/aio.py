@@ -402,9 +402,8 @@ def aio_page():
 
     # is PWM good ?
     def has_uniform_column_length(pwm):
-        try:
-            column_lengths = set(len(column) for column in pwm)
-        except:
+        column_lengths = set(len(column) for column in pwm)
+        if len(column_lengths) != 1:
             raise Exception('Invalid PWM lenght.')
 
     # Calculate PWM
