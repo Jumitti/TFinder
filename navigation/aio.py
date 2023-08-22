@@ -882,7 +882,8 @@ def aio_page():
             except:
                 button = False
                 error_input_im = False
-                raise Exception('Wrong JASPAR_ID')
+                st.error('Wrong JASPAR_ID')
+                st.stop()
 
 
         with REcol2:
