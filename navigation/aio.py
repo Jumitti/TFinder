@@ -400,6 +400,11 @@ def aio_page():
 
         return sequences
 
+    # is PWM good ?
+    def has_uniform_column_length(pwm):
+        column_lengths = set(len(column) for column in pwm)
+        return len(column_lengths) == 1
+
     # Calculate PWM
     def calculate_pwm(sequences):
         num_sequences = len(sequences)
@@ -883,6 +888,13 @@ def aio_page():
                                            value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
                                            label_visibility='collapsed')
                 error_input_im = True
+                pwm_rows = matrix_text.strip().split('\n')
+                pwm = [list(map(float, row.split())) for row in pwm_rows]
+
+                if has_uniform_column_length(pwm):
+                    st.write("Chaque nucléotide a le même nombre de valeurs.")
+                else:
+                    st.write("Les nucléotides n'ont pas le même nombre de valeurs.")
         else:
             with REcol1:
                 st.markdown("🔹 :blue[**Step 2.3**] Sequences:",
