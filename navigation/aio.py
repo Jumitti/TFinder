@@ -978,7 +978,9 @@ def aio_page():
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
 
+            st.session_state['table2'] = table2
             df = pd.DataFrame(table2[1:], columns=table2[0])
+            st.session_state['df'] = df
 
             st.markdown('**Table**')
             tablecol1, tablecol2 = st.columns([0.75, 0.25])
