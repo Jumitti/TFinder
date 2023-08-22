@@ -402,8 +402,10 @@ def aio_page():
 
     # is PWM good ?
     def has_uniform_column_length(pwm):
-        column_lengths = set(len(column) for column in pwm)
-        return len(column_lengths) == 1
+        try:
+            column_lengths = set(len(column) for column in pwm)
+        except:
+            raise Exception('Invalid PWM lenght.')
 
     # Calculate PWM
     def calculate_pwm(sequences):
@@ -896,7 +898,7 @@ def aio_page():
                     error_input_im = True
                 except Exception as e:
                     error_input_im = False
-                    st.error(f"Invalid PWM lenght.")
+                    st.error(e)
         else:
             with REcol1:
                 st.markdown("🔹 :blue[**Step 2.3**] Sequences:",
