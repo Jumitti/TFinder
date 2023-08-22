@@ -967,6 +967,7 @@ def aio_page():
                 if st.button("test", use_container_width=True):
                     matrices = transform_matrix(matrix)
                     table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                    st.session_state['table2'] = table2
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
 
@@ -978,7 +979,6 @@ def aio_page():
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
 
-            st.session_state['table2'] = table2
             df = pd.DataFrame(table2[1:], columns=table2[0])
             st.session_state['df'] = df
 
