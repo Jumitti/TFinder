@@ -590,7 +590,7 @@ def aio_page():
             ispvalue = True
 
         chart = alt.Chart(source).mark_circle().encode(
-            x=alt.X('x:Q').title(''),
+            x=alt.X('x:Q').title('Position (bp)'),
             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                     scale=alt.Scale(domain=[ystart, ystop])),
             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
