@@ -884,7 +884,7 @@ def aio_page():
     # RE output
     st.divider()
 
-    def email(excel_file, email_receiver, body):
+    def email(excel_file, txt_output, email_receiver, body):
         try:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             subject = f'Results TFinder - {current_date_time}'
@@ -912,6 +912,11 @@ def aio_page():
             elif jaspar == 'Manual sequence':
                 image = MIMEImage(st.session_state['buffer'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
                 msg.attach(image)
+
+            attachment_text = MIMEText(txt_output, 'plain', 'utf-8')
+            attachment_text.add_header('Content-Disposition', 'attachment',
+                                       filename=f'Sequences_{current_date_time}.fasta')
+            msg.attach(attachment_text)
 
             server = smtplib.SMTP('smtp.gmail.com', 587)
             server.starttls()
@@ -992,11 +997,10 @@ def aio_page():
             position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
 
             result_table_output(df)
-
             with tablecol2:
                 email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
                                                label_visibility='collapsed')
                 if st.button("Send ✉"):
-                    email(excel_file, email_receiver, body)
+                    email(excel_file, txt_output, email_receiver, body)
         else:
             st.error(f"No consensus sequence found with the specified threshold")
