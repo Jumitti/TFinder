@@ -43,16 +43,6 @@ from PIL import Image
 
 
 def BSF_page():
-    # Promoter output state
-
-    st.subheader('🔎 Binding Sites Finder')
-    st.markdown("🔹 :blue[**Step 2.1**] Sequences:")
-    result_promoter = st.text_area("🔹 :blue[**Step 1.1**] Sequence:",
-                                   value="Paste sequences here (FASTA required for multiple sequences).",
-                                   label_visibility='collapsed')
-
-    # Responsive-Elements-Finder
-
     # Extract JASPAR matrix
     def matrix_extraction(sequence_consensus_input):
         jaspar_id = sequence_consensus_input
@@ -62,7 +52,7 @@ def BSF_page():
             response_data = response.json()
             matrix = response_data['pfm']
         else:
-            st.error(f"Error while retrieving PWM : {response.status_code}")
+            st.error(f"Error while retrieving PWM: {response.status_code}")
             return
 
         return transform_matrix(matrix)
@@ -240,35 +230,26 @@ def BSF_page():
                         tis_position = position - tis_value
 
                         if normalized_score >= threshold:
+                            row = [str(position).ljust(8),
+                                   str(tis_position).ljust(15),
+                                   sequence_with_context,
+                                   "{:.6f}".format(normalized_score).ljust(12)]
                             if calc_pvalue:
-                                row = [str(position).ljust(8),
-                                       str(tis_position).ljust(15),
-                                       sequence_with_context,
-                                       "{:.6f}".format(normalized_score).ljust(12), "{:.3e}".format(p_value).ljust(12),
-                                       shortened_promoter_name, found_species, region]
-                                table2.append(row)
-
-                            else:
-                                row = [str(position).ljust(8),
-                                       str(tis_position).ljust(15),
-                                       sequence_with_context,
-                                       "{:.6f}".format(normalized_score).ljust(12),
-                                       shortened_promoter_name, found_species, region]
-                                table2.append(row)
+                                row.append("{:.3e}".format(p_value).ljust(12))
+                            row += [shortened_promoter_name, found_species, region]
+                            table2.append(row)
 
         if len(table2) > 0:
             table2.sort(key=lambda x: float(x[3]), reverse=True)
+            header = ["Position", "Rel Position", "Sequence", "Rel Score"]
             if calc_pvalue:
-                header = ["Position", "Rel Position", "Sequence", "Rel Score", "p-value", "Gene", "Species", "Region"]
-            else:
-                header = ["Position", "Rel Position", "Sequence", "Rel Score", "Gene", "Species", "Region"]
+                header.append("p-value")
+            header += ["Gene", "Species", "Region"]
             table2.insert(0, header)
         else:
             "No consensus sequence found with the specified threshold."
 
         return table2
-
-    # Responsive Elements Finder
 
     # IUPAC code
     def generate_iupac_variants(sequence):
@@ -406,136 +387,6 @@ def BSF_page():
         else:
             raise Exception(f"You forget FASTA sequences :)")
 
-    # RE entry
-    REcol1, REcol2 = st.columns([0.30, 0.70])
-    with REcol1:
-        st.markdown('🔹 :blue[**Step 2.2**] Responsive elements type:')
-        jaspar = st.radio('🔹 :blue[**Step 2.2**] Responsive elements type:', ('Manual sequence', 'JASPAR_ID', 'PWM'),
-                          label_visibility='collapsed')
-    if jaspar == 'JASPAR_ID':
-        with REcol1:
-            st.markdown("🔹 :blue[**Step 2.3**] JASPAR ID:")
-            entry_sequence = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:", value="MA0106.1",
-                                           label_visibility='collapsed')
-            url = f"https://jaspar.genereg.net/api/v1/matrix/{entry_sequence}/"
-            response = requests.get(url)
-            response_data = response.json()
-            TF_name = response_data['name']
-            TF_species = response_data['species'][0]['name']
-            st.success(f"{TF_species} transcription factor {TF_name}")
-            matrix = response_data['pfm']
-        with REcol2:
-            st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
-    elif jaspar == 'PWM':
-        with REcol1:
-            st.markdown('🔹 :blue[**Step 2.2bis**] Matrix:')
-            matrix_type = st.radio('🔹 :blue[**Step 2.2bis**] Matrix:', ('With FASTA sequences', 'With PWM'),
-                                   label_visibility='collapsed')
-        if matrix_type == 'With PWM':
-            isUIPAC = True
-            with REcol2:
-                st.markdown("🔹 :blue[**Step 2.3**] Matrix:", help="Only PWM generated with our tools are allowed")
-                matrix_text = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
-                                           value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
-                                           label_visibility='collapsed')
-        else:
-            with REcol1:
-                st.markdown("🔹 :blue[**Step 2.3**] Sequences:",
-                            help='Put FASTA sequences. Same sequence length required ⚠')
-                fasta_text = st.text_area("🔹 :blue[**Step 2.3**] Sequences:",
-                                          value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG",
-                                          label_visibility='collapsed')
-            isUIPAC = True
-
-            try:
-                matrix_text, buffer = im(fasta_text)
-                error_input_im = True
-            except Exception as e:
-                error_input_im = False
-                st.error(e)
-
-    else:
-        with REcol1:
-            st.markdown("🔹 :blue[**Step 2.3**] Responsive element:", help="IUPAC authorized")
-            IUPAC = st.text_input("🔹 :blue[**Step 2.3**] Responsive element (IUPAC authorized):", value="GGGRNYYYCC",
-                                  label_visibility='collapsed')
-
-        IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N']
-
-        if all(char in IUPAC_code for char in IUPAC):
-            isUIPAC = True
-
-            sequences = generate_iupac_variants(IUPAC)
-            fasta_text = ""
-            for i, seq in enumerate(sequences):
-                fasta_text += f">seq{i + 1}\n{seq}\n"
-
-            try:
-                matrix_text, buffer = im(fasta_text)
-                error_input_im = True
-            except Exception as e:
-                error_input_im = False
-                st.error(e)
-
-        else:
-            isUIPAC = False
-
-    # TSS entry
-    BSFcol1, BSFcol2, BSFcol3 = st.columns([2, 2, 1], gap="medium")
-    with BSFcol1:
-        if 'upstream' not in st.session_state:
-            st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
-                        help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
-            entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
-                                        -10000, 10000, 0, label_visibility="collapsed")
-        else:
-            st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
-                        help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
-            entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
-                                        -10000, 10000, st.session_state['upstream'], label_visibility="collapsed")
-
-    # Threshold pvalue
-
-    with BSFcol2:
-        st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
-        threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0, 0.85, step=0.05,
-                                    label_visibility="collapsed")
-
-    with BSFcol3:
-        st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
-        calc_pvalue = st.checkbox('_p-value_')
-
-    # Run Responsive Elements finder
-    if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
-        with st.spinner("Finding responsive elements..."):
-            tis_value = int(entry_tis)
-            threshold = float(threshold_entry)
-            try:
-                if jaspar == 'JASPAR_ID':
-                    sequence_consensus_input = entry_sequence
-                    matrices = transform_matrix(matrix)
-                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-                else:
-                    if not isUIPAC:
-                        st.error("Please use IUPAC code for Responsive Elements")
-                    elif error_input_im:
-                        matrix_lines = matrix_text.split('\n')
-                        matrix = {}
-                        for line in matrix_lines:
-                            line = line.strip()
-                            if line:
-                                key, values = line.split('[', 1)
-                                values = values.replace(']', '').split()
-                                values = [float(value) for value in values]
-                                matrix[key.strip()] = values
-                        matrices = transform_matrix(matrix)
-                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-            except Exception as e:
-                st.error(f"Error finding responsive elements: {str(e)}")
-
-    # RE output
-    st.divider()
-
     def email(excel_file, email_receiver, body):
         try:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -577,7 +428,7 @@ def BSF_page():
         except smtplib.SMTPServerDisconnected:
             st.toast("Failed to connect to the SMTP server. Please check your internet connection.")
         except smtplib.SMTPRecipientsRefused:
-            st.toast(f"Error sending email: {email_receiver}")
+            st.toast(f"Error sending email to {email_receiver}")
         except smtplib.SMTPException as e:
             st.toast(f"Error sending email: {e}")
         except Exception as e:
@@ -593,6 +444,9 @@ def BSF_page():
         color_scale = alt.Color("Gene_Region:N", scale=scale)
         gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
 
+        if 'p-value' in source:
+            ispvalue = True
+
         chart = alt.Chart(source).mark_circle().encode(
             x=alt.X('Rel Position:Q' if position_type == 'From TSS/gene end' else 'Position:Q',
                     axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
@@ -600,54 +454,189 @@ def BSF_page():
                     scale=alt.Scale(domain=[ystart, ystop])),
             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
             tooltip=['Rel Position' if position_type == 'From TSS/gene end' else 'Position', 'Rel Score'] + (
-                ['p-value'] if calc_pvalue else []) + ['Sequence', 'Gene', 'Species', 'Region'],
+                ['p-value'] if 'p-value' in source else []) + ['Sequence', 'Gene', 'Species', 'Region'],
             opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
         ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
         st.altair_chart(chart, theme=None, use_container_width=True)
 
-    if 'table2' in locals():
-        if len(table2) > 1:
+    # Promoter output state
+
+    st.subheader('🔎 Binding Sites Finder')
+    st.markdown("🔹 :blue[**Step 1.1**] Sequences:")
+    result_promoter = st.text_area("🔹 :blue[**Step 1.1**] Sequence:",
+                                   value="Paste sequences here (FASTA required for multiple sequences).", label_visibility='collapsed')
+
+    # RE entry
+    REcol1, REcol2 = st.columns([0.30, 0.70])
+    with REcol1:
+        st.markdown('🔹 :blue[**Step 1.2**] Responsive elements type:')
+        jaspar = st.radio('🔹 :blue[**Step 1.2**] Responsive elements type:', ('Manual sequence', 'JASPAR_ID', 'PWM'),
+                          label_visibility='collapsed')
+    if jaspar == 'JASPAR_ID':
+        with REcol1:
+            st.markdown("🔹 :blue[**Step 1.3**] JASPAR ID:")
+            entry_sequence = st.text_input("🔹 :blue[**Step 1.3**] JASPAR ID:", value="MA0106.1",
+                                           label_visibility='collapsed')
+            url = f"https://jaspar.genereg.net/api/v1/matrix/{entry_sequence}/"
+            response = requests.get(url)
+            response_data = response.json()
+            TF_name = response_data['name']
+            TF_species = response_data['species'][0]['name']
+            st.success(f"{TF_species} transcription factor {TF_name}")
+            matrix = response_data['pfm']
+        with REcol2:
+            st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
+    elif jaspar == 'PWM':
+        with REcol1:
+            st.markdown('🔹 :blue[**Step 1.2bis**] Matrix:')
+            matrix_type = st.radio('🔹 :blue[**Step 1.2bis**] Matrix:', ('With FASTA sequences', 'With PWM'),
+                                   label_visibility='collapsed')
+        if matrix_type == 'With PWM':
+            isUIPAC = True
+            with REcol2:
+                st.markdown("🔹 :blue[**Step 1.3**] Matrix:", help="Only PWM generated with our tools are allowed")
+                matrix_text = st.text_area("🔹 :blue[**Step 1.3**] Matrix:",
+                                           value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
+                                           label_visibility='collapsed')
+        else:
+            with REcol1:
+                st.markdown("🔹 :blue[**Step 1.3**] Sequences:",
+                            help='Put FASTA sequences. Same sequence length required ⚠')
+                fasta_text = st.text_area("🔹 :blue[**Step 1.3**] Sequences:",
+                                          value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG",
+                                          label_visibility='collapsed')
+            isUIPAC = True
+
+            try:
+                matrix_text, buffer = im(fasta_text)
+                error_input_im = True
+            except Exception as e:
+                error_input_im = False
+                st.error(e)
+
+    else:
+        with REcol1:
+            st.markdown("🔹 :blue[**Step 1.3**] Responsive element:", help="IUPAC authorized")
+            IUPAC = st.text_input("🔹 :blue[**Step 1.3**] Responsive element (IUPAC authorized):", value="GGGRNYYYCC",
+                                  label_visibility='collapsed')
+
+        IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N']
+
+        if all(char in IUPAC_code for char in IUPAC):
+            isUIPAC = True
+
+            sequences = generate_iupac_variants(IUPAC)
+            fasta_text = ""
+            for i, seq in enumerate(sequences):
+                fasta_text += f">seq{i + 1}\n{seq}\n"
+
+            try:
+                matrix_text, buffer = im(fasta_text)
+                error_input_im = True
+            except Exception as e:
+                error_input_im = False
+                st.error(e)
+
+        else:
+            isUIPAC = False
+
+    # TSS entry
+    BSFcol1, BSFcol2, BSFcol3 = st.columns([2, 2, 1], gap="medium")
+    with BSFcol1:
+        st.markdown("🔹 :blue[**Step 1.4**] Transcription Start Site (TSS)/gene end at (in bp):",
+                    help="Distance of TSS and gene end from begin of sequences.")
+        if 'upstream' not in st.session_state:
+            entry_tis = st.number_input("🔹 :blue[**Step 1.4**] Transcription Start Site (TSS)/gene end at (in bp):",
+                                        -10000, 10000, 0, label_visibility="collapsed")
+        else:
+            entry_tis = st.number_input("🔹 :blue[**Step 1.4**] Transcription Start Site (TSS)/gene end at (in bp):",
+                                        -10000, 10000, st.session_state['upstream'], label_visibility="collapsed")
+
+    # Threshold pvalue
+
+    with BSFcol2:
+        st.markdown("🔹 :blue[**Step 1.5**] Relative Score threshold")
+        threshold_entry = st.slider("🔹 :blue[**Step 1.5**] Relative Score threshold", 0.0, 1.0, 0.85, step=0.05,
+                                    label_visibility="collapsed")
+    with BSFcol3:
+        st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
+        calc_pvalue = st.checkbox('_p-value_')
+
+    # Run Responsive Elements finder
+    if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
+        with st.spinner("Finding responsive elements..."):
+            tis_value = int(entry_tis)
+            threshold = float(threshold_entry)
+            try:
+                if jaspar == 'JASPAR_ID':
+                    sequence_consensus_input = entry_sequence
+                else:
+                    if not isUIPAC:
+                        st.error("Please use IUPAC code for Responsive Elements")
+                    elif error_input_im:
+                        matrix_lines = matrix_text.split('\n')
+                        matrix = {}
+                        for line in matrix_lines:
+                            line = line.strip()
+                            if line:
+                                key, values = line.split('[', 1)
+                                values = values.replace(']', '').split()
+                                values = [float(value) for value in values]
+                                matrix[key.strip()] = values
+                st.markdown("")
+                if st.button("🔹 :blue[**Step 1.6**] Click here to find motif in your sequences 🔎 🧬",
+                             use_container_width=True):
+                    matrices = transform_matrix(matrix)
+                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                    st.session_state['table2'] = table2
+            except Exception as e:
+                st.error(f"Error finding responsive elements: {str(e)}")
+
+    st.divider()
+    if 'table2' in st.session_state:
+        if len(st.session_state['table2']) > 1:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
 
-            df = pd.DataFrame(table2[1:], columns=table2[0])
+            df = pd.DataFrame(st.session_state['table2'][1:], columns=st.session_state['table2'][0])
             st.session_state['df'] = df
-            st.markdown('**Table**')
 
+            st.markdown('**Table**')
             tablecol1, tablecol2 = st.columns([0.75, 0.25])
             with tablecol1:
                 st.dataframe(df, hide_index=True)
 
             with tablecol2:
                 st.success(f"Finding responsive elements done !")
-                if jaspar == 'PWM':
-                    if matrix_type == 'With PWM':
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                    if matrix_type == 'With FASTA sequences':
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                elif jaspar == 'JASPAR_ID':
-                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                else:
-                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-
-            excel_file = io.BytesIO()
-            df.to_excel(excel_file, index=False, sheet_name='Sheet1')
-            excel_file.seek(0)
-
-            st.download_button("💾 Download table (.xlsx)", excel_file,
-                               file_name=f'Results_TFinder_{current_date_time}.xlsx',
-                               mime="application/vnd.ms-excel", key='download-excel')
 
             st.markdown("")
             st.markdown('**Graph**',
                         help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-            position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
+            position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'],
+                                     horizontal=True)
 
             result_table_output(df)
+
             with tablecol2:
-                email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
-                                               label_visibility='collapsed')
+                excel_file = io.BytesIO()
+                df.to_excel(excel_file, index=False, sheet_name='Sheet1')
+                excel_file.seek(0)
+                st.download_button("💾 Download table (.xlsx)", excel_file,
+                                   file_name=f'Results_TFinder_{current_date_time}.xlsx',
+                                   mime="application/vnd.ms-excel", key='download-excel')
+                email_receiver = st.text_input('Send results by email ✉',
+                                               value='Send results by email ✉',
+                                               label_visibility="collapsed")
                 if st.button("Send ✉"):
+                    if jaspar == 'PWM':
+                        if matrix_type == 'With PWM':
+                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                        if matrix_type == 'With FASTA sequences':
+                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                    elif jaspar == 'JASPAR_ID':
+                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                    else:
+                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                     email(excel_file, email_receiver, body)
         else:
             st.error(f"No consensus sequence found with the specified threshold")
