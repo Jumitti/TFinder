@@ -575,15 +575,12 @@ def aio_page():
         color_scale = alt.Color("Gene_Region:N", scale=scale)
         gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
 
-        position_selector = alt.binding_select(options=['Rel Position', 'Position'])
-        x_axis_selector = alt.selection_single(fields=['Position Type'], bind=position_selector, name='Position Type')
-
         if 'p-value' in source:
             ispvalue = True
 
         chart = alt.Chart(source).mark_circle().encode(
             x=alt.X('Rel Position:Q' if position_type == 'From TSS/gene end' else 'Position:Q',
-                    axis=alt.Axis(title='Relative position (bp)'), sort='ascending').add_selection(x_axis_selector),
+                    axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
             y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                     scale=alt.Scale(domain=[ystart, ystop])),
             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
@@ -591,15 +588,7 @@ def aio_page():
                 ['p-value'] if 'p-value' in source else []) + ['Sequence', 'Gene', 'Species', 'Region'],
             opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
         ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-
-        position_switch = alt.Chart({'Position Type': ['Rel Position', 'Position']}).mark_text().encode(
-            text='Position Type:N',
-            opacity=alt.condition(x_axis_selector, alt.value(1), alt.value(0.4)),
-            size=alt.value(14)
-        ).add_selection(x_axis_selector)
-
-        # Affichez le graphique Altair et le commutateur d'axe X
-        st.altair_chart(position_switch & chart, theme=None, use_container_width=True)
+        st.altair_chart(chart, theme=None, use_container_width=True)
 
     # Disposition
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
