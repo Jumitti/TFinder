@@ -84,13 +84,16 @@ def aio_page():
             if response.status_code == 200:
                 response_data = response.json()
                 gene_info = response_data['result'][str(gene_id)]
-                return gene_info
 
+            if 'chraccver' in gene_info:
+                return gene_info
             else:
+                st.error('Please verify ID: {gene_id}')
+                gene_info = int('not_found')
                 return gene_info
 
         except Exception as e:
-            raise Exception(f"Error: {str(e)}")
+                raise Exception(f"Error: {str(e)}")
 
     # Get DNA sequence
     def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
@@ -136,17 +139,14 @@ def aio_page():
                         continue
 
                 gene_info = get_gene_info(entrez_id)
-                gene_name = gene_info['name']
-                chraccver = gene_info['genomicinfo'][0]['chraccver']
-                chrstart = gene_info['genomicinfo'][0]['chrstart']
-                if chrstart != '999999999':
-                    pass
+                if gene_info != 'not_found':
+                    gene_name = gene_info['name']
+                    chraccver = gene_info['genomicinfo'][0]['chraccver']
+                    chrstart = gene_info['genomicinfo'][0]['chrstart']
+                    chrstop = gene_info['genomicinfo'][0]['chrstop']
+                    species_API = gene_info['organism']['scientificname']
                 else:
-                    st.error(f"{gene_id} not found. Please check ID or use Gene Name")
                     continue
-
-                chrstop = gene_info['genomicinfo'][0]['chrstop']
-                species_API = gene_info['organism']['scientificname']
 
                 dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
 
