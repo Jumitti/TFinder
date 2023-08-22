@@ -905,14 +905,18 @@ def aio_page():
                                         filename=f'Results_TFinder_{current_date_time}.xlsx')
             msg.attach(attachment_excel)
 
+            if jaspar == 'PWM':
+                if matrix_type == 'With FASTA sequences':
+                    image = MIMEImage(st.session_state['buffer'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
+                    msg.attach(image)
+            elif jaspar == 'Manual sequence':
+                image = MIMEImage(st.session_state['buffer'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
+                msg.attach(image)
+
             attachment_text = MIMEText(txt_output, 'plain', 'utf-8')
             attachment_text.add_header('Content-Disposition', 'attachment',
                                        filename=f'Sequences_{current_date_time}.fasta')
             msg.attach(attachment_text)
-
-            if matrix_type == 'With FASTA sequences' or jaspar == 'Manual sequence':
-                image = MIMEImage(st.session_state['buffer'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
-                msg.attach(image)
 
             server = smtplib.SMTP('smtp.gmail.com', 587)
             server.starttls()
@@ -997,6 +1001,6 @@ def aio_page():
                 email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
                                                label_visibility='collapsed')
                 if st.button("Send ✉"):
-                    email(excel_file, email_receiver, body)
+                    email(excel_file, txt_output, email_receiver, body)
         else:
             st.error(f"No consensus sequence found with the specified threshold")
