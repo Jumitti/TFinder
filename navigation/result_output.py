@@ -76,7 +76,7 @@ def email(excel_file, txt_output, email_receiver, body):
         st.toast(f"Unknown error occurred: {e}")
 
 
-def result_table_output():
+def result_table_output(df, position_type):
     source = df
     score_range = source['Rel Score'].astype(float)
     ystart = score_range.min() - 0.02
