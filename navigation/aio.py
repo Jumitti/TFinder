@@ -139,7 +139,7 @@ def aio_page():
                 gene_name = gene_info['name']
                 chraccver = gene_info['genomicinfo'][0]['chraccver']
                 chrstart = gene_info['genomicinfo'][0]['chrstart']
-                if chrstart != 999999999:
+                if chrstart == 999999999:
                     pass
                 else:
                     st.error(f"{gene_id} not found. Please check ID or use Gene Name")
