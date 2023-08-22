@@ -445,7 +445,7 @@ def aio_page():
     # generate Weblogo
     def create_web_logo(sequences):
         matrix = logomaker.alignment_to_matrix(sequences)
-        logo = logomaker.Logo(matrix, color_scheme='classic', ax=None, width=0.8, stack_order='small_on_top', fade_probabilities=True)
+        logo = logomaker.Logo(matrix, color_scheme='classic', fade_below=0.5, ax=None)
         logo.fig.set_facecolor('#080808')
 
         return logo
