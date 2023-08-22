@@ -999,8 +999,7 @@ def aio_page():
             result_table_output(df)
             with tablecol2:
                 with st.form("email"):
-                    email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
-                                               label_visibility='collapsed')
+                    email_receiver = st.text_input('Send results by email ✉', value='Email',)
                     submitted = st.form_submit_button("Send ✉")
                     if submitted:
                         email(excel_file, txt_output, email_receiver, body)
