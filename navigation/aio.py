@@ -591,7 +591,7 @@ def aio_page():
             tooltip=['Position', 'Rel Position', 'Rel Score'] + (
                 ['p-value'] if 'p-value' in source else []) + ['Sequence', 'Gene', 'Species', 'Region'],
             opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
-        ).transform_calculate(x=f'datum[{xcol_param.name}]').properties(width=600, height=400).interactive().add_params(gene_region_selection).add_params(xcol_param)
+        ).transform_calculate(x=f'datum[{xcol_param.name}]').properties(width=600, height=400).interactive().add_params(gene_region_selection, xcol_param)
         st.altair_chart(chart, theme=None, use_container_width=True)
 
     # Disposition
