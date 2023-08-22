@@ -387,7 +387,7 @@ def BSF_page():
         else:
             raise Exception(f"You forget FASTA sequences :)")
 
-    def email(excel_file, txt_output, email_receiver, body):
+    def email(excel_file, email_receiver, body):
         try:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             subject = f'Results TFinder - {current_date_time}'
