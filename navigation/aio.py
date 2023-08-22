@@ -944,7 +944,7 @@ def aio_page():
         calc_pvalue = st.checkbox('_p-value_')
 
     # Run Responsive Elements finder
-    with st.button("test", use_container_width='True'):
+    with st.button("test", use_container_width=True):
         if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
             with st.spinner("Finding responsive elements..."):
                 tis_value = int(entry_tis)
