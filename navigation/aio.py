@@ -84,12 +84,6 @@ def aio_page():
             if response.status_code == 200:
                 response_data = response.json()
                 gene_info = response_data['result'][str(gene_id)]
-
-            if 'chraccver' in gene_info:
-                return gene_info
-            else:
-                st.error(f'Please verify ID: {gene_id}')
-                gene_info = int('not_found')
                 return gene_info
 
         except Exception as e:
