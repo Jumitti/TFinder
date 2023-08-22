@@ -980,7 +980,6 @@ def aio_page():
             st.subheader(':blue[Results]')
 
             df = pd.DataFrame(table2[1:], columns=table2[0])
-            st.session_state['df'] = df
 
             excel_file = io.BytesIO()
             df.to_excel(excel_file, index=False, sheet_name='Sheet1')
