@@ -240,7 +240,7 @@ def aio_page():
                 downstream_entry = max(updown_slide)
 
                 # Run Promoter Finder
-                if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
+                if st.form_submit_button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
                     with colprom1:
                         with st.spinner("Finding promoters..."):
                             gene_ids = gene_id_entry.strip().split("\n")
@@ -360,7 +360,7 @@ def aio_page():
                 upstream_entry = -min(updown_slide)
                 downstream_entry = max(updown_slide)
 
-                if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
+                if st.form_submit_button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
                     with colprom1:
                         with st.spinner("Finding sequences..."):
                             st.session_state['upstream'] = upstream_entry
