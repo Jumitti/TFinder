@@ -848,147 +848,147 @@ def aio_page():
                            file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain")
 
     # RE entry
-    REcol1, REcol2 = st.columns([0.30, 0.70])
-    with REcol1:
-        st.markdown('🔹 :blue[**Step 2.2**] Responsive elements type:')
-        jaspar = st.radio('🔹 :blue[**Step 2.2**] Responsive elements type:', ('Manual sequence', 'JASPAR_ID', 'PWM'),
-                          label_visibility='collapsed')
-    if jaspar == 'JASPAR_ID':
+    with st.form("Results"):
+        REcol1, REcol2 = st.columns([0.30, 0.70])
         with REcol1:
-            st.markdown("🔹 :blue[**Step 2.3**] JASPAR ID:")
-            entry_sequence = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:", value="MA0106.1",
-                                           label_visibility='collapsed')
-            url = f"https://jaspar.genereg.net/api/v1/matrix/{entry_sequence}/"
-            response = requests.get(url)
-            response_data = response.json()
-            TF_name = response_data['name']
-            TF_species = response_data['species'][0]['name']
-            st.success(f"{TF_species} transcription factor {TF_name}")
-            matrix = response_data['pfm']
-        with REcol2:
-            st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
-    elif jaspar == 'PWM':
-        with REcol1:
-            st.markdown('🔹 :blue[**Step 2.2bis**] Matrix:')
-            matrix_type = st.radio('🔹 :blue[**Step 2.2bis**] Matrix:', ('With FASTA sequences', 'With PWM'),
-                                   label_visibility='collapsed')
-        if matrix_type == 'With PWM':
-            isUIPAC = True
+            st.markdown('🔹 :blue[**Step 2.2**] Responsive elements type:')
+            jaspar = st.radio('🔹 :blue[**Step 2.2**] Responsive elements type:', ('Manual sequence', 'JASPAR_ID', 'PWM'),
+                              label_visibility='collapsed')
+        if jaspar == 'JASPAR_ID':
+            with REcol1:
+                st.markdown("🔹 :blue[**Step 2.3**] JASPAR ID:")
+                entry_sequence = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:", value="MA0106.1",
+                                               label_visibility='collapsed')
+                url = f"https://jaspar.genereg.net/api/v1/matrix/{entry_sequence}/"
+                response = requests.get(url)
+                response_data = response.json()
+                TF_name = response_data['name']
+                TF_species = response_data['species'][0]['name']
+                st.success(f"{TF_species} transcription factor {TF_name}")
+                matrix = response_data['pfm']
             with REcol2:
-                st.markdown("🔹 :blue[**Step 2.3**] Matrix:", help="Only PWM generated with our tools are allowed")
-                matrix_text = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
-                                           value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
-                                           label_visibility='collapsed')
+                st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
+        elif jaspar == 'PWM':
+            with REcol1:
+                st.markdown('🔹 :blue[**Step 2.2bis**] Matrix:')
+                matrix_type = st.radio('🔹 :blue[**Step 2.2bis**] Matrix:', ('With FASTA sequences', 'With PWM'),
+                                       label_visibility='collapsed')
+            if matrix_type == 'With PWM':
+                isUIPAC = True
+                with REcol2:
+                    st.markdown("🔹 :blue[**Step 2.3**] Matrix:", help="Only PWM generated with our tools are allowed")
+                    matrix_text = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
+                                               value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
+                                               label_visibility='collapsed')
+            else:
+                with REcol1:
+                    st.markdown("🔹 :blue[**Step 2.3**] Sequences:",
+                                help='Put FASTA sequences. Same sequence length required ⚠')
+                    fasta_text = st.text_area("🔹 :blue[**Step 2.3**] Sequences:",
+                                              value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG",
+                                              label_visibility='collapsed')
+                isUIPAC = True
+
+                try:
+                    matrix_text, buffer = im(fasta_text)
+                    error_input_im = True
+                except Exception as e:
+                    error_input_im = False
+                    st.error(e)
+
         else:
             with REcol1:
-                st.markdown("🔹 :blue[**Step 2.3**] Sequences:",
-                            help='Put FASTA sequences. Same sequence length required ⚠')
-                fasta_text = st.text_area("🔹 :blue[**Step 2.3**] Sequences:",
-                                          value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG",
-                                          label_visibility='collapsed')
-            isUIPAC = True
+                st.markdown("🔹 :blue[**Step 2.3**] Responsive element:", help="IUPAC authorized")
+                IUPAC = st.text_input("🔹 :blue[**Step 2.3**] Responsive element (IUPAC authorized):", value="GGGRNYYYCC",
+                                      label_visibility='collapsed')
 
-            try:
-                matrix_text, buffer = im(fasta_text)
-                error_input_im = True
-            except Exception as e:
-                error_input_im = False
-                st.error(e)
+            IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N']
 
-    else:
-        with REcol1:
-            st.markdown("🔹 :blue[**Step 2.3**] Responsive element:", help="IUPAC authorized")
-            IUPAC = st.text_input("🔹 :blue[**Step 2.3**] Responsive element (IUPAC authorized):", value="GGGRNYYYCC",
-                                  label_visibility='collapsed')
+            if all(char in IUPAC_code for char in IUPAC):
+                isUIPAC = True
 
-        IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N']
+                sequences = generate_iupac_variants(IUPAC)
+                fasta_text = ""
+                for i, seq in enumerate(sequences):
+                    fasta_text += f">seq{i + 1}\n{seq}\n"
 
-        if all(char in IUPAC_code for char in IUPAC):
-            isUIPAC = True
+                try:
+                    matrix_text, buffer = im(fasta_text)
+                    error_input_im = True
+                except Exception as e:
+                    error_input_im = False
+                    st.error(e)
 
-            sequences = generate_iupac_variants(IUPAC)
-            fasta_text = ""
-            for i, seq in enumerate(sequences):
-                fasta_text += f">seq{i + 1}\n{seq}\n"
+            else:
+                isUIPAC = False
 
-            try:
-                matrix_text, buffer = im(fasta_text)
-                error_input_im = True
-            except Exception as e:
-                error_input_im = False
-                st.error(e)
+        # TSS entry
+        BSFcol1, BSFcol2, BSFcol3 = st.columns([2, 2, 1], gap="medium")
+        with BSFcol1:
+            st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
+                        help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
+            if 'upstream' not in st.session_state:
+                entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
+                                            -10000, 10000, 0, label_visibility="collapsed")
+            else:
+                entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
+                                            -10000, 10000, st.session_state['upstream'], label_visibility="collapsed")
 
-        else:
-            isUIPAC = False
+        # Threshold pvalue
 
-    # TSS entry
-    BSFcol1, BSFcol2, BSFcol3 = st.columns([2, 2, 1], gap="medium")
-    with BSFcol1:
-        st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
-                    help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
-        if 'upstream' not in st.session_state:
-            entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
-                                        -10000, 10000, 0, label_visibility="collapsed")
-        else:
-            entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
-                                        -10000, 10000, st.session_state['upstream'], label_visibility="collapsed")
+        with BSFcol2:
+            st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
+            threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0, 0.85, step=0.05,
+                                        label_visibility="collapsed")
+        with BSFcol3:
+            st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
+            calc_pvalue = st.checkbox('_p-value_')
 
-    # Threshold pvalue
-
-    with BSFcol2:
-        st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
-        threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0, 0.85, step=0.05,
-                                    label_visibility="collapsed")
-    with BSFcol3:
-        st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
-        calc_pvalue = st.checkbox('_p-value_')
-
-    # Run Responsive Elements finder
-    if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
-        with st.spinner("Finding responsive elements..."):
-            tis_value = int(entry_tis)
-            threshold = float(threshold_entry)
-            try:
-                if jaspar == 'JASPAR_ID':
-                    sequence_consensus_input = entry_sequence
-                    matrices = transform_matrix(matrix)
-                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-                else:
-                    if not isUIPAC:
-                        st.error("Please use IUPAC code for Responsive Elements")
-                    elif error_input_im:
-                        matrix_lines = matrix_text.split('\n')
-                        matrix = {}
-                        for line in matrix_lines:
-                            line = line.strip()
-                            if line:
-                                key, values = line.split('[', 1)
-                                values = values.replace(']', '').split()
-                                values = [float(value) for value in values]
-                                matrix[key.strip()] = values
+        # Run Responsive Elements finder
+        if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
+            with st.spinner("Finding responsive elements..."):
+                tis_value = int(entry_tis)
+                threshold = float(threshold_entry)
+                try:
+                    if jaspar == 'JASPAR_ID':
+                        sequence_consensus_input = entry_sequence
                         matrices = transform_matrix(matrix)
                         table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-            except Exception as e:
-                st.error(f"Error finding responsive elements: {str(e)}")
+                    else:
+                        if not isUIPAC:
+                            st.error("Please use IUPAC code for Responsive Elements")
+                        elif error_input_im:
+                            matrix_lines = matrix_text.split('\n')
+                            matrix = {}
+                            for line in matrix_lines:
+                                line = line.strip()
+                                if line:
+                                    key, values = line.split('[', 1)
+                                    values = values.replace(']', '').split()
+                                    values = [float(value) for value in values]
+                                    matrix[key.strip()] = values
+                            matrices = transform_matrix(matrix)
+                            table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                except Exception as e:
+                    st.error(f"Error finding responsive elements: {str(e)}")
 
-    # RE output
-    st.divider()
+        # RE output
+        st.divider()
 
-    if 'table2' in locals():
-        if len(table2) > 1:
-            current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            st.subheader(':blue[Results]')
+        if 'table2' in locals():
+            if len(table2) > 1:
+                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                st.subheader(':blue[Results]')
 
-            df = pd.DataFrame(table2[1:], columns=table2[0])
+                df = pd.DataFrame(table2[1:], columns=table2[0])
 
-            excel_file = io.BytesIO()
-            df.to_excel(excel_file, index=False, sheet_name='Sheet1')
-            excel_file.seek(0)
-            st.download_button("💾 Download table (.xlsx)", excel_file,
-                               file_name=f'Results_TFinder_{current_date_time}.xlsx',
-                               mime="application/vnd.ms-excel", key='download-excel')
+                excel_file = io.BytesIO()
+                df.to_excel(excel_file, index=False, sheet_name='Sheet1')
+                excel_file.seek(0)
+                st.download_button("💾 Download table (.xlsx)", excel_file,
+                                   file_name=f'Results_TFinder_{current_date_time}.xlsx',
+                                   mime="application/vnd.ms-excel", key='download-excel')
 
-            with st.form("Results"):
                 st.markdown('**Table**')
                 tablecol1, tablecol2 = st.columns([0.75, 0.25])
                 with tablecol1:
@@ -1018,5 +1018,5 @@ def aio_page():
                     submitted = st.form_submit_button("Send ✉")
                     if submitted:
                         email(excel_file, txt_output, email_receiver, body)
-        else:
-            st.error(f"No consensus sequence found with the specified threshold")
+            else:
+                st.error(f"No consensus sequence found with the specified threshold")
