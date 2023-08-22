@@ -968,7 +968,7 @@ def aio_page():
                                 values = [float(value) for value in values]
                                 matrix[key.strip()] = values
                 st.markdown("")
-                if st.button("**Click here to find motif in your sequences** 🔎 🧬", use_container_width=True):
+                if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True):
                     matrices = transform_matrix(matrix)
                     table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     st.session_state['table2'] = table2
