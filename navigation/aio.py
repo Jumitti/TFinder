@@ -124,6 +124,7 @@ def aio_page():
     def find_promoters(gene_ids, species, upstream, downstream):
         try:
             for gene_id in gene_ids:
+                time.sleep(1)
                 if gene_id.isdigit():
                     entrez_id = gene_id
                 else:
