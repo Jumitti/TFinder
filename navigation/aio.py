@@ -958,7 +958,7 @@ def aio_page():
         ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
         st.altair_chart(chart, theme=None, use_container_width=True)
 
-    try:
+    if 'table2' in locals():
         if len(table2) > 1:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
@@ -1005,5 +1005,3 @@ def aio_page():
                         email(excel_file, txt_output, email_receiver, body)
         else:
             st.error(f"No consensus sequence found with the specified threshold")
-    except NoResult:
-            print('no result')
