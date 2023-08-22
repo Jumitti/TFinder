@@ -975,9 +975,7 @@ def aio_page():
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
 
-    # RE output
     st.divider()
-
     if 'table2' in st.session_state:
         if len(st.session_state['table2']) > 1:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -1007,7 +1005,8 @@ def aio_page():
             st.markdown("")
             st.markdown('**Graph**',
                         help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-            position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
+            position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'],
+                                     horizontal=True)
 
             result_table_output(df)
 
@@ -1018,7 +1017,9 @@ def aio_page():
                 st.download_button("💾 Download table (.xlsx)", excel_file,
                                    file_name=f'Results_TFinder_{current_date_time}.xlsx',
                                    mime="application/vnd.ms-excel", key='download-excel')
-                email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉', label_visibility="collapsed")
+                email_receiver = st.text_input('Send results by email ✉',
+                                               value='Send results by email ✉',
+                                               label_visibility="collapsed")
                 if st.button("Send ✉"):
                     email(excel_file, txt_output, email_receiver, body)
         else:
