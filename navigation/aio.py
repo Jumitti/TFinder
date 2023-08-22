@@ -139,14 +139,13 @@ def aio_page():
 
                 gene_info = get_gene_info(entrez_id)
                 if gene_info != 'not_found':
-                    pass
+                    gene_name = gene_info['name']
+                    chraccver = gene_info['genomicinfo'][0]['chraccver']
+                    chrstart = gene_info['genomicinfo'][0]['chrstart']
+                    chrstop = gene_info['genomicinfo'][0]['chrstop']
+                    species_API = gene_info['organism']['scientificname']
                 else:
                     continue
-                gene_name = gene_info['name']
-                chraccver = gene_info['genomicinfo'][0]['chraccver']
-                chrstart = gene_info['genomicinfo'][0]['chrstart']
-                chrstop = gene_info['genomicinfo'][0]['chrstop']
-                species_API = gene_info['organism']['scientificname']
 
                 dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
 
