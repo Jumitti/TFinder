@@ -957,6 +957,17 @@ def aio_page():
     if 'table2' in locals():
         if len(table2) > 1:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+
+            if jaspar == 'PWM':
+                if matrix_type == 'With PWM':
+                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                if matrix_type == 'With FASTA sequences':
+                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+            elif jaspar == 'JASPAR_ID':
+                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+            elif jaspar == 'Manual sequence':
+                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+
             st.subheader(':blue[Results]')
 
             df = pd.DataFrame(table2[1:], columns=table2[0])
@@ -984,20 +995,10 @@ def aio_page():
             position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
 
             result_table_output(df)
+
             with tablecol2:
                 email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
                                                label_visibility='collapsed')
-
-            if jaspar == 'PWM':
-                if matrix_type == 'With PWM':
-                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                if matrix_type == 'With FASTA sequences':
-                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-            elif jaspar == 'JASPAR_ID':
-                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-            elif jaspar == 'Manual sequence':
-                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-
                 if st.button("Send ✉"):
                     email(excel_file, txt_output, email_receiver, body)
         else:
