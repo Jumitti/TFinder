@@ -143,8 +143,6 @@ def aio_page():
                 species_API = gene_info['organism']['scientificname']
 
                 dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
-                
-                st.toast(f'{gene_name} of {species_API} extracted', icon='😍')
 
                 st.toast(f'{prom_term} **{gene_name}** from **{species_API}** extracted', icon='🧬')
 
