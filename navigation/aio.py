@@ -878,7 +878,9 @@ def aio_page():
                 TF_species = response_data['species'][0]['name']
                 st.success(f"{TF_species} transcription factor {TF_name}")
                 matrix = response_data['pfm']
+                button = True
             except:
+                button = False
                 error_input_im = False
                 raise Exception('Wrong JASPAR_ID')
 
@@ -981,7 +983,6 @@ def aio_page():
             try:
                 if jaspar == 'JASPAR_ID':
                         sequence_consensus_input = entry_sequence
-                        button = False
                 else:
                     if not isUIPAC:
                         st.error("Please use IUPAC code for Responsive Elements")
