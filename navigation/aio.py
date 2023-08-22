@@ -606,7 +606,7 @@ def aio_page():
                 results_gene_list = []
                 data = []
                 for gene_input in gene_list:
-                    time.sleep(1)
+                    time.sleep(0.25)
                     if not gene_input.isdigit():
                         row = [gene_input]
 
@@ -1012,6 +1012,7 @@ def aio_page():
             position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
 
             result_table_output(df)
+
             with tablecol2:
                 with st.form("email"):
                     email_receiver = st.text_input('Send results by email ✉', value='Email',)
