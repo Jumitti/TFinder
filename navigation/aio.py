@@ -1018,5 +1018,6 @@ def aio_page():
                 submitted = st.button("Send ✉")
                 if submitted:
                     email(excel_file, txt_output, email_receiver, body)
+                    st.stop()
         else:
             st.error(f"No consensus sequence found with the specified threshold")
