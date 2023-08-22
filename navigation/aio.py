@@ -950,25 +950,23 @@ def aio_page():
             threshold = float(threshold_entry)
             try:
                 if jaspar == 'JASPAR_ID':
-                    sequence_consensus_input = entry_sequence
-                    matrices = transform_matrix(matrix)
-                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                        sequence_consensus_input = entry_sequence
                 else:
                     if not isUIPAC:
                         st.error("Please use IUPAC code for Responsive Elements")
                     elif error_input_im:
-                        if st.button("test", use_container_width=True):
-                            matrix_lines = matrix_text.split('\n')
-                            matrix = {}
-                            for line in matrix_lines:
-                                line = line.strip()
-                                if line:
-                                    key, values = line.split('[', 1)
-                                    values = values.replace(']', '').split()
-                                    values = [float(value) for value in values]
-                                    matrix[key.strip()] = values
-                            matrices = transform_matrix(matrix)
-                            table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                        matrix_lines = matrix_text.split('\n')
+                        matrix = {}
+                        for line in matrix_lines:
+                            line = line.strip()
+                            if line:
+                                key, values = line.split('[', 1)
+                                values = values.replace(']', '').split()
+                                values = [float(value) for value in values]
+                                matrix[key.strip()] = values
+                if st.button("test", use_container_width=True):
+                    matrices = transform_matrix(matrix)
+                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
 
