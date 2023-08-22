@@ -1005,5 +1005,5 @@ def aio_page():
                         email(excel_file, txt_output, email_receiver, body)
         else:
             st.error(f"No consensus sequence found with the specified threshold")
-    finally:
+    except NoResult:
             print('no result')
