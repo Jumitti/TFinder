@@ -133,7 +133,7 @@ def aio_page():
                         continue
 
                 gene_info = get_gene_info(entrez_id)
-                if 'chraccver' in gene_info:
+                if 'chraccver' in str(gene_info):
                     gene_name = gene_info['name']
                     chraccver = gene_info['genomicinfo'][0]['chraccver']
                     chrstart = gene_info['genomicinfo'][0]['chrstart']
