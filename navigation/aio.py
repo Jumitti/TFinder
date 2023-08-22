@@ -623,7 +623,8 @@ def aio_page():
                                     row.append("❌")
 
                         data.append(row)
-                    if gene_input.disgit():
+
+                    if gene_input.isdigit():
                         gene_id = gene_input
                         gene_info = get_gene_info(gene_id)
                         if not 'chraccver' in str(gene_info):
