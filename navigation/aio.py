@@ -998,9 +998,11 @@ def aio_page():
 
             result_table_output(df)
             with tablecol2:
-                email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
+                with st.form("email"):
+                    email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
                                                label_visibility='collapsed')
-                if st.button("Send ✉"):
-                    email(excel_file, txt_output, email_receiver, body)
+                    submitted = st.form_submit_button("Send ✉")
+                    if submitted:
+                        email(excel_file, txt_output, email_receiver, body)
         else:
             st.error(f"No consensus sequence found with the specified threshold")
