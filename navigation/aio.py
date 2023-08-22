@@ -611,6 +611,7 @@ def aio_page():
                         row = [gene_input]
 
                         for species_test in species_list:
+                            time.sleep(0.5)
                             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
                             response = requests.get(url)
 
