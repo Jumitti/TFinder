@@ -570,6 +570,9 @@ def aio_page():
         color_scale = alt.Color("Gene_Region:N", scale=scale)
         gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
 
+        if 'p-value' in source:
+            ispvalue = True
+
         chart = alt.Chart(source).mark_circle().encode(
             x=alt.X('Rel Position:Q' if position_type == 'From TSS/gene end' else 'Position:Q',
                     axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
@@ -577,7 +580,7 @@ def aio_page():
                     scale=alt.Scale(domain=[ystart, ystop])),
             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
             tooltip=['Rel Position' if position_type == 'From TSS/gene end' else 'Position', 'Rel Score'] + (
-                ['p-value'] if calc_pvalue else []) + ['Sequence', 'Gene', 'Species', 'Region'],
+                ['p-value'] if 'p-value' in source else []) + ['Sequence', 'Gene', 'Species', 'Region'],
             opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
         ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
         st.altair_chart(chart, theme=None, use_container_width=True)
