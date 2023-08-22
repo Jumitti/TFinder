@@ -974,7 +974,7 @@ def aio_page():
     # RE output
     st.divider()
 
-    if 'table2' in session_state():
+    if 'table2' in st.session_state:
         if len(st.session_state['table2']) > 1:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
