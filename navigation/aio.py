@@ -884,7 +884,7 @@ def aio_page():
     # RE output
     st.divider()
 
-    def email(excel_file, txt_output, email_receiver, body, jaspar, matrix_type):
+    def email(excel_file, txt_output, email_receiver, jaspar, matrix_type):
         try:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             subject = f'Results TFinder - {current_date_time}'
@@ -1001,6 +1001,6 @@ def aio_page():
                 email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
                                                label_visibility='collapsed')
                 if st.button("Send ✉"):
-                    email(excel_file, txt_output, email_receiver, body, jaspar, matrix_type)
+                    email(excel_file, txt_output, email_receiver, jaspar, matrix_type)
         else:
             st.error(f"No consensus sequence found with the specified threshold")
