@@ -41,7 +41,6 @@ import datetime
 import matplotlib.pyplot as plt
 from PIL import Image
 import time
-from navigation.result_output import email, result_table_output
 
 
 def aio_page():
@@ -509,7 +508,7 @@ def aio_page():
         else:
             raise Exception(f"You forget FASTA sequences :)")
 
-    '''def email(excel_file, txt_output, email_receiver, body):
+    def email(excel_file, txt_output, email_receiver, body):
         try:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             subject = f'Results TFinder - {current_date_time}'
@@ -584,7 +583,7 @@ def aio_page():
                 ['p-value'] if 'p-value' in source else []) + ['Sequence', 'Gene', 'Species', 'Region'],
             opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
         ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
-        st.altair_chart(chart, theme=None, use_container_width=True)'''
+        st.altair_chart(chart, theme=None, use_container_width=True)
 
     # Disposition
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
@@ -1022,6 +1021,6 @@ def aio_page():
                                                value='Send results by email ✉',
                                                label_visibility="collapsed")
                 if st.button("Send ✉"):
-                    email(excel_file, txt_output, email_receiver, body, jaspar, matrix_type)
+                    email(excel_file, txt_output, email_receiver, body)
         else:
             st.error(f"No consensus sequence found with the specified threshold")
