@@ -602,9 +602,9 @@ def aio_page():
         position_switch = alt.Chart(
             {'Position Type': ['Beginning of sequences', 'From TSS/gene end']}).mark_text().encode(
             text='Position Type:N',
-            opacity=alt.condition(x_axis_selector, alt.value(1), alt.value(0.4)),
+            opacity=alt.condition(dropdown, alt.value(1), alt.value(0.4)),
             size=alt.value(14)
-        ).add_selection(x_axis_selector)
+        ).add_selection(dropdown)
 
         # Empilez verticalement le sélecteur et le graphique
         stacked_chart = alt.vconcat(position_switch, chart)
