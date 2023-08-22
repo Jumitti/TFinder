@@ -40,6 +40,7 @@ import base64
 import datetime
 import matplotlib.pyplot as plt
 from PIL import Image
+import time
 
 
 def aio_page():
@@ -605,6 +606,7 @@ def aio_page():
                 results_gene_list = []
                 data = []
                 for gene_input in gene_list:
+                    time.sleep(1)
                     if not gene_input.isdigit():
                         row = [gene_input]
 
