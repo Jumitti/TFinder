@@ -970,9 +970,13 @@ def aio_page():
             try:
                 if jaspar == 'JASPAR_ID':
                         sequence_consensus_input = entry_sequence
+                        button = False
                 else:
                     if not isUIPAC:
                         st.error("Please use IUPAC code for Responsive Elements")
+                        button = True
+                    elif not error_input_im:
+                        button = True
                     elif error_input_im:
                         matrix_lines = matrix_text.split('\n')
                         matrix = {}
@@ -983,8 +987,9 @@ def aio_page():
                                 values = values.replace(']', '').split()
                                 values = [float(value) for value in values]
                                 matrix[key.strip()] = values
+                        button = False
                 st.markdown("")
-                if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True):
+                if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
                     matrices = transform_matrix(matrix)
                     table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                     st.session_state['table2'] = table2
