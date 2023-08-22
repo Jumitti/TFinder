@@ -979,46 +979,45 @@ def aio_page():
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
 
-            df = pd.DataFrame(table2[1:], columns=table2[0])
-            st.session_state['df'] = df
-            st.markdown('**Table**')
+            with st.form("Results"):
+                df = pd.DataFrame(table2[1:], columns=table2[0])
+                st.session_state['df'] = df
+                st.markdown('**Table**')
 
-            tablecol1, tablecol2 = st.columns([0.75, 0.25])
-            with tablecol1:
-                st.dataframe(df, hide_index=True)
+                tablecol1, tablecol2 = st.columns([0.75, 0.25])
+                with tablecol1:
+                    st.dataframe(df, hide_index=True)
 
-            with tablecol2:
-                st.success(f"Finding responsive elements done !")
-                if jaspar == 'PWM':
-                    if matrix_type == 'With PWM':
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                    if matrix_type == 'With FASTA sequences':
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                elif jaspar == 'JASPAR_ID':
-                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                else:
-                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                with tablecol2:
+                    st.success(f"Finding responsive elements done !")
+                    if jaspar == 'PWM':
+                        if matrix_type == 'With PWM':
+                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                        if matrix_type == 'With FASTA sequences':
+                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                    elif jaspar == 'JASPAR_ID':
+                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                    else:
+                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
 
-            excel_file = io.BytesIO()
-            df.to_excel(excel_file, index=False, sheet_name='Sheet1')
-            excel_file.seek(0)
+                excel_file = io.BytesIO()
+                df.to_excel(excel_file, index=False, sheet_name='Sheet1')
+                excel_file.seek(0)
 
-            st.download_button("💾 Download table (.xlsx)", excel_file,
-                               file_name=f'Results_TFinder_{current_date_time}.xlsx',
-                               mime="application/vnd.ms-excel", key='download-excel')
+                st.download_button("💾 Download table (.xlsx)", excel_file,
+                                   file_name=f'Results_TFinder_{current_date_time}.xlsx',
+                                   mime="application/vnd.ms-excel", key='download-excel')
 
-            st.markdown("")
-            st.markdown('**Graph**',
-                        help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-            position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
+                st.markdown("")
+                st.markdown('**Graph**',
+                            help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
+                position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
 
-            result_table_output(df)
+                result_table_output(df)
 
-            with tablecol2:
-                with st.form("email"):
-                    email_receiver = st.text_input('Send results by email ✉', value='Email',)
-                    submitted = st.form_submit_button("Send ✉")
-                    if submitted:
+                with tablecol2:
+                    email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉', label_visibility="collapsed")
+                    if st.button("Send ✉"):
                         email(excel_file, txt_output, email_receiver, body)
         else:
             st.error(f"No consensus sequence found with the specified threshold")
