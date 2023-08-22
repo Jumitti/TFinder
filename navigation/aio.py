@@ -40,6 +40,7 @@ import base64
 import datetime
 import matplotlib.pyplot as plt
 from PIL import Image
+import time
 
 
 def aio_page():
@@ -123,6 +124,7 @@ def aio_page():
     def find_promoters(gene_ids, species, upstream, downstream):
         try:
             for gene_id in gene_ids:
+                time.sleep(1)
                 if gene_id.isdigit():
                     entrez_id = gene_id
                 else:
@@ -552,7 +554,7 @@ def aio_page():
         except smtplib.SMTPServerDisconnected:
             st.toast("Failed to connect to the SMTP server. Please check your internet connection.")
         except smtplib.SMTPRecipientsRefused:
-            st.toast(f"Error sending email: {email_receiver}")
+            st.toast(f"Error sending email to {email_receiver}")
         except smtplib.SMTPException as e:
             st.toast(f"Error sending email: {e}")
         except Exception as e:
@@ -568,6 +570,9 @@ def aio_page():
         color_scale = alt.Color("Gene_Region:N", scale=scale)
         gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
 
+        if 'p-value' in source:
+            ispvalue = True
+
         chart = alt.Chart(source).mark_circle().encode(
             x=alt.X('Rel Position:Q' if position_type == 'From TSS/gene end' else 'Position:Q',
                     axis=alt.Axis(title='Relative position (bp)'), sort='ascending'),
@@ -575,7 +580,7 @@ def aio_page():
                     scale=alt.Scale(domain=[ystart, ystop])),
             color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
             tooltip=['Rel Position' if position_type == 'From TSS/gene end' else 'Position', 'Rel Score'] + (
-                ['p-value'] if calc_pvalue else []) + ['Sequence', 'Gene', 'Species', 'Region'],
+                ['p-value'] if 'p-value' in source else []) + ['Sequence', 'Gene', 'Species', 'Region'],
             opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
         ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
         st.altair_chart(chart, theme=None, use_container_width=True)
@@ -605,10 +610,12 @@ def aio_page():
                 results_gene_list = []
                 data = []
                 for gene_input in gene_list:
+                    time.sleep(0.25)
                     if not gene_input.isdigit():
                         row = [gene_input]
 
                         for species_test in species_list:
+                            time.sleep(0.5)
                             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
                             response = requests.get(url)
 
@@ -621,6 +628,12 @@ def aio_page():
                                     row.append("❌")
 
                         data.append(row)
+
+                    if gene_input.isdigit():
+                        gene_id = gene_input
+                        gene_info = get_gene_info(gene_id)
+                        if not 'chraccver' in str(gene_info):
+                            st.error(f'Please verify ID of {gene_id}')
 
                 species_columns = ['Gene'] + species_list
                 df = pd.DataFrame(data, columns=species_columns)
@@ -940,9 +953,7 @@ def aio_page():
             threshold = float(threshold_entry)
             try:
                 if jaspar == 'JASPAR_ID':
-                    sequence_consensus_input = entry_sequence
-                    matrices = transform_matrix(matrix)
-                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                        sequence_consensus_input = entry_sequence
                 else:
                     if not isUIPAC:
                         st.error("Please use IUPAC code for Responsive Elements")
@@ -956,58 +967,60 @@ def aio_page():
                                 values = values.replace(']', '').split()
                                 values = [float(value) for value in values]
                                 matrix[key.strip()] = values
-                        matrices = transform_matrix(matrix)
-                        table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                st.markdown("")
+                if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True):
+                    matrices = transform_matrix(matrix)
+                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
+                    st.session_state['table2'] = table2
             except Exception as e:
                 st.error(f"Error finding responsive elements: {str(e)}")
 
-    # RE output
     st.divider()
-
-    if 'table2' in locals():
-        if len(table2) > 1:
+    if 'table2' in st.session_state:
+        if len(st.session_state['table2']) > 1:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
 
-            df = pd.DataFrame(table2[1:], columns=table2[0])
+            df = pd.DataFrame(st.session_state['table2'][1:], columns=st.session_state['table2'][0])
             st.session_state['df'] = df
-            st.markdown('**Table**')
 
+            st.markdown('**Table**')
             tablecol1, tablecol2 = st.columns([0.75, 0.25])
             with tablecol1:
                 st.dataframe(df, hide_index=True)
 
             with tablecol2:
                 st.success(f"Finding responsive elements done !")
-                if jaspar == 'PWM':
-                    if matrix_type == 'With PWM':
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                    if matrix_type == 'With FASTA sequences':
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                elif jaspar == 'JASPAR_ID':
-                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                else:
-                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
 
-            excel_file = io.BytesIO()
-            df.to_excel(excel_file, index=False, sheet_name='Sheet1')
-            excel_file.seek(0)
-
-            st.download_button("💾 Download table (.xlsx)", excel_file,
-                               file_name=f'Results_TFinder_{current_date_time}.xlsx',
-                               mime="application/vnd.ms-excel", key='download-excel')
+            if jaspar == 'PWM':
+                if matrix_type == 'With PWM':
+                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                if matrix_type == 'With FASTA sequences':
+                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+            elif jaspar == 'JASPAR_ID':
+                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+            else:
+                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
 
             st.markdown("")
             st.markdown('**Graph**',
                         help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-            position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'], horizontal=True)
+            position_type = st.radio('X axis', ['From beginning of sequence', 'From TSS/gene end'],
+                                     horizontal=True)
 
             result_table_output(df)
+
             with tablecol2:
-                with st.form("email"):
-                    email_receiver = st.text_input('Send results by email ✉', value='Email',)
-                    submitted = st.form_submit_button("Send ✉")
-                    if submitted:
-                        email(excel_file, txt_output, email_receiver, body)
+                excel_file = io.BytesIO()
+                df.to_excel(excel_file, index=False, sheet_name='Sheet1')
+                excel_file.seek(0)
+                st.download_button("💾 Download table (.xlsx)", excel_file,
+                                   file_name=f'Results_TFinder_{current_date_time}.xlsx',
+                                   mime="application/vnd.ms-excel", key='download-excel')
+                email_receiver = st.text_input('Send results by email ✉',
+                                               value='Send results by email ✉',
+                                               label_visibility="collapsed")
+                if st.button("Send ✉"):
+                    email(excel_file, txt_output, email_receiver, body)
         else:
             st.error(f"No consensus sequence found with the specified threshold")
