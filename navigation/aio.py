@@ -554,7 +554,7 @@ def aio_page():
         except smtplib.SMTPServerDisconnected:
             st.toast("Failed to connect to the SMTP server. Please check your internet connection.")
         except smtplib.SMTPRecipientsRefused:
-            st.toast(f"Error sending email: {email_receiver}")
+            st.toast(f"Error sending email to {email_receiver}")
         except smtplib.SMTPException as e:
             st.toast(f"Error sending email: {e}")
         except Exception as e:
