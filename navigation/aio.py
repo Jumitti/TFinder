@@ -990,13 +990,6 @@ def aio_page():
             with tablecol2:
                 st.success(f"Finding responsive elements done !")
 
-                excel_file = io.BytesIO()
-                df.to_excel(excel_file, index=False, sheet_name='Sheet1')
-                excel_file.seek(0)
-                st.download_button("💾 Download table (.xlsx)", excel_file,
-                                   file_name=f'Results_TFinder_{current_date_time}.xlsx',
-                                   mime="application/vnd.ms-excel", key='download-excel')
-
             if jaspar == 'PWM':
                 if matrix_type == 'With PWM':
                     body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
@@ -1015,6 +1008,12 @@ def aio_page():
             result_table_output(df)
 
             with tablecol2:
+                excel_file = io.BytesIO()
+                df.to_excel(excel_file, index=False, sheet_name='Sheet1')
+                excel_file.seek(0)
+                st.download_button("💾 Download table (.xlsx)", excel_file,
+                                   file_name=f'Results_TFinder_{current_date_time}.xlsx',
+                                   mime="application/vnd.ms-excel", key='download-excel')
                 email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉', label_visibility="collapsed")
                 submitted = st.button("Send ✉")
                 if submitted:
