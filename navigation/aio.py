@@ -884,23 +884,12 @@ def aio_page():
     # RE output
     st.divider()
 
-    def email(excel_file, txt_output, email_receiver, jaspar, matrix_type):
+    def email(excel_file, email_receiver, body):
         try:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             subject = f'Results TFinder - {current_date_time}'
             email_sender = st.secrets['sender']
             password = st.secrets['password']
-
-            if jaspar == 'PWM':
-                if matrix_type == 'With PWM':
-                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                if matrix_type == 'With FASTA sequences':
-                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-            elif jaspar == 'JASPAR_ID':
-                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-            elif jaspar == 'Manual sequence':
-                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-
 
             msg = MIMEMultipart()
             msg['From'] = email_sender
@@ -916,12 +905,11 @@ def aio_page():
                                         filename=f'Results_TFinder_{current_date_time}.xlsx')
             msg.attach(attachment_excel)
 
-            attachment_text = MIMEText(txt_output, 'plain', 'utf-8')
-            attachment_text.add_header('Content-Disposition', 'attachment',
-                                       filename=f'Sequences_{current_date_time}.fasta')
-            msg.attach(attachment_text)
-
-            if matrix_type == 'With FASTA sequences' or jaspar == 'Manual sequence':
+            if jaspar == 'PWM':
+                if matrix_type == 'With FASTA sequences':
+                    image = MIMEImage(st.session_state['buffer'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
+                    msg.attach(image)
+            elif jaspar == 'Manual sequence':
                 image = MIMEImage(st.session_state['buffer'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
                 msg.attach(image)
 
@@ -968,7 +956,6 @@ def aio_page():
     if 'table2' in locals():
         if len(table2) > 1:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-
             st.subheader(':blue[Results]')
 
             df = pd.DataFrame(table2[1:], columns=table2[0])
@@ -981,6 +968,15 @@ def aio_page():
 
             with tablecol2:
                 st.success(f"Finding responsive elements done !")
+                if jaspar == 'PWM':
+                    if matrix_type == 'With PWM':
+                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                    if matrix_type == 'With FASTA sequences':
+                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                elif jaspar == 'JASPAR_ID':
+                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                else:
+                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
 
             excel_file = io.BytesIO()
             df.to_excel(excel_file, index=False, sheet_name='Sheet1')
@@ -1001,6 +997,6 @@ def aio_page():
                 email_receiver = st.text_input('Send results by email ✉', value='Send results by email ✉',
                                                label_visibility='collapsed')
                 if st.button("Send ✉"):
-                    email(excel_file, txt_output, email_receiver, jaspar, matrix_type)
+                    email(excel_file, email_receiver, body)
         else:
             st.error(f"No consensus sequence found with the specified threshold")
