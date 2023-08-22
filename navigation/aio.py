@@ -577,14 +577,8 @@ def aio_page():
         color_scale = alt.Color("Gene_Region:N", scale=scale)
         gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
 
-        dropdown = alt.binding_select(
-            options=['Beginning of sequences', 'From TSS/gene end'],
-            name='(X-axis) Position (bp) from:'
-        )
-        xcol_param = alt.param(
-            value='Beginning of sequences',
-            bind=dropdown
-        )
+        dropdown = alt.binding_select(options=['Beginning of sequences', 'From TSS/gene end'], name='(X-axis) Position from:')
+        xcol_param = alt.param(value='Beginning of sequences', bind=dropdown)
 
         if 'p-value' in source:
             ispvalue = True
