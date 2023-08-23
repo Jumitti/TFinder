@@ -351,6 +351,10 @@ def aio_page():
 
                     # Creating a results table
                     if len(found_positions) > 0:
+                        highest_normalized_score = max(
+                            [normalized_score for _, _, normalized_score, _ in found_positions])
+                        threshold = highest_normalized_score - 0.10
+
                         for position, seq, normalized_score, p_value in found_positions:
                             start_position = max(0, position - 3)
                             end_position = min(len(promoter_region), position + len(seq) + 3)
@@ -1013,6 +1017,7 @@ def aio_page():
     st.markdown("")
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
         if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
+
             with st.spinner("Finding responsive elements..."):
                 matrices = transform_matrix(matrix)
                 table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
