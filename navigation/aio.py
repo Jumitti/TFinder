@@ -266,9 +266,9 @@ def aio_page():
                 else:
                     i += 1
 
-        st.write(len(promoters))
+        st.write(len(matrices.items()))
 
-        total_iterations = len(matrices.items())
+        total_iterations = len(matrices.items())*len(promoters)
 
         with tqdm(total=total_iterations, desc='Calculating scores', mininterval=1) as pbar:
 
