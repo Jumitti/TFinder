@@ -308,7 +308,7 @@ def aio_page():
 
                     # Calculation of random scores from the different matrices
                     random_scores = {}
-
+            found_positions = []
             for matrix_name, matrix in matrices.items():
                 seq_length = len(matrix['A'])
 
@@ -318,7 +318,7 @@ def aio_page():
 
                 # REF
                 for shortened_promoter_name, promoter_region, found_species, region in promoters:
-                    found_positions = []
+
 
                     if calc_pvalue:
 
