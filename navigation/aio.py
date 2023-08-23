@@ -883,6 +883,7 @@ def aio_page():
 
     total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
     total_promoter = len(promoters)
+    print(len(promoters))
 
     # RE entry
     REcol1, REcol2 = st.columns([0.30, 0.70])
