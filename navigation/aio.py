@@ -41,6 +41,8 @@ import datetime
 import matplotlib.pyplot as plt
 from PIL import Image
 import time
+from tqdm import tqdm
+from stqdm import stqdm
 
 
 def aio_page():
@@ -220,145 +222,127 @@ def aio_page():
         return
 
     # Find with JASPAR and manual matrix
-    def search_sequence(threshold, tis_value, result_promoter, matrices):
+    def search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length):
         global table2
         table2 = []
-    
-        # Promoter input type
-        lines = result_promoter
-        promoters = []
-        if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
-            promoter_region = lines.upper()
-            isdna(promoter_region)
-            shortened_promoter_name = "n.d."
-            found_species = "n.d"
-            region = "n.d"
-            promoters.append((shortened_promoter_name, promoter_region, found_species, region))
-        elif lines.startswith(">"):
-            lines = result_promoter.split("\n")
-            i = 0
-            while i < len(lines):
-                line = lines[i]
-                if line.startswith(">"):
-                    species_prom = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster',
-                                    'Danio rerio']
-                    promoter_name = line[1:]
-                    words = promoter_name.lstrip('>').split()
-                    shortened_promoter_name = words[0]
-                    for species in species_prom:
-                        if species.lower() in promoter_name.lower():
-                            found_species = species
-                            break
-                        else:
-                            found_species = "n.d"
-                    regions_prom = ['Promoter', 'Terminator']
-                    for regions in regions_prom:
-                        if regions.lower() in promoter_name.lower():
-                            region = regions[:4] + "."
-                            break
-                        else:
-                            region = "n.d"
-                    promoter_region = lines[i + 1].upper()
-                    isdna(promoter_region)
-                    promoters.append((shortened_promoter_name, promoter_region, found_species, region))
-                    i += 1
-                else:
-                    i += 1
-
-        if calc_pvalue:
-            for matrix_name, matrix in matrices.items():
-                seq_length = len(matrix['A'])
-
-            for shortened_promoter_name, promoter_region, found_species, region in promoters:
-
-                # Generate random sequences
-                motif_length = seq_length
-                num_random_seqs = 1000000
-
-                count_a = promoter_region.count('A')
-                count_t = promoter_region.count('T')
-                count_g = promoter_region.count('G')
-                count_c = promoter_region.count('C')
-
-                length_prom = len(promoter_region)
-                percentage_a = count_a / length_prom
-                percentage_t = count_t / length_prom
-                percentage_g = count_g / length_prom
-                percentage_c = count_c / length_prom
-
-                probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
-
-                random_sequences = []
-                for _ in range(num_random_seqs):
-                    random_sequence = generate_random_sequence(motif_length, probabilities)
-                    random_sequences.append(random_sequence)
-
-                # Calculation of random scores from the different matrices
-                random_scores = {}
 
         for matrix_name, matrix in matrices.items():
             seq_length = len(matrix['A'])
 
-            # Max score per matrix
-            max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-            min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+        sequence_iteration = len(matrices.items()) * total_promoter_region_length
+        random_gen = len(promoters) * 1000000
+        random_score = random_gen * len(matrices.items())
 
-            # REF
-            for shortened_promoter_name, promoter_region, found_species, region in promoters:
-                found_positions = []
+        if calc_pvalue:
+            total_iterations = sequence_iteration + random_gen + random_score
+        else:
+            total_iterations = sequence_iteration
 
-                if calc_pvalue:
+        with stqdm(total=total_iterations, desc='Calculating scores', mininterval=0.1) as pbar:
 
-                    matrix_random_scores = []
-                    for random_sequence in random_sequences:
-                        random_score = calculate_score(random_sequence, matrix)
-                        normalized_random_score = (random_score - min_score) / (max_score - min_score)
-                        matrix_random_scores.append(normalized_random_score)
+            if calc_pvalue:
+                for shortened_promoter_name, promoter_region, found_species, region in promoters:
 
-                    random_scores = np.array(matrix_random_scores)
+                    # Generate random sequences
+                    motif_length = seq_length
+                    num_random_seqs = 1000000
 
-                for i in range(len(promoter_region) - seq_length + 1):
-                    seq = promoter_region[i:i + seq_length]
-                    score = calculate_score(seq, matrix)
-                    normalized_score = (score - min_score) / (max_score - min_score)
-                    position = int(i)
+                    count_a = promoter_region.count('A')
+                    count_t = promoter_region.count('T')
+                    count_g = promoter_region.count('G')
+                    count_c = promoter_region.count('C')
+
+                    length_prom = len(promoter_region)
+                    percentage_a = count_a / length_prom
+                    percentage_t = count_t / length_prom
+                    percentage_g = count_g / length_prom
+                    percentage_c = count_c / length_prom
+
+                    probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
+
+                    random_sequences = []
+                    for _ in range(num_random_seqs):
+                        random_sequence = generate_random_sequence(motif_length, probabilities)
+                        random_sequences.append(random_sequence)
+                        pbar.update(1)
+
+                    # Calculation of random scores from the different matrices
+                    random_scores = {}
+
+            for matrix_name, matrix in matrices.items():
+                seq_length = len(matrix['A'])
+
+                # Max score per matrix
+                max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+
+                # REF
+                for shortened_promoter_name, promoter_region, found_species, region in promoters:
+                    found_positions = []
 
                     if calc_pvalue:
-                        p_value = (random_scores >= normalized_score).sum() / num_random_seqs
-                    else:
-                        p_value = 0
 
-                    found_positions.append((position, seq, normalized_score, p_value))
+                        matrix_random_scores = []
+                        for random_sequence in random_sequences:
+                            sequence = random_sequence
+                            random_score = calculate_score(sequence, matrix)
+                            normalized_random_score = (random_score - min_score) / (max_score - min_score)
+                            matrix_random_scores.append(normalized_random_score)
+                            pbar.update(1)
 
-                # Sort positions in descending order of score percentage
-                found_positions.sort(key=lambda x: x[1], reverse=True)
+                        random_scores = np.array(matrix_random_scores)
 
-                # Creating a results table
-                if len(found_positions) > 0:
-                    for position, seq, normalized_score, p_value in found_positions:
-                        start_position = max(0, position - 3)
-                        end_position = min(len(promoter_region), position + len(seq) + 3)
-                        sequence_with_context = promoter_region[start_position:end_position]
+                    for i in range(len(promoter_region) - seq_length + 1):
+                        seq = promoter_region[i:i + seq_length]
+                        score = calculate_score(seq, matrix)
+                        normalized_score = (score - min_score) / (max_score - min_score)
+                        position = int(i)
 
-                        sequence_parts = []
-                        for j in range(start_position, end_position):
-                            if j < position or j >= position + len(seq):
-                                sequence_parts.append(sequence_with_context[j - start_position].lower())
+                        if calc_pvalue:
+                            p_value = (random_scores >= normalized_score).sum() / num_random_seqs
+                        else:
+                            p_value = 0
+
+                        found_positions.append((position, seq, normalized_score, p_value))
+                        pbar.update(1)
+
+                    # Sort positions in descending order of score percentage
+                    found_positions.sort(key=lambda x: x[1], reverse=True)
+
+                    # Creating a results table
+                    if len(found_positions) > 0:
+                        if auto_thre:
+                            highest_normalized_score = max(
+                                [normalized_score for _, _, normalized_score, _ in found_positions])
+                            if highest_normalized_score >= 0.6:
+                                threshold = highest_normalized_score - 0.10
                             else:
-                                sequence_parts.append(sequence_with_context[j - start_position].upper())
+                                threshold = 0.5
 
-                        sequence_with_context = ''.join(sequence_parts)
-                        tis_position = position - tis_value
+                        for position, seq, normalized_score, p_value in found_positions:
+                            start_position = max(0, position - 3)
+                            end_position = min(len(promoter_region), position + len(seq) + 3)
+                            sequence_with_context = promoter_region[start_position:end_position]
 
-                        if normalized_score >= threshold:
-                            row = [str(position).ljust(8),
-                                   str(tis_position).ljust(15),
-                                   sequence_with_context,
-                                   "{:.6f}".format(normalized_score).ljust(12)]
-                            if calc_pvalue:
-                                row.append("{:.3e}".format(p_value).ljust(12))
-                            row += [shortened_promoter_name, found_species, region]
-                            table2.append(row)
+                            sequence_parts = []
+                            for j in range(start_position, end_position):
+                                if j < position or j >= position + len(seq):
+                                    sequence_parts.append(sequence_with_context[j - start_position].lower())
+                                else:
+                                    sequence_parts.append(sequence_with_context[j - start_position].upper())
+
+                            sequence_with_context = ''.join(sequence_parts)
+                            tis_position = position - tis_value
+
+                            if normalized_score >= threshold:
+                                row = [str(position).ljust(8),
+                                       str(tis_position).ljust(15),
+                                       sequence_with_context,
+                                       "{:.6f}".format(normalized_score).ljust(12)]
+                                if calc_pvalue:
+                                    row.append("{:.3e}".format(p_value).ljust(12))
+                                row += [shortened_promoter_name, found_species, region]
+                                table2.append(row)
 
         if len(table2) > 0:
             table2.sort(key=lambda x: float(x[3]), reverse=True)
@@ -652,188 +636,185 @@ def aio_page():
         tab1, tab2 = st.tabs(['Default', 'Advance'])
 
         with tab1:
-            with st.form("Default"):
+            # Species
+            st.markdown("🔹 :blue[**Step 1.2**] Select species of gene names:")
+            species = st.selectbox("🔹 :blue[**Step 1.2**] Select species of gene names:",
+                                   ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0,
+                                   label_visibility='collapsed')
 
-                # Species
-                st.markdown("🔹 :blue[**Step 1.2**] Select species of gene names:")
-                species = st.selectbox("🔹 :blue[**Step 1.2**] Select species of gene names:",
-                                       ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0,
-                                       label_visibility='collapsed')
+            # Upstream/Downstream Promoter
+            st.markdown("🔹 :blue[**Step 1.3**] Regulatory region:")
+            prom_term = st.radio("🔹 :blue[**Step 1.3**] Regulatory region:", ('Promoter', 'Terminator'),
+                                 label_visibility='collapsed')
+            if prom_term == 'Promoter':
+                st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from the TSS (bp)")
+            else:
+                st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from gene end (bp)")
 
-                # Upstream/Downstream Promoter
-                st.markdown("🔹 :blue[**Step 1.3**] Regulatory region:")
-                prom_term = st.radio("🔹 :blue[**Step 1.3**] Regulatory region:", ('Promoter', 'Terminator'),
-                                     label_visibility='collapsed')
-                if prom_term == 'Promoter':
-                    st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from the TSS (bp)")
-                else:
-                    st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from gene end (bp)")
+            updown_slide = st.slider("🔹 :blue[**Step 1.4**] Upstream/downstream", -10000, 10000,
+                                     (-2000, 2000), step=100, label_visibility='collapsed')
+            if prom_term == 'Promoter':
+                st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide),
+                         " bp from TSS")
+            else:
+                st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide),
+                         " bp from gene end")
 
-                updown_slide = st.slider("🔹 :blue[**Step 1.4**] Upstream/downstream", -10000, 10000,
-                                         (-2000, 2000), step=100, label_visibility='collapsed')
-                if prom_term == 'Promoter':
-                    st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide),
-                             " bp from TSS")
-                else:
-                    st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide),
-                             " bp from gene end")
+            upstream_entry = -min(updown_slide)
+            downstream_entry = max(updown_slide)
 
-                upstream_entry = -min(updown_slide)
-                downstream_entry = max(updown_slide)
-
-                # Run Promoter Finder
-                if st.form_submit_button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
-                    with colprom1:
-                        with st.spinner("Finding promoters..."):
-                            gene_ids = gene_id_entry.strip().split("\n")
-                            upstream = int(upstream_entry)
-                            st.session_state['upstream'] = upstream
-                            downstream = int(downstream_entry)
-                            try:
-                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                                st.success(f"{prom_term} extraction complete !")
-                                st.toast(f"{prom_term} extraction complete !", icon='😊')
-                            except Exception as e:
-                                st.error(f"Error finding {prom_term}: {str(e)}")
+            # Run Promoter Finder
+            if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
+                with colprom1:
+                    with st.spinner("Finding promoters..."):
+                        gene_ids = gene_id_entry.strip().split("\n")
+                        upstream = int(upstream_entry)
+                        st.session_state['upstream'] = upstream
+                        downstream = int(downstream_entry)
+                        try:
+                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            st.success(f"{prom_term} extraction complete !")
+                            st.toast(f"{prom_term} extraction complete !", icon='😊')
+                        except Exception as e:
+                            st.error(f"Error finding {prom_term}: {str(e)}")
 
         with tab2:
-            with st.form("Advance"):
-                # Advance mode extraction
-                data_df = pd.DataFrame(
-                    {
-                        "Gene": gene_list,
-                        "human": [False] * len(gene_list),
-                        "mouse": [False] * len(gene_list),
-                        "rat": [False] * len(gene_list),
-                        "drosophila": [False] * len(gene_list),
-                        "zebrafish": [False] * len(gene_list),
-                        "promoter": [False] * len(gene_list),
-                        "terminator": [False] * len(gene_list),
-                    }
-                )
+            # Advance mode extraction
+            data_df = pd.DataFrame(
+                {
+                    "Gene": gene_list,
+                    "human": [False] * len(gene_list),
+                    "mouse": [False] * len(gene_list),
+                    "rat": [False] * len(gene_list),
+                    "drosophila": [False] * len(gene_list),
+                    "zebrafish": [False] * len(gene_list),
+                    "promoter": [False] * len(gene_list),
+                    "terminator": [False] * len(gene_list),
+                }
+            )
 
-                species_list = ['human', 'mouse', 'rat', 'drosophila', 'zebrafish']
-                search_types = ['promoter', 'terminator']
+            species_list = ['human', 'mouse', 'rat', 'drosophila', 'zebrafish']
+            search_types = ['promoter', 'terminator']
 
-                st.markdown('**🔹 :blue[Step 1.2]** Select species for all genes:',
-                            help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
+            st.markdown('**🔹 :blue[Step 1.2]** Select species for all genes:',
+                        help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
 
-                species1, species2, species3, species4, species5 = st.columns(5)
+            species1, species2, species3, species4, species5 = st.columns(5)
 
-                with species1:
-                    all_human = st.checkbox("Human")
-                with species2:
-                    all_mouse = st.checkbox("Mouse")
-                with species3:
-                    all_rat = st.checkbox("Rat")
-                with species4:
-                    all_droso = st.checkbox("Drosophila")
-                with species5:
-                    all_zebra = st.checkbox("Zebrafish")
+            with species1:
+                all_human = st.checkbox("Human")
+            with species2:
+                all_mouse = st.checkbox("Mouse")
+            with species3:
+                all_rat = st.checkbox("Rat")
+            with species4:
+                all_droso = st.checkbox("Drosophila")
+            with species5:
+                all_zebra = st.checkbox("Zebrafish")
 
-                st.markdown('**🔹 :blue[Step 1.2]** Select regions for all genes:',
-                            help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
+            st.markdown('**🔹 :blue[Step 1.2]** Select regions for all genes:',
+                        help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
 
-                region1, region2 = st.columns(2)
+            region1, region2 = st.columns(2)
 
-                with region1:
-                    all_prom = st.checkbox("Promoter")
-                with region2:
-                    all_term = st.checkbox("Terminator")
+            with region1:
+                all_prom = st.checkbox("Promoter")
+            with region2:
+                all_term = st.checkbox("Terminator")
 
-                if all_human:
-                    data_df["human"] = True
-                if all_mouse:
-                    data_df["mouse"] = True
-                if all_rat:
-                    data_df["rat"] = True
-                if all_droso:
-                    data_df["drosophila"] = True
-                if all_zebra:
-                    data_df["zebrafish"] = True
-                if all_prom:
-                    data_df["promoter"] = True
-                if all_term:
-                    data_df["terminator"] = True
+            if all_human:
+                data_df["human"] = True
+            if all_mouse:
+                data_df["mouse"] = True
+            if all_rat:
+                data_df["rat"] = True
+            if all_droso:
+                data_df["drosophila"] = True
+            if all_zebra:
+                data_df["zebrafish"] = True
+            if all_prom:
+                data_df["promoter"] = True
+            if all_term:
+                data_df["terminator"] = True
 
-                st.markdown('**🔹 :blue[Step 1.2]** On demand genes table',
-                            help="Check the boxes for which you want to extract a sequence. Pay attention that the gene name is equivalent for each species. The choice of species is not available for gene IDs. Parameterize the table last, if you check the boxes above, it resets the whole table.")
+            st.markdown('**🔹 :blue[Step 1.2]** On demand genes table',
+                        help="Check the boxes for which you want to extract a sequence. Pay attention that the gene name is equivalent for each species. The choice of species is not available for gene IDs. Parameterize the table last, if you check the boxes above, it resets the whole table.")
 
-                data_dff = st.data_editor(
-                    data_df,
-                    column_config={
-                        "human": st.column_config.CheckboxColumn(
-                            "Human",
-                            default=False,
-                        ),
-                        "mouse": st.column_config.CheckboxColumn(
-                            "Mouse",
-                            default=False,
-                        ),
-                        "rat": st.column_config.CheckboxColumn(
-                            "Rat",
-                            default=False,
-                        ),
-                        "drosophila": st.column_config.CheckboxColumn(
-                            "Drosophila",
-                            default=False,
-                        ),
-                        "zebrafish": st.column_config.CheckboxColumn(
-                            "Zebrafish",
-                            default=False,
-                        ),
-                        "promoter": st.column_config.CheckboxColumn(
-                            "Promoter",
-                            default=False,
-                        ),
-                        "terminator": st.column_config.CheckboxColumn(
-                            "Terminator",
-                            default=False,
-                        )
-                    },
-                    disabled=["Gene"],
-                    hide_index=True,
-                )
+            data_dff = st.data_editor(
+                data_df,
+                column_config={
+                    "human": st.column_config.CheckboxColumn(
+                        "Human",
+                        default=False,
+                    ),
+                    "mouse": st.column_config.CheckboxColumn(
+                        "Mouse",
+                        default=False,
+                    ),
+                    "rat": st.column_config.CheckboxColumn(
+                        "Rat",
+                        default=False,
+                    ),
+                    "drosophila": st.column_config.CheckboxColumn(
+                        "Drosophila",
+                        default=False,
+                    ),
+                    "zebrafish": st.column_config.CheckboxColumn(
+                        "Zebrafish",
+                        default=False,
+                    ),
+                    "promoter": st.column_config.CheckboxColumn(
+                        "Promoter",
+                        default=False,
+                    ),
+                    "terminator": st.column_config.CheckboxColumn(
+                        "Terminator",
+                        default=False,
+                    )
+                },
+                disabled=["Gene"],
+                hide_index=True,
+            )
 
-                updown_slide = st.slider("🔹 :blue[**Step 1.3**] Upstream/downstream from TSS and gene end (bp)",
-                                         -10000,
-                                         10000, (-2000, 2000), step=100, label_visibility='collapsed')
-                st.write("Upstream: ", min(updown_slide), " bp from TSS and gene end | Downstream: ",
-                         max(updown_slide),
-                         " bp from TSS and gene end")
-                upstream_entry = -min(updown_slide)
-                downstream_entry = max(updown_slide)
+            updown_slide = st.slider("🔹 :blue[**Step 1.3**] Upstream/downstream from TSS and gene end (bp)",
+                                     -10000,
+                                     10000, (-2000, 2000), step=100, label_visibility='collapsed')
+            st.write("Upstream: ", min(updown_slide), " bp from TSS and gene end | Downstream: ",
+                     max(updown_slide),
+                     " bp from TSS and gene end")
+            upstream_entry = -min(updown_slide)
+            downstream_entry = max(updown_slide)
 
-                if st.form_submit_button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
-                    with colprom1:
-                        with st.spinner("Finding sequences..."):
-                            st.session_state['upstream'] = upstream_entry
-                            upstream = int(upstream_entry)
-                            downstream = int(downstream_entry)
-                            for gene_info in data_dff.itertuples(index=False):
-                                gene_name = gene_info.Gene
-                                gene_ids = gene_name.strip().split('\n')
-                                if gene_name.isdigit():
+            if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
+                with colprom1:
+                    with st.spinner("Finding sequences..."):
+                        st.session_state['upstream'] = upstream_entry
+                        upstream = int(upstream_entry)
+                        downstream = int(downstream_entry)
+                        for gene_info in data_dff.itertuples(index=False):
+                            gene_name = gene_info.Gene
+                            gene_ids = gene_name.strip().split('\n')
+                            if gene_name.isdigit():
+                                for search_type in search_types:
+                                    if getattr(gene_info, f'{search_type}'):
+                                        prom_term = search_type.capitalize()
+                                        species = 'human'  # This is just a remnant of the past
+                                        try:
+                                            result_promoter = find_promoters(gene_ids, species, upstream,
+                                                                             downstream)
+                                        except Exception as e:
+                                            st.error(f"Error finding {gene_ids}: {str(e)}")
+                            else:
+                                for species in species_list:
                                     for search_type in search_types:
-                                        if getattr(gene_info, f'{search_type}'):
+                                        if getattr(gene_info, f'{species}') and getattr(gene_info,
+                                                                                        f'{search_type}'):
                                             prom_term = search_type.capitalize()
-                                            species = 'human'  # This is just a remnant of the past
                                             try:
                                                 result_promoter = find_promoters(gene_ids, species, upstream,
                                                                                  downstream)
                                             except Exception as e:
                                                 st.error(f"Error finding {gene_ids}: {str(e)}")
-                                else:
-                                    for species in species_list:
-                                        for search_type in search_types:
-                                            if getattr(gene_info, f'{species}') and getattr(gene_info,
-                                                                                            f'{search_type}'):
-                                                prom_term = search_type.capitalize()
-                                                try:
-                                                    result_promoter = find_promoters(gene_ids, species, upstream,
-                                                                                     downstream)
-                                                except Exception as e:
-                                                    st.error(f"Error finding {gene_ids}: {str(e)}")
 
     # Promoter output state
     st.divider()
@@ -859,6 +840,50 @@ def aio_page():
         st.download_button(label="💾 Download (.fasta)", data=txt_output,
                            file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain")
 
+    # Promoter detection information
+    lines = result_promoter
+    promoters = []
+    if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
+        promoter_region = lines.upper()
+        isdna(promoter_region)
+        shortened_promoter_name = "n.d."
+        found_species = "n.d"
+        region = "n.d"
+        promoters.append((shortened_promoter_name, promoter_region, found_species, region))
+    elif lines.startswith(">"):
+        lines = result_promoter.split("\n")
+        i = 0
+        while i < len(lines):
+            line = lines[i]
+            if line.startswith(">"):
+                species_prom = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster',
+                                'Danio rerio']
+                promoter_name = line[1:]
+                words = promoter_name.lstrip('>').split()
+                shortened_promoter_name = words[0]
+                for species in species_prom:
+                    if species.lower() in promoter_name.lower():
+                        found_species = species
+                        break
+                    else:
+                        found_species = "n.d"
+                regions_prom = ['Promoter', 'Terminator']
+                for regions in regions_prom:
+                    if regions.lower() in promoter_name.lower():
+                        region = regions[:4] + "."
+                        break
+                    else:
+                        region = "n.d"
+                promoter_region = lines[i + 1].upper()
+                isdna(promoter_region)
+                promoters.append((shortened_promoter_name, promoter_region, found_species, region))
+                i += 1
+            else:
+                i += 1
+
+    total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
+    total_promoter = len(promoters)
+
     # RE entry
     REcol1, REcol2 = st.columns([0.30, 0.70])
     with REcol1:
@@ -872,21 +897,21 @@ def aio_page():
                                            label_visibility='collapsed')
             url = f"https://jaspar.genereg.net/api/v1/matrix/{entry_sequence}/"
             response = requests.get(url)
-            try:
+            if response.status_code == 200:
                 response_data = response.json()
                 TF_name = response_data['name']
                 TF_species = response_data['species'][0]['name']
                 st.success(f"{TF_species} transcription factor {TF_name}")
                 matrix = response_data['pfm']
+                with REcol2:
+                    st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
                 button = False
-            except:
+                error_input_im = True
+            else:
                 button = True
                 error_input_im = False
                 st.error('Wrong JASPAR_ID')
 
-
-        with REcol2:
-            st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
     elif jaspar == 'PWM':
         with REcol1:
             st.markdown('🔹 :blue[**Step 2.2bis**] Matrix:')
@@ -954,7 +979,7 @@ def aio_page():
             isUIPAC = False
 
     # TSS entry
-    BSFcol1, BSFcol2, BSFcol3 = st.columns([2, 2, 1], gap="medium")
+    BSFcol1, BSFcol2, BSFcol3 = st.columns([2, 2, 2], gap="medium")
     with BSFcol1:
         st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
                     help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
@@ -969,44 +994,49 @@ def aio_page():
 
     with BSFcol2:
         st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
-        threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0, 0.85, step=0.05,
+        auto_thre = st.checkbox("Automatic threshold", value=True)
+        if auto_thre:
+            threshold_entry = 0
+        else:
+            threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.5, 1.0, 0.85, step=0.05,
                                     label_visibility="collapsed")
     with BSFcol3:
-        st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
-        calc_pvalue = st.checkbox('_p-value_')
+        st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times. 10 sequences max.')
+        if total_promoter > 10:
+            calc_pvalue_stop = True
+            st.warning('⚠️_p-value_ not allowed. 10 sequences max. Insufficient server resource.')
+        else:
+            calc_pvalue_stop = False
+        calc_pvalue = st.checkbox('_p-value_', disabled=calc_pvalue_stop)
 
     # Run Responsive Elements finder
-    if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
-        with st.spinner("Finding responsive elements..."):
-            tis_value = int(entry_tis)
-            threshold = float(threshold_entry)
-            try:
-                if jaspar == 'JASPAR_ID':
-                        sequence_consensus_input = entry_sequence
-                else:
-                    if not isUIPAC:
-                        st.error("Please use IUPAC code for Responsive Elements")
-                        button = True
-                    elif not error_input_im:
-                        button = True
-                    elif error_input_im:
-                        matrix_lines = matrix_text.split('\n')
-                        matrix = {}
-                        for line in matrix_lines:
-                            line = line.strip()
-                            if line:
-                                key, values = line.split('[', 1)
-                                values = values.replace(']', '').split()
-                                values = [float(value) for value in values]
-                                matrix[key.strip()] = values
-                        button = False
-                st.markdown("")
-                if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
-                    matrices = transform_matrix(matrix)
-                    table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-                    st.session_state['table2'] = table2
-            except Exception as e:
-                st.error(f"Error finding responsive elements: {str(e)}")
+    tis_value = int(entry_tis)
+    threshold = float(threshold_entry)
+    if jaspar == 'JASPAR_ID':
+        sequence_consensus_input = entry_sequence
+    else:
+        if not isUIPAC:
+            st.error("Please use IUPAC code for Responsive Elements")
+            button = True
+        elif not error_input_im:
+            button = True
+        elif error_input_im:
+            matrix_lines = matrix_text.split('\n')
+            matrix = {}
+            for line in matrix_lines:
+                line = line.strip()
+                if line:
+                    key, values = line.split('[', 1)
+                    values = values.replace(']', '').split()
+                    values = [float(value) for value in values]
+                    matrix[key.strip()] = values
+            button = False
+    st.markdown("")
+    if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
+        if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
+            matrices = transform_matrix(matrix)
+            table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length)
+            st.session_state['table2'] = table2
 
     st.divider()
     if 'table2' in st.session_state:
@@ -1044,13 +1074,13 @@ def aio_page():
                 if st.button("Send ✉"):
                     if jaspar == 'PWM':
                         if matrix_type == 'With PWM':
-                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                         if matrix_type == 'With FASTA sequences':
-                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                     elif jaspar == 'JASPAR_ID':
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                     else:
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                     email(excel_file, txt_output, email_receiver, body)
         else:
             st.error(f"No consensus sequence found with the specified threshold")

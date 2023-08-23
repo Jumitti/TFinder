@@ -36,3 +36,5 @@ logomaker
 openpyxl
 sendgrid
 Pillow
+stqdm
+tqdm
