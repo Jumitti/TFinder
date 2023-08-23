@@ -270,6 +270,7 @@ def aio_page():
         sequence_iteration = len(matrices.items()) * total_promoter_region_length
         random_gen = len(promoters) * 1000000
         random_score = random_gen * len(matrices.items())
+
         if calc_pvalue:
             total_iterations = sequence_iteration + random_gen + random_score
         else:
