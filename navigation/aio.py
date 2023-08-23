@@ -878,15 +878,14 @@ def aio_page():
                 TF_species = response_data['species'][0]['name']
                 st.success(f"{TF_species} transcription factor {TF_name}")
                 matrix = response_data['pfm']
+                with REcol2:
+                    st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
                 button = False
             except:
                 button = True
                 error_input_im = False
                 st.error('Wrong JASPAR_ID')
 
-
-        with REcol2:
-            st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
     elif jaspar == 'PWM':
         with REcol1:
             st.markdown('🔹 :blue[**Step 2.2bis**] Matrix:')
