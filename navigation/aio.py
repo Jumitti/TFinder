@@ -349,36 +349,36 @@ def aio_page():
                     # Sort positions in descending order of score percentage
                     found_positions.sort(key=lambda x: x[1], reverse=True)
 
-                    # Creating a results table
-                    if len(found_positions) > 0:
-                        highest_normalized_score = max(
-                            [normalized_score for _, _, normalized_score, _ in found_positions])
-                        threshold = highest_normalized_score - 0.10
+                # Creating a results table
+                if len(found_positions) > 0:
+                    highest_normalized_score = max(
+                        [normalized_score for _, _, normalized_score, _ in found_positions])
+                    threshold = highest_normalized_score - 0.10
 
-                        for position, seq, normalized_score, p_value in found_positions:
-                            start_position = max(0, position - 3)
-                            end_position = min(len(promoter_region), position + len(seq) + 3)
-                            sequence_with_context = promoter_region[start_position:end_position]
+                    for position, seq, normalized_score, p_value in found_positions:
+                        start_position = max(0, position - 3)
+                        end_position = min(len(promoter_region), position + len(seq) + 3)
+                        sequence_with_context = promoter_region[start_position:end_position]
 
-                            sequence_parts = []
-                            for j in range(start_position, end_position):
-                                if j < position or j >= position + len(seq):
-                                    sequence_parts.append(sequence_with_context[j - start_position].lower())
-                                else:
-                                    sequence_parts.append(sequence_with_context[j - start_position].upper())
+                        sequence_parts = []
+                        for j in range(start_position, end_position):
+                            if j < position or j >= position + len(seq):
+                                sequence_parts.append(sequence_with_context[j - start_position].lower())
+                            else:
+                                sequence_parts.append(sequence_with_context[j - start_position].upper())
 
-                            sequence_with_context = ''.join(sequence_parts)
-                            tis_position = position - tis_value
+                        sequence_with_context = ''.join(sequence_parts)
+                        tis_position = position - tis_value
 
-                            if normalized_score >= threshold:
-                                row = [str(position).ljust(8),
-                                       str(tis_position).ljust(15),
-                                       sequence_with_context,
-                                       "{:.6f}".format(normalized_score).ljust(12)]
-                                if calc_pvalue:
-                                    row.append("{:.3e}".format(p_value).ljust(12))
-                                row += [shortened_promoter_name, found_species, region]
-                                table2.append(row)
+                        if normalized_score >= threshold:
+                            row = [str(position).ljust(8),
+                                   str(tis_position).ljust(15),
+                                   sequence_with_context,
+                                   "{:.6f}".format(normalized_score).ljust(12)]
+                            if calc_pvalue:
+                                row.append("{:.3e}".format(p_value).ljust(12))
+                            row += [shortened_promoter_name, found_species, region]
+                            table2.append(row)
 
         if len(table2) > 0:
             table2.sort(key=lambda x: float(x[3]), reverse=True)
