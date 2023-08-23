@@ -978,7 +978,7 @@ def aio_page():
             isUIPAC = False
 
     # TSS entry
-    BSFcol1, BSFcol2, BSFcol3 = st.columns([2, 2, 1], gap="medium")
+    BSFcol1, BSFcol2, BSFcol3 = st.columns([2, 2, 2], gap="small")
     with BSFcol1:
         st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
                     help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
