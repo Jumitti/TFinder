@@ -290,7 +290,7 @@ def aio_page():
                 probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
                 random_sequences = []
-                for _ in stqdm(range(num_random_seqs), desc=f"P-value: Generate random sequences for **{shortened_promoter_name}**",
+                for _ in stqdm(range(num_random_seqs), desc=f"P-value: Generate random sequences for **{region}** **{shortened_promoter_name}** **{found_species}*",
                                mininterval=1):
                     random_sequence = generate_random_sequence(motif_length, probabilities)
                     random_sequences.append(random_sequence)
@@ -312,15 +312,16 @@ def aio_page():
                 if calc_pvalue:
 
                     matrix_random_scores = []
-                    for random_sequence in stqdm(random_sequences, desc=f"P-value: Calculate random sequences Score for **{shortened_promoter_name}**",
-                               mininterval=1) :
+                    for random_sequence in stqdm(random_sequences, desc=f"P-value: Calculate random sequences Score for **{region}** **{shortened_promoter_name}** **{found_species}*",
+                               mininterval=1):
                         random_score = calculate_score(random_sequence, matrix)
                         normalized_random_score = (random_score - min_score) / (max_score - min_score)
                         matrix_random_scores.append(normalized_random_score)
 
                     random_scores = np.array(matrix_random_scores)
 
-                for i in range(len(promoter_region) - seq_length + 1):
+                for i in stqdm(range(len(promoter_region) - seq_length + 1), desc=f"BSF: Search BSF in **{region}** **{shortened_promoter_name}** **{found_species}**",
+                               mininterval=1):
                     seq = promoter_region[i:i + seq_length]
                     score = calculate_score(seq, matrix)
                     normalized_score = (score - min_score) / (max_score - min_score)
