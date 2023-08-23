@@ -872,8 +872,7 @@ def aio_page():
                                            label_visibility='collapsed')
             url = f"https://jaspar.genereg.net/api/v1/matrix/{entry_sequence}/"
             response = requests.get(url)
-            st.write(response)
-            try:
+            if response.status_code == 200:
                 response_data = response.json()
                 TF_name = response_data['name']
                 TF_species = response_data['species'][0]['name']
@@ -882,7 +881,7 @@ def aio_page():
                 with REcol2:
                     st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
                 button = False
-            finally:
+            else:
                 button = True
                 error_input_im = False
                 st.error('Wrong JASPAR_ID')
