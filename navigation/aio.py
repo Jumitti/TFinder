@@ -41,6 +41,7 @@ import datetime
 import matplotlib.pyplot as plt
 from PIL import Image
 import time
+from stqdm import stqdm
 
 
 def aio_page():
@@ -289,11 +290,10 @@ def aio_page():
                 probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
                 random_sequences = []
-                '''
                 for _ in stqdm(range(num_random_seqs), desc=f"P-value: Generate random sequences for {shortened_promoter_name}",
                                mininterval=1):
                     random_sequence = generate_random_sequence(motif_length, probabilities)
-                    random_sequences.append(random_sequence)'''
+                    random_sequences.append(random_sequence)
 
                 # Calculation of random scores from the different matrices
                 random_scores = {}
