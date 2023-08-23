@@ -882,6 +882,7 @@ def aio_page():
                 i += 1
 
     total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
+    total_promoter = len(promoters)
 
     # RE entry
     REcol1, REcol2 = st.columns([0.30, 0.70])
@@ -978,7 +979,7 @@ def aio_page():
             isUIPAC = False
 
     # TSS entry
-    BSFcol1, BSFcol2, BSFcol3 = st.columns([2, 2, 2], gap="small")
+    BSFcol1, BSFcol2, BSFcol3 = st.columns([2, 2, 2], gap="medium")
     with BSFcol1:
         st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
                     help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
@@ -1001,7 +1002,11 @@ def aio_page():
                                     label_visibility="collapsed")
     with BSFcol3:
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
-        calc_pvalue = st.checkbox('_p-value_')
+        if total_promoter > 10:
+            calc_pvalue_stop = True
+        else:
+            calc_pvalue_stop = True
+        calc_pvalue = st.checkbox('_p-value_', disabled=calc_pvalue_stop)
 
     # Run Responsive Elements finder
     tis_value = int(entry_tis)
