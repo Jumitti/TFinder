@@ -269,7 +269,7 @@ def aio_page():
         total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
         total_iterations = len(matrices.items())*total_promoter_region_length
 
-        with stqdm(total=total_iterations, desc='Calculating scores', mininterval=1) as pbar:
+        with stqdm(total=total_iterations, desc='Calculating scores', mininterval=0.1) as pbar:
 
             if calc_pvalue:
                 for matrix_name, matrix in matrices.items():
@@ -324,6 +324,7 @@ def aio_page():
                         random_scores = np.array(matrix_random_scores)
 
                     for i in range(len(promoter_region) - seq_length + 1):
+                        pbar.update(1)
                         seq = promoter_region[i:i + seq_length]
                         score = calculate_score(seq, matrix)
                         normalized_score = (score - min_score) / (max_score - min_score)
