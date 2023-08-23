@@ -883,7 +883,6 @@ def aio_page():
 
     total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
     total_promoter = len(promoters)
-    st.write(len(promoters))
 
     # RE entry
     REcol1, REcol2 = st.columns([0.30, 0.70])
@@ -1002,10 +1001,10 @@ def aio_page():
             threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.5, 1.0, 0.85, step=0.05,
                                     label_visibility="collapsed")
     with BSFcol3:
-        st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
+        st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times. 10 sequences max.')
         if total_promoter > 10:
             calc_pvalue_stop = True
-            st.warning('p_value not allowed. Insufficient server resource.')
+            st.warning('⚠️_p-value_ not allowed. 10 sequences max. Insufficient server resource.')
         else:
             calc_pvalue_stop = False
         calc_pvalue = st.checkbox('_p-value_', disabled=calc_pvalue_stop)
