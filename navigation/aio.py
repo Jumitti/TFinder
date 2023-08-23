@@ -1008,49 +1008,49 @@ def aio_page():
                 table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                 st.session_state['table2'] = table2
 
-    st.divider()
-    if 'table2' in st.session_state:
-        if len(st.session_state['table2']) > 1:
-            current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            st.subheader(':blue[Results]')
+        st.divider()
+        if 'table2' in st.session_state:
+            if len(st.session_state['table2']) > 1:
+                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                st.subheader(':blue[Results]')
 
-            df = pd.DataFrame(st.session_state['table2'][1:], columns=st.session_state['table2'][0])
-            st.session_state['df'] = df
+                df = pd.DataFrame(st.session_state['table2'][1:], columns=st.session_state['table2'][0])
+                st.session_state['df'] = df
 
-            st.markdown('**Table**')
-            tablecol1, tablecol2 = st.columns([0.75, 0.25])
-            with tablecol1:
-                st.dataframe(df, hide_index=True)
+                st.markdown('**Table**')
+                tablecol1, tablecol2 = st.columns([0.75, 0.25])
+                with tablecol1:
+                    st.dataframe(df, hide_index=True)
 
-            with tablecol2:
-                st.success(f"Finding responsive elements done !")
+                with tablecol2:
+                    st.success(f"Finding responsive elements done !")
 
-            st.markdown("")
-            st.markdown('**Graph**',
-                        help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
+                st.markdown("")
+                st.markdown('**Graph**',
+                            help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
 
-            result_table_output(df)
+                result_table_output(df)
 
-            with tablecol2:
-                excel_file = io.BytesIO()
-                df.to_excel(excel_file, index=False, sheet_name='Sheet1')
-                excel_file.seek(0)
-                st.download_button("💾 Download table (.xlsx)", excel_file,
-                                   file_name=f'Results_TFinder_{current_date_time}.xlsx',
-                                   mime="application/vnd.ms-excel", key='download-excel')
-                email_receiver = st.text_input('Send results by email ✉',
-                                               value='Send results by email ✉',
-                                               label_visibility="collapsed")
-                if st.button("Send ✉"):
-                    if jaspar == 'PWM':
-                        if matrix_type == 'With PWM':
-                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                        if matrix_type == 'With FASTA sequences':
-                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                    elif jaspar == 'JASPAR_ID':
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                    else:
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                    email(excel_file, txt_output, email_receiver, body)
-        else:
-            st.error(f"No consensus sequence found with the specified threshold")
+                with tablecol2:
+                    excel_file = io.BytesIO()
+                    df.to_excel(excel_file, index=False, sheet_name='Sheet1')
+                    excel_file.seek(0)
+                    st.download_button("💾 Download table (.xlsx)", excel_file,
+                                       file_name=f'Results_TFinder_{current_date_time}.xlsx',
+                                       mime="application/vnd.ms-excel", key='download-excel')
+                    email_receiver = st.text_input('Send results by email ✉',
+                                                   value='Send results by email ✉',
+                                                   label_visibility="collapsed")
+                    if st.button("Send ✉"):
+                        if jaspar == 'PWM':
+                            if matrix_type == 'With PWM':
+                                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                            if matrix_type == 'With FASTA sequences':
+                                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                        elif jaspar == 'JASPAR_ID':
+                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                        else:
+                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                        email(excel_file, txt_output, email_receiver, body)
+            else:
+                st.error(f"No consensus sequence found with the specified threshold")
