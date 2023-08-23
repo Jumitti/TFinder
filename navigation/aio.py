@@ -276,11 +276,11 @@ def aio_page():
         else:
             total_iterations = sequence_iteration
 
-
         progress_text = "Operation in progress. Please wait."
         my_bar = st.progress(0, text=progress_text)
 
-        for iterations in range(100):
+        with stqdm(total=total_iterations, desc='Calculating scores', mininterval=0.1) as pbar:
+
             if calc_pvalue:
                 for matrix_name, matrix in matrices.items():
                     seq_length = len(matrix['A'])
@@ -308,7 +308,7 @@ def aio_page():
                     for _ in range(num_random_seqs):
                         random_sequence = generate_random_sequence(motif_length, probabilities)
                         random_sequences.append(random_sequence)
-                        my_bar.progress(iterations + (100/total_iterations), text=progress_text)
+                        pbar.update(1)
 
                     # Calculation of random scores from the different matrices
                     random_scores = {}
@@ -332,7 +332,7 @@ def aio_page():
                             random_score = calculate_score(sequence, matrix)
                             normalized_random_score = (random_score - min_score) / (max_score - min_score)
                             matrix_random_scores.append(normalized_random_score)
-                            my_bar.progress(iterations + (100/total_iterations), text=progress_text)
+                            pbar.update(1)
 
                         random_scores = np.array(matrix_random_scores)
 
@@ -348,7 +348,7 @@ def aio_page():
                             p_value = 0
 
                         found_positions.append((position, seq, normalized_score, p_value))
-                        my_bar.progress(iterations + (100/total_iterations), text=progress_text)
+                        pbar.update(1)
 
                     # Sort positions in descending order of score percentage
                     found_positions.sort(key=lambda x: x[1], reverse=True)
@@ -1025,7 +1025,7 @@ def aio_page():
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
         if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
 
-            with st.spinner("Finding responsive elements..."):
+            with st.progress(0, text="Finding responsive elements..."):
                 matrices = transform_matrix(matrix)
                 table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
                 st.session_state['table2'] = table2
