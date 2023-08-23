@@ -311,7 +311,7 @@ def aio_page():
                     # Calculation of random scores from the different matrices
                     random_scores = {}
 
-            found_positions = {}
+            found_positions = []
             for matrix_name, matrix in matrices.items():
                 seq_length = len(matrix['A'])
 
@@ -346,7 +346,7 @@ def aio_page():
                         else:
                             p_value = 0
 
-                        found_positions.append((position, seq, normalized_score, p_value))
+                        found_positions.extend((position, seq, normalized_score, p_value))
                         pbar.update(1)
 
                     # Sort positions in descending order of score percentage
