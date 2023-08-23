@@ -222,50 +222,9 @@ def aio_page():
         return
 
     # Find with JASPAR and manual matrix
-    def search_sequence(threshold, tis_value, result_promoter, matrices):
+    def search_sequence(threshold, tis_value, promoters, matrices):
         global table2
         table2 = []
-
-        # Promoter input type
-        lines = result_promoter
-        promoters = []
-        if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
-            promoter_region = lines.upper()
-            isdna(promoter_region)
-            shortened_promoter_name = "n.d."
-            found_species = "n.d"
-            region = "n.d"
-            promoters.append((shortened_promoter_name, promoter_region, found_species, region))
-        elif lines.startswith(">"):
-            lines = result_promoter.split("\n")
-            i = 0
-            while i < len(lines):
-                line = lines[i]
-                if line.startswith(">"):
-                    species_prom = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster',
-                                    'Danio rerio']
-                    promoter_name = line[1:]
-                    words = promoter_name.lstrip('>').split()
-                    shortened_promoter_name = words[0]
-                    for species in species_prom:
-                        if species.lower() in promoter_name.lower():
-                            found_species = species
-                            break
-                        else:
-                            found_species = "n.d"
-                    regions_prom = ['Promoter', 'Terminator']
-                    for regions in regions_prom:
-                        if regions.lower() in promoter_name.lower():
-                            region = regions[:4] + "."
-                            break
-                        else:
-                            region = "n.d"
-                    promoter_region = lines[i + 1].upper()
-                    isdna(promoter_region)
-                    promoters.append((shortened_promoter_name, promoter_region, found_species, region))
-                    i += 1
-                else:
-                    i += 1
 
         for matrix_name, matrix in matrices.items():
             seq_length = len(matrix['A'])
@@ -620,8 +579,6 @@ def aio_page():
         st.altair_chart(chart, theme=None, use_container_width=True)
 
     # Disposition
-    runBSF = False
-
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
     colprom1, colprom2 = st.columns([0.8, 1.2], gap="small")
 
@@ -997,11 +954,51 @@ def aio_page():
                                     label_visibility="collapsed")
     with BSFcol3:
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
-        calc_pvalue = st.checkbox('_p-value_', disabled=runBSF)
+        calc_pvalue = st.checkbox('_p-value_')
 
     # Run Responsive Elements finder
     tis_value = int(entry_tis)
     threshold = float(threshold_entry)
+    lines = result_promoter
+    promoters = []
+    if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
+        promoter_region = lines.upper()
+        isdna(promoter_region)
+        shortened_promoter_name = "n.d."
+        found_species = "n.d"
+        region = "n.d"
+        promoters.append((shortened_promoter_name, promoter_region, found_species, region))
+    elif lines.startswith(">"):
+        lines = result_promoter.split("\n")
+        i = 0
+        while i < len(lines):
+            line = lines[i]
+            if line.startswith(">"):
+                species_prom = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster',
+                                'Danio rerio']
+                promoter_name = line[1:]
+                words = promoter_name.lstrip('>').split()
+                shortened_promoter_name = words[0]
+                for species in species_prom:
+                    if species.lower() in promoter_name.lower():
+                        found_species = species
+                        break
+                    else:
+                        found_species = "n.d"
+                regions_prom = ['Promoter', 'Terminator']
+                for regions in regions_prom:
+                    if regions.lower() in promoter_name.lower():
+                        region = regions[:4] + "."
+                        break
+                    else:
+                        region = "n.d"
+                promoter_region = lines[i + 1].upper()
+                isdna(promoter_region)
+                promoters.append((shortened_promoter_name, promoter_region, found_species, region))
+                i += 1
+            else:
+                i += 1
+
     if jaspar == 'JASPAR_ID':
         sequence_consensus_input = entry_sequence
     else:
@@ -1025,10 +1022,8 @@ def aio_page():
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
         if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
             with st.spinner("Finding responsive elements..."):
-                runBSF = True
                 matrices = transform_matrix(matrix)
-                table2 = search_sequence(threshold, tis_value, result_promoter, matrices)
-                runBSF = False
+                table2 = search_sequence(threshold, tis_value, promoters, matrices)
                 st.session_state['table2'] = table2
 
     st.divider()
