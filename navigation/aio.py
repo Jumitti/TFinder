@@ -881,6 +881,7 @@ def aio_page():
                 with REcol2:
                     st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
                 button = False
+                error_input_im = True
             else:
                 button = True
                 error_input_im = False
@@ -981,7 +982,7 @@ def aio_page():
             threshold = float(threshold_entry)
             try:
                 if jaspar == 'JASPAR_ID':
-                        sequence_consensus_input = entry_sequence
+                    sequence_consensus_input = entry_sequence
                 else:
                     if not isUIPAC:
                         st.error("Please use IUPAC code for Responsive Elements")
