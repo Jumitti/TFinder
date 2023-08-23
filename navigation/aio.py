@@ -311,7 +311,6 @@ def aio_page():
                     # Calculation of random scores from the different matrices
                     random_scores = {}
 
-            found_positions = []
             for matrix_name, matrix in matrices.items():
                 seq_length = len(matrix['A'])
 
@@ -321,7 +320,7 @@ def aio_page():
 
                 # REF
                 for shortened_promoter_name, promoter_region, found_species, region in promoters:
-
+                    found_positions = []
 
                     if calc_pvalue:
 
@@ -346,45 +345,45 @@ def aio_page():
                         else:
                             p_value = 0
 
-                        found_positions.extend((position, seq, normalized_score, p_value))
+                        found_positions.append((position, seq, normalized_score, p_value))
                         pbar.update(1)
 
                     # Sort positions in descending order of score percentage
                     found_positions.sort(key=lambda x: x[1], reverse=True)
 
-            # Creating a results table
-            if len(found_positions) > 0:
-                highest_normalized_score = max(
-                    [normalized_score for _, _, normalized_score, _ in found_positions])
-                if highest_normalized_score >= 0.6:
-                    threshold = highest_normalized_score - 0.10
-                else:
-                    threshold = 0.5
-
-                for position, seq, normalized_score, p_value in found_positions:
-                    start_position = max(0, position - 3)
-                    end_position = min(len(promoter_region), position + len(seq) + 3)
-                    sequence_with_context = promoter_region[start_position:end_position]
-
-                    sequence_parts = []
-                    for j in range(start_position, end_position):
-                        if j < position or j >= position + len(seq):
-                            sequence_parts.append(sequence_with_context[j - start_position].lower())
+                    # Creating a results table
+                    if len(found_positions) > 0:
+                        highest_normalized_score = max(
+                            [normalized_score for _, _, normalized_score, _ in found_positions])
+                        if highest_normalized_score >= 0.6:
+                            threshold = highest_normalized_score - 0.10
                         else:
-                            sequence_parts.append(sequence_with_context[j - start_position].upper())
+                            threshold = 0.5
 
-                    sequence_with_context = ''.join(sequence_parts)
-                    tis_position = position - tis_value
+                        for position, seq, normalized_score, p_value in found_positions:
+                            start_position = max(0, position - 3)
+                            end_position = min(len(promoter_region), position + len(seq) + 3)
+                            sequence_with_context = promoter_region[start_position:end_position]
 
-                    if normalized_score >= threshold:
-                        row = [str(position).ljust(8),
-                               str(tis_position).ljust(15),
-                               sequence_with_context,
-                               "{:.6f}".format(normalized_score).ljust(12)]
-                        if calc_pvalue:
-                            row.append("{:.3e}".format(p_value).ljust(12))
-                        row += [shortened_promoter_name, found_species, region]
-                        table2.append(row)
+                            sequence_parts = []
+                            for j in range(start_position, end_position):
+                                if j < position or j >= position + len(seq):
+                                    sequence_parts.append(sequence_with_context[j - start_position].lower())
+                                else:
+                                    sequence_parts.append(sequence_with_context[j - start_position].upper())
+
+                            sequence_with_context = ''.join(sequence_parts)
+                            tis_position = position - tis_value
+
+                            if normalized_score >= threshold:
+                                row = [str(position).ljust(8),
+                                       str(tis_position).ljust(15),
+                                       sequence_with_context,
+                                       "{:.6f}".format(normalized_score).ljust(12)]
+                                if calc_pvalue:
+                                    row.append("{:.3e}".format(p_value).ljust(12))
+                                row += [shortened_promoter_name, found_species, region]
+                                table2.append(row)
 
         if len(table2) > 0:
             table2.sort(key=lambda x: float(x[3]), reverse=True)
