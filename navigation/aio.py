@@ -276,9 +276,6 @@ def aio_page():
         else:
             total_iterations = sequence_iteration
 
-        progress_text = "Operation in progress. Please wait."
-        my_bar = st.progress(0, text=progress_text)
-
         with stqdm(total=total_iterations, desc='Calculating scores', mininterval=0.1) as pbar:
 
             if calc_pvalue:
