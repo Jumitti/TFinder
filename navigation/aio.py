@@ -224,7 +224,7 @@ def aio_page():
     def search_sequence(threshold, tis_value, result_promoter, matrices):
         global table2
         table2 = []
-    
+
         # Promoter input type
         lines = result_promoter
         promoters = []
@@ -267,10 +267,13 @@ def aio_page():
                     i += 1
 
         total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
+        sequence_iteration = len(matrices.items()) * total_promoter_region_length
+        random_gen = len(promoters) * 1000000
+        random_score = random_gen * len(matrices.items())
         if calc_pvalue:
-            total_iterations = (len(matrices.items()) * total_promoter_region_length) + (len(matrices.items()) * (len(promoters) * 1000000))
+            total_iterations = sequence_iteration + random_gen + random_score
         else:
-            total_iterations = len(matrices.items()) * total_promoter_region_length
+            total_iterations = sequence_iteration
 
         with stqdm(total=total_iterations, desc='Calculating scores', mininterval=0.1 if not calc_pvalue else 1) as pbar:
 
@@ -321,9 +324,11 @@ def aio_page():
 
                         matrix_random_scores = []
                         for random_sequence in random_sequences:
-                            random_score = calculate_score(random_sequence, matrix)
+                            sequence = random_sequence
+                            random_score = calculate_score(sequence, matrix)
                             normalized_random_score = (random_score - min_score) / (max_score - min_score)
                             matrix_random_scores.append(normalized_random_score)
+                            pbar.update(1)
 
                         random_scores = np.array(matrix_random_scores)
 
