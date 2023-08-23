@@ -289,7 +289,8 @@ def aio_page():
                 probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
                 random_sequences = []
-                for _ in range(num_random_seqs):
+                for _ in stqdm(range(num_random_seqs), desc=f"P-value: Generate random sequences for {shortened_promoter_name}",
+                               mininterval=1):
                     random_sequence = generate_random_sequence(motif_length, probabilities)
                     random_sequences.append(random_sequence)
 
