@@ -42,6 +42,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import time
 from tqdm import tqdm
+from stqdm import stqdm
 
 
 def aio_page():
@@ -279,7 +280,7 @@ def aio_page():
         else:
             total_iterations = sequence_iteration
 
-        with tqdm(total=total_iterations, desc='Calculating scores', mininterval=0.1) as pbar:
+        with stqdm(total=total_iterations, desc='Calculating scores', mininterval=0.1) as pbar:
 
             if calc_pvalue:
                 for shortened_promoter_name, promoter_region, found_species, region in promoters:
