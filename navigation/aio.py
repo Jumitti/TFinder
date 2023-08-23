@@ -276,8 +276,11 @@ def aio_page():
         else:
             total_iterations = sequence_iteration
 
-        with stqdm(total=total_iterations, desc='Calculating scores', mininterval=0.1) as pbar:
 
+        progress_text = "Operation in progress. Please wait."
+        my_bar = st.progress(0, text=progress_text)
+
+        for iterations in range(100):
             if calc_pvalue:
                 for matrix_name, matrix in matrices.items():
                     seq_length = len(matrix['A'])
@@ -305,7 +308,7 @@ def aio_page():
                     for _ in range(num_random_seqs):
                         random_sequence = generate_random_sequence(motif_length, probabilities)
                         random_sequences.append(random_sequence)
-                        pbar.update(1)
+                        my_bar.progress(iterations + (100/total_iterations), text=progress_text)
 
                     # Calculation of random scores from the different matrices
                     random_scores = {}
@@ -329,7 +332,7 @@ def aio_page():
                             random_score = calculate_score(sequence, matrix)
                             normalized_random_score = (random_score - min_score) / (max_score - min_score)
                             matrix_random_scores.append(normalized_random_score)
-                            pbar.update(1)
+                            my_bar.progress(iterations + (100/total_iterations), text=progress_text)
 
                         random_scores = np.array(matrix_random_scores)
 
@@ -345,7 +348,7 @@ def aio_page():
                             p_value = 0
 
                         found_positions.append((position, seq, normalized_score, p_value))
-                        pbar.update(1)
+                        my_bar.progress(iterations + (100/total_iterations), text=progress_text)
 
                     # Sort positions in descending order of score percentage
                     found_positions.sort(key=lambda x: x[1], reverse=True)
