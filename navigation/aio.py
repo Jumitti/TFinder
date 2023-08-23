@@ -275,7 +275,7 @@ def aio_page():
         else:
             total_iterations = sequence_iteration
 
-        with stqdm(total=total_iterations, desc='Calculating scores', mininterval=0.24) as pbar:
+        with stqdm(total=total_iterations, desc='Calculating scores', mininterval=0.1) as pbar:
 
             if calc_pvalue:
                 for matrix_name, matrix in matrices.items():
