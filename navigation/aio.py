@@ -311,12 +311,13 @@ def aio_page():
 
                     # Creating a results table
                     if len(found_positions) > 0:
-                        highest_normalized_score = max(
-                            [normalized_score for _, _, normalized_score, _ in found_positions])
-                        if highest_normalized_score >= 0.6:
-                            threshold = highest_normalized_score - 0.10
-                        else:
-                            threshold = 0.5
+                        if auto_thre:
+                            highest_normalized_score = max(
+                                [normalized_score for _, _, normalized_score, _ in found_positions])
+                            if highest_normalized_score >= 0.6:
+                                threshold = highest_normalized_score - 0.10
+                            else:
+                                threshold = 0.5
 
                         for position, seq, normalized_score, p_value in found_positions:
                             start_position = max(0, position - 3)
@@ -992,10 +993,11 @@ def aio_page():
 
     with BSFcol2:
         st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
-        if st.checkbox("Automatic threshold", value=True):
+        auto_thre = st.checkbox("Automatic threshold", value=True)
+        if auto_thre:
             threshold_entry = 0
         else:
-            threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0, 0.85, step=0.05,
+            threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.5, 1.0, 0.85, step=0.05,
                                     label_visibility="collapsed")
     with BSFcol3:
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
@@ -1067,13 +1069,13 @@ def aio_page():
                 if st.button("Send ✉"):
                     if jaspar == 'PWM':
                         if matrix_type == 'With PWM':
-                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                         if matrix_type == 'With FASTA sequences':
-                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                     elif jaspar == 'JASPAR_ID':
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                     else:
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nRelScore Threshold:\n{threshold_entry}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                     email(excel_file, txt_output, email_receiver, body)
         else:
             st.error(f"No consensus sequence found with the specified threshold")
