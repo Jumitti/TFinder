@@ -280,7 +280,7 @@ def aio_page():
         else:
             total_iterations = sequence_iteration
 
-        with stqdm(total=total_iterations, desc='Calculating scores', mininterval=0.1) as pbar:
+        with stqdm(total=100, desc='Calculating scores', mininterval=0.1) as pbar:
 
             if calc_pvalue:
                 for shortened_promoter_name, promoter_region, found_species, region in promoters:
@@ -306,7 +306,7 @@ def aio_page():
                     for _ in range(num_random_seqs):
                         random_sequence = generate_random_sequence(motif_length, probabilities)
                         random_sequences.append(random_sequence)
-                        pbar.update(1)
+                        pbar.update(total_iterations/100)
 
                     # Calculation of random scores from the different matrices
                     random_scores = {}
@@ -330,7 +330,7 @@ def aio_page():
                             random_score = calculate_score(sequence, matrix)
                             normalized_random_score = (random_score - min_score) / (max_score - min_score)
                             matrix_random_scores.append(normalized_random_score)
-                            pbar.update(1)
+                            pbar.update(total_iterations/100)
 
                         random_scores = np.array(matrix_random_scores)
 
@@ -346,7 +346,7 @@ def aio_page():
                             p_value = 0
 
                         found_positions.append((position, seq, normalized_score, p_value))
-                        pbar.update(1)
+                        pbar.update(total_iterations/100)
 
                     # Sort positions in descending order of score percentage
                     found_positions.sort(key=lambda x: x[1], reverse=True)
