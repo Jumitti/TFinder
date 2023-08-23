@@ -311,7 +311,7 @@ def aio_page():
                     # Calculation of random scores from the different matrices
                     random_scores = {}
 
-            found_positions = []
+            found_positions = {}
             for matrix_name, matrix in matrices.items():
                 seq_length = len(matrix['A'])
 
