@@ -268,9 +268,9 @@ def aio_page():
 
         total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
         if calc_pvalue:
-            total_iterations = len(matrices.items()) * (total_promoter_region_length + (len(promoters) * 1000000))
+            total_iterations = (len(matrices.items()) * total_promoter_region_length) + (len(matrices.items()) * (len(promoters) * 1000000))
         else:
-            total_iterations = len(matrices.items())*total_promoter_region_length
+            total_iterations = len(matrices.items()) * total_promoter_region_length
 
         with stqdm(total=total_iterations, desc='Calculating scores', mininterval=0.1) as pbar:
 
