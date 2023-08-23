@@ -41,7 +41,6 @@ import datetime
 import matplotlib.pyplot as plt
 from PIL import Image
 import time
-from stqdm import stqdm
 
 
 def aio_page():
