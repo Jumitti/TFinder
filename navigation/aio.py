@@ -962,6 +962,7 @@ def aio_page():
     lines = result_promoter
     promoters = []
     if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
+        button = True
         promoter_region = lines.upper()
         isdna(promoter_region)
         shortened_promoter_name = "n.d."
@@ -969,6 +970,7 @@ def aio_page():
         region = "n.d"
         promoters.append((shortened_promoter_name, promoter_region, found_species, region))
     elif lines.startswith(">"):
+        button = True
         lines = result_promoter.split("\n")
         i = 0
         while i < len(lines):
@@ -998,7 +1000,7 @@ def aio_page():
                 i += 1
             else:
                 i += 1
-
+    button = False
     if jaspar == 'JASPAR_ID':
         sequence_consensus_input = entry_sequence
     else:
