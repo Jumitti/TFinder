@@ -327,7 +327,6 @@ def aio_page():
                         random_scores = np.array(matrix_random_scores)
 
                     for i in range(len(promoter_region) - seq_length + 1):
-                        pbar.update(1)
                         seq = promoter_region[i:i + seq_length]
                         score = calculate_score(seq, matrix)
                         normalized_score = (score - min_score) / (max_score - min_score)
@@ -339,6 +338,7 @@ def aio_page():
                             p_value = 0
 
                         found_positions.append((position, seq, normalized_score, p_value))
+                        pbar.update(1)
 
                     # Sort positions in descending order of score percentage
                     found_positions.sort(key=lambda x: x[1], reverse=True)
