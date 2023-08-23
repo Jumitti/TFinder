@@ -267,10 +267,7 @@ def aio_page():
                     i += 1
 
         total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
-        '''if calc_pvalue:
-            total_iterations = (len(matrices.items()) * (total_promoter_region_length + len(promoter_region)*1000000))
-        else:'''
-        total_iterations = len(matrices.items()) * total_promoter_region_length
+        total_iterations = len(matrices.items())*total_promoter_region_length
 
         with stqdm(total=total_iterations, desc='Calculating scores', mininterval=0.1) as pbar:
 
@@ -299,7 +296,6 @@ def aio_page():
 
                     random_sequences = []
                     for _ in range(num_random_seqs):
-                        pbar.update(1)
                         random_sequence = generate_random_sequence(motif_length, probabilities)
                         random_sequences.append(random_sequence)
 
