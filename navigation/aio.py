@@ -270,7 +270,7 @@ def aio_page():
             seq_length = len(matrix['A'])
 
         total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
-        sequence_iteration = len(matrices.items()) * (total_promoter_region_length - seq_lenght * len(promoters))
+        sequence_iteration = len(matrices.items()) * (total_promoter_region_length - seq_length * len(promoters))
         random_gen = len(promoters) * 1000000
         random_score = random_gen * len(matrices.items())
 
@@ -282,7 +282,6 @@ def aio_page():
         with tqdm(total=total_iterations, desc='Calculating scores', mininterval=0.1) as pbar:
 
             if calc_pvalue:
-
                 for shortened_promoter_name, promoter_region, found_species, region in promoters:
 
                     # Generate random sequences
