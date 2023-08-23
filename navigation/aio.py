@@ -266,100 +266,106 @@ def aio_page():
                 else:
                     i += 1
 
-        if calc_pvalue:
+        st.write(len(promoters))
+
+        total_iterations = len(matrices.items())
+
+        with tqdm(total=total_iterations, desc='Calculating scores', mininterval=1) as pbar:
+
+            if calc_pvalue:
+                for matrix_name, matrix in matrices.items():
+                    seq_length = len(matrix['A'])
+
+                for shortened_promoter_name, promoter_region, found_species, region in promoters:
+
+                    # Generate random sequences
+                    motif_length = seq_length
+                    num_random_seqs = 1000000
+
+                    count_a = promoter_region.count('A')
+                    count_t = promoter_region.count('T')
+                    count_g = promoter_region.count('G')
+                    count_c = promoter_region.count('C')
+
+                    length_prom = len(promoter_region)
+                    percentage_a = count_a / length_prom
+                    percentage_t = count_t / length_prom
+                    percentage_g = count_g / length_prom
+                    percentage_c = count_c / length_prom
+
+                    probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
+
+                    random_sequences = []
+                    for _ in range(num_random_seqs):
+                        random_sequence = generate_random_sequence(motif_length, probabilities)
+                        random_sequences.append(random_sequence)
+
+                    # Calculation of random scores from the different matrices
+                    random_scores = {}
+
             for matrix_name, matrix in matrices.items():
                 seq_length = len(matrix['A'])
 
-            for shortened_promoter_name, promoter_region, found_species, region in promoters:
+                # Max score per matrix
+                max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
 
-                # Generate random sequences
-                motif_length = seq_length
-                num_random_seqs = 1000000
-
-                count_a = promoter_region.count('A')
-                count_t = promoter_region.count('T')
-                count_g = promoter_region.count('G')
-                count_c = promoter_region.count('C')
-
-                length_prom = len(promoter_region)
-                percentage_a = count_a / length_prom
-                percentage_t = count_t / length_prom
-                percentage_g = count_g / length_prom
-                percentage_c = count_c / length_prom
-
-                probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
-
-                random_sequences = []
-                for _ in range(num_random_seqs):
-                    random_sequence = generate_random_sequence(motif_length, probabilities)
-                    random_sequences.append(random_sequence)
-
-                # Calculation of random scores from the different matrices
-                random_scores = {}
-
-        for matrix_name, matrix in stqdm(matrices.items(), desc='test', mininterval=1):
-            seq_length = len(matrix['A'])
-
-            # Max score per matrix
-            max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-            min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-
-            # REF
-            for shortened_promoter_name, promoter_region, found_species, region in promoters:
-                found_positions = []
-
-                if calc_pvalue:
-
-                    matrix_random_scores = []
-                    for random_sequence in random_sequences:
-                        random_score = calculate_score(random_sequence, matrix)
-                        normalized_random_score = (random_score - min_score) / (max_score - min_score)
-                        matrix_random_scores.append(normalized_random_score)
-
-                    random_scores = np.array(matrix_random_scores)
-
-                for i in range(len(promoter_region) - seq_length + 1):
-                    seq = promoter_region[i:i + seq_length]
-                    score = calculate_score(seq, matrix)
-                    normalized_score = (score - min_score) / (max_score - min_score)
-                    position = int(i)
+                # REF
+                for shortened_promoter_name, promoter_region, found_species, region in promoters:
+                    found_positions = []
 
                     if calc_pvalue:
-                        p_value = (random_scores >= normalized_score).sum() / num_random_seqs
-                    else:
-                        p_value = 0
 
-                    found_positions.append((position, seq, normalized_score, p_value))
+                        matrix_random_scores = []
+                        for random_sequence in random_sequences:
+                            random_score = calculate_score(random_sequence, matrix)
+                            normalized_random_score = (random_score - min_score) / (max_score - min_score)
+                            matrix_random_scores.append(normalized_random_score)
 
-                # Sort positions in descending order of score percentage
-                found_positions.sort(key=lambda x: x[1], reverse=True)
+                        random_scores = np.array(matrix_random_scores)
 
-                # Creating a results table
-                if len(found_positions) > 0:
-                    for position, seq, normalized_score, p_value in found_positions:
-                        start_position = max(0, position - 3)
-                        end_position = min(len(promoter_region), position + len(seq) + 3)
-                        sequence_with_context = promoter_region[start_position:end_position]
+                    for i in range(len(promoter_region) - seq_length + 1):
+                        seq = promoter_region[i:i + seq_length]
+                        score = calculate_score(seq, matrix)
+                        normalized_score = (score - min_score) / (max_score - min_score)
+                        position = int(i)
 
-                        sequence_parts = []
-                        for j in range(start_position, end_position):
-                            if j < position or j >= position + len(seq):
-                                sequence_parts.append(sequence_with_context[j - start_position].lower())
-                            else:
-                                sequence_parts.append(sequence_with_context[j - start_position].upper())
+                        if calc_pvalue:
+                            p_value = (random_scores >= normalized_score).sum() / num_random_seqs
+                        else:
+                            p_value = 0
 
-                        sequence_with_context = ''.join(sequence_parts)
-                        tis_position = position - tis_value
+                        found_positions.append((position, seq, normalized_score, p_value))
 
-                        if normalized_score >= threshold:
-                            row = [str(position).ljust(8),
-                                   str(tis_position).ljust(15),
-                                   sequence_with_context,
-                                   "{:.6f}".format(normalized_score).ljust(12)]
-                            if calc_pvalue:
-                                row.append("{:.3e}".format(p_value).ljust(12))
-                            row += [shortened_promoter_name, found_species, region]
-                            table2.append(row)
+                    # Sort positions in descending order of score percentage
+                    found_positions.sort(key=lambda x: x[1], reverse=True)
+
+                    # Creating a results table
+                    if len(found_positions) > 0:
+                        for position, seq, normalized_score, p_value in found_positions:
+                            start_position = max(0, position - 3)
+                            end_position = min(len(promoter_region), position + len(seq) + 3)
+                            sequence_with_context = promoter_region[start_position:end_position]
+
+                            sequence_parts = []
+                            for j in range(start_position, end_position):
+                                if j < position or j >= position + len(seq):
+                                    sequence_parts.append(sequence_with_context[j - start_position].lower())
+                                else:
+                                    sequence_parts.append(sequence_with_context[j - start_position].upper())
+
+                            sequence_with_context = ''.join(sequence_parts)
+                            tis_position = position - tis_value
+
+                            if normalized_score >= threshold:
+                                row = [str(position).ljust(8),
+                                       str(tis_position).ljust(15),
+                                       sequence_with_context,
+                                       "{:.6f}".format(normalized_score).ljust(12)]
+                                if calc_pvalue:
+                                    row.append("{:.3e}".format(p_value).ljust(12))
+                                row += [shortened_promoter_name, found_species, region]
+                                table2.append(row)
 
         if len(table2) > 0:
             table2.sort(key=lambda x: float(x[3]), reverse=True)
