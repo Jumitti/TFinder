@@ -301,6 +301,7 @@ def aio_page():
                     for _ in range(num_random_seqs):
                         random_sequence = generate_random_sequence(motif_length, probabilities)
                         random_sequences.append(random_sequence)
+                        pbar.update(1)
 
                     # Calculation of random scores from the different matrices
                     random_scores = {}
