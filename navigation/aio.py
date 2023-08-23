@@ -992,6 +992,9 @@ def aio_page():
 
     with BSFcol2:
         st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
+        if st.ckeckbox("Automatic threshold", value=True):
+            threshold_entry = 0
+        else:
         threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.0, 1.0, 0.85, step=0.05,
                                     label_visibility="collapsed")
     with BSFcol3:
