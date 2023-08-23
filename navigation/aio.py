@@ -297,7 +297,7 @@ def aio_page():
                 # Calculation of random scores from the different matrices
                 random_scores = {}
 
-        for matrix_name, matrix in stqdm(matrices.items()):
+        for matrix_name, matrix in stqdm(matrices.items(), desc='test', mininterval=1):
             seq_length = len(matrix['A'])
 
             # Max score per matrix
