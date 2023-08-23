@@ -267,10 +267,7 @@ def aio_page():
                     i += 1
 
         total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
-
-        st.write(total_promoter_region_length)
-
-        total_iterations = len(matrices.items())*len(total_promoter_region_length)
+        total_iterations = len(matrices.items())*total_promoter_region_length
 
         with stqdm(total=total_iterations, desc='Calculating scores', mininterval=1) as pbar:
 
