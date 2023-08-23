@@ -620,6 +620,8 @@ def aio_page():
         st.altair_chart(chart, theme=None, use_container_width=True)
 
     # Disposition
+    runBSF = False
+
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
     colprom1, colprom2 = st.columns([0.8, 1.2], gap="small")
 
