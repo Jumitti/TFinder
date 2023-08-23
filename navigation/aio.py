@@ -41,7 +41,7 @@ import datetime
 import matplotlib.pyplot as plt
 from PIL import Image
 import time
-import stqdm
+from tqdm import tqdm
 
 
 def aio_page():
@@ -276,7 +276,7 @@ def aio_page():
         else:
             total_iterations = sequence_iteration
 
-        with stqdm(total=total_iterations, desc='Calculating scores', mininterval=0.1) as pbar:
+        with tqdm(total=total_iterations, desc='Calculating scores', mininterval=0.1) as pbar:
 
             if calc_pvalue:
                 for matrix_name, matrix in matrices.items():
