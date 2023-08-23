@@ -1004,8 +1004,9 @@ def aio_page():
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times')
         if total_promoter > 10:
             calc_pvalue_stop = True
+            st.warning('p_value not allowed. Insufficient server resource.')
         else:
-            calc_pvalue_stop = True
+            calc_pvalue_stop = False
         calc_pvalue = st.checkbox('_p-value_', disabled=calc_pvalue_stop)
 
     # Run Responsive Elements finder
