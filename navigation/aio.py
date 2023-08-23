@@ -353,7 +353,10 @@ def aio_page():
                     if len(found_positions) > 0:
                         highest_normalized_score = max(
                             [normalized_score for _, _, normalized_score, _ in found_positions])
-                        threshold = highest_normalized_score - 0.10
+                        if highest_normalized_score >= 0.6:
+                            threshold = highest_normalized_score - 0.10
+                        else:
+                            threshold = 0.5
 
                         for position, seq, normalized_score, p_value in found_positions:
                             start_position = max(0, position - 3)
