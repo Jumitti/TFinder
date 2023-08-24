@@ -284,6 +284,7 @@ def aio_page():
             total_iterations = sequence_iteration
         num_random_seqs = 1000000
 
+
         with stqdm(total=total_iterations, desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**', mininterval=0.1) as pbar:
             if calc_pvalue and total_promoter > 10:
                 percentage_a = 0.275
@@ -294,6 +295,19 @@ def aio_page():
                 probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
                 random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
+
+            if calc_pvalue and total_promoter > 10:
+                for matrix_name, matrix in matrices.items():
+                    random_scores = {}
+                    matrix_random_scores = []
+                    for random_sequence in random_sequences:
+                        sequence = random_sequence
+                        random_score = calculate_score(sequence, matrix)
+                        normalized_random_score = (random_score - min_score) / (max_score - min_score)
+                        matrix_random_scores.append(normalized_random_score)
+                        pbar.update(1)
+
+                    random_scores = np.array(matrix_random_scores)
 
             for shortened_promoter_name, promoter_region, found_species, region in promoters:
                 if calc_pvalue and total_promoter <= 10:
@@ -312,15 +326,16 @@ def aio_page():
 
                     random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
 
+                    random_scores = {}
+
                 for matrix_name, matrix in matrices.items():
                     found_positions = []
-                    random_scores = {}
 
                     # Max score per matrix
                     max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
                     min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
 
-                    if calc_pvalue:
+                    if calc_pvalue and total_promoter <= 10:
                         matrix_random_scores = []
                         for random_sequence in random_sequences:
                             sequence = random_sequence
