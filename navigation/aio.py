@@ -879,13 +879,18 @@ def aio_page():
                     else:
                         region = "n.d"
                 promoter_region = lines[i + 1].upper()
-                isdna(promoter_region)
-                promoters.append((shortened_promoter_name, promoter_region, found_species, region))
-                i += 1
+                try:
+                    isdna(promoter_region)
+                    error_input_im = True
+                    promoters.append((shortened_promoter_name, promoter_region, found_species, region))
+                    i += 1
+                except Exception as e:
+                    error_input_im = False
+                    st.error(e)
             else:
                 i += 1
     else:
-        button = True
+        error_input_im = True
 
     total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
     total_promoter = len(promoters)
