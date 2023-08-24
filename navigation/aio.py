@@ -177,7 +177,6 @@ def aio_page():
                 species_API = gene_info['organism']['scientificname']
             else:
                 st.error(f'Please verify ID of {gene_id}')
-                continue
 
             dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
 
