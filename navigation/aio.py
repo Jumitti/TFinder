@@ -604,10 +604,10 @@ def aio_page():
             species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
             results_gene_list = []
             data = []
-            for gene_input in stqdm(gene_list, desc="Analyse genes...", mininterval=0.1) :
+            row = [gene_input]
+            for gene_input in stqdm(gene_list, desc="Analyse genes...", mininterval=0.1):
                 time.sleep(0.25)
                 if not gene_input.isdigit():
-                    row = [gene_input]
 
                     for species_test in species_list:
                         time.sleep(0.5)
@@ -622,17 +622,17 @@ def aio_page():
                             else:
                                 row.append("❌")
 
-                    data.append(row)
-
                     if gene_input.isdigit():
                         gene_id = gene_input
                         gene_info = get_gene_info(gene_id)
                         if not 'chraccver' in str(gene_info):
                             st.error(f'Please verify ID of {gene_id}')
 
-                species_columns = ['Gene'] + species_list
-                df = pd.DataFrame(data, columns=species_columns)
-                st.dataframe(df, hide_index=True)
+            data.append(row)
+            species_columns = ['Gene'] + species_list
+            dfgene = pd.DataFrame(data, columns=species_columns)
+            st.session_state['dfgene'] = degene
+            st.dataframe(st.session_state['dfgene'], hide_index=True)
 
     with colprom2:
         tab1, tab2 = st.tabs(['Default', 'Advance'])
