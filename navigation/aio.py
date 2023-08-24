@@ -847,7 +847,7 @@ def aio_page():
     promoters = []
     if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
         promoter_region = lines.upper()
-        isdna(promoter_region)
+        isfasta = isdna(promoter_region)
         shortened_promoter_name = "n.d."
         found_species = "n.d"
         region = "n.d"
