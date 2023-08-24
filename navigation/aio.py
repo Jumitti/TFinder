@@ -1052,15 +1052,7 @@ def aio_page():
 
     matrices = transform_matrix(matrix)
     st.markdown("")
-    if 'runBSF' not in st.session_state:
-        runBSF = threshold + tis_value + total_promoter_region_length
-        runBSFmat = matrices
-        runBSFprom = promoters
-    elif runBSF != st.session_state['runBSF'] or runBSFmat != st.session_state['runBSFmat'] or runBSFprom != st.session_state['runBSFprom'] :
-        st.experimental_rerun()
-    st.session_state['runBSF'] = threshold + tis_value + total_promoter_region_length
-    st.session_state['runBSFmat'] = matrices
-    st.session_state['runBSFprom'] = promoters
+    st.experimental_rerun()
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
         table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length)
         st.session_state['table2'] = table2
