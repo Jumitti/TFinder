@@ -299,6 +299,22 @@ def aio_page():
 
             # REF
             for shortened_promoter_name, promoter_region, found_species, region in promoters:
+                if calc_pvalue and total_promoter <= 10:
+                    count_a = promoter_region.count('A')
+                    count_t = promoter_region.count('T')
+                    count_g = promoter_region.count('G')
+                    count_c = promoter_region.count('C')
+
+                    length_prom = len(promoter_region)
+                    percentage_a = count_a / length_prom
+                    percentage_t = count_t / length_prom
+                    percentage_g = count_g / length_prom
+                    percentage_c = count_c / length_prom
+
+                    probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
+
+                    random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
+
                 for matrix_name, matrix in matrices.items():
                     found_positions = []
                     random_scores = {}
@@ -307,22 +323,6 @@ def aio_page():
                     # Max score per matrix
                     max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
                     min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-
-                    if calc_pvalue and total_promoter <= 10:
-                        count_a = promoter_region.count('A')
-                        count_t = promoter_region.count('T')
-                        count_g = promoter_region.count('G')
-                        count_c = promoter_region.count('C')
-
-                        length_prom = len(promoter_region)
-                        percentage_a = count_a / length_prom
-                        percentage_t = count_t / length_prom
-                        percentage_g = count_g / length_prom
-                        percentage_c = count_c / length_prom
-
-                        probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
-
-                        random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
 
                     if calc_pvalue:
                         matrix_random_scores = []
