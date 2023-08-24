@@ -632,6 +632,7 @@ def aio_page():
             species_columns = ['Gene'] + species_list
             dfgene = pd.DataFrame(data, columns=species_columns)
             st.session_state['dfgene'] = dfgene
+        if 'dfgene' in st.session_state:
             st.dataframe(st.session_state['dfgene'], hide_index=True)
 
     with colprom2:
