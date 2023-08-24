@@ -53,6 +53,41 @@ def aio_page():
         complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
         return complement_sequence
 
+    def analyse_gene(gene_list):
+        species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
+        results_gene_list = []
+        data = []
+        for gene_input in stqdm(gene_list,
+                                desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
+                                mininterval=0.1):
+            time.sleep(0.25)
+            if not gene_input.isdigit():
+                row = [gene_input]
+                for species_test in species_list:
+                    time.sleep(0.5)
+                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
+                    response = requests.get(url)
+
+                    if response.status_code == 200:
+                        response_data = response.json()
+
+                        if response_data['esearchresult']['count'] != '0':
+                            row.append("✅")
+                        else:
+                            row.append("❌")
+
+                data.append(row)
+
+            if gene_input.isdigit():
+                gene_id = gene_input
+                gene_info = get_gene_info(gene_id)
+                if not 'chraccver' in str(gene_info):
+                    st.error(f'Please verify ID of {gene_id}')
+
+        species_columns = ['Gene'] + species_list
+        dfgene = pd.DataFrame(data, columns=species_columns)
+        return dfgene
+
     # Convert gene to ENTREZ_GENE_ID
     def convert_gene_to_entrez_id(gene, species):
         if gene.isdigit():
@@ -155,11 +190,9 @@ def aio_page():
                 if prom_term == 'Promoter':
                     result_promoter.append(
                         f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {upstream}\n{dna_sequence}\n")
-                    st.session_state['result_promoter'] = result_promoter
                 else:
                     result_promoter.append(
                         f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {upstream}\n{dna_sequence}\n")
-                    st.session_state['result_promoter'] = result_promoter
 
             return result_promoter
 
@@ -198,6 +231,18 @@ def aio_page():
             'Reversed Complement': reversed_complement_matrix
         }
 
+    # Generate random sequences for p_value
+    def generate_ranseq(probabilities, seq_length, pbar, num_random_seqs):
+        motif_length = seq_length
+        random_sequences = []
+
+        for _ in range(num_random_seqs):
+            random_sequence = generate_random_sequence(motif_length, probabilities)
+            random_sequences.append(random_sequence)
+            pbar.update(1)
+
+        return random_sequences
+
     # Calculate matrix score
     def calculate_score(sequence, matrix):
         score = 0
@@ -217,36 +262,60 @@ def aio_page():
     def isdna(promoter_region):
         DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
         if not all(char in DNA_code for char in promoter_region):
-            raise Exception("Please use ONLY A, T, G, C, N in your sequence")
-
-        return
+            isfasta = True
+            return isfasta
+        else:
+            isfasta = False
+            return isfasta
 
     # Find with JASPAR and manual matrix
-    def search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length):
+    def search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length, total_promoter):
         global table2
         table2 = []
 
-        for matrix_name, matrix in matrices.items():
-            seq_length = len(matrix['A'])
-
+        seq_length = len(matrices['Original']['A'])
         sequence_iteration = len(matrices.items()) * total_promoter_region_length
-        random_gen = len(promoters) * 1000000
+        if total_promoter <= 10:
+            random_gen = len(promoters) * 1000000
+        else:
+            random_gen = 1000000
         random_score = random_gen * len(matrices.items())
 
         if calc_pvalue:
             total_iterations = sequence_iteration + random_gen + random_score
         else:
             total_iterations = sequence_iteration
+        num_random_seqs = 1000000
 
-        with stqdm(total=total_iterations, desc='Calculating scores', mininterval=0.1) as pbar:
 
-            if calc_pvalue:
-                for shortened_promoter_name, promoter_region, found_species, region in promoters:
+        with stqdm(total=total_iterations, desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**', mininterval=0.1) as pbar:
+            if calc_pvalue and total_promoter > 10:
+                percentage_a = 0.275
+                percentage_t = 0.275
+                percentage_g = 0.225
+                percentage_c = 0.225
 
-                    # Generate random sequences
-                    motif_length = seq_length
-                    num_random_seqs = 1000000
+                probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
+                random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
+
+            if calc_pvalue and total_promoter > 10:
+                for matrix_name, matrix in matrices.items():
+                    max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                    min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                    random_scores = {}
+                    matrix_random_scores = []
+                    for random_sequence in random_sequences:
+                        sequence = random_sequence
+                        random_score = calculate_score(sequence, matrix)
+                        normalized_random_score = (random_score - min_score) / (max_score - min_score)
+                        matrix_random_scores.append(normalized_random_score)
+                        pbar.update(1)
+
+                    random_scores = np.array(matrix_random_scores)
+
+            for shortened_promoter_name, promoter_region, found_species, region in promoters:
+                if calc_pvalue and total_promoter <= 10:
                     count_a = promoter_region.count('A')
                     count_t = promoter_region.count('T')
                     count_g = promoter_region.count('G')
@@ -260,28 +329,19 @@ def aio_page():
 
                     probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
-                    random_sequences = []
-                    for _ in range(num_random_seqs):
-                        random_sequence = generate_random_sequence(motif_length, probabilities)
-                        random_sequences.append(random_sequence)
-                        pbar.update(1)
+                    random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
 
-                    # Calculation of random scores from the different matrices
                     random_scores = {}
+                    st.write(len(random_scores))
 
-            for matrix_name, matrix in matrices.items():
-                seq_length = len(matrix['A'])
-
-                # Max score per matrix
-                max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-                min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-
-                # REF
-                for shortened_promoter_name, promoter_region, found_species, region in promoters:
+                for matrix_name, matrix in matrices.items():
                     found_positions = []
 
-                    if calc_pvalue:
+                    # Max score per matrix
+                    max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                    min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
 
+                    if calc_pvalue and total_promoter <= 10:
                         matrix_random_scores = []
                         for random_sequence in random_sequences:
                             sequence = random_sequence
@@ -299,7 +359,7 @@ def aio_page():
                         position = int(i)
 
                         if calc_pvalue:
-                            p_value = (random_scores >= normalized_score).sum() / num_random_seqs
+                            p_value = (random_scores >= normalized_score).sum() / len(random_scores)
                         else:
                             p_value = 0
 
@@ -465,9 +525,11 @@ def aio_page():
                     pwm_text += base_str
 
                 with REcol2:
+                    st.markdown("PWM",  help="Modification not allowed. Still select and copy for later use.")
                     matrix_text = st.text_area("PWM:", value=pwm_text,
-                                               help="Select and copy for later use. Don't modify.",
-                                               key="non_editable_text")
+                                               label_visibility = 'collapsed',
+                                               height = 125,
+                                               disabled=True)
 
                 with REcol2:
                     sequences_text = fasta_text
@@ -487,7 +549,7 @@ def aio_page():
                     logo = create_web_logo(sequences)
                     st.pyplot(logo.fig)
                     buffer = io.BytesIO()
-                    plt.savefig(buffer, format='jpg')
+                    logo.fig.savefig(buffer, format='png')
                     buffer.seek(0)
 
                     st.session_state['buffer'] = buffer
@@ -578,6 +640,9 @@ def aio_page():
         ).transform_calculate(x=f'datum[{xcol_param.name}]').properties(width=600, height=400).interactive().add_params(gene_region_selection, xcol_param)
         st.altair_chart(chart, theme=None, use_container_width=True)
 
+    if 'button' not in st.session_state:
+        st.session_state.button = False
+
     # Disposition
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
     colprom1, colprom2 = st.columns([0.8, 1.2], gap="small")
@@ -594,43 +659,15 @@ def aio_page():
         gene_id_entry = st.text_area("🔹 :blue[**Step 1.1**] Gene ID:", value="PRKN\n351",
                                      label_visibility='collapsed')
         gene_list = gene_id_entry.strip().split('\n')
+        gene_ids = gene_id_entry.strip().split("\n")
 
         # Verify if gene is available for all species
         if st.button('🔎 Check genes avaibility',
                      help='Sometimes genes do not have the same name in all species or do not exist.'):
-            with st.spinner("Checking genes avaibility..."):
-                species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
-                results_gene_list = []
-                data = []
-                for gene_input in gene_list:
-                    time.sleep(0.25)
-                    if not gene_input.isdigit():
-                        row = [gene_input]
-
-                        for species_test in species_list:
-                            time.sleep(0.5)
-                            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
-                            response = requests.get(url)
-
-                            if response.status_code == 200:
-                                response_data = response.json()
-
-                                if response_data['esearchresult']['count'] != '0':
-                                    row.append("✅")
-                                else:
-                                    row.append("❌")
-
-                        data.append(row)
-
-                    if gene_input.isdigit():
-                        gene_id = gene_input
-                        gene_info = get_gene_info(gene_id)
-                        if not 'chraccver' in str(gene_info):
-                            st.error(f'Please verify ID of {gene_id}')
-
-                species_columns = ['Gene'] + species_list
-                df = pd.DataFrame(data, columns=species_columns)
-                st.dataframe(df, hide_index=True)
+            dfgene = analyse_gene(gene_list)
+            st.session_state['dfgene'] = dfgene
+        if 'dfgene' in st.session_state:
+            st.dataframe(st.session_state['dfgene'], hide_index=True)
 
     with colprom2:
         tab1, tab2 = st.tabs(['Default', 'Advance'])
@@ -663,20 +700,26 @@ def aio_page():
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
 
+            upstream = int(upstream_entry)
+            st.session_state['upstream'] = upstream
+            downstream = int(downstream_entry)
+
             # Run Promoter Finder
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
                 with colprom1:
-                    with st.spinner("Finding promoters..."):
-                        gene_ids = gene_id_entry.strip().split("\n")
-                        upstream = int(upstream_entry)
-                        st.session_state['upstream'] = upstream
-                        downstream = int(downstream_entry)
-                        try:
+                    if 'result_promoter_text' in st.session_state:
+                        del st.session_state['result_promoter_text']
+                    try:
+                        for gene_id in stqdm(gene_ids, desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
+                               mininterval=0.1):
+                            gene_ids = gene_id.strip().split('\n')
                             result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                            st.success(f"{prom_term} extraction complete !")
-                            st.toast(f"{prom_term} extraction complete !", icon='😊')
-                        except Exception as e:
-                            st.error(f"Error finding {prom_term}: {str(e)}")
+                            result_promoter_text = "\n".join(result_promoter)
+                            st.session_state['result_promoter_text'] = result_promoter_text
+                        st.success(f"{prom_term} extraction complete !")
+                        st.toast(f"{prom_term} extraction complete !", icon='😊')
+                    except Exception as e:
+                        st.error(f"Error finding {prom_term}: {str(e)}")
 
         with tab2:
             # Advance mode extraction
@@ -785,13 +828,29 @@ def aio_page():
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
 
-            if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
+            if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)", key='Advance'):
                 with colprom1:
-                    with st.spinner("Finding sequences..."):
-                        st.session_state['upstream'] = upstream_entry
-                        upstream = int(upstream_entry)
-                        downstream = int(downstream_entry)
-                        for gene_info in data_dff.itertuples(index=False):
+                    st.session_state['upstream'] = upstream_entry
+                    upstream = int(upstream_entry)
+                    downstream = int(downstream_entry)
+                    iterration = 0
+                    for gene_info in (data_dff.itertuples(index=False)):
+                        gene_name = gene_info.Gene
+                        gene_ids = gene_name.strip().split('\n')
+                        if gene_name.isdigit():
+                            for search_type in search_types:
+                                if getattr(gene_info, f'{search_type}'):
+                                    iterration += 1
+                        else:
+                            for species in species_list:
+                                for search_type in search_types:
+                                    if getattr(gene_info, f'{species}') and getattr(gene_info,
+                                                                                    f'{search_type}'):
+                                        iterration += 1
+                    with stqdm(total=iterration,
+                               desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
+                               mininterval=0.1) as pbar:
+                        for gene_info in (data_dff.itertuples(index=False)):
                             gene_name = gene_info.Gene
                             gene_ids = gene_name.strip().split('\n')
                             if gene_name.isdigit():
@@ -800,37 +859,40 @@ def aio_page():
                                         prom_term = search_type.capitalize()
                                         species = 'human'  # This is just a remnant of the past
                                         try:
-                                            result_promoter = find_promoters(gene_ids, species, upstream,
-                                                                             downstream)
+                                            result_promoter = find_promoters(gene_ids, species, upstream,downstream)
                                         except Exception as e:
                                             st.error(f"Error finding {gene_ids}: {str(e)}")
+                                        pbar.update(1)
                             else:
                                 for species in species_list:
                                     for search_type in search_types:
-                                        if getattr(gene_info, f'{species}') and getattr(gene_info,
-                                                                                        f'{search_type}'):
+                                        if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
                                             prom_term = search_type.capitalize()
                                             try:
-                                                result_promoter = find_promoters(gene_ids, species, upstream,
-                                                                                 downstream)
+                                                result_promoter = find_promoters(gene_ids, species, upstream,downstream)
                                             except Exception as e:
                                                 st.error(f"Error finding {gene_ids}: {str(e)}")
+                                            pbar.update(1)
+
+                        result_promoter_text = "\n".join(result_promoter)
+                        st.session_state['result_promoter_text'] = result_promoter_text
+                        st.success(f"{prom_term} extraction complete !")
+                        st.toast(f"{prom_term} extraction complete !", icon='😊')
 
     # Promoter output state
     st.divider()
     st.subheader(':blue[Step 2] Binding Sites Finder')
     promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
     with promcol1:
-        if 'result_promoter' not in st.session_state:
-            st.markdown("🔹 :blue[**Step 2.1**] Sequences:")
-            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
-                                           value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).",
-                                           label_visibility='collapsed')
-        else:
-            st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-            result_promoter_text = "\n".join(st.session_state['result_promoter'])
-            result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text,
-                                           label_visibility='collapsed')
+        st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
+        if not 'result_promoter_text' in st.session_state:
+            result_promoter_text = ''
+            st.session_state['result_promoter_text'] = result_promoter_text
+        result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
+                                       value=st.session_state['result_promoter_text'],
+                                       placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
+                                       label_visibility='collapsed', height = 125)
+
     with promcol2:
         st.markdown('')
         st.markdown('')
@@ -845,7 +907,7 @@ def aio_page():
     promoters = []
     if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
         promoter_region = lines.upper()
-        isdna(promoter_region)
+        isfasta = isdna(promoter_region)
         shortened_promoter_name = "n.d."
         found_species = "n.d"
         region = "n.d"
@@ -875,11 +937,15 @@ def aio_page():
                     else:
                         region = "n.d"
                 promoter_region = lines[i + 1].upper()
-                isdna(promoter_region)
+                isfasta = isdna(promoter_region)
                 promoters.append((shortened_promoter_name, promoter_region, found_species, region))
                 i += 1
             else:
                 i += 1
+    elif not lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n", "I", "i", "")):
+        isfasta = True
+    else:
+        isfasta = False
 
     total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
     total_promoter = len(promoters)
@@ -923,9 +989,9 @@ def aio_page():
                 st.markdown("🔹 :blue[**Step 2.3**] Matrix:", help="Only PWM generated with our tools are allowed")
                 matrix_text = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
                                            value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
-                                           label_visibility='collapsed')
+                                           label_visibility='collapsed', height = 125)
 
-                pwm_rows = matrix_text.strip().split('\n')
+                pwm_rows = kmatrix_text.strip().split('\n')
                 pwm = [list(map(str, row.split())) for row in pwm_rows]
 
                 try:
@@ -1001,13 +1067,13 @@ def aio_page():
             threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.5, 1.0, 0.85, step=0.05,
                                     label_visibility="collapsed")
     with BSFcol3:
-        st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times. 10 sequences max.')
+        st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times.')
         if total_promoter > 10:
-            calc_pvalue_stop = True
-            st.warning('⚠️_p-value_ not allowed. 10 sequences max. Insufficient server resource.')
+            st.markdown('⚠️Proportion of A, T, G, C imposed for the calculation of the p-value for more than 10 sequences. See "Resource" for more information')
+            st.markdown('A 0.275 | C 0.225 | G 0.225 | T 0.275')
         else:
-            calc_pvalue_stop = False
-        calc_pvalue = st.checkbox('_p-value_', disabled=calc_pvalue_stop)
+            st.markdown('⚠️Proportion of A, T, G, C depending on the proportions in the sequence. See "Resource" for more information')
+        calc_pvalue = st.checkbox('_p-value_')
 
     # Run Responsive Elements finder
     tis_value = int(entry_tis)
@@ -1020,7 +1086,10 @@ def aio_page():
             button = True
         elif not error_input_im:
             button = True
-        elif error_input_im:
+        elif isfasta:
+            st.error("Please use only A, T, G, C, N in your sequence")
+            button = True
+        else:
             matrix_lines = matrix_text.split('\n')
             matrix = {}
             for line in matrix_lines:
@@ -1031,12 +1100,13 @@ def aio_page():
                     values = [float(value) for value in values]
                     matrix[key.strip()] = values
             button = False
+
+    matrices = transform_matrix(matrix)
+
     st.markdown("")
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
-        if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
-            matrices = transform_matrix(matrix)
-            table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length)
-            st.session_state['table2'] = table2
+        table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length, total_promoter)
+        st.session_state['table2'] = table2
 
     st.divider()
     if 'table2' in st.session_state:
@@ -1051,6 +1121,9 @@ def aio_page():
             tablecol1, tablecol2 = st.columns([0.75, 0.25])
             with tablecol1:
                 st.dataframe(df, hide_index=True)
+                excel_file = io.BytesIO()
+                df.to_excel(excel_file, index=False, sheet_name='Sheet1')
+                excel_file.seek(0)
 
             with tablecol2:
                 st.success(f"Finding responsive elements done !")
@@ -1062,9 +1135,6 @@ def aio_page():
             result_table_output(df)
 
             with tablecol2:
-                excel_file = io.BytesIO()
-                df.to_excel(excel_file, index=False, sheet_name='Sheet1')
-                excel_file.seek(0)
                 st.download_button("💾 Download table (.xlsx)", excel_file,
                                    file_name=f'Results_TFinder_{current_date_time}.xlsx',
                                    mime="application/vnd.ms-excel", key='download-excel')
