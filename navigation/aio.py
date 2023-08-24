@@ -347,7 +347,7 @@ def aio_page():
                             p_value = 0
 
                         should_add = True
-                        for existing_position, existing_normalized_score, _, _ in found_positions:
+                        for existing_position, _, existing_normalized_score, _ in found_positions:
                             if position == existing_position:
                                 if normalized_score <= existing_normalized_score:
                                     should_add = False
