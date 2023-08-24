@@ -1051,7 +1051,7 @@ def aio_page():
             button = False
     st.markdown("")
     with st.form("runBSF"):
-        if st.form_submit_button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button, on_click=click_button):
+        if st.form_submit_button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
             matrices = transform_matrix(matrix)
             table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length)
             st.session_state['table2'] = table2
