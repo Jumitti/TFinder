@@ -238,7 +238,7 @@ def aio_page():
         else:
             total_iterations = sequence_iteration
 
-        with stqdm(total=total_iterations, desc=':blue[Processing...] ⚠️:red[**PLEASE WAIT UNTIL ENDING WITHOUT CHANGE ANYTHING**]', mininterval=0.1) as pbar:
+        with stqdm(total=total_iterations, desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**', mininterval=0.1) as pbar:
 
             if calc_pvalue:
                 for shortened_promoter_name, promoter_region, found_species, region in promoters:
