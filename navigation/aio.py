@@ -664,13 +664,14 @@ def aio_page():
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
 
+            upstream = int(upstream_entry)
+            st.session_state['upstream'] = upstream
+            downstream = int(downstream_entry)
+
             # Run Promoter Finder
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
                 with colprom1:
                     with st.spinner("Finding promoters..."):
-                        upstream = int(upstream_entry)
-                        st.session_state['upstream'] = upstream
-                        downstream = int(downstream_entry)
                         try:
                             result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             st.session_state['result_promoter'] = result_promoter
