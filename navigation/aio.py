@@ -273,7 +273,7 @@ def aio_page():
         global table2
         table2 = []
 
-        selected_matrix = matrices[Original]
+        selected_matrix = matrices['Original']
         seq_length = len(selected_matrix['A'])
         st.write(seq_length)
 
