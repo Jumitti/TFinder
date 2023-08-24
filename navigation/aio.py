@@ -223,7 +223,7 @@ def aio_page():
 
     #For run BSF button
     def click_button():
-        st.session_state.button = not st.session_state.button
+        st.session_state.button = True
 
     # Find with JASPAR and manual matrix
     def search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length):
@@ -1060,7 +1060,6 @@ def aio_page():
             matrices = transform_matrix(matrix)
             table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length)
             st.session_state['table2'] = table2
-            click_button()
 
     st.divider()
     if 'table2' in st.session_state:
