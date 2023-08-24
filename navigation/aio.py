@@ -1054,6 +1054,9 @@ def aio_page():
             tablecol1, tablecol2 = st.columns([0.75, 0.25])
             with tablecol1:
                 st.dataframe(df, hide_index=True)
+                excel_file = io.BytesIO()
+                df.to_excel(excel_file, index=False, sheet_name='Sheet1')
+                excel_file.seek(0)
 
             with tablecol2:
                 st.success(f"Finding responsive elements done !")
@@ -1065,9 +1068,6 @@ def aio_page():
             result_table_output(df)
 
             with tablecol2:
-                excel_file = io.BytesIO()
-                df.to_excel(excel_file, index=False, sheet_name='Sheet1')
-                excel_file.seek(0)
                 st.download_button("💾 Download table (.xlsx)", excel_file,
                                    file_name=f'Results_TFinder_{current_date_time}.xlsx',
                                    mime="application/vnd.ms-excel", key='download-excel')
