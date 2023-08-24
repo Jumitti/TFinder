@@ -274,7 +274,7 @@ def aio_page():
         table2 = []
 
         selected_matrix = matrices['Original']
-        seq_length = len(selected_matrix['A'])
+        seq_length = len(matrices['Original']['A'])
         st.write(seq_length)
 
         sequence_iteration = len(matrices.items()) * total_promoter_region_length
