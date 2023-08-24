@@ -580,15 +580,10 @@ def aio_page():
         st.altair_chart(chart, theme=None, use_container_width=True)
 
     def click_button():
-        stopBSF = True
         st.session_state.button = not st.session_state.button
-
 
     if 'button' not in st.session_state:
         st.session_state.button = False
-        stopBSF = True
-    else:
-        stopBSF = False
 
     # Disposition
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
@@ -604,7 +599,7 @@ def aio_page():
         # Gene ID
         st.markdown("🔹 :blue[**Step 1.1**] Gene ID:", help='NCBI gene name and NCBI gene ID allowed')
         gene_id_entry = st.text_area("🔹 :blue[**Step 1.1**] Gene ID:", value="PRKN\n351",
-                                     label_visibility='collapsed', disabled=stopBSF)
+                                     label_visibility='collapsed')
         gene_list = gene_id_entry.strip().split('\n')
         gene_ids = gene_id_entry.strip().split("\n")
 
@@ -653,19 +648,19 @@ def aio_page():
             st.markdown("🔹 :blue[**Step 1.2**] Select species of gene names:")
             species = st.selectbox("🔹 :blue[**Step 1.2**] Select species of gene names:",
                                    ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0,
-                                   label_visibility='collapsed', disabled=stopBSF)
+                                   label_visibility='collapsed')
 
             # Upstream/Downstream Promoter
             st.markdown("🔹 :blue[**Step 1.3**] Regulatory region:")
             prom_term = st.radio("🔹 :blue[**Step 1.3**] Regulatory region:", ('Promoter', 'Terminator'),
-                                 label_visibility='collapsed', disabled=stopBSF)
+                                 label_visibility='collapsed')
             if prom_term == 'Promoter':
                 st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from the TSS (bp)")
             else:
                 st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from gene end (bp)")
 
             updown_slide = st.slider("🔹 :blue[**Step 1.4**] Upstream/downstream", -10000, 10000,
-                                     (-2000, 2000), step=100, label_visibility='collapsed', disabled=stopBSF)
+                                     (-2000, 2000), step=100, label_visibility='collapsed')
             if prom_term == 'Promoter':
                 st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide),
                          " bp from TSS")
@@ -681,7 +676,7 @@ def aio_page():
             downstream = int(downstream_entry)
 
             # Run Promoter Finder
-            if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)', disabled=stopBSF):
+            if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
                 with colprom1:
                     with st.spinner("Finding promoters..."):
                         if 'result_promoter_text' in st.session_state:
@@ -719,15 +714,15 @@ def aio_page():
             species1, species2, species3, species4, species5 = st.columns(5)
 
             with species1:
-                all_human = st.checkbox("Human", disabled=stopBSF)
+                all_human = st.checkbox("Human")
             with species2:
-                all_mouse = st.checkbox("Mouse", disabled=stopBSF)
+                all_mouse = st.checkbox("Mouse")
             with species3:
-                all_rat = st.checkbox("Rat", disabled=stopBSF)
+                all_rat = st.checkbox("Rat")
             with species4:
-                all_droso = st.checkbox("Drosophila", disabled=stopBSF)
+                all_droso = st.checkbox("Drosophila")
             with species5:
-                all_zebra = st.checkbox("Zebrafish", disabled=stopBSF)
+                all_zebra = st.checkbox("Zebrafish")
 
             st.markdown('**🔹 :blue[Step 1.2]** Select regions for all genes:',
                         help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
@@ -735,9 +730,9 @@ def aio_page():
             region1, region2 = st.columns(2)
 
             with region1:
-                all_prom = st.checkbox("Promoter", disabled=stopBSF)
+                all_prom = st.checkbox("Promoter")
             with region2:
-                all_term = st.checkbox("Terminator", disabled=stopBSF)
+                all_term = st.checkbox("Terminator")
 
             if all_human:
                 data_df["human"] = True
@@ -795,14 +790,14 @@ def aio_page():
 
             updown_slide = st.slider("🔹 :blue[**Step 1.3**] Upstream/downstream from TSS and gene end (bp)",
                                      -10000,
-                                     10000, (-2000, 2000), step=100, label_visibility='collapsed', disabled=stopBSF)
+                                     10000, (-2000, 2000), step=100, label_visibility='collapsed')
             st.write("Upstream: ", min(updown_slide), " bp from TSS and gene end | Downstream: ",
                      max(updown_slide),
                      " bp from TSS and gene end")
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
 
-            if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)", disabled=stopBSF):
+            if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)", key='Advance'):
                 with colprom1:
                     with st.spinner("Finding sequences..."):
                         st.session_state['upstream'] = upstream_entry
@@ -848,7 +843,7 @@ def aio_page():
         result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
                                        value=st.session_state['result_promoter_text'],
                                        placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
-                                       label_visibility='collapsed', disabled=stopBSF)
+                                       label_visibility='collapsed')
 
     with promcol2:
         st.markdown('')
@@ -857,7 +852,7 @@ def aio_page():
         current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         txt_output = f"{result_promoter}"
         st.download_button(label="💾 Download (.fasta)", data=txt_output,
-                           file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain", disabled=stopBSF)
+                           file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain")
 
     # Promoter detection information
     lines = result_promoter
@@ -912,12 +907,12 @@ def aio_page():
     with REcol1:
         st.markdown('🔹 :blue[**Step 2.2**] Responsive elements type:')
         jaspar = st.radio('🔹 :blue[**Step 2.2**] Responsive elements type:', ('Manual sequence', 'JASPAR_ID', 'PWM'),
-                          label_visibility='collapsed', disabled=stopBSF)
+                          label_visibility='collapsed')
     if jaspar == 'JASPAR_ID':
         with REcol1:
             st.markdown("🔹 :blue[**Step 2.3**] JASPAR ID:")
             entry_sequence = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:", value="MA0106.1",
-                                           label_visibility='collapsed', disabled=stopBSF)
+                                           label_visibility='collapsed')
             url = f"https://jaspar.genereg.net/api/v1/matrix/{entry_sequence}/"
             response = requests.get(url)
             if response.status_code == 200:
@@ -939,14 +934,14 @@ def aio_page():
         with REcol1:
             st.markdown('🔹 :blue[**Step 2.2bis**] Matrix:')
             matrix_type = st.radio('🔹 :blue[**Step 2.2bis**] Matrix:', ('With FASTA sequences', 'With PWM'),
-                                   label_visibility='collapsed', disabled=stopBSF)
+                                   label_visibility='collapsed')
         if matrix_type == 'With PWM':
             isUIPAC = True
             with REcol2:
                 st.markdown("🔹 :blue[**Step 2.3**] Matrix:", help="Only PWM generated with our tools are allowed")
                 matrix_text = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
                                            value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
-                                           label_visibility='collapsed', disabled=stopBSF)
+                                           label_visibility='collapsed')
 
                 pwm_rows = kmatrix_text.strip().split('\n')
                 pwm = [list(map(str, row.split())) for row in pwm_rows]
@@ -963,7 +958,7 @@ def aio_page():
                             help='Put FASTA sequences. Same sequence length required ⚠')
                 fasta_text = st.text_area("🔹 :blue[**Step 2.3**] Sequences:",
                                           value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG",
-                                          label_visibility='collapsed', disabled=stopBSF)
+                                          label_visibility='collapsed')
                 fasta_text = fasta_text.upper()
             isUIPAC = True
 
@@ -978,7 +973,7 @@ def aio_page():
         with REcol1:
             st.markdown("🔹 :blue[**Step 2.3**] Responsive element:", help="IUPAC authorized")
             IUPAC = st.text_input("🔹 :blue[**Step 2.3**] Responsive element (IUPAC authorized):", value="GGGRNYYYCC",
-                                  label_visibility='collapsed', disabled=stopBSF)
+                                  label_visibility='collapsed')
             IUPAC = IUPAC.upper()
 
         IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N']
@@ -1008,21 +1003,21 @@ def aio_page():
                     help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
         if 'upstream' not in st.session_state:
             entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
-                                        -10000, 10000, 0, label_visibility="collapsed", disabled=stopBSF)
+                                        -10000, 10000, 0, label_visibility="collapsed")
         else:
             entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
-                                        -10000, 10000, st.session_state['upstream'], label_visibility="collapsed", disabled=stopBSF)
+                                        -10000, 10000, st.session_state['upstream'], label_visibility="collapsed")
 
     # Threshold pvalue
 
     with BSFcol2:
         st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
-        auto_thre = st.checkbox("Automatic threshold", value=True, disabled=stopBSF)
+        auto_thre = st.checkbox("Automatic threshold", value=True)
         if auto_thre:
             threshold_entry = 0
         else:
             threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.5, 1.0, 0.85, step=0.05,
-                                    label_visibility="collapsed", disabled=stopBSF)
+                                    label_visibility="collapsed")
     with BSFcol3:
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times. 10 sequences max.')
         if total_promoter > 10:
@@ -1030,7 +1025,7 @@ def aio_page():
             st.warning('⚠️_p-value_ not allowed. 10 sequences max. Insufficient server resource.')
         else:
             calc_pvalue_stop = False
-        calc_pvalue = st.checkbox('_p-value_', disabled=calc_pvalue_stop or stopBSF)
+        calc_pvalue = st.checkbox('_p-value_', disabled=calc_pvalue_stop)
 
     # Run Responsive Elements finder
     tis_value = int(entry_tis)
