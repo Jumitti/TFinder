@@ -346,7 +346,15 @@ def aio_page():
                         else:
                             p_value = 0
 
-                        found_positions.append((position, seq, normalized_score, p_value))
+                        should_add = True
+                        for existing_position, existing_normalized_score, _, _ in found_positions:
+                            if position == existing_position:
+                                if normalized_score <= existing_normalized_score:
+                                    should_add = False
+                                break
+
+                        if should_add:
+                            found_positions.append((position, seq, normalized_score, p_value))
                         pbar.update(1)
 
                     # Sort positions in descending order of score percentage
