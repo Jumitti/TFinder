@@ -884,7 +884,7 @@ def aio_page():
                 i += 1
             else:
                 i += 1
-    elif not lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n", "I", "i")):
+    elif not lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n", "I", "i", "")):
         isfasta = True
     else:
         isfasta = False
