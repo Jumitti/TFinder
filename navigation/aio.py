@@ -497,6 +497,9 @@ def aio_page():
         else:
             raise Exception(f"You forget FASTA sequences :)")
 
+    def click_button():
+        st.session_state.clicked = True
+
     def email(excel_file, txt_output, email_receiver, body):
         try:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -885,159 +888,164 @@ def aio_page():
     total_promoter = len(promoters)
 
     # RE entry
-    with st.form("runBSF"):
-        REcol1, REcol2 = st.columns([0.30, 0.70])
+    REcol1, REcol2 = st.columns([0.30, 0.70])
+    with REcol1:
+        st.markdown('🔹 :blue[**Step 2.2**] Responsive elements type:')
+        jaspar = st.radio('🔹 :blue[**Step 2.2**] Responsive elements type:', ('Manual sequence', 'JASPAR_ID', 'PWM'),
+                          label_visibility='collapsed')
+    if jaspar == 'JASPAR_ID':
         with REcol1:
-            st.markdown('🔹 :blue[**Step 2.2**] Responsive elements type:')
-            jaspar = st.radio('🔹 :blue[**Step 2.2**] Responsive elements type:', ('Manual sequence', 'JASPAR_ID', 'PWM'),
-                              label_visibility='collapsed')
-        if jaspar == 'JASPAR_ID':
-            with REcol1:
-                st.markdown("🔹 :blue[**Step 2.3**] JASPAR ID:")
-                entry_sequence = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:", value="MA0106.1",
-                                               label_visibility='collapsed')
-                url = f"https://jaspar.genereg.net/api/v1/matrix/{entry_sequence}/"
-                response = requests.get(url)
-                if response.status_code == 200:
-                    response_data = response.json()
-                    TF_name = response_data['name']
-                    TF_species = response_data['species'][0]['name']
-                    st.success(f"{TF_species} transcription factor {TF_name}")
-                    matrix = response_data['pfm']
-                    with REcol2:
-                        st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
-                    button = False
-                    error_input_im = True
-                else:
-                    button = True
-                    error_input_im = False
-                    st.error('Wrong JASPAR_ID')
-
-        elif jaspar == 'PWM':
-            with REcol1:
-                st.markdown('🔹 :blue[**Step 2.2bis**] Matrix:')
-                matrix_type = st.radio('🔹 :blue[**Step 2.2bis**] Matrix:', ('With FASTA sequences', 'With PWM'),
-                                       label_visibility='collapsed')
-            if matrix_type == 'With PWM':
-                isUIPAC = True
+            st.markdown("🔹 :blue[**Step 2.3**] JASPAR ID:")
+            entry_sequence = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:", value="MA0106.1",
+                                           label_visibility='collapsed')
+            url = f"https://jaspar.genereg.net/api/v1/matrix/{entry_sequence}/"
+            response = requests.get(url)
+            if response.status_code == 200:
+                response_data = response.json()
+                TF_name = response_data['name']
+                TF_species = response_data['species'][0]['name']
+                st.success(f"{TF_species} transcription factor {TF_name}")
+                matrix = response_data['pfm']
                 with REcol2:
-                    st.markdown("🔹 :blue[**Step 2.3**] Matrix:", help="Only PWM generated with our tools are allowed")
-                    matrix_text = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
-                                               value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
-                                               label_visibility='collapsed')
-
-                    pwm_rows = matrix_text.strip().split('\n')
-                    pwm = [list(map(str, row.split())) for row in pwm_rows]
-
-                    try:
-                        has_uniform_column_length(pwm)
-                        error_input_im = True
-                    except Exception as e:
-                        error_input_im = False
-                        st.error(e)
+                    st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
+                button = False
+                error_input_im = True
             else:
-                with REcol1:
-                    st.markdown("🔹 :blue[**Step 2.3**] Sequences:",
-                                help='Put FASTA sequences. Same sequence length required ⚠')
-                    fasta_text = st.text_area("🔹 :blue[**Step 2.3**] Sequences:",
-                                              value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG",
-                                              label_visibility='collapsed')
-                    fasta_text = fasta_text.upper()
-                isUIPAC = True
+                button = True
+                error_input_im = False
+                st.error('Wrong JASPAR_ID')
+
+    elif jaspar == 'PWM':
+        with REcol1:
+            st.markdown('🔹 :blue[**Step 2.2bis**] Matrix:')
+            matrix_type = st.radio('🔹 :blue[**Step 2.2bis**] Matrix:', ('With FASTA sequences', 'With PWM'),
+                                   label_visibility='collapsed')
+        if matrix_type == 'With PWM':
+            isUIPAC = True
+            with REcol2:
+                st.markdown("🔹 :blue[**Step 2.3**] Matrix:", help="Only PWM generated with our tools are allowed")
+                matrix_text = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
+                                           value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
+                                           label_visibility='collapsed')
+
+                pwm_rows = matrix_text.strip().split('\n')
+                pwm = [list(map(str, row.split())) for row in pwm_rows]
 
                 try:
-                    matrix_text, buffer = im(fasta_text)
+                    has_uniform_column_length(pwm)
                     error_input_im = True
                 except Exception as e:
                     error_input_im = False
                     st.error(e)
-
         else:
             with REcol1:
-                st.markdown("🔹 :blue[**Step 2.3**] Responsive element:", help="IUPAC authorized")
-                IUPAC = st.text_input("🔹 :blue[**Step 2.3**] Responsive element (IUPAC authorized):", value="GGGRNYYYCC",
-                                      label_visibility='collapsed')
-                IUPAC = IUPAC.upper()
+                st.markdown("🔹 :blue[**Step 2.3**] Sequences:",
+                            help='Put FASTA sequences. Same sequence length required ⚠')
+                fasta_text = st.text_area("🔹 :blue[**Step 2.3**] Sequences:",
+                                          value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG",
+                                          label_visibility='collapsed')
+                fasta_text = fasta_text.upper()
+            isUIPAC = True
 
-            IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N']
+            try:
+                matrix_text, buffer = im(fasta_text)
+                error_input_im = True
+            except Exception as e:
+                error_input_im = False
+                st.error(e)
 
-            if all(char in IUPAC_code for char in IUPAC):
-                isUIPAC = True
+    else:
+        with REcol1:
+            st.markdown("🔹 :blue[**Step 2.3**] Responsive element:", help="IUPAC authorized")
+            IUPAC = st.text_input("🔹 :blue[**Step 2.3**] Responsive element (IUPAC authorized):", value="GGGRNYYYCC",
+                                  label_visibility='collapsed')
+            IUPAC = IUPAC.upper()
 
-                sequences = generate_iupac_variants(IUPAC)
-                fasta_text = ""
-                for i, seq in enumerate(sequences):
-                    fasta_text += f">seq{i + 1}\n{seq}\n"
+        IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N']
 
-                try:
-                    matrix_text, buffer = im(fasta_text)
-                    error_input_im = True
-                except Exception as e:
-                    error_input_im = False
-                    st.error(e)
+        if all(char in IUPAC_code for char in IUPAC):
+            isUIPAC = True
 
-            else:
-                isUIPAC = False
+            sequences = generate_iupac_variants(IUPAC)
+            fasta_text = ""
+            for i, seq in enumerate(sequences):
+                fasta_text += f">seq{i + 1}\n{seq}\n"
 
-        # TSS entry
-        BSFcol1, BSFcol2, BSFcol3 = st.columns([2, 2, 2], gap="medium")
-        with BSFcol1:
-            st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
-                        help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
-            if 'upstream' not in st.session_state:
-                entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
-                                            -10000, 10000, 0, label_visibility="collapsed")
-            else:
-                entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
-                                            -10000, 10000, st.session_state['upstream'], label_visibility="collapsed")
+            try:
+                matrix_text, buffer = im(fasta_text)
+                error_input_im = True
+            except Exception as e:
+                error_input_im = False
+                st.error(e)
 
-        # Threshold pvalue
-
-        with BSFcol2:
-            st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
-            auto_thre = st.checkbox("Automatic threshold", value=True)
-            if auto_thre:
-                threshold_entry = 0
-            else:
-                threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.5, 1.0, 0.85, step=0.05,
-                                        label_visibility="collapsed")
-        with BSFcol3:
-            st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times. 10 sequences max.')
-            if total_promoter > 10:
-                calc_pvalue_stop = True
-                st.warning('⚠️_p-value_ not allowed. 10 sequences max. Insufficient server resource.')
-            else:
-                calc_pvalue_stop = False
-            calc_pvalue = st.checkbox('_p-value_', disabled=calc_pvalue_stop)
-
-        # Run Responsive Elements finder
-        tis_value = int(entry_tis)
-        threshold = float(threshold_entry)
-        if jaspar == 'JASPAR_ID':
-            sequence_consensus_input = entry_sequence
         else:
-            if not isUIPAC:
-                st.error("Please use IUPAC code for Responsive Elements")
-                button = True
-            elif not error_input_im:
-                button = True
-            elif error_input_im:
-                matrix_lines = matrix_text.split('\n')
-                matrix = {}
-                for line in matrix_lines:
-                    line = line.strip()
-                    if line:
-                        key, values = line.split('[', 1)
-                        values = values.replace(']', '').split()
-                        values = [float(value) for value in values]
-                        matrix[key.strip()] = values
-                button = False
-        st.markdown("")
-        if st.form_submit_button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
-            if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
-                matrices = transform_matrix(matrix)
-                table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length)
-                st.session_state['table2'] = table2
+            isUIPAC = False
+
+    # TSS entry
+    BSFcol1, BSFcol2, BSFcol3 = st.columns([2, 2, 2], gap="medium")
+    with BSFcol1:
+        st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
+                    help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
+        if 'upstream' not in st.session_state:
+            entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
+                                        -10000, 10000, 0, label_visibility="collapsed")
+        else:
+            entry_tis = st.number_input("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
+                                        -10000, 10000, st.session_state['upstream'], label_visibility="collapsed")
+
+    # Threshold pvalue
+
+    with BSFcol2:
+        st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
+        auto_thre = st.checkbox("Automatic threshold", value=True)
+        if auto_thre:
+            threshold_entry = 0
+        else:
+            threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.5, 1.0, 0.85, step=0.05,
+                                    label_visibility="collapsed")
+    with BSFcol3:
+        st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times. 10 sequences max.')
+        if total_promoter > 10:
+            calc_pvalue_stop = True
+            st.warning('⚠️_p-value_ not allowed. 10 sequences max. Insufficient server resource.')
+        else:
+            calc_pvalue_stop = False
+        calc_pvalue = st.checkbox('_p-value_', disabled=calc_pvalue_stop)
+
+    # Run Responsive Elements finder
+    tis_value = int(entry_tis)
+    threshold = float(threshold_entry)
+    if jaspar == 'JASPAR_ID':
+        sequence_consensus_input = entry_sequence
+    else:
+        if not isUIPAC:
+            st.error("Please use IUPAC code for Responsive Elements")
+            button = True
+        elif not error_input_im:
+            button = True
+        elif error_input_im:
+            matrix_lines = matrix_text.split('\n')
+            matrix = {}
+            for line in matrix_lines:
+                line = line.strip()
+                if line:
+                    key, values = line.split('[', 1)
+                    values = values.replace(']', '').split()
+                    values = [float(value) for value in values]
+                    matrix[key.strip()] = values
+            button = False
+    st.markdown("")
+    if 'clicked' not in st.session_state:
+        st.session_state.clicked = False
+
+    st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", on_click=click_button, use_container_width=True, disabled=button)
+    if st.session_state.clicked:
+        st.session_state.clicked = False
+        if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
+            matrices = transform_matrix(matrix)
+            table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length)
+            st.session_state.clicked = False
+            st.session_state['table2'] = table2
 
     st.divider()
     if 'table2' in st.session_state:
