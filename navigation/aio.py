@@ -1037,7 +1037,7 @@ def aio_page():
     if 'clicked' not in st.session_state:
         st.session_state.clicked = False
     form = st.form("runBSF")
-    form.st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", on_click=click_button, use_container_width=True, disabled=button)
+    form.form_submit_button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", on_click=click_button, use_container_width=True, disabled=button)
     if st.session_state.clicked:
         st.session_state.clicked = False
         if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
