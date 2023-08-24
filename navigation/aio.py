@@ -231,6 +231,19 @@ def aio_page():
             'Reversed Complement': reversed_complement_matrix
         }
 
+    # Generate random sequences for p_value
+    def generate_ranseq(num_random_seqs, motif_length, probabilities, seq_length):
+        motif_length = seq_length
+        num_random_seqs = 1000000
+        random_sequences = []
+
+        for _ in range(num_random_seqs):
+            random_sequence = generate_random_sequence(motif_length, probabilities)
+            random_sequences.append(random_sequence)
+            pbar.update(1)
+
+        return random_sequences
+
     # Calculate matrix score
     def calculate_score(sequence, matrix):
         score = 0
@@ -257,7 +270,7 @@ def aio_page():
             return isfasta
 
     # Find with JASPAR and manual matrix
-    def search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length):
+    def search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length, total_promoter):
         global table2
         table2 = []
 
@@ -276,33 +289,35 @@ def aio_page():
         with stqdm(total=total_iterations, desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**', mininterval=0.1) as pbar:
 
             if calc_pvalue:
-                for shortened_promoter_name, promoter_region, found_species, region in promoters:
-
-                    # Generate random sequences
-                    motif_length = seq_length
-                    num_random_seqs = 1000000
-
-                    count_a = promoter_region.count('A')
-                    count_t = promoter_region.count('T')
-                    count_g = promoter_region.count('G')
-                    count_c = promoter_region.count('C')
-
-                    length_prom = len(promoter_region)
-                    percentage_a = count_a / length_prom
-                    percentage_t = count_t / length_prom
-                    percentage_g = count_g / length_prom
-                    percentage_c = count_c / length_prom
+                if total_promoter > 10:
+                    percentage_a = 0.275
+                    percentage_t = 0.275
+                    percentage_g = 0.225
+                    percentage_c = 0.225
 
                     probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
-                    random_sequences = []
-                    for _ in range(num_random_seqs):
-                        random_sequence = generate_random_sequence(motif_length, probabilities)
-                        random_sequences.append(random_sequence)
-                        pbar.update(1)
+                    random_sequences = generate_ranseq(num_random_seqs, motif_length, probabilities, seq_lenght)
 
-                    # Calculation of random scores from the different matrices
-                    random_scores = {}
+                else:
+                    for shortened_promoter_name, promoter_region, found_species, region in promoters:
+                        count_a = promoter_region.count('A')
+                        count_t = promoter_region.count('T')
+                        count_g = promoter_region.count('G')
+                        count_c = promoter_region.count('C')
+
+                        length_prom = len(promoter_region)
+                        percentage_a = count_a / length_prom
+                        percentage_t = count_t / length_prom
+                        percentage_g = count_g / length_prom
+                        percentage_c = count_c / length_prom
+
+                        probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
+
+                        random_sequences = generate_ranseq(num_random_seqs, motif_length, probabilities, seq_lenght)
+
+                # Calculation of random scores from the different matrices
+                random_scores = {}
 
             for matrix_name, matrix in matrices.items():
                 seq_length = len(matrix['A'])
@@ -1024,11 +1039,11 @@ def aio_page():
     with BSFcol3:
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times. 10 sequences max.')
         if total_promoter > 10:
-            calc_pvalue_stop = True
-            st.warning('⚠️_p-value_ not allowed. 10 sequences max. Insufficient server resource.')
+            st.markdown('⚠ Proportion of A, T, G, C imposed for the calculation of the p-value for more than 10 sequences')
+            st.markdown('A 0.275 | C 0.225 | G 0.225 | T 0.275')
         else:
-            calc_pvalue_stop = False
-        calc_pvalue = st.checkbox('_p-value_', disabled=calc_pvalue_stop)
+            st.markdown('Proportion of A, T, G, C depending on the proportions in the sequence')
+        calc_pvalue = st.checkbox('_p-value_')
 
     # Run Responsive Elements finder
     tis_value = int(entry_tis)
@@ -1060,7 +1075,7 @@ def aio_page():
 
     st.markdown("")
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
-        table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length)
+        table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length, total_promoter)
         st.session_state['table2'] = table2
 
     st.divider()
