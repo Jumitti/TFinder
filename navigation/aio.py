@@ -832,6 +832,7 @@ def aio_page():
             result_promoter_text = "\n".join(result_promoter)
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text,
                                            label_visibility='collapsed')
+            st.session_state['result_promoter'] = result_promoter
     with promcol2:
         st.markdown('')
         st.markdown('')
