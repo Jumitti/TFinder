@@ -689,7 +689,8 @@ def aio_page():
                     if 'result_promoter_text' in st.session_state:
                         del st.session_state['result_promoter_text']
                     try:
-                        for gene_id in stqdm(gene_ids, desc=''):
+                        for gene_id in stqdm(gene_ids, desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
+                               mininterval=0.1):
                             gene_ids = gene_id.strip().split('\n')
                             result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             result_promoter_text = "\n".join(result_promoter)
@@ -827,7 +828,7 @@ def aio_page():
                                         iterration += 1
                     st.write(iterration)
                     with stqdm(total=iterration,
-                               desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
+                               desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                                mininterval=0.1) as pbar:
                         for gene_info in (data_dff.itertuples(index=False)):
                             gene_name = gene_info.Gene
