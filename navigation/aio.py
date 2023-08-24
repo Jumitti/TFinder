@@ -465,8 +465,9 @@ def aio_page():
                     pwm_text += base_str
 
                 with REcol2:
+                    st.markdown("PWM",  help="Modification not allowed. Still select and copy for later use.")
                     matrix_text = st.text_area("PWM:", value=pwm_text,
-                                               help="Select and copy for later use. Don't modify.",
+                                               label_visibility = 'collapsed',
                                                disabled=True)
 
                 with REcol2:
@@ -933,7 +934,7 @@ def aio_page():
                                            value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
                                            label_visibility='collapsed')
 
-                pwm_rows = matrix_text.strip().split('\n')
+                pwm_rows = kmatrix_text.strip().split('\n')
                 pwm = [list(map(str, row.split())) for row in pwm_rows]
 
                 try:
