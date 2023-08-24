@@ -287,8 +287,8 @@ def aio_page():
 
         with stqdm(total=total_iterations, desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**', mininterval=0.1) as pbar:
             random_scores = {}
+            num_random_seqs = 1000000
             if calc_pvalue and total_promoter > 10:
-                num_random_seqs = 1000000
                 percentage_a = 0.275
                 percentage_t = 0.275
                 percentage_g = 0.225
