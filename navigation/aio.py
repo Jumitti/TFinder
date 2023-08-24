@@ -580,7 +580,13 @@ def aio_page():
         st.altair_chart(chart, theme=None, use_container_width=True)
 
     def click_button():
+        st.session_state.button = not st.session_state.button
         stopBSF = True
+
+    if 'button' not in st.session_state:
+        st.session_state.button = False
+    else:
+        stopBSF = False
 
     # Disposition
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
@@ -1050,7 +1056,8 @@ def aio_page():
                     matrix[key.strip()] = values
             button = False
     st.markdown("")
-    if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button, on_click=click_button):
+    st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button, on_click=click_button)
+    if st.session_state.button:
         matrices = transform_matrix(matrix)
         table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length)
         st.session_state['table2'] = table2
