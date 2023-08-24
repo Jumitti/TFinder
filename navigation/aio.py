@@ -507,6 +507,7 @@ def aio_page():
                     st.markdown("PWM",  help="Modification not allowed. Still select and copy for later use.")
                     matrix_text = st.text_area("PWM:", value=pwm_text,
                                                label_visibility = 'collapsed',
+                                               height = 2000,
                                                disabled=True)
 
                 with REcol2:
