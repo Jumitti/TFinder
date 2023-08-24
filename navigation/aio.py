@@ -167,6 +167,8 @@ def aio_page():
                 entrez_id = convert_gene_to_entrez_id(gene_id, species)
                 if entrez_id != 'not_found':
                     pass
+                else:
+                    return st.error(f'Please verify ID of {gene_id}')
 
             gene_info = get_gene_info(entrez_id)
             if 'chraccver' in str(gene_info):
@@ -176,7 +178,7 @@ def aio_page():
                 chrstop = gene_info['genomicinfo'][0]['chrstop']
                 species_API = gene_info['organism']['scientificname']
             else:
-                st.error(f'Please verify ID of {gene_id}')
+                return st.error(f'Please verify ID of {gene_id}')
 
             dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
 
