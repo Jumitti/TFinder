@@ -806,8 +806,7 @@ def aio_page():
                                         prom_term = search_type.capitalize()
                                         species = 'human'  # This is just a remnant of the past
                                         try:
-                                            result_promoter = find_promoters(gene_ids, species, upstream,
-                                                                             downstream)
+                                            result_promoter = find_promoters(gene_ids, species, upstream,downstream)
                                         except Exception as e:
                                             st.error(f"Error finding {gene_ids}: {str(e)}")
                             else:
@@ -817,8 +816,7 @@ def aio_page():
                                                                                         f'{search_type}'):
                                             prom_term = search_type.capitalize()
                                             try:
-                                                result_promoter = find_promoters(gene_ids, species, upstream,
-                                                                                 downstream)
+                                                result_promoter = find_promoters(gene_ids, species, upstream,downstream)
                                             except Exception as e:
                                                 st.error(f"Error finding {gene_ids}: {str(e)}")
 
@@ -1049,11 +1047,11 @@ def aio_page():
                     matrix[key.strip()] = values
             button = False
     st.markdown("")
-    with st.form("runBSF"):
-        if st.form_submit_button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
-            matrices = transform_matrix(matrix)
-            table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length)
-            st.session_state['table2'] = table2
+    '''with st.form("runBSF"):'''
+    if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
+        matrices = transform_matrix(matrix)
+        table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length)
+        st.session_state['table2'] = table2
 
     st.divider()
     if 'table2' in st.session_state:
