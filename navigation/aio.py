@@ -601,29 +601,28 @@ def aio_page():
         # Verify if gene is available for all species
         if st.button('🔎 Check genes avaibility',
                      help='Sometimes genes do not have the same name in all species or do not exist.'):
-            with st.spinner("Checking genes avaibility..."):
-                species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
-                results_gene_list = []
-                data = []
-                for gene_input in gene_list:
-                    time.sleep(0.25)
-                    if not gene_input.isdigit():
-                        row = [gene_input]
+            species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
+            results_gene_list = []
+            data = []
+            for gene_input in stqdm(gene_list, desc="Analyse genes...", mininterval=0.1) :
+                time.sleep(0.25)
+                if not gene_input.isdigit():
+                    row = [gene_input]
 
-                        for species_test in species_list:
-                            time.sleep(0.5)
-                            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
-                            response = requests.get(url)
+                    for species_test in species_list:
+                        time.sleep(0.5)
+                        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
+                        response = requests.get(url)
 
-                            if response.status_code == 200:
-                                response_data = response.json()
+                        if response.status_code == 200:
+                            response_data = response.json()
 
-                                if response_data['esearchresult']['count'] != '0':
-                                    row.append("✅")
-                                else:
-                                    row.append("❌")
+                            if response_data['esearchresult']['count'] != '0':
+                                row.append("✅")
+                            else:
+                                row.append("❌")
 
-                        data.append(row)
+                    data.append(row)
 
                     if gene_input.isdigit():
                         gene_id = gene_input
@@ -1038,7 +1037,7 @@ def aio_page():
     if 'clicked' not in st.session_state:
         st.session_state.clicked = False
 
-    st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", on_click=click_button, use_container_width=True, disabled=button)
+    form.st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", on_click=click_button, use_container_width=True, disabled=button)
     if st.session_state.clicked:
         st.session_state.clicked = False
         if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
