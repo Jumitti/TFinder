@@ -677,7 +677,6 @@ def aio_page():
                         try:
                             result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             st.success(f"{prom_term} extraction complete !")
-                            st.session_state['dfgene'] = ''
                             st.toast(f"{prom_term} extraction complete !", icon='😊')
                         except Exception as e:
                             st.error(f"Error finding {prom_term}: {str(e)}")
@@ -819,8 +818,6 @@ def aio_page():
                                                                                  downstream)
                                             except Exception as e:
                                                 st.error(f"Error finding {gene_ids}: {str(e)}")
-
-                    st.session_state['dfgene'] = ''
 
     # Promoter output state
     st.divider()
