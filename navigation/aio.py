@@ -326,21 +326,21 @@ def aio_page():
                 max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
                 min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
 
+                if calc_pvalue:
+
+                    matrix_random_scores = []
+                    for random_sequence in random_sequences:
+                        sequence = random_sequence
+                        random_score = calculate_score(sequence, matrix)
+                        normalized_random_score = (random_score - min_score) / (max_score - min_score)
+                        matrix_random_scores.append(normalized_random_score)
+                        pbar.update(1)
+
+                    random_scores = np.array(matrix_random_scores)
+
                 # REF
                 for shortened_promoter_name, promoter_region, found_species, region in promoters:
                     found_positions = []
-
-                    if calc_pvalue:
-
-                        matrix_random_scores = []
-                        for random_sequence in random_sequences:
-                            sequence = random_sequence
-                            random_score = calculate_score(sequence, matrix)
-                            normalized_random_score = (random_score - min_score) / (max_score - min_score)
-                            matrix_random_scores.append(normalized_random_score)
-                            pbar.update(1)
-
-                        random_scores = np.array(matrix_random_scores)
 
                     for i in range(len(promoter_region) - seq_length + 1):
                         seq = promoter_region[i:i + seq_length]
