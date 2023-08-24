@@ -43,6 +43,7 @@ from PIL import Image
 import time
 from tqdm import tqdm
 from stqdm import stqdm
+import SessionState
 
 
 def aio_page():
@@ -581,6 +582,13 @@ def aio_page():
 
     # Disposition
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
+    state = SessionState.get(key=0)
+
+    if st.button('Clear'):
+        state.key += 1
+
+    st.text_area('Some text', value='', key=state.key)
+
     colprom1, colprom2 = st.columns([0.8, 1.2], gap="small")
 
     # Promoter Finder
@@ -839,7 +847,6 @@ def aio_page():
             result_promoter_text = ''
         result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
                                        value=result_promoter_text,
-                                       on_change= result_promoter_text,
                                        placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
                                        label_visibility='collapsed')
     with promcol2:
