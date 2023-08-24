@@ -1025,8 +1025,9 @@ def aio_page():
         elif not error_input_im:
             button = True
         elif isfasta:
+            st.error("Please use only A, T, G, C, N in your sequence")
             button = True
-        elif error_input_im and not isfasta:
+        else:
             matrix_lines = matrix_text.split('\n')
             matrix = {}
             for line in matrix_lines:
