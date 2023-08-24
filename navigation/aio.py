@@ -1026,12 +1026,12 @@ def aio_page():
             threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.5, 1.0, 0.85, step=0.05,
                                     label_visibility="collapsed")
     with BSFcol3:
-        st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times. 10 sequences max.')
+        st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times.')
         if total_promoter > 10:
-            st.markdown('⚠ Proportion of A, T, G, C imposed for the calculation of the p-value for more than 10 sequences')
+            st.markdown('⚠ Proportion of A, T, G, C imposed for the calculation of the p-value for more than 10 sequences. See "Resource" for more information')
             st.markdown('A 0.275 | C 0.225 | G 0.225 | T 0.275')
         else:
-            st.markdown('Proportion of A, T, G, C depending on the proportions in the sequence')
+            st.markdown('⚠ Proportion of A, T, G, C depending on the proportions in the sequence. See "Resource" for more information')
         calc_pvalue = st.checkbox('_p-value_')
 
     # Run Responsive Elements finder
