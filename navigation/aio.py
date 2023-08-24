@@ -823,7 +823,7 @@ def aio_page():
     promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
     with promcol1:
         st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-        if result_promoter not in locals():
+        if not result_promoter:
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
                                            value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).",
                                            label_visibility='collapsed')
