@@ -217,10 +217,10 @@ def aio_page():
     def isdna(promoter_region):
         DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
         if not all(char in DNA_code for char in promoter_region):
-            isfasta = False
+            isfasta = True
             return isfasta
         else:
-            isfasta = True
+            isfasta = False
             return isfasta
 
     # Find with JASPAR and manual matrix
