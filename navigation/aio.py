@@ -581,16 +581,6 @@ def aio_page():
 
     # Disposition
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
-
-    def replace_text():
-        st.session_state["text"] = text1.replace(before, after)
-
-    if "text" not in st.session_state:
-        st.session_state["text"] = ""
-    text1 = st.text_area('Text : ', st.session_state["text"])
-    before = st.text_input('Before')
-    after = st.text_input('After')
-    button = st.button('Button', on_click=replace_text)
     colprom1, colprom2 = st.columns([0.8, 1.2], gap="small")
 
     # Promoter Finder
