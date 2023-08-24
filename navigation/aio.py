@@ -467,7 +467,7 @@ def aio_page():
                 with REcol2:
                     matrix_text = st.text_area("PWM:", value=pwm_text,
                                                help="Select and copy for later use. Don't modify.",
-                                               key="non_editable_text")
+                                               disabled=True)
 
                 with REcol2:
                     sequences_text = fasta_text
@@ -822,8 +822,8 @@ def aio_page():
                                             except Exception as e:
                                                 st.error(f"Error finding {gene_ids}: {str(e)}")
 
-                            st.success(f"{prom_term} extraction complete !")
-                            st.toast(f"{prom_term} extraction complete !", icon='😊')
+                        st.success(f"{prom_term} extraction complete !")
+                        st.toast(f"{prom_term} extraction complete !", icon='😊')
 
     # Promoter output state
     st.divider()
@@ -834,7 +834,7 @@ def aio_page():
         if 'result_promoter' in st.session_state:
             result_promoter_text = "\n".join(st.session_state['result_promoter'])
         result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text if 'result_promoter' in st.session_state else '', placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
-                                       label_visibility='collapsed')
+                                       key="result_promoter_key", label_visibility='collapsed')
     with promcol2:
         st.markdown('')
         st.markdown('')
