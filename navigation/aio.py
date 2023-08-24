@@ -831,8 +831,9 @@ def aio_page():
     promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
     with promcol1:
         st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-        result_promoter_text = "\n".join(st.session_state['result_promoter'])
-        result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text,
+        if st.session_state['result_promoter']:
+            result_promoter_text = "\n".join(st.session_state['result_promoter'])
+        result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text if result_promoter_text else '',
                                        label_visibility='collapsed')
     with promcol2:
         st.markdown('')
