@@ -217,6 +217,7 @@ def aio_page():
     def isdna(promoter_region):
         DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
         if not all(char in DNA_code for char in promoter_region):
+            button = True
             raise Exception("Please use ONLY A, T, G, C, N in your sequence")
 
         return
@@ -846,7 +847,6 @@ def aio_page():
     # Promoter detection information
     lines = result_promoter
     promoters = []
-    button = True
     if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
         promoter_region = lines.upper()
         isdna(promoter_region)
@@ -854,7 +854,6 @@ def aio_page():
         found_species = "n.d"
         region = "n.d"
         promoters.append((shortened_promoter_name, promoter_region, found_species, region))
-        button = False
     elif lines.startswith(">"):
         lines = result_promoter.split("\n")
         i = 0
@@ -881,11 +880,12 @@ def aio_page():
                         region = "n.d"
                 promoter_region = lines[i + 1].upper()
                 isdna(promoter_region)
-                button = False
                 promoters.append((shortened_promoter_name, promoter_region, found_species, region))
                 i += 1
             else:
                 i += 1
+    else:
+        button = True
 
     total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
     total_promoter = len(promoters)
