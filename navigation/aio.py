@@ -581,13 +581,6 @@ def aio_page():
 
     # Disposition
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
-    state = session_state.get(key=0)
-
-    if st.button('Clear'):
-        state.key += 1
-
-    st.text_area('Some text', value='', key=state.key)
-
     colprom1, colprom2 = st.columns([0.8, 1.2], gap="small")
 
     # Promoter Finder
