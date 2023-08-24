@@ -581,7 +581,7 @@ def aio_page():
 
     # Disposition
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
-    state = SessionState.get(key=0)
+    state = session_state.get(key=0)
 
     if st.button('Clear'):
         state.key += 1
