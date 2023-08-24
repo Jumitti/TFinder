@@ -835,7 +835,7 @@ def aio_page():
         if 'result_promoter' in st.session_state:
             result_promoter_text = "\n".join(st.session_state['result_promoter'])
         result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text if 'result_promoter' in st.session_state else '', placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
-                                       on_change = result_promoter_text if 'result_promoter' in st.session_state else '', label_visibility='collapsed')
+                                       label_visibility='collapsed')
     with promcol2:
         st.markdown('')
         st.markdown('')
