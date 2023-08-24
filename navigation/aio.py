@@ -836,7 +836,7 @@ def aio_page():
         if not 'result_promoter_text' in st.session_state:
             result_promoter_text = ''
         result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
-                                       value=result_promoter_text,
+                                       value=st.session_state['result_promoter_text'],
                                        placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
                                        label_visibility='collapsed')
 
