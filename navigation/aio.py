@@ -886,7 +886,7 @@ def aio_page():
             else:
                 i += 1
     else:
-        isfasta = False
+        isfasta = True
 
     total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
     total_promoter = len(promoters)
@@ -1028,7 +1028,7 @@ def aio_page():
         elif not error_input_im:
             button = True
         elif isfasta:
-            utton = True
+            button = True
         elif error_input_im and not isfasta:
             matrix_lines = matrix_text.split('\n')
             matrix = {}
