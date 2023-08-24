@@ -273,10 +273,7 @@ def aio_page():
         global table2
         table2 = []
 
-        selected_matrix = matrices['Original']
         seq_length = len(matrices['Original']['A'])
-        st.write(seq_length)
-
         sequence_iteration = len(matrices.items()) * total_promoter_region_length
         random_gen = len(promoters) * 1000000
         random_score = random_gen * len(matrices.items())
@@ -318,7 +315,6 @@ def aio_page():
                 for matrix_name, matrix in matrices.items():
                     found_positions = []
                     random_scores = {}
-                    seq_length = len(matrix['A'])
 
                     # Max score per matrix
                     max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
