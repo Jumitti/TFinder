@@ -275,6 +275,7 @@ def aio_page():
 
         for matrix_name, matrix in matrices.items():
             seq_length = len(matrix['A'])
+            st.write(seq_length)
 
         sequence_iteration = len(matrices.items()) * total_promoter_region_length
         random_gen = len(promoters) * 1000000
@@ -297,7 +298,6 @@ def aio_page():
 
                 random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
 
-            # REF
             for shortened_promoter_name, promoter_region, found_species, region in promoters:
                 if calc_pvalue and total_promoter <= 10:
                     count_a = promoter_region.count('A')
