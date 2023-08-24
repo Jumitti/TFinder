@@ -884,6 +884,8 @@ def aio_page():
                 i += 1
     elif not lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n", "I", "i")):
         isfasta = True
+    else:
+        isfasta = False
 
     total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
     total_promoter = len(promoters)
