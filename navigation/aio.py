@@ -678,7 +678,6 @@ def aio_page():
                         try:
                             result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             st.session_state['result_promoter'] = result_promoter
-                            result_promoter_text = "\n".join(st.session_state['result_promoter'])
                             st.success(f"{prom_term} extraction complete !")
                             st.toast(f"{prom_term} extraction complete !", icon='😊')
                         except Exception as e:
@@ -809,7 +808,6 @@ def aio_page():
                                             result_promoter = find_promoters(gene_ids, species, upstream,
                                                                              downstream)
                                             st.session_state['result_promoter'] = result_promoter
-                                            result_promoter_text = "\n".join(st.session_state['result_promoter'])
                                         except Exception as e:
                                             st.error(f"Error finding {gene_ids}: {str(e)}")
                             else:
@@ -822,7 +820,6 @@ def aio_page():
                                                 result_promoter = find_promoters(gene_ids, species, upstream,
                                                                                  downstream)
                                                 st.session_state['result_promoter'] = result_promoter
-                                                result_promoter_text = "\n".join(st.session_state['result_promoter'])
                                             except Exception as e:
                                                 st.error(f"Error finding {gene_ids}: {str(e)}")
 
@@ -835,6 +832,8 @@ def aio_page():
     promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
     with promcol1:
         st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
+        if 'result_promoter' in st.session_state:
+            result_promoter_text = "\n".join(st.session_state['result_promoter'])
         result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text if 'result_promoter' in st.session_state else '', placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
                                        label_visibility='collapsed')
     with promcol2:
