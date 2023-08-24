@@ -836,23 +836,23 @@ def aio_page():
                             if gene_name.isdigit():
                                 for search_type in search_types:
                                     if getattr(gene_info, f'{search_type}'):
-                                        pbar.update(1)
                                         prom_term = search_type.capitalize()
                                         species = 'human'  # This is just a remnant of the past
                                         try:
                                             result_promoter = find_promoters(gene_ids, species, upstream,downstream)
                                         except Exception as e:
                                             st.error(f"Error finding {gene_ids}: {str(e)}")
+                                        pbar.update(1)
                             else:
                                 for species in species_list:
                                     for search_type in search_types:
                                         if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
-                                            pbar.update(1)
                                             prom_term = search_type.capitalize()
                                             try:
                                                 result_promoter = find_promoters(gene_ids, species, upstream,downstream)
                                             except Exception as e:
                                                 st.error(f"Error finding {gene_ids}: {str(e)}")
+                                            pbar.update(1)
 
                         result_promoter_text = "\n".join(result_promoter)
                         st.session_state['result_promoter_text'] = result_promoter_text
