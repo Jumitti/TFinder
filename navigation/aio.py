@@ -620,7 +620,7 @@ def aio_page():
                                 row.append("✅")
                             else:
                                 row.append("❌")
-            data.append(row)
+                data.append(row)
 
                 if gene_input.isdigit():
                     gene_id = gene_input
