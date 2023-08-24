@@ -332,6 +332,7 @@ def aio_page():
                     random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
 
                     random_scores = {}
+                    st.write(len(random_scores))
 
                 for matrix_name, matrix in matrices.items():
                     found_positions = []
