@@ -155,11 +155,9 @@ def aio_page():
                 if prom_term == 'Promoter':
                     result_promoter.append(
                         f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {upstream}\n{dna_sequence}\n")
-                    st.session_state['result_promoter'] = result_promoter
                 else:
                     result_promoter.append(
                         f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {upstream}\n{dna_sequence}\n")
-                    st.session_state['result_promoter'] = result_promoter
 
             return result_promoter
 
@@ -675,6 +673,7 @@ def aio_page():
                         downstream = int(downstream_entry)
                         try:
                             result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            st.session_state['result_promoter'] = result_promoter
                             st.success(f"{prom_term} extraction complete !")
                             st.toast(f"{prom_term} extraction complete !", icon='😊')
                         except Exception as e:
@@ -804,6 +803,7 @@ def aio_page():
                                         try:
                                             result_promoter = find_promoters(gene_ids, species, upstream,
                                                                              downstream)
+                                            st.session_state['result_promoter'] = result_promoter
                                         except Exception as e:
                                             st.error(f"Error finding {gene_ids}: {str(e)}")
                             else:
@@ -815,8 +815,12 @@ def aio_page():
                                             try:
                                                 result_promoter = find_promoters(gene_ids, species, upstream,
                                                                                  downstream)
+                                                st.session_state['result_promoter'] = result_promoter
                                             except Exception as e:
                                                 st.error(f"Error finding {gene_ids}: {str(e)}")
+
+                            st.success(f"{prom_term} extraction complete !")
+                            st.toast(f"{prom_term} extraction complete !", icon='😊')
 
     # Promoter output state
     st.divider()
