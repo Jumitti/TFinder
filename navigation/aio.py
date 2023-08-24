@@ -276,6 +276,7 @@ def aio_page():
         matrix_name = 'Original'
         selected_matrix = matrices[matrix_name]
         seq_length = len(selected_matrix['A'])
+        st.write(seq_length)
 
         sequence_iteration = len(matrices.items()) * total_promoter_region_length
         random_gen = len(promoters) * 1000000
