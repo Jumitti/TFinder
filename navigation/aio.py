@@ -826,7 +826,9 @@ def aio_page():
                                                                                     f'{search_type}'):
                                         iterration += 1
                     st.write(iterration)
-                    with stqdm(value=iterration) as pbar:
+                    with stqdm(total=iterration,
+                               desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
+                               mininterval=0.1) as pbar:
                         for gene_info in (data_dff.itertuples(index=False)):
                             pbar.update(1)
                             gene_name = gene_info.Gene
