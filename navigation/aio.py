@@ -1032,11 +1032,14 @@ def aio_page():
                     matrix[key.strip()] = values
             button = False
     st.markdown("")
-    if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
+    runBSF = False
+    if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button) and runBSF == False:
         if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
+            runBSF = True
             matrices = transform_matrix(matrix)
             table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length)
             st.session_state['table2'] = table2
+            runBSF = False
 
     st.divider()
     if 'table2' in st.session_state:
