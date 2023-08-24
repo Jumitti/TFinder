@@ -1050,6 +1050,7 @@ def aio_page():
                     matrix[key.strip()] = values
             button = False
     st.markdown("")
+    st.experimental_rerun()
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
         matrices = transform_matrix(matrix)
         table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length)
