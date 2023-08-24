@@ -273,9 +273,9 @@ def aio_page():
         global table2
         table2 = []
 
-        for matrix_name, matrix in matrices.items():
-            seq_length = len(matrix['A'])
-            st.write(seq_length)
+        matrix_name = 'Original'
+        selected_matrix = matrices[matrix_name]
+        seq_length = len(selected_matrix['A'])
 
         sequence_iteration = len(matrices.items()) * total_promoter_region_length
         random_gen = len(promoters) * 1000000
