@@ -669,20 +669,22 @@ def aio_page():
             st.session_state['upstream'] = upstream
             downstream = int(downstream_entry)
 
+    def extraction():
+        with colprom1:
+            with st.spinner("Finding promoters..."):
+                if 'result_promoter_text' in st.session_state:
+                    del st.session_state['result_promoter_text']
+                try:
+                    result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                    result_promoter_text = "\n".join(result_promoter)
+                    st.session_state['result_promoter_text'] = result_promoter_text
+                    st.success(f"{prom_term} extraction complete !")
+                    st.toast(f"{prom_term} extraction complete !", icon='😊')
+                except Exception as e:
+                    st.error(f"Error finding {prom_term}: {str(e)}")
+
             # Run Promoter Finder
-            if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)', key='Default'):
-                with colprom1:
-                    with st.spinner("Finding promoters..."):
-                        if 'result_promoter_text' in st.session_state:
-                            del st.session_state['result_promoter_text']
-                        try:
-                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                            result_promoter_text = "\n".join(result_promoter)
-                            st.session_state['result_promoter_text'] = result_promoter_text
-                            st.success(f"{prom_term} extraction complete !")
-                            st.toast(f"{prom_term} extraction complete !", icon='😊')
-                        except Exception as e:
-                            st.error(f"Error finding {prom_term}: {str(e)}")
+            st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)', on_click = extraction)
 
         with tab2:
             # Advance mode extraction
