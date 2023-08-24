@@ -158,39 +158,41 @@ def aio_page():
             raise Exception(f"Error: {str(e)}")
 
     # Promoter Finder
-    def find_promoters(gene_id, species, upstream, downstream):
+    def find_promoters(gene_ids, species, upstream, downstream):
         try:
-            time.sleep(1)
-            if gene_id.isdigit():
-                entrez_id = gene_id
-            else:
-                entrez_id = convert_gene_to_entrez_id(gene_id, species)
-                if entrez_id != 'not_found':
-                    pass
+            for gene_id in gene_ids:
+                time.sleep(1)
+                if gene_id.isdigit():
+                    entrez_id = gene_id
                 else:
-                    return st.error(f'Please verify ID of {gene_id}')
+                    entrez_id = convert_gene_to_entrez_id(gene_id, species)
+                    if entrez_id != 'not_found':
+                        pass
+                    else:
+                        continue
 
-            gene_info = get_gene_info(entrez_id)
-            if 'chraccver' in str(gene_info):
-                gene_name = gene_info['name']
-                chraccver = gene_info['genomicinfo'][0]['chraccver']
-                chrstart = gene_info['genomicinfo'][0]['chrstart']
-                chrstop = gene_info['genomicinfo'][0]['chrstop']
-                species_API = gene_info['organism']['scientificname']
-            else:
-                return st.error(f'Please verify ID of {gene_id}')
+                gene_info = get_gene_info(entrez_id)
+                if 'chraccver' in str(gene_info):
+                    gene_name = gene_info['name']
+                    chraccver = gene_info['genomicinfo'][0]['chraccver']
+                    chrstart = gene_info['genomicinfo'][0]['chrstart']
+                    chrstop = gene_info['genomicinfo'][0]['chrstop']
+                    species_API = gene_info['organism']['scientificname']
+                else:
+                    st.error(f'Please verify ID of {gene_id}')
+                    continue
 
-            dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
+                dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
 
-            st.toast(f'{prom_term} **{gene_name}** from **{species_API}** extracted', icon='🧬')
+                st.toast(f'{prom_term} **{gene_name}** from **{species_API}** extracted', icon='🧬')
 
-            # Append the result to the result_promoter
-            if prom_term == 'Promoter':
-                result_promoter.append(
-                    f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {upstream}\n{dna_sequence}\n")
-            else:
-                result_promoter.append(
-                    f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {upstream}\n{dna_sequence}\n")
+                # Append the result to the result_promoter
+                if prom_term == 'Promoter':
+                    result_promoter.append(
+                        f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {upstream}\n{dna_sequence}\n")
+                else:
+                    result_promoter.append(
+                        f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {upstream}\n{dna_sequence}\n")
 
             return result_promoter
 
@@ -688,10 +690,9 @@ def aio_page():
                         if 'result_promoter_text' in st.session_state:
                             del st.session_state['result_promoter_text']
                         try:
-                            for gene_id in gene_ids:
-                                result_promoter = find_promoters(gene_id, species, upstream, downstream)
-                                result_promoter_text = "\n".join(result_promoter)
-                                st.session_state['result_promoter_text'] = result_promoter_text
+                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            result_promoter_text = "\n".join(result_promoter)
+                            st.session_state['result_promoter_text'] = result_promoter_text
                             st.success(f"{prom_term} extraction complete !")
                             st.toast(f"{prom_term} extraction complete !", icon='😊')
                         except Exception as e:
@@ -812,16 +813,16 @@ def aio_page():
                         downstream = int(downstream_entry)
                         for gene_info in data_dff.itertuples(index=False):
                             gene_name = gene_info.Gene
-                            gene_id = gene_name.strip().split('\n')
+                            gene_ids = gene_name.strip().split('\n')
                             if gene_name.isdigit():
                                 for search_type in search_types:
                                     if getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
                                         species = 'human'  # This is just a remnant of the past
                                         try:
-                                            result_promoter = find_promoters(gene_id, species, upstream,downstream)
+                                            result_promoter = find_promoters(gene_ids, species, upstream,downstream)
                                         except Exception as e:
-                                            st.error(f"Error finding {gene_id}: {str(e)}")
+                                            st.error(f"Error finding {gene_ids}: {str(e)}")
                             else:
                                 for species in species_list:
                                     for search_type in search_types:
@@ -829,9 +830,9 @@ def aio_page():
                                                                                         f'{search_type}'):
                                             prom_term = search_type.capitalize()
                                             try:
-                                                result_promoter = find_promoters(gene_id, species, upstream,downstream)
+                                                result_promoter = find_promoters(gene_ids, species, upstream,downstream)
                                             except Exception as e:
-                                                st.error(f"Error finding {gene_id}: {str(e)}")
+                                                st.error(f"Error finding {gene_ids}: {str(e)}")
 
                         result_promoter_text = "\n".join(result_promoter)
                         st.session_state['result_promoter_text'] = result_promoter_text
