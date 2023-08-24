@@ -672,6 +672,8 @@ def aio_page():
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
                 with colprom1:
                     with st.spinner("Finding promoters..."):
+                        if st.session_state['result_promoter']:
+                            del st.session_state['result_promoter']
                         try:
                             result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             st.session_state['result_promoter'] = result_promoter
