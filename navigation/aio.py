@@ -579,7 +579,7 @@ def aio_page():
         ).transform_calculate(x=f'datum[{xcol_param.name}]').properties(width=600, height=400).interactive().add_params(gene_region_selection, xcol_param)
         st.altair_chart(chart, theme=None, use_container_width=True)
 
-    def extraction():
+    def extraction(gene_ids, species, upstream, downstream):
         with colprom1:
             with st.spinner("Finding promoters..."):
                 if 'result_promoter_text' in st.session_state:
@@ -684,7 +684,7 @@ def aio_page():
             downstream = int(downstream_entry)
 
             # Run Promoter Finder
-            st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)', on_click = extraction)
+            st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)', on_click = extraction(gene_ids, species, upstream, downstream))
 
         with tab2:
             # Advance mode extraction
