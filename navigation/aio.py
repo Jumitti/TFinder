@@ -675,15 +675,12 @@ def aio_page():
                     with st.spinner("Finding promoters..."):
                         if 'result_promoter_text' in st.session_state:
                             del st.session_state['result_promoter_text']
-
                         try:
-
                             result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             result_promoter_text = "\n".join(result_promoter)
                             st.session_state['result_promoter_text'] = result_promoter_text
                             st.success(f"{prom_term} extraction complete !")
                             st.toast(f"{prom_term} extraction complete !", icon='😊')
-                            st.experimental_rerun()
                         except Exception as e:
                             st.error(f"Error finding {prom_term}: {str(e)}")
 
@@ -839,6 +836,8 @@ def aio_page():
         if not 'result_promoter_text' in st.session_state:
             result_promoter_text = ''
             st.session_state['result_promoter_text'] = result_promoter_text
+        else:
+            st.experimental_rerun()
         result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
                                        value=st.session_state['result_promoter_text'],
                                        placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
