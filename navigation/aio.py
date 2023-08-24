@@ -878,7 +878,6 @@ def aio_page():
                         region = "n.d"
                 promoter_region = lines[i + 1].upper()
                 isfasta = isdna(promoter_region)
-                isfasta
                 promoters.append((shortened_promoter_name, promoter_region, found_species, region))
                 i += 1
             else:
