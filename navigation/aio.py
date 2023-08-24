@@ -284,62 +284,61 @@ def aio_page():
             total_iterations = sequence_iteration + random_gen + random_score
         else:
             total_iterations = sequence_iteration
+        num_random_seqs = 1000000
 
         with stqdm(total=total_iterations, desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**', mininterval=0.1) as pbar:
+            if calc_pvalue and total_promoter > 10:
+                percentage_a = 0.275
+                percentage_t = 0.275
+                percentage_g = 0.225
+                percentage_c = 0.225
 
-            if calc_pvalue:
-                num_random_seqs = 1000000
-                if total_promoter > 10:
-                    percentage_a = 0.275
-                    percentage_t = 0.275
-                    percentage_g = 0.225
-                    percentage_c = 0.225
+                probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
+
+                random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
+
+            if calc_pvalue and total_promoter <= 10:
+                for shortened_promoter_name, promoter_region, found_species, region in promoters:
+                    count_a = promoter_region.count('A')
+                    count_t = promoter_region.count('T')
+                    count_g = promoter_region.count('G')
+                    count_c = promoter_region.count('C')
+
+                    length_prom = len(promoter_region)
+                    percentage_a = count_a / length_prom
+                    percentage_t = count_t / length_prom
+                    percentage_g = count_g / length_prom
+                    percentage_c = count_c / length_prom
 
                     probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
                     random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
 
-                else:
-                    for shortened_promoter_name, promoter_region, found_species, region in promoters:
-                        count_a = promoter_region.count('A')
-                        count_t = promoter_region.count('T')
-                        count_g = promoter_region.count('G')
-                        count_c = promoter_region.count('C')
-
-                        length_prom = len(promoter_region)
-                        percentage_a = count_a / length_prom
-                        percentage_t = count_t / length_prom
-                        percentage_g = count_g / length_prom
-                        percentage_c = count_c / length_prom
-
-                        probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
-
-                        random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
-
                 # Calculation of random scores from the different matrices
                 random_scores = {}
 
-            for matrix_name, matrix in matrices.items():
-                seq_length = len(matrix['A'])
+            # REF
+            for shortened_promoter_name, promoter_region, found_species, region in promoters:
+                for matrix_name, matrix in matrices.items():
+                    seq_length = len(matrix['A'])
 
-                # Max score per matrix
-                max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-                min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                    # Max score per matrix
+                    max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                    min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
 
-                if calc_pvalue:
+                    if calc_pvalue:
 
-                    matrix_random_scores = []
-                    for random_sequence in random_sequences:
-                        sequence = random_sequence
-                        random_score = calculate_score(sequence, matrix)
-                        normalized_random_score = (random_score - min_score) / (max_score - min_score)
-                        matrix_random_scores.append(normalized_random_score)
-                        pbar.update(1)
+                        matrix_random_scores = []
+                        for random_sequence in random_sequences:
+                            sequence = random_sequence
+                            random_score = calculate_score(sequence, matrix)
+                            normalized_random_score = (random_score - min_score) / (max_score - min_score)
+                            matrix_random_scores.append(normalized_random_score)
+                            pbar.update(1)
 
-                    random_scores = np.array(matrix_random_scores)
+                        random_scores = np.array(matrix_random_scores)
 
-                # REF
-                for shortened_promoter_name, promoter_region, found_species, region in promoters:
+
                     found_positions = []
 
                     for i in range(len(promoter_region) - seq_length + 1):
