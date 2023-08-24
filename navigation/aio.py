@@ -298,7 +298,6 @@ def aio_page():
                     probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
                     random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
-                    #pbar.update(1000000)
 
                 else:
                     for shortened_promoter_name, promoter_region, found_species, region in promoters:
@@ -316,7 +315,6 @@ def aio_page():
                         probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
                         random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
-                        #pbar.update(1000000)
 
                 # Calculation of random scores from the different matrices
                 random_scores = {}
