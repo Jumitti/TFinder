@@ -851,7 +851,7 @@ def aio_page():
         result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
                                        value=st.session_state['result_promoter_text'],
                                        placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
-                                       label_visibility='collapsed')
+                                       label_visibility='collapsed', height = 125)
 
     with promcol2:
         st.markdown('')
@@ -949,7 +949,7 @@ def aio_page():
                 st.markdown("🔹 :blue[**Step 2.3**] Matrix:", help="Only PWM generated with our tools are allowed")
                 matrix_text = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
                                            value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
-                                           label_visibility='collapsed')
+                                           label_visibility='collapsed', height = 125)
 
                 pwm_rows = kmatrix_text.strip().split('\n')
                 pwm = [list(map(str, row.split())) for row in pwm_rows]
