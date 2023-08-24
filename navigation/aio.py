@@ -579,6 +579,20 @@ def aio_page():
         ).transform_calculate(x=f'datum[{xcol_param.name}]').properties(width=600, height=400).interactive().add_params(gene_region_selection, xcol_param)
         st.altair_chart(chart, theme=None, use_container_width=True)
 
+    def extraction():
+        with colprom1:
+            with st.spinner("Finding promoters..."):
+                if 'result_promoter_text' in st.session_state:
+                    del st.session_state['result_promoter_text']
+                try:
+                    result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                    result_promoter_text = "\n".join(result_promoter)
+                    st.session_state['result_promoter_text'] = result_promoter_text
+                    st.success(f"{prom_term} extraction complete !")
+                    st.toast(f"{prom_term} extraction complete !", icon='😊')
+                except Exception as e:
+                    st.error(f"Error finding {prom_term}: {str(e)}")
+
     # Disposition
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
     colprom1, colprom2 = st.columns([0.8, 1.2], gap="small")
@@ -668,20 +682,6 @@ def aio_page():
             upstream = int(upstream_entry)
             st.session_state['upstream'] = upstream
             downstream = int(downstream_entry)
-
-    def extraction():
-        with colprom1:
-            with st.spinner("Finding promoters..."):
-                if 'result_promoter_text' in st.session_state:
-                    del st.session_state['result_promoter_text']
-                try:
-                    result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                    result_promoter_text = "\n".join(result_promoter)
-                    st.session_state['result_promoter_text'] = result_promoter_text
-                    st.success(f"{prom_term} extraction complete !")
-                    st.toast(f"{prom_term} extraction complete !", icon='😊')
-                except Exception as e:
-                    st.error(f"Error finding {prom_term}: {str(e)}")
 
             # Run Promoter Finder
             st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)', on_click = extraction)
