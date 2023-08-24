@@ -830,12 +830,12 @@ def aio_page():
                                desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                                mininterval=0.1) as pbar:
                         for gene_info in (data_dff.itertuples(index=False)):
-                            pbar.update(1)
                             gene_name = gene_info.Gene
                             gene_ids = gene_name.strip().split('\n')
                             if gene_name.isdigit():
                                 for search_type in search_types:
                                     if getattr(gene_info, f'{search_type}'):
+                                        pbar.update(1)
                                         prom_term = search_type.capitalize()
                                         species = 'human'  # This is just a remnant of the past
                                         try:
@@ -845,8 +845,8 @@ def aio_page():
                             else:
                                 for species in species_list:
                                     for search_type in search_types:
-                                        if getattr(gene_info, f'{species}') and getattr(gene_info,
-                                                                                        f'{search_type}'):
+                                        if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
+                                            pbar.update(1)
                                             prom_term = search_type.capitalize()
                                             try:
                                                 result_promoter = find_promoters(gene_ids, species, upstream,downstream)
