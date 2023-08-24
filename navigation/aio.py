@@ -826,7 +826,6 @@ def aio_page():
                                     if getattr(gene_info, f'{species}') and getattr(gene_info,
                                                                                     f'{search_type}'):
                                         iterration += 1
-                    st.write(iterration)
                     with stqdm(total=iterration,
                                desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                                mininterval=0.1) as pbar:
