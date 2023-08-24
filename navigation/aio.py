@@ -811,7 +811,6 @@ def aio_page():
                     st.session_state['upstream'] = upstream_entry
                     upstream = int(upstream_entry)
                     downstream = int(downstream_entry)
-                    st.write(len(data_dff))
                     iterration = 0
                     for gene_info in (data_dff.itertuples(index=False)):
                         gene_name = gene_info.Gene
@@ -826,7 +825,7 @@ def aio_page():
                                     if getattr(gene_info, f'{species}') and getattr(gene_info,
                                                                                     f'{search_type}'):
                                         iterration += 1
-                    st.write(itteration)
+                    st.write(iterration)
                     for gene_info in (data_dff.itertuples(index=False)):
                         gene_name = gene_info.Gene
                         gene_ids = gene_name.strip().split('\n')
