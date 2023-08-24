@@ -594,6 +594,7 @@ def aio_page():
         gene_id_entry = st.text_area("🔹 :blue[**Step 1.1**] Gene ID:", value="PRKN\n351",
                                      label_visibility='collapsed')
         gene_list = gene_id_entry.strip().split('\n')
+        gene_ids = gene_id_entry.strip().split("\n")
 
         # Verify if gene is available for all species
         if st.button('🔎 Check genes avaibility',
