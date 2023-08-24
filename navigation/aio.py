@@ -878,12 +878,13 @@ def aio_page():
                         region = "n.d"
                 promoter_region = lines[i + 1].upper()
                 isfasta = isdna(promoter_region)
+                isfasta
                 promoters.append((shortened_promoter_name, promoter_region, found_species, region))
                 i += 1
             else:
                 i += 1
     else:
-        isfasta = False
+        isfasta = True
 
     total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
     total_promoter = len(promoters)
