@@ -486,8 +486,8 @@ def aio_page():
 
                     logo = create_web_logo(sequences)
                     st.pyplot(logo.fig)
-                    buffer = io.BytesIO()
-                    plt.savefig(buffer, format='jpg')
+                    buffer = io.StringIO()
+                    logo.fig.savefig(buffer, format='png')
                     buffer.seek(0)
 
                     st.session_state['buffer'] = buffer
@@ -520,10 +520,10 @@ def aio_page():
 
             if jaspar == 'PWM':
                 if matrix_type == 'With FASTA sequences':
-                    image = MIMEImage(st.session_state['buffer'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
+                    image = MIMEImage(st.session_state['buffer'].read().encode('base64'), name=f'LOGOMAKER_{current_date_time}.jpg')
                     msg.attach(image)
             elif jaspar == 'Manual sequence':
-                image = MIMEImage(st.session_state['buffer'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
+                image = MIMEImage(st.session_state['buffer'].read().encode('base64'), name=f'LOGOMAKER_{current_date_time}.jpg')
                 msg.attach(image)
 
             attachment_text = MIMEText(txt_output, 'plain', 'utf-8')
