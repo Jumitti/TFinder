@@ -674,7 +674,7 @@ def aio_page():
                 with colprom1:
                     with st.spinner("Finding promoters..."):
                         if 'result_promoter_text' in st.session_state:
-                            del st.session_state['result_promoter']
+                            del st.session_state['result_promoter_text']
                         try:
                             result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             result_promoter_text = "\n".join(result_promoter)
