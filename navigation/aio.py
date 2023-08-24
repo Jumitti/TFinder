@@ -681,6 +681,7 @@ def aio_page():
                             st.session_state['result_promoter_text'] = result_promoter_text
                             st.success(f"{prom_term} extraction complete !")
                             st.toast(f"{prom_term} extraction complete !", icon='😊')
+                            st.experimental_rerun()
                         except Exception as e:
                             st.error(f"Error finding {prom_term}: {str(e)}")
 
