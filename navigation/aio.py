@@ -580,8 +580,9 @@ def aio_page():
         st.altair_chart(chart, theme=None, use_container_width=True)
 
     def click_button():
-        st.session_state.button = not st.session_state.button
         stopBSF = True
+        st.session_state.button = not st.session_state.button
+
 
     if 'button' not in st.session_state:
         st.session_state.button = False
