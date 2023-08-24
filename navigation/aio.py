@@ -670,7 +670,7 @@ def aio_page():
             downstream = int(downstream_entry)
 
             # Run Promoter Finder
-            if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
+            if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)', key='Default'):
                 with colprom1:
                     with st.spinner("Finding promoters..."):
                         if 'result_promoter' in st.session_state:
@@ -790,7 +790,7 @@ def aio_page():
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
 
-            if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)"):
+            if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)", key='Advance'):
                 with colprom1:
                     with st.spinner("Finding sequences..."):
                         st.session_state['upstream'] = upstream_entry
@@ -835,7 +835,7 @@ def aio_page():
         if 'result_promoter' in st.session_state:
             result_promoter_text = "\n".join(st.session_state['result_promoter'])
         result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text if 'result_promoter' in st.session_state else '', placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
-                                       on_change = st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)"), label_visibility='collapsed')
+                                       on_change = 'Advance' or 'Default', label_visibility='collapsed')
     with promcol2:
         st.markdown('')
         st.markdown('')
