@@ -297,37 +297,34 @@ def aio_page():
 
                 random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
 
-            if calc_pvalue and total_promoter <= 10:
-                for shortened_promoter_name, promoter_region, found_species, region in promoters:
-                    count_a = promoter_region.count('A')
-                    count_t = promoter_region.count('T')
-                    count_g = promoter_region.count('G')
-                    count_c = promoter_region.count('C')
-
-                    length_prom = len(promoter_region)
-                    percentage_a = count_a / length_prom
-                    percentage_t = count_t / length_prom
-                    percentage_g = count_g / length_prom
-                    percentage_c = count_c / length_prom
-
-                    probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
-
-                    random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
-
-                # Calculation of random scores from the different matrices
-                random_scores = {}
-
             # REF
             for shortened_promoter_name, promoter_region, found_species, region in promoters:
                 for matrix_name, matrix in matrices.items():
+                    found_positions = []
+                    random_scores = {}
                     seq_length = len(matrix['A'])
 
                     # Max score per matrix
                     max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
                     min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
 
-                    if calc_pvalue:
+                    if calc_pvalue and total_promoter <= 10:
+                        count_a = promoter_region.count('A')
+                        count_t = promoter_region.count('T')
+                        count_g = promoter_region.count('G')
+                        count_c = promoter_region.count('C')
 
+                        length_prom = len(promoter_region)
+                        percentage_a = count_a / length_prom
+                        percentage_t = count_t / length_prom
+                        percentage_g = count_g / length_prom
+                        percentage_c = count_c / length_prom
+
+                        probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
+
+                        random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
+
+                    if calc_pvalue:
                         matrix_random_scores = []
                         for random_sequence in random_sequences:
                             sequence = random_sequence
@@ -337,9 +334,6 @@ def aio_page():
                             pbar.update(1)
 
                         random_scores = np.array(matrix_random_scores)
-
-
-                    found_positions = []
 
                     for i in range(len(promoter_region) - seq_length + 1):
                         seq = promoter_region[i:i + seq_length]
