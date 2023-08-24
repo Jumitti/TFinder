@@ -690,11 +690,13 @@ def aio_page():
                         if 'result_promoter_text' in st.session_state:
                             del st.session_state['result_promoter_text']
                         try:
-                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                            result_promoter_text = "\n".join(result_promoter)
-                            st.session_state['result_promoter_text'] = result_promoter_text
-                            st.success(f"{prom_term} extraction complete !")
-                            st.toast(f"{prom_term} extraction complete !", icon='😊')
+                            for gene_id in gene_ids:
+                                gene_ids = gene_id
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                result_promoter_text = "\n".join(result_promoter)
+                                st.session_state['result_promoter_text'] = result_promoter_text
+                                st.success(f"{prom_term} extraction complete !")
+                                st.toast(f"{prom_term} extraction complete !", icon='😊')
                         except Exception as e:
                             st.error(f"Error finding {prom_term}: {str(e)}")
 
