@@ -604,11 +604,10 @@ def aio_page():
             species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
             results_gene_list = []
             data = []
-            row = []
             for gene_input in stqdm(gene_list, desc="Analyse genes...", mininterval=0.1):
                 time.sleep(0.25)
+                row = [gene_input]
                 if not gene_input.isdigit():
-
                     for species_test in species_list:
                         time.sleep(0.5)
                         url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
@@ -621,14 +620,14 @@ def aio_page():
                                 row.append("✅")
                             else:
                                 row.append("❌")
-
-                    if gene_input.isdigit():
-                        gene_id = gene_input
-                        gene_info = get_gene_info(gene_id)
-                        if not 'chraccver' in str(gene_info):
-                            st.error(f'Please verify ID of {gene_id}')
-
             data.append(row)
+
+                if gene_input.isdigit():
+                    gene_id = gene_input
+                    gene_info = get_gene_info(gene_id)
+                    if not 'chraccver' in str(gene_info):
+                        st.error(f'Please verify ID of {gene_id}')
+
             species_columns = ['Gene'] + species_list
             dfgene = pd.DataFrame(data, columns=species_columns)
             st.session_state['dfgene'] = dfgene
