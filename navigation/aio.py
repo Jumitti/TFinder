@@ -606,8 +606,8 @@ def aio_page():
             data = []
             for gene_input in stqdm(gene_list, desc="Analyse genes...", mininterval=0.1):
                 time.sleep(0.25)
-                row = [gene_input]
                 if not gene_input.isdigit():
+                    row = [gene_input]
                     for species_test in species_list:
                         time.sleep(0.5)
                         url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
