@@ -631,7 +631,7 @@ def aio_page():
             data.append(row)
             species_columns = ['Gene'] + species_list
             dfgene = pd.DataFrame(data, columns=species_columns)
-            st.session_state['dfgene'] = degene
+            st.session_state['dfgene'] = dfgene
             st.dataframe(st.session_state['dfgene'], hide_index=True)
 
     with colprom2:
