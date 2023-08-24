@@ -846,6 +846,7 @@ def aio_page():
     # Promoter detection information
     lines = result_promoter
     promoters = []
+    button = True
     if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
         promoter_region = lines.upper()
         isdna(promoter_region)
@@ -853,6 +854,7 @@ def aio_page():
         found_species = "n.d"
         region = "n.d"
         promoters.append((shortened_promoter_name, promoter_region, found_species, region))
+        button = False
     elif lines.startswith(">"):
         lines = result_promoter.split("\n")
         i = 0
@@ -879,6 +881,7 @@ def aio_page():
                         region = "n.d"
                 promoter_region = lines[i + 1].upper()
                 isdna(promoter_region)
+                button = False
                 promoters.append((shortened_promoter_name, promoter_region, found_species, region))
                 i += 1
             else:
@@ -1037,14 +1040,10 @@ def aio_page():
     st.markdown("")
     if 'clicked' not in st.session_state:
         st.session_state.clicked = False
-    form = st.form("runBSF")
-    form.form_submit_button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", on_click=click_button, use_container_width=True, disabled=button)
-    if st.session_state.clicked:
-        st.session_state.clicked = False
-        if result_promoter.startswith(("A", "T", "G", "C", ">", "a", "t", "c", "g", "n")):
+    with st.form("runBSF"):
+        if st.form_submit_button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
             matrices = transform_matrix(matrix)
             table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length)
-            st.session_state.clicked = False
             st.session_state['table2'] = table2
 
     st.divider()
