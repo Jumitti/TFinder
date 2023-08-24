@@ -829,7 +829,7 @@ def aio_page():
                                            value="If Step 1 not used, paste sequences here (FASTA required for multiple sequences).",
                                            label_visibility='collapsed')
         else:
-            result_promoter_text = "\n".join(st.session_state['result_promoter'])
+            result_promoter_text = "\n".join(result_promoter)
             result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:", value=result_promoter_text,
                                            label_visibility='collapsed')
     with promcol2:
