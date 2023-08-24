@@ -358,7 +358,7 @@ def aio_page():
                         position = int(i)
 
                         if calc_pvalue:
-                            p_value = (random_scores >= normalized_score).sum() / num_random_seqs
+                            p_value = (random_scores >= normalized_score).sum() / len(random_scores)
                         else:
                             p_value = 0
 
