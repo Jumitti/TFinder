@@ -812,6 +812,21 @@ def aio_page():
                     upstream = int(upstream_entry)
                     downstream = int(downstream_entry)
                     st.write(len(data_dff))
+                    iterration = 0
+                    for gene_info in (data_dff.itertuples(index=False)):
+                        gene_name = gene_info.Gene
+                        gene_ids = gene_name.strip().split('\n')
+                        if gene_name.isdigit():
+                            for search_type in search_types:
+                                if getattr(gene_info, f'{search_type}'):
+                                    iterration += 1
+                        else:
+                            for species in species_list:
+                                for search_type in search_types:
+                                    if getattr(gene_info, f'{species}') and getattr(gene_info,
+                                                                                    f'{search_type}'):
+                                        iterration += 1
+                    st.write(itteration)
                     for gene_info in (data_dff.itertuples(index=False)):
                         gene_name = gene_info.Gene
                         gene_ids = gene_name.strip().split('\n')
