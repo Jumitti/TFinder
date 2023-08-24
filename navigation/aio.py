@@ -604,9 +604,9 @@ def aio_page():
             species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
             results_gene_list = []
             data = []
-            row = [gene_input]
             for gene_input in stqdm(gene_list, desc="Analyse genes...", mininterval=0.1):
                 time.sleep(0.25)
+                row = [gene_input]
                 if not gene_input.isdigit():
 
                     for species_test in species_list:
