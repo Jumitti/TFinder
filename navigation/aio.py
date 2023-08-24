@@ -883,7 +883,7 @@ def aio_page():
             else:
                 i += 1
     else:
-        isfasta = True
+        isfasta = False
 
     total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
     total_promoter = len(promoters)
