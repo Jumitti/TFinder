@@ -579,22 +579,18 @@ def aio_page():
         ).transform_calculate(x=f'datum[{xcol_param.name}]').properties(width=600, height=400).interactive().add_params(gene_region_selection, xcol_param)
         st.altair_chart(chart, theme=None, use_container_width=True)
 
-    def extraction(gene_ids, species, upstream, downstream):
-        with colprom1:
-            with st.spinner("Finding promoters..."):
-                if 'result_promoter_text' in st.session_state:
-                    del st.session_state['result_promoter_text']
-                try:
-                    result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                    result_promoter_text = "\n".join(result_promoter)
-                    st.session_state['result_promoter_text'] = result_promoter_text
-                    st.success(f"{prom_term} extraction complete !")
-                    st.toast(f"{prom_term} extraction complete !", icon='😊')
-                except Exception as e:
-                    st.error(f"Error finding {prom_term}: {str(e)}")
-
     # Disposition
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
+
+    def replace_text():
+        st.session_state["text"] = text1.replace(before, after)
+
+    if "text" not in st.session_state:
+        st.session_state["text"] = ""
+    text1 = st.text_area('Text : ', st.session_state["text"])
+    before = st.text_input('Before')
+    after = st.text_input('After')
+    button = st.button('Button', on_click=replace_text)
     colprom1, colprom2 = st.columns([0.8, 1.2], gap="small")
 
     # Promoter Finder
@@ -684,7 +680,19 @@ def aio_page():
             downstream = int(downstream_entry)
 
             # Run Promoter Finder
-            st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)', on_click = extraction(gene_ids, species, upstream, downstream))
+            if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
+                with colprom1:
+                    with st.spinner("Finding promoters..."):
+                        if 'result_promoter_text' in st.session_state:
+                            del st.session_state['result_promoter_text']
+                        try:
+                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                            result_promoter_text = "\n".join(result_promoter)
+                            st.session_state['result_promoter_text'] = result_promoter_text
+                            st.success(f"{prom_term} extraction complete !")
+                            st.toast(f"{prom_term} extraction complete !", icon='😊')
+                        except Exception as e:
+                            st.error(f"Error finding {prom_term}: {str(e)}")
 
         with tab2:
             # Advance mode extraction
