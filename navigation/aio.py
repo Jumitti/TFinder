@@ -221,6 +221,10 @@ def aio_page():
             isfasta = False
             return isfasta
 
+    #For run BSF button
+    def click_button():
+        st.session_state.button = not st.session_state.button
+
     # Find with JASPAR and manual matrix
     def search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length):
         global table2
@@ -578,9 +582,6 @@ def aio_page():
             opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
         ).transform_calculate(x=f'datum[{xcol_param.name}]').properties(width=600, height=400).interactive().add_params(gene_region_selection, xcol_param)
         st.altair_chart(chart, theme=None, use_container_width=True)
-
-    def click_button():
-        st.session_state.button = not st.session_state.button
 
     if 'button' not in st.session_state:
         st.session_state.button = False
