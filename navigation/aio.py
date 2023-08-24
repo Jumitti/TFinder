@@ -238,7 +238,7 @@ def aio_page():
         else:
             total_iterations = sequence_iteration
 
-        with stqdm(total=total_iterations, desc='Calculating scores', mininterval=0.1) as pbar:
+        with stqdm(total=total_iterations, desc='<style>color: blue; font-weight: bold;">Calculating scores... ⚠️PLEASE WAIT UNTIL ENDING WITHOUT CHANGE ANYTHING</style>', mininterval=0.1) as pbar:
 
             if calc_pvalue:
                 for shortened_promoter_name, promoter_region, found_species, region in promoters:
@@ -1051,6 +1051,7 @@ def aio_page():
             button = False
 
     matrices = transform_matrix(matrix)
+
     st.markdown("")
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
         table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length)
