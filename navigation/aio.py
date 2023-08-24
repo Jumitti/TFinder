@@ -1054,10 +1054,9 @@ def aio_page():
                     matrix[key.strip()] = values
             button = False
     st.markdown("")
-    matrices = transform_matrix(matrix)
-
     st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button, on_click=click_button)
     if st.session_state.button:
+        matrices = transform_matrix(matrix)
         table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length)
         st.session_state['table2'] = table2
         click_button()
