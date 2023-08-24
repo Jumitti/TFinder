@@ -217,9 +217,11 @@ def aio_page():
     def isdna(promoter_region):
         DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
         if not all(char in DNA_code for char in promoter_region):
-            raise Exception("Please use ONLY A, T, G, C, N in your sequence")
+            isfasta = False
+            return isfasta
         else:
-            return
+            isfasta = True
+            return isfasta
 
     # Find with JASPAR and manual matrix
     def search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length):
@@ -875,14 +877,9 @@ def aio_page():
                     else:
                         region = "n.d"
                 promoter_region = lines[i + 1].upper()
-                try:
-                    isdna(promoter_region)
-                    isfasta = True
-                    promoters.append((shortened_promoter_name, promoter_region, found_species, region))
-                    i += 1
-                except Exception as e:
-                    isfasta = False
-                    st.error(e)
+                isfasta = isdna(promoter_region)
+                promoters.append((shortened_promoter_name, promoter_region, found_species, region))
+                i += 1
             else:
                 i += 1
     else:
