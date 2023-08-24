@@ -286,45 +286,54 @@ def aio_page():
             total_iterations = sequence_iteration
 
         with stqdm(total=total_iterations, desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**', mininterval=0.1) as pbar:
-            random_scores = {}
-            num_random_seqs = 1000000
-            if calc_pvalue and total_promoter > 10:
-                percentage_a = 0.275
-                percentage_t = 0.275
-                percentage_g = 0.225
-                percentage_c = 0.225
 
-                probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
-
-                random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
-            # REF
-            for shortened_promoter_name, promoter_region, found_species, region in promoters:
-                found_positions = []
-
-                if calc_pvalue and total_promoter <= 10:
-                    count_a = promoter_region.count('A')
-                    count_t = promoter_region.count('T')
-                    count_g = promoter_region.count('G')
-                    count_c = promoter_region.count('C')
-
-                    length_prom = len(promoter_region)
-                    percentage_a = count_a / length_prom
-                    percentage_t = count_t / length_prom
-                    percentage_g = count_g / length_prom
-                    percentage_c = count_c / length_prom
+            if calc_pvalue:
+                num_random_seqs = 1000000
+                if total_promoter > 10:
+                    percentage_a = 0.275
+                    percentage_t = 0.275
+                    percentage_g = 0.225
+                    percentage_c = 0.225
 
                     probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
                     random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
+                    #pbar.update(1000000)
 
-                for matrix_name, matrix in matrices.items():
-                    seq_length = len(matrix['A'])
+                else:
+                    for shortened_promoter_name, promoter_region, found_species, region in promoters:
+                        count_a = promoter_region.count('A')
+                        count_t = promoter_region.count('T')
+                        count_g = promoter_region.count('G')
+                        count_c = promoter_region.count('C')
 
-                    # Max score per matrix
-                    max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-                    min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                        length_prom = len(promoter_region)
+                        percentage_a = count_a / length_prom
+                        percentage_t = count_t / length_prom
+                        percentage_g = count_g / length_prom
+                        percentage_c = count_c / length_prom
+
+                        probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
+
+                        random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
+                        #pbar.update(1000000)
+
+                # Calculation of random scores from the different matrices
+                random_scores = {}
+
+            for matrix_name, matrix in matrices.items():
+                seq_length = len(matrix['A'])
+
+                # Max score per matrix
+                max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+
+                # REF
+                for shortened_promoter_name, promoter_region, found_species, region in promoters:
+                    found_positions = []
 
                     if calc_pvalue:
+
                         matrix_random_scores = []
                         for random_sequence in random_sequences:
                             sequence = random_sequence
@@ -346,15 +355,7 @@ def aio_page():
                         else:
                             p_value = 0
 
-                        should_add = True
-                        for existing_position, _, existing_normalized_score, _ in found_positions:
-                            if position == existing_position:
-                                if normalized_score <= existing_normalized_score:
-                                    should_add = False
-                                break
-
-                        if should_add:
-                            found_positions.append((position, seq, normalized_score, p_value))
+                        found_positions.append((position, seq, normalized_score, p_value))
                         pbar.update(1)
 
                     # Sort positions in descending order of score percentage
