@@ -232,9 +232,8 @@ def aio_page():
         }
 
     # Generate random sequences for p_value
-    def generate_ranseq(probabilities, seq_length, pbar):
+    def generate_ranseq(probabilities, seq_length, pbar, num_random_seqs):
         motif_length = seq_length
-        num_random_seqs = 1000000
         random_sequences = []
 
         for _ in range(num_random_seqs):
@@ -289,6 +288,7 @@ def aio_page():
         with stqdm(total=total_iterations, desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**', mininterval=0.1) as pbar:
 
             if calc_pvalue:
+                num_random_seqs = 1000000
                 if total_promoter > 10:
                     percentage_a = 0.275
                     percentage_t = 0.275
@@ -297,7 +297,7 @@ def aio_page():
 
                     probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
-                    random_sequences = generate_ranseq(probabilities, seq_length, pbar)
+                    random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
                     #pbar.update(1000000)
 
                 else:
@@ -315,7 +315,7 @@ def aio_page():
 
                         probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
-                        random_sequences = generate_ranseq(probabilities, seq_length, pbar)
+                        random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
                         #pbar.update(1000000)
 
                 # Calculation of random scores from the different matrices
