@@ -586,8 +586,9 @@ def aio_page():
 
     if 'button' not in st.session_state:
         st.session_state.button = False
-    else:
         stopBSF = False
+    else:
+        stopBSF = True
 
     # Disposition
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
