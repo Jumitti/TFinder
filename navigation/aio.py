@@ -217,7 +217,6 @@ def aio_page():
     def isdna(promoter_region):
         DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
         if not all(char in DNA_code for char in promoter_region):
-            button = True
             raise Exception("Please use ONLY A, T, G, C, N in your sequence")
         else:
             return
@@ -878,16 +877,16 @@ def aio_page():
                 promoter_region = lines[i + 1].upper()
                 try:
                     isdna(promoter_region)
-                    error_input_im = True
+                    isfasta = True
                     promoters.append((shortened_promoter_name, promoter_region, found_species, region))
                     i += 1
                 except Exception as e:
-                    error_input_im = False
+                    isfasta = False
                     st.error(e)
             else:
                 i += 1
     else:
-        button = True
+        isfasta = False
 
     total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
     total_promoter = len(promoters)
@@ -1028,7 +1027,9 @@ def aio_page():
             button = True
         elif not error_input_im:
             button = True
-        elif error_input_im:
+        elif isfasta:
+            utton = True
+        elif error_input_im and not isfasta:
             matrix_lines = matrix_text.split('\n')
             matrix = {}
             for line in matrix_lines:
@@ -1040,8 +1041,6 @@ def aio_page():
                     matrix[key.strip()] = values
             button = False
     st.markdown("")
-    if 'clicked' not in st.session_state:
-        st.session_state.clicked = False
     with st.form("runBSF"):
         if st.form_submit_button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
             matrices = transform_matrix(matrix)
