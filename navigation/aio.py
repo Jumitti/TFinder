@@ -219,8 +219,8 @@ def aio_page():
         if not all(char in DNA_code for char in promoter_region):
             button = True
             raise Exception("Please use ONLY A, T, G, C, N in your sequence")
-
-        return
+        else:
+            return
 
     # Find with JASPAR and manual matrix
     def search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length):
@@ -497,9 +497,6 @@ def aio_page():
 
         else:
             raise Exception(f"You forget FASTA sequences :)")
-
-    def click_button():
-        st.session_state.clicked = True
 
     def email(excel_file, txt_output, email_receiver, body):
         try:
