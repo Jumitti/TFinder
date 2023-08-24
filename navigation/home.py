@@ -28,7 +28,7 @@ def home_page():
     st.markdown('')
     colhome1, colhome2 = st.columns ([1.5, 0.5])
     with colhome1:
-        st.image('./img/tfinder_schema_bg_V5-3.pgn', caption='Just a test')
+        st.image('https://raw.githubusercontent.com/Jumitti/TFinder/Beta/img/tfinder_schema_bg_V5-3.png', caption='Just a test')
     with colhome2:
         st.markdown('**Overview**')
         st.markdown('<div style="text-align: justify;"> TFinder is a Python easy-to-use web tool for identifying Transcription Factor Binding Sites (TFBS). It allows easy extraction of either the promoter or terminal regions of a gene by simple inquiry of unique NCBI API keys. It allows the simultaneous analysis of five different species of an unlimited number of genes. The tool allows the search of TFBS in different formats, including IUPAC codes and JASPAR entries. Moreover, TFinder also allows the generation and use a Position Weight Matrix (PWM). Finally, the data may be recovered in a tabular form and a graph showing the relevance of the TFBSs as well as its location relative to the transcription start site (TSS) or gene end. </div>', unsafe_allow_html=True)
