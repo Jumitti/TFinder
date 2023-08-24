@@ -664,20 +664,21 @@ def aio_page():
             downstream_entry = max(updown_slide)
 
             # Run Promoter Finder
-            if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
-                with colprom1:
-                    with st.spinner("Finding promoters..."):
-                        gene_ids = gene_id_entry.strip().split("\n")
-                        upstream = int(upstream_entry)
-                        st.session_state['upstream'] = upstream
-                        downstream = int(downstream_entry)
-                        try:
-                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                            st.session_state['result_promoter'] = result_promoter
-                            st.success(f"{prom_term} extraction complete !")
-                            st.toast(f"{prom_term} extraction complete !", icon='😊')
-                        except Exception as e:
-                            st.error(f"Error finding {prom_term}: {str(e)}")
+            with st.form("Default"):
+                if st.form_submit_button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
+                    with colprom1:
+                        with st.spinner("Finding promoters..."):
+                            gene_ids = gene_id_entry.strip().split("\n")
+                            upstream = int(upstream_entry)
+                            st.session_state['upstream'] = upstream
+                            downstream = int(downstream_entry)
+                            try:
+                                result_promoter = find_promoters(gene_ids, species, upstream, downstream)
+                                st.session_state['result_promoter'] = result_promoter
+                                st.success(f"{prom_term} extraction complete !")
+                                st.toast(f"{prom_term} extraction complete !", icon='😊')
+                            except Exception as e:
+                                st.error(f"Error finding {prom_term}: {str(e)}")
 
         with tab2:
             # Advance mode extraction
