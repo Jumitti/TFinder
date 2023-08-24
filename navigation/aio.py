@@ -298,6 +298,8 @@ def aio_page():
 
             if calc_pvalue and total_promoter > 10:
                 for matrix_name, matrix in matrices.items():
+                    max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                    min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
                     random_scores = {}
                     matrix_random_scores = []
                     for random_sequence in random_sequences:
