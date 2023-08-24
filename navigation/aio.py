@@ -691,7 +691,7 @@ def aio_page():
                             del st.session_state['result_promoter_text']
                         try:
                             for gene_id in gene_ids:
-                                gene_ids = gene_id
+                                gene_ids = gene_id.strip().split('\n')
                                 result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                                 result_promoter_text = "\n".join(result_promoter)
                                 st.session_state['result_promoter_text'] = result_promoter_text
