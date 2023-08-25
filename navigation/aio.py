@@ -275,11 +275,11 @@ def aio_page():
 
         seq_length = len(matrices['Original']['A'])
         sequence_iteration = len(matrices.items()) * total_promoter_region_length
+
+        num_random_seqs = 1000000
         if total_promoter <= 10:
-            num_random_seqs = 1000000
             random_gen = len(promoters) * num_random_seqs
         else:
-            num_random_seqs = 250000
             random_gen = num_random_seqs
         random_score = random_gen * len(matrices.items())
 
@@ -303,10 +303,10 @@ def aio_page():
 
             if calc_pvalue and total_promoter > 10:
                 random_scores = {}
+                matrix_random_scores = []
                 for matrix_name, matrix in matrices.items():
                     max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
                     min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-                    matrix_random_scores = []
                     for random_sequence in random_sequences:
                         sequence = random_sequence
                         random_score = calculate_score(sequence, matrix)
