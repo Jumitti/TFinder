@@ -301,10 +301,10 @@ def aio_page():
                 random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
 
             if calc_pvalue and total_promoter > 10:
+                random_scores = {}
                 for matrix_name, matrix in matrices.items():
                     max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
                     min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-                    random_scores = {}
                     matrix_random_scores = []
                     for random_sequence in random_sequences:
                         sequence = random_sequence
@@ -362,12 +362,7 @@ def aio_page():
                         normalized_score = (score - min_score) / (max_score - min_score)
                         position = int(i)
 
-                        if calc_pvalue:
-                            p_value = (random_scores >= normalized_score).sum() / len(random_scores)
-                        else:
-                            p_value = 0
-
-                        found_positions.append((position, seq, normalized_score, p_value))
+                        found_positions.append((position, seq, normalized_score))
                         pbar.update(1)
 
                     # Sort positions in descending order of score percentage
@@ -383,7 +378,7 @@ def aio_page():
                             else:
                                 threshold = 0.5
 
-                        for position, seq, normalized_score, p_value in found_positions:
+                        for position, seq, normalized_score in found_positions:
                             start_position = max(0, position - 3)
                             end_position = min(len(promoter_region), position + len(seq) + 3)
                             sequence_with_context = promoter_region[start_position:end_position]
@@ -399,6 +394,9 @@ def aio_page():
                             tis_position = position - tis_value
 
                             if normalized_score >= threshold:
+                                if calc_pvalue:
+                                    p_value = (random_scores >= normalized_score).sum() / len(random_scores)
+
                                 row = [str(position).ljust(8),
                                        str(tis_position).ljust(15),
                                        sequence_with_context,
