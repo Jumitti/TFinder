@@ -28,6 +28,7 @@ from navigation.home import home_page
 from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
+import streamlit_analytics
 
 st.set_page_config(
     page_title='TFinder by Minniti Julien',
@@ -106,6 +107,8 @@ elif chosen_tab == CONTACT:
 for i in range(4):
     st.markdown('#')
 st.markdown(footer, unsafe_allow_html=True)
+
+streamlit_analytics.start_tracking()
 
 # Credit rating
 st.sidebar.image("https://raw.githubusercontent.com/Jumitti/TFinder/main/img/REF.png")
@@ -213,6 +216,10 @@ class SessionState:
             super().__setattr__(key, value)
 
 
+streamlit_analytics.stop_tracking()
+
+views = view_data['pageviews']
+'''
 try:
     with open("user_count.pkl", "rb") as file:
         user_count = pickle.load(file)
@@ -224,6 +231,6 @@ if "user_count_incremented" not in st.session_state:
     st.session_state.user_count_incremented = True
 
     with open("user_count.pkl", "wb") as file:
-        pickle.dump(user_count, file)
+        pickle.dump(user_count, file)'''
 
-st.sidebar.markdown(f"Total users 👥: {user_count}")
+st.sidebar.markdown(f"Total users 👥: {views}")
