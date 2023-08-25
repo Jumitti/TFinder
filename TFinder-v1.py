@@ -218,7 +218,7 @@ class SessionState:
 
 streamlit_analytics.stop_tracking()
 
-views = view_data['pageviews']
+views = streamlit_analytics.main.counts['pageviews']
 '''
 try:
     with open("user_count.pkl", "rb") as file:
