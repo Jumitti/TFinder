@@ -314,7 +314,7 @@ def aio_page():
                         matrix_random_scores.append(normalized_random_score)
                         pbar.update(1)
 
-                        random_scores = np.array(matrix_random_scores)
+                    random_scores = np.array(matrix_random_scores)
 
             for shortened_promoter_name, promoter_region, found_species, region in promoters:
                 if calc_pvalue and total_promoter <= 10:
