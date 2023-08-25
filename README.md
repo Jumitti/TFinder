@@ -61,7 +61,9 @@ Report an issue/bug 🆘 -> [Click here](https://github.com/Jumitti/TFinder/issu
 
 Want to talk ? 🙋🏼‍♂️ -> [Chat Room](https://github.com/Jumitti/TFinder/discussions)
 
-Banner was generated with Adobe Firefly
+Banner was generated with Adobe Firefly.
+
+Artwork made by [Minniti Pauline](https://minnitidesign.fr/)
 
 ## Credit & Licence & Citation
 
