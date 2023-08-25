@@ -276,16 +276,17 @@ def aio_page():
         seq_length = len(matrices['Original']['A'])
         sequence_iteration = len(matrices.items()) * total_promoter_region_length
         if total_promoter <= 10:
-            random_gen = len(promoters) * 1000000
+            num_random_seqs = 1000000
+            random_gen = len(promoters) * num_random_seqs
         else:
-            random_gen = 1000000
+            num_random_seqs = 250000
+            random_gen = num_random_seqs
         random_score = random_gen * len(matrices.items())
 
         if calc_pvalue:
             total_iterations = sequence_iteration + random_gen + random_score
         else:
             total_iterations = sequence_iteration
-        num_random_seqs = 1000000
 
         with stqdm(total=total_iterations,
                    desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
