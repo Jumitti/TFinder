@@ -29,7 +29,6 @@ from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 import streamlit_analytics
-import telebot
 
 st.set_page_config(
     page_title='TFinder by Minniti Julien',
@@ -219,28 +218,5 @@ class SessionState:
 
 streamlit_analytics.stop_tracking()
 views = streamlit_analytics.main.counts["total_pageviews"]
-'''
-try:
-    with open("user_count.pkl", "rb") as file:
-        user_count = pickle.load(file)
-except FileNotFoundError:
-    user_count = 0
-
-if "user_count_incremented" not in st.session_state:
-    user_count += 1
-    st.session_state.user_count_incremented = True
-
-    with open("user_count.pkl", "wb") as file:
-        pickle.dump(user_count, file)'''
 
 st.sidebar.markdown(f"Total users 👥: {int(views)}")
-
-bot = telebot.TeleBot("6605900382:AAGDXSpd8Zmx1ffaTpu398Nari8ewQxpTNA")
-
-
-@bot.message_handler(commands=['start', 'help'])
-def send_welcome(message):
-    bot.reply_to(message, "Howdy, how are you doing?")
-
-
-bot.infinity_polling()
