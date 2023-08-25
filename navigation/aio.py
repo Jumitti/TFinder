@@ -125,7 +125,7 @@ def aio_page():
                 return gene_info
 
         except Exception as e:
-                raise Exception(f"Error: {str(e)}")
+            raise Exception(f"Error: {str(e)}")
 
     # Get DNA sequence
     def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
@@ -287,8 +287,9 @@ def aio_page():
             total_iterations = sequence_iteration
         num_random_seqs = 1000000
 
-
-        with stqdm(total=total_iterations, desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**', mininterval=0.1) as pbar:
+        with stqdm(total=total_iterations,
+                   desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
+                   mininterval=0.1) as pbar:
             if calc_pvalue and total_promoter > 10:
                 percentage_a = 0.275
                 percentage_t = 0.275
@@ -304,6 +305,7 @@ def aio_page():
                     max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
                     min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
                     random_scores = {}
+                    st.write(len(random_scores))
                     matrix_random_scores = []
                     for random_sequence in random_sequences:
                         sequence = random_sequence
@@ -331,8 +333,9 @@ def aio_page():
 
                     random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
 
-                    random_scores = {}
-                    st.write(len(random_scores))
+                    if calc_pvalue and total_promoter <= 10:
+                        random_scores = {}
+                        st.write(len(random_scores))
 
                 for matrix_name, matrix in matrices.items():
                     found_positions = []
@@ -525,10 +528,10 @@ def aio_page():
                     pwm_text += base_str
 
                 with REcol2:
-                    st.markdown("PWM",  help="Modification not allowed. Still select and copy for later use.")
+                    st.markdown("PWM", help="Modification not allowed. Still select and copy for later use.")
                     matrix_text = st.text_area("PWM:", value=pwm_text,
-                                               label_visibility = 'collapsed',
-                                               height = 125,
+                                               label_visibility='collapsed',
+                                               height=125,
                                                disabled=True)
 
                 with REcol2:
@@ -623,7 +626,8 @@ def aio_page():
         color_scale = alt.Color("Gene_Region:N", scale=scale)
         gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
 
-        dropdown = alt.binding_select(options=['Beginning of sequences', 'From TSS/gene end'], name='(X-axis) Position from:')
+        dropdown = alt.binding_select(options=['Beginning of sequences', 'From TSS/gene end'],
+                                      name='(X-axis) Position from:')
         xcol_param = alt.param(value='Beginning of sequences', bind=dropdown)
 
         if 'p-value' in source:
@@ -637,7 +641,8 @@ def aio_page():
             tooltip=['Position', 'Rel Position', 'Rel Score'] + (
                 ['p-value'] if 'p-value' in source else []) + ['Sequence', 'Gene', 'Species', 'Region'],
             opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
-        ).transform_calculate(x=f'datum[{xcol_param.name}]').properties(width=600, height=400).interactive().add_params(gene_region_selection, xcol_param)
+        ).transform_calculate(x=f'datum[{xcol_param.name}]').properties(width=600, height=400).interactive().add_params(
+            gene_region_selection, xcol_param)
         st.altair_chart(chart, theme=None, use_container_width=True)
 
     if 'button' not in st.session_state:
@@ -710,8 +715,9 @@ def aio_page():
                     if 'result_promoter_text' in st.session_state:
                         del st.session_state['result_promoter_text']
                     try:
-                        for gene_id in stqdm(gene_ids, desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
-                               mininterval=0.1):
+                        for gene_id in stqdm(gene_ids,
+                                             desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
+                                             mininterval=0.1):
                             gene_ids = gene_id.strip().split('\n')
                             result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                             result_promoter_text = "\n".join(result_promoter)
@@ -859,7 +865,7 @@ def aio_page():
                                         prom_term = search_type.capitalize()
                                         species = 'human'  # This is just a remnant of the past
                                         try:
-                                            result_promoter = find_promoters(gene_ids, species, upstream,downstream)
+                                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
                                         except Exception as e:
                                             st.error(f"Error finding {gene_ids}: {str(e)}")
                                         pbar.update(1)
@@ -869,7 +875,8 @@ def aio_page():
                                         if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
                                             prom_term = search_type.capitalize()
                                             try:
-                                                result_promoter = find_promoters(gene_ids, species, upstream,downstream)
+                                                result_promoter = find_promoters(gene_ids, species, upstream,
+                                                                                 downstream)
                                             except Exception as e:
                                                 st.error(f"Error finding {gene_ids}: {str(e)}")
                                             pbar.update(1)
@@ -891,7 +898,7 @@ def aio_page():
         result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
                                        value=st.session_state['result_promoter_text'],
                                        placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
-                                       label_visibility='collapsed', height = 125)
+                                       label_visibility='collapsed', height=125)
 
     with promcol2:
         st.markdown('')
@@ -989,7 +996,7 @@ def aio_page():
                 st.markdown("🔹 :blue[**Step 2.3**] Matrix:", help="Only PWM generated with our tools are allowed")
                 matrix_text = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
                                            value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
-                                           label_visibility='collapsed', height = 125)
+                                           label_visibility='collapsed', height=125)
 
                 pwm_rows = kmatrix_text.strip().split('\n')
                 pwm = [list(map(str, row.split())) for row in pwm_rows]
@@ -1065,14 +1072,16 @@ def aio_page():
             threshold_entry = 0
         else:
             threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.5, 1.0, 0.85, step=0.05,
-                                    label_visibility="collapsed")
+                                        label_visibility="collapsed")
     with BSFcol3:
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times.')
         if total_promoter > 10:
-            st.markdown('⚠️Proportion of A, T, G, C imposed for the calculation of the p-value for more than 10 sequences. See "Resource" for more information')
+            st.markdown(
+                '⚠️Proportion of A, T, G, C imposed for the calculation of the p-value for more than 10 sequences. See "Resource" for more information')
             st.markdown('A 0.275 | C 0.225 | G 0.225 | T 0.275')
         else:
-            st.markdown('⚠️Proportion of A, T, G, C depending on the proportions in the sequence. See "Resource" for more information')
+            st.markdown(
+                '⚠️Proportion of A, T, G, C depending on the proportions in the sequence. See "Resource" for more information')
         calc_pvalue = st.checkbox('_p-value_')
 
     # Run Responsive Elements finder
@@ -1104,8 +1113,10 @@ def aio_page():
     matrices = transform_matrix(matrix)
 
     st.markdown("")
-    if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True, disabled=button):
-        table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length, total_promoter)
+    if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True,
+                 disabled=button):
+        table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length,
+                                 total_promoter)
         st.session_state['table2'] = table2
 
     st.divider()
