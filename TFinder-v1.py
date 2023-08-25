@@ -236,16 +236,5 @@ if "user_count_incremented" not in st.session_state:
 st.sidebar.markdown(f"Total users 👥: {int(views)}")
 
 bot = telebot.TeleBot("6605900382:AAGDXSpd8Zmx1ffaTpu398Nari8ewQxpTNA")
-
-
-@bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
     bot.reply_to(message, "Howdy, how are you doing?")
-
-
-@bot.message_handler(func=lambda message: True)
-def echo_all(message):
-    bot.reply_to(message, message.text)
-
-
-bot.infinity_polling()
