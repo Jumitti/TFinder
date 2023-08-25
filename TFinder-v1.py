@@ -233,4 +233,4 @@ if "user_count_incremented" not in st.session_state:
     with open("user_count.pkl", "wb") as file:
         pickle.dump(user_count, file)'''
 
-st.sidebar.markdown(f"Total users 👥: {views}")
+st.sidebar.markdown(f"Total users 👥: {views[-1]}")
