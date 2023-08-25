@@ -354,9 +354,6 @@ def aio_page():
 
                         random_scores = np.array(matrix_random_scores)
 
-                    if calc_pvalue:
-                        st.write(len(random_scores))
-
                     for i in range(len(promoter_region) - seq_length + 1):
                         seq = promoter_region[i:i + seq_length]
                         score = calculate_score(seq, matrix)
