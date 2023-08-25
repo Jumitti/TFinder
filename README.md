@@ -30,7 +30,7 @@ TFinder is an ultra-intuitive, easy-to-use and fast analysis open source and fre
 
 - Mode "Advance": allows to extract for the same gene the promoter and terminator regions for several species
 
-### Binding Site Finder
+### Individual Motif Finder
 - Support multiple DNA sequences in FASTA format
 - Find Individual Motif occurrences (like TFBS, enzymes restriction site, specific pattern... whatever you want)
 - Support IUPAC code
