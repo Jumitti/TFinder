@@ -28,6 +28,8 @@ def home_page():
     st.markdown(
         "<h3 style='text-align: center; color: black;'>TFinder: a Python web tool for predicting Transcription Factor Binding Sites</h1>",
         unsafe_allow_html=True)
+    with open('./clock.time', 'r') as f:
+        last_updated_on = f.readlines()[0]
     st.markdown('')
     st.image('https://raw.githubusercontent.com/Jumitti/TFinder/Beta/img/tfinder_schema_bg_V5-3.png',
              caption='Just a test')
