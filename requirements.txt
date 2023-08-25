@@ -38,3 +38,4 @@ sendgrid
 Pillow
 stqdm
 tqdm
+pyTelegramBotAPI
