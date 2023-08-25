@@ -30,6 +30,7 @@ def home_page():
         unsafe_allow_html=True)
     with open('./clock.time', 'r') as f:
         last_updated_on = f.readlines()[0]
+    st.caption(last_updated_on)
     st.markdown('')
     st.image('https://raw.githubusercontent.com/Jumitti/TFinder/Beta/img/tfinder_schema_bg_V5-3.png',
              caption='Just a test')
