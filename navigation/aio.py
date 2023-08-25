@@ -305,7 +305,6 @@ def aio_page():
                     max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
                     min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
                     random_scores = {}
-                    st.write(len(random_scores))
                     matrix_random_scores = []
                     for random_sequence in random_sequences:
                         sequence = random_sequence
@@ -335,7 +334,6 @@ def aio_page():
 
                     if calc_pvalue and total_promoter <= 10:
                         random_scores = {}
-                        st.write(len(random_scores))
 
                 for matrix_name, matrix in matrices.items():
                     found_positions = []
@@ -354,6 +352,9 @@ def aio_page():
                             pbar.update(1)
 
                         random_scores = np.array(matrix_random_scores)
+
+                    if calc_pvalue:
+                        st.write(len(random_scores))
 
                     for i in range(len(promoter_region) - seq_length + 1):
                         seq = promoter_region[i:i + seq_length]
