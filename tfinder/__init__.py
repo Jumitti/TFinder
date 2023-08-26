@@ -86,7 +86,7 @@ class NCBI_dna:
     def find_sequences(self):
         time.sleep(1)
         if self.gene_id.isdigit():
-            entrez_id = sel.gene_id
+            entrez_id = self.gene_id
         else:
             entrez_id = self.convert_gene_to_entrez_id()
             if entrez_id != 'not_found':
