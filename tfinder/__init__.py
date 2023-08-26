@@ -111,8 +111,8 @@ class NCBI_dna:
         if 'chraccver' in str(gene_info):
             gene_name = gene_info['name']
             chraccver = gene_info['genomicinfo'][0]['chraccver']
-            chrstart = gene_info['genomicinfo'][0]['chrstart']
-            chrstop = gene_info['genomicinfo'][0]['chrstop']
+            chrstart = int(gene_info['genomicinfo'][0]['chrstart'])
+            chrstop = int(gene_info['genomicinfo'][0]['chrstop'])
             species_API = gene_info['organism']['scientificname']
         else:
             result_promoter = f'Please verify ID of {self.gene_id}'

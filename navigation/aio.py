@@ -552,9 +552,9 @@ def aio_page():
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
 
-            upstream = str(upstream_entry)
+            upstream = int(upstream_entry)
             st.session_state['upstream'] = upstream
-            downstream = str(downstream_entry)
+            downstream = int(downstream_entry)
 
             # Run Promoter Finder
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
