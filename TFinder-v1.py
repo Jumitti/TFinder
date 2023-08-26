@@ -213,6 +213,7 @@ st.sidebar.markdown('TFinder use NCBI API and JASPAR ID. See Resources for more 
 
 modal = Modal(key="TFinder Key", title="Disclaimers")
 if 'popup' not in st.session_sate:
+    st.session_state['popup'] = False
     modal.open()
 
 if modal.is_open():
