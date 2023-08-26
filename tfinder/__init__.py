@@ -154,7 +154,7 @@ class NCBI_dna:
         if self.gene_id.isdigit():
             entrez_id = self.gene_id
         else:
-            entrez_id = convert_gene_to_entrez_id(self.gene_id, self.species)
+            entrez_id = convert_gene_to_entrez_id(self)
             if entrez_id != 'not_found':
                 pass
             else:
