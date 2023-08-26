@@ -83,14 +83,13 @@ class NCBI_dna:
             entrez_id = self.gene_id
         else:
             entrez_id = self.convert_gene_to_entrez_id()
-            print(entrez_id)
             if entrez_id != 'not_found':
                 pass
             else:
                 result_promoter = f'Please verify if {self.gene_id} exist for {self.species}'
                 return result_promoter
 
-        gene_info = get_gene_info(entrez_id)
+        gene_info = self.get_gene_info(entrez_id)
         if 'chraccver' in str(gene_info):
             gene_name = gene_info['name']
             chraccver = gene_info['genomicinfo'][0]['chraccver']
