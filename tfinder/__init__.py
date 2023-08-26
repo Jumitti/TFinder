@@ -144,7 +144,7 @@ class NCBI_dna:
 
         if response.status_code == 200:
             response_data = response.json()
-            gene_info = response_data['result'][str(entrez_id)]
+            gene_info = response_data['result'][str(self.gene_id)]
             return gene_info
 
     # Get DNA sequence
