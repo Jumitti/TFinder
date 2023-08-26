@@ -209,8 +209,6 @@ streamlit_analytics.stop_tracking()
 views = streamlit_analytics.main.counts["total_pageviews"]
 st.sidebar.markdown(f"Total users 👥: {int(views)}")
 
-st.sidebar.markdown('TFinder use NCBI API and JASPAR ID. See Resources for more information')
-
 modal = Modal(key="TFinder Key", title="Disclaimers")
 
 if 'popup_closed' not in st.session_state:
