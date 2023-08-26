@@ -681,15 +681,15 @@ def aio_page():
                     for gene_id in stqdm(gene_ids,
                                          desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                                          mininterval=0.1):
-                        result_promoter = find_promoters(gene_id, species, upstream, downstream)
-                        if not result_promoter.startswith('P'):
+                        result_promoter_output = find_promoters(gene_id, species, upstream, downstream)
+                        if not result_promoter_output.startswith('P'):
                             st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
-                            st.write(result_promoter)
-                            result_promoter.append(result_promoter)
+                            st.write(result_promoter_output)
+                            result_promoter.append(result_promoter_output)
                             pass
 
                         else:
-                            st.error(result_promoter)
+                            st.error(result_promoter_output)
                             continue
 
                         result_promoter_text = "\n".join(result_promoter)
