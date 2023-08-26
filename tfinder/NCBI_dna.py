@@ -18,16 +18,17 @@
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+def reverse_complement(sequence):
+    complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
+    reverse_sequence = sequence[::-1]
+    complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
+    return complement_sequence
+
+
 class NCBI_dna:
     species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
     def __init__(self):
         self.gene_name = gene_name
-
-    def reverse_complement(sequence):
-        complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
-        reverse_sequence = sequence[::-1]
-        complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
-        return complement_sequence
 
     @classmethod
     def analyse_gene(cls, gene_id):
