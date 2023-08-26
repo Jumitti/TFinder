@@ -504,7 +504,7 @@ def aio_page():
         gene_ids = gene_id_entry.strip().split("\n")
 
         if st.button('test'):
-            output = NCBI_dna.get_dna_sequence(prom_term='Promoter', upstream=int(1000), downstream=int(1000), chraccver='NC_000006.12', chrstart=int(161347417), chrstop=int(162727766))
+            output = NCBI_dna.get_dna_sequence(prom_term='Promoter', upstream=int(1000), downstream=int(1000), chraccver='NC_000006.12', chrstart=int(162727765), chrstop=int(161347417))
             st.write(output)
 
         # Verify if gene is available for all species
