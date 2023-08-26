@@ -43,7 +43,7 @@ from PIL import Image
 import time
 from tqdm import tqdm
 from stqdm import stqdm
-from tfinder import NCBI_dna
+from tfinder.NCBI_dna import NCBI_dna
 
 
 def aio_page():
