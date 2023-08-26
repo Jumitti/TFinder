@@ -806,6 +806,7 @@ def aio_page():
                     iterration = 0
                     for gene_info in (data_dff.itertuples(index=False)):
                         gene_name = gene_info.Gene
+                        gene_ids = gene_name.strip().split('\n')
                         if gene_name.isdigit():
                             for search_type in search_types:
                                 if getattr(gene_info, f'{search_type}'):
@@ -821,17 +822,16 @@ def aio_page():
                                mininterval=0.1) as pbar:
                         for gene_info in (data_dff.itertuples(index=False)):
                             gene_name = gene_info.Gene
-                            gene_id = gene_name.strip().split('\n')
-                            if gene_id.isdigit():
+                            gene_ids = gene_name.strip().split('\n')
+                            if gene_name.isdigit():
                                 for search_type in search_types:
                                     if getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
                                         species = 'human'  # This is just a remnant of the past
                                         try:
-                                            result_promoter = find_promoters(gene_id, species, upstream, downstream,
-                                                                             prom_term)
+                                            result_promoter = find_promoters(gene_ids, species, upstream, downstream, prom_term)
                                         except Exception as e:
-                                            st.error(f"Error finding {gene_id}: {str(e)}")
+                                            st.error(f"Error finding {gene_ids}: {str(e)}")
                                         pbar.update(1)
                             else:
                                 for species in species_list:
@@ -839,10 +839,10 @@ def aio_page():
                                         if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
                                             prom_term = search_type.capitalize()
                                             try:
-                                                result_promoter = find_promoters(gene_id, species, upstream,
+                                                result_promoter = find_promoters(gene_ids, species, upstream,
                                                                                  downstream, prom_term)
                                             except Exception as e:
-                                                st.error(f"Error finding {gene_id}: {str(e)}")
+                                                st.error(f"Error finding {gene_ids}: {str(e)}")
                                             pbar.update(1)
 
                         result_promoter_text = "\n".join(result_promoter)
