@@ -30,18 +30,15 @@ def reverse_complement(sequence):
 
 # Get gene information
 def get_gene_info(gene_id):
-    try:
-        # Request gene information
-        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml"
-        response = requests.get(url)
+    # Request gene information
+    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml"
+    response = requests.get(url)
+    st.write(response)
 
-        if response.status_code == 200:
-            response_data = response.json()
-            gene_info = response_data['result'][str(gene_id)]
-            return gene_info
-
-    except Exception as e:
-        raise Exception(f"Error: {str(e)}")
+    if response.status_code == 200:
+        response_data = response.json()
+        gene_info = response_data['result'][str(gene_id)]
+        return gene_info
 
 # Get DNA sequence
 def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream, prom_term):
