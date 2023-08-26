@@ -224,5 +224,4 @@ if not st.session_state.popup_closed:
         st.markdown("TFinder use [JASPAR API](https://doi.org/10.1093/bioinformatics/btx804)")
         value = st.checkbox("By checking this box, you agree with data usage polices of NCBI and JASPAR")
         if value:
-            if st.button('Close'):
-                modal.close()
+            button('Close')
