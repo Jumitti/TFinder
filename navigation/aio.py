@@ -54,11 +54,11 @@ def aio_page():
         return complement_sequence
 
     def analyse_gene(gene_id):
-        species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
+        disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         time.sleep(0.25)
         gene_analyse = [gene_id]
         gene_disponibility = []
-        for species_test in species_list:
+        for species_test in disponibility_list:
             if not gene_id.isdigit():
                 if species_test == 'ID':
                     gene_disponibility.append('n.d')
@@ -669,12 +669,12 @@ def aio_page():
         # Verify if gene is available for all species
         if st.button('🔎 Check genes avaibility',
                      help='Sometimes genes do not have the same name in all species or do not exist.'):
+            species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
             gene_disponibility = []
             for gene_id in stqdm(gene_ids,
                                     desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
                                     mininterval=0.1):
-                gene_disponibility, species_list = analyse_gene(gene_id)
-                gene_disponibility.append(gene_disponibility)
+                gene_disponibility.append(analyse_gene(gene_id))
 
             species_columns = ['Gene'] + species_list
             gene_disponibility = pd.DataFrame(gene_disponibility, columns=species_columns)
