@@ -101,10 +101,10 @@ class NCBI_dna:
         self.gene_id = gene_id
 
     # Analyse if gene is available for species or if ID exist
-    def analyse_gene(self, gene_id):
+    def analyse_gene(self):
         disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         time.sleep(0.25)
-        gene_analyse = [gene_id]
+        gene_analyse = [self.gene_id]
         for species_test in disponibility_list:
             if not gene_id.isdigit():
                 if species_test == 'ID':
