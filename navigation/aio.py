@@ -43,6 +43,7 @@ from PIL import Image
 import time
 from tqdm import tqdm
 from stqdm import stqdm
+from tfinder import tfinder
 
 
 def aio_page():
@@ -53,7 +54,7 @@ def aio_page():
         complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
         return complement_sequence
 
-    def analyse_gene(gene_id):
+    '''def analyse_gene(gene_id):
         disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         time.sleep(0.25)
         gene_analyse = [gene_id]
@@ -89,7 +90,7 @@ def aio_page():
                         else:
                             gene_analyse.append("❌")
 
-        return gene_analyse
+        return gene_analyse'''
 
     # Convert gene to ENTREZ_GENE_ID
     def convert_gene_to_entrez_id(gene, species):

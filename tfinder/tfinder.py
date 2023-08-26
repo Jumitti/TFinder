@@ -29,42 +29,46 @@ class NCBI_dna:
         complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
         return complement_sequence
 
-    def analyse_gene(gene_ids):
-        results_gene_list = []
-        data = []
-        for gene_input in stqdm(gene_ids,
-                                desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
-                                mininterval=0.1):
-            time.sleep(0.25)
-            if not gene_input.isdigit():
-                row = [gene_input]
-                for species_test in species_list:
+    def analyse_gene(self, gene_id):
+        disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
+        time.sleep(0.25)
+        gene_analyse = [gene_id]
+        for species_test in disponibility_list:
+            if not gene_id.isdigit():
+                if species_test == 'ID':
+                    gene_analyse.append('n.d')
+                else:
                     time.sleep(0.5)
-                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
+                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_id}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
                     response = requests.get(url)
 
                     if response.status_code == 200:
                         response_data = response.json()
 
                         if response_data['esearchresult']['count'] != '0':
-                            row.append("✅")
+                            gene_analyse.append("✅")
                         else:
-                            row.append("❌")
+                            gene_analyse.append("❌")
 
-                data.append(row)
+            if gene_id.isdigit():
+                if species_test != 'ID':
+                    gene_analyse.append('n.d')
+                else:
+                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml"
+                    response = requests.get(url)
 
-            if gene_input.isdigit():
-                gene_id = gene_input
-                gene_info = get_gene_info(gene_id)
-                if not 'chraccver' in str(gene_info):
-                    st.error(f'Please verify ID of {gene_id}')
+                    if response.status_code == 200:
+                        response_data = response.json()
 
-        species_columns = ['Gene'] + species_list
-        dfgene = pd.DataFrame(data, columns=species_columns)
-        return dfgene
+                        if 'chraccver' in str(response_data):
+                            gene_analyse.append("✅")
+                        else:
+                            gene_analyse.append("❌")
+
+        return gene_analyse
 
     # Convert gene to ENTREZ_GENE_ID
-    def convert_gene_to_entrez_id(gene, species):
+    def convert_gene_to_entrez_id(self, gene, species):
         if gene.isdigit():
             return gene  # Already an ENTREZ_GENE_ID
 
@@ -88,7 +92,7 @@ class NCBI_dna:
             raise Exception(f"Error during gene search: {response.status_code}")
 
     # Get gene information
-    def get_gene_info(gene_id):
+    def get_gene_info(self, gene_id):
         try:
             # Request gene information
             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml"
@@ -103,7 +107,7 @@ class NCBI_dna:
             raise Exception(f"Error: {str(e)}")
 
     # Get DNA sequence
-    def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
+    def get_dna_sequence(self, chraccver, chrstart, chrstop, upstream, downstream):
         try:
             # Determine sens of gene + coordinate for upstream and downstream
             if chrstop > chrstart:
@@ -133,7 +137,7 @@ class NCBI_dna:
             raise Exception(f"Error: {str(e)}")
 
     # Promoter Finder
-    def find_promoters(gene_ids, species, upstream, downstream):
+    def find_promoters(self, gene_ids, species, upstream, downstream):
         try:
             for gene_id in gene_ids:
                 time.sleep(1)
