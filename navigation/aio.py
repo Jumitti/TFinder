@@ -38,7 +38,6 @@ from tfinder import NCBI_dna
 
 
 def aio_page():
-
     # Extract JASPAR matrix
     def matrix_extraction(sequence_consensus_input):
         jaspar_id = sequence_consensus_input
@@ -508,13 +507,12 @@ def aio_page():
             species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
             gene_disponibility_output = []
             for gene_id in stqdm(gene_ids,
-                                    desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
-                                    mininterval=0.1):
+                                 desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
+                                 mininterval=0.1):
                 gene_disponibility_output.append(NCBI_dna.analyse_gene(gene_id))
 
             species_columns = ['Gene'] + species_list
             gene_disponibility_output = pd.DataFrame(gene_disponibility_output, columns=species_columns)
-
 
             st.session_state['gene_disponibility_output'] = gene_disponibility_output
 
@@ -562,7 +560,8 @@ def aio_page():
                     for gene_id in stqdm(gene_ids,
                                          desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                                          mininterval=0.1):
-                        result_promoter_output = NCBI_dna(gene_id, species, upstream, downstream, prom_term).find_sequences()
+                        result_promoter_output = NCBI_dna(gene_id, species, upstream, downstream,
+                                                          prom_term).find_sequences()
                         if not result_promoter_output.startswith('P'):
                             st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
                             result_promoter.append(result_promoter_output)
@@ -713,8 +712,8 @@ def aio_page():
                                     if getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
 
-                                        result_promoter_output = NCBI_dna(gene_id, upstream, downstream,
-                                                                          prom_term).find_sequences()
+                                        result_promoter_output = NCBI_dna(gene_id, upstream=upstream, downstream=downstream,
+                                                                          prom_term=prom_term).find_sequences()
 
                                         if not result_promoter_output.startswith('P'):
                                             st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted',
@@ -733,13 +732,13 @@ def aio_page():
                                         if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
                                             prom_term = search_type.capitalize()
 
-
                                             result_promoter_output = NCBI_dna(gene_id, species, upstream, downstream,
                                                                               prom_term).find_sequences()
 
                                             if not result_promoter_output.startswith('P'):
-                                                st.toast(f'{prom_term} **{gene_id}** from **{species.capitalize()}** extracted',
-                                                         icon='🧬')
+                                                st.toast(
+                                                    f'{prom_term} **{gene_id}** from **{species.capitalize()}** extracted',
+                                                    icon='🧬')
                                                 result_promoter.append(result_promoter_output)
                                                 pass
 
