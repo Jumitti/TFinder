@@ -91,7 +91,6 @@ def aio_page():
                             gene_disponibilty.append("❌")
 
         species_columns = ['Gene'] + species_list
-        gene_disponibilty = pd.DataFrame(gene_disponibilty, columns=species_columns)
 
         return gene_disponibilty
 
@@ -676,6 +675,8 @@ def aio_page():
                                     desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
                                     mininterval=0.1):
                 gene_disponibility = analyse_gene(gene_id)
+
+            gene_disponibilty = pd.DataFrame(gene_disponibilty, columns=species_columns)
 
             st.session_state['gene_disponibility'] = gene_disponibility
 
