@@ -106,7 +106,11 @@ class NCBI_dna:
             result_promoter = f'Please verify ID of {self.gene_id}'
             return result_promoter
 
-        dna_sequence = self.get_dna_sequence(chraccver, chrstart, chrstop)
+        prom_term = self.prom_term
+        upstream = self.upstream
+        downstream = self.downstream
+
+        dna_sequence = self.get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop)
 
         if self.prom_term == 'Promoter':
             result_promoter = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
@@ -147,8 +151,9 @@ class NCBI_dna:
             gene_info = response_data['result'][str(entrez_id)]
             return gene_info
 
+    @staticmethod
     # Get DNA sequence
-    def get_dna_sequence(self, chraccver, chrstart, chrstop):
+    def get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop):
         # Determine sens of gene + coordinate for upstream and downstream
         if chrstop > chrstart:
             start = (chrstart if self.prom_term == 'Promoter' else chrstop) - self.upstream
