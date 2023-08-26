@@ -97,21 +97,21 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream, prom_te
 class NCBI_dna:
     species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
     def __init__(self, gene_id):
-        self.gene_name = gene_name
         self.gene_id = gene_id
 
     # Analyse if gene is available for species or if ID exist
     def analyse_gene(self):
         disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         time.sleep(0.25)
-        gene_analyse = [self.gene_id]
+        gene_id = self.gene_id
+        gene_analyse = [gene_id]
         for species_test in disponibility_list:
             if not gene_id.isdigit():
                 if species_test == 'ID':
                     gene_analyse.append('n.d')
                 else:
                     time.sleep(0.5)
-                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={self.gene_id}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
+                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_id}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
                     response = requests.get(url)
 
                     if response.status_code == 200:
@@ -126,7 +126,7 @@ class NCBI_dna:
                 if species_test != 'ID':
                     gene_analyse.append('n.d')
                 else:
-                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={self.gene_id}&retmode=json&rettype=xml"
+                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml"
                     response = requests.get(url)
 
                     if response.status_code == 200:
