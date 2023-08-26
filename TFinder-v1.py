@@ -218,7 +218,7 @@ if open_modal:
 
 if modal.is_open():
     with modal.container():
-        st.write("Text goes here")
+        st.markdown("Text goes here")
         st.write("Some fancy text")
         value = st.checkbox("Check me")
         st.write(f"Checkbox checked: {value}")
