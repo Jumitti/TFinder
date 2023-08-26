@@ -150,11 +150,9 @@ def aio_page():
         dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
 
         if prom_term == 'Promoter':
-            result_promoter.append(
-                f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {upstream}\n{dna_sequence}\n")
+            result_promoter = f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {upstream}\n{dna_sequence}\n"
         else:
-            result_promoter.append(
-                f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {upstream}\n{dna_sequence}\n")
+            result_promoter = f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {upstream}\n{dna_sequence}\n"
 
         return result_promoter
 
@@ -680,22 +678,24 @@ def aio_page():
                 with colprom1:
                     if 'result_promoter_text' in st.session_state:
                         del st.session_state['result_promoter_text']
-                    try:
-                        for gene_id in stqdm(gene_ids,
-                                             desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
-                                             mininterval=0.1):
-                            result_promoter = find_promoters(gene_id, species, upstream, downstream)
-                            if not result_promoter.startswith('P'):
-                                st.toast(f'{prom_term} **{gene_name}** from **{species_API}** extracted', icon='🧬')
-                                result_promoter_text = "\n".join(result_promoter)
-                                st.session_state['result_promoter_text'] = result_promoter_text
-                            else:
-                                st.error(result_promoter)
+                    for gene_id in stqdm(gene_ids,
+                                         desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
+                                         mininterval=0.1):
+                        result_promoter = find_promoters(gene_id, species, upstream, downstream)
+                        if not result_promoter.startswith('P'):
+                            st.toast(f'{prom_term} **{gene_name}** from **{species_API}** extracted', icon='🧬')
+                            result_promoter.append(result_promoter)
+                            pass
 
-                        st.success(f"{prom_term} extraction complete !")
-                        st.toast(f"{prom_term} extraction complete !", icon='😊')
-                    except Exception as e:
-                        st.error(f"Error finding {prom_term}: {str(e)}")
+                        else:
+                            st.error(result_promoter)
+                            continue
+
+                        result_promoter_text = "\n".join(result_promoter)
+                        st.session_state['result_promoter_text'] = result_promoter_text
+
+                    st.success(f"{prom_term} extraction complete !")
+                    st.toast(f"{prom_term} extraction complete !", icon='😊')
 
         with tab2:
             # Advance mode extraction
