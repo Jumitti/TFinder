@@ -95,8 +95,19 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream, prom_te
 
 
 class NCBI_dna:
-    def __init__(self, gene_id=None):
+    def __init__(self,
+                 gene_id,
+                 upstream,
+                 downstream,
+                 prom_term,
+                 species=None):
         self.gene_id = gene_id
+        self.upstream = upstream
+        self.downstream = downstream
+        self.prom_term = prom_term
+        self.species = species
+
+
 
     # Analyse if gene is available
     def analyse_gene(self):
@@ -138,16 +149,16 @@ class NCBI_dna:
         return gene_analyse
 
     # Sequence extractor
-    def find_sequences(self, gene_id, species, upstream, downstream, prom_term):
+    def find_sequences(self):
         time.sleep(1)
         if gene_id.isdigit():
-            entrez_id = gene_id
+            entrez_id = self.gene_id
         else:
-            entrez_id = convert_gene_to_entrez_id(gene_id, species)
+            entrez_id = convert_gene_to_entrez_id(self.gene_id, self.species)
             if entrez_id != 'not_found':
                 pass
             else:
-                result_promoter = f'Please verify if {gene_id} exist for {species}'
+                result_promoter = f'Please verify if {self.gene_id} exist for {self.species}'
                 return result_promoter
 
         gene_info = get_gene_info(entrez_id)
@@ -158,14 +169,14 @@ class NCBI_dna:
             chrstop = gene_info['genomicinfo'][0]['chrstop']
             species_API = gene_info['organism']['scientificname']
         else:
-            result_promoter = f'Please verify ID of {gene_id}'
+            result_promoter = f'Please verify ID of {self.gene_id}'
             return result_promoter
 
-        dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream, prom_term)
+        dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, self.upstream, self.downstream, self.prom_term)
 
         if prom_term == 'Promoter':
-            result_promoter = f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {upstream}\n{dna_sequence}\n"
+            result_promoter = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
         else:
-            result_promoter = f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {upstream}\n{dna_sequence}\n"
+            result_promoter = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
 
         return result_promoter
