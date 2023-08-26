@@ -51,6 +51,71 @@ def reverse_complement(sequence):
     complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
     return complement_sequence
 
+# Convert gene to ENTREZ_GENE_ID
+def convert_gene_to_entrez_id(gene, species):
+    if gene.isdigit():
+        return gene  # Already an ENTREZ_GENE_ID
+
+    # Request for ENTREZ_GENE_ID
+    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml "
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        response_data = response.json()
+
+        if response_data['esearchresult']['count'] == '0':
+            gene_id = 'not_found'
+            return gene_id
+
+        else:
+            gene_id = response_data['esearchresult']['idlist'][0]
+            return gene_id
+
+# Get gene information
+def get_gene_info(gene_id):
+    try:
+        # Request gene information
+        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            response_data = response.json()
+            gene_info = response_data['result'][str(gene_id)]
+            return gene_info
+
+    except Exception as e:
+        raise Exception(f"Error: {str(e)}")
+
+# Get DNA sequence
+def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
+    try:
+        # Determine sens of gene + coordinate for upstream and downstream
+        if chrstop > chrstart:
+            start = (chrstart if prom_term == 'Promoter' else chrstop) - upstream
+            end = (chrstart if prom_term == 'Promoter' else chrstop) + downstream
+        else:
+            start = (chrstart if prom_term == 'Promoter' else chrstop) + upstream
+            end = (chrstart if prom_term == 'Promoter' else chrstop) - downstream
+
+        # Request for DNA sequence
+        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            # Extraction of DNA sequence
+            dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
+            if chrstop > chrstart:
+                sequence = dna_sequence
+            else:
+                sequence = reverse_complement(dna_sequence)
+
+            return sequence
+
+        else:
+            raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
+    except Exception as e:
+        raise Exception(f"Error: {str(e)}")
+
 
 class NCBI_dna:
     species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
@@ -95,3 +160,37 @@ class NCBI_dna:
                             gene_analyse.append("❌")
 
         return gene_analyse
+
+    # Sequence extractor
+    @classmethod
+    def find_sequences(cls, gene_id, species, upstream, downstream, prom_term):
+        time.sleep(1)
+        if gene_id.isdigit():
+            entrez_id = gene_id
+        else:
+            entrez_id = convert_gene_to_entrez_id(gene_id, species)
+            if entrez_id != 'not_found':
+                pass
+            else:
+                result_promoter = f'Please verify if {gene_id} exist for {species}'
+                return result_promoter
+
+        gene_info = get_gene_info(entrez_id)
+        if 'chraccver' in str(gene_info):
+            gene_name = gene_info['name']
+            chraccver = gene_info['genomicinfo'][0]['chraccver']
+            chrstart = gene_info['genomicinfo'][0]['chrstart']
+            chrstop = gene_info['genomicinfo'][0]['chrstop']
+            species_API = gene_info['organism']['scientificname']
+        else:
+            result_promoter = f'Please verify ID of {gene_id}'
+            return result_promoter
+
+        dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
+
+        if prom_term == 'Promoter':
+            result_promoter = f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {upstream}\n{dna_sequence}\n"
+        else:
+            result_promoter = f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {upstream}\n{dna_sequence}\n"
+
+        return result_promoter
