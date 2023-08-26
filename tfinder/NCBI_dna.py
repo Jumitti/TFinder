@@ -96,14 +96,13 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream, prom_te
 
 class NCBI_dna:
     species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
-    def __init__(self, gene_id):
-        self.gene_id = gene_id
+    def __init__(self, species=None):
+        self.species = species
 
-    # Analyse if gene is available for species or if ID exist
-    def analyse_gene(self):
+    @classmethod
+    def analyse_gene(cls, gene_id):
         disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         time.sleep(0.25)
-        gene_id = self.gene_id
         gene_analyse = [gene_id]
         for species_test in disponibility_list:
             if not gene_id.isdigit():
@@ -140,16 +139,17 @@ class NCBI_dna:
         return gene_analyse
 
     # Sequence extractor
-    def find_sequences(self, gene_id, species, upstream, downstream, prom_term):
+    @classmethod
+    def find_sequences(cls, self, gene_id, upstream, downstream, prom_term):
         time.sleep(1)
         if gene_id.isdigit():
             entrez_id = gene_id
         else:
-            entrez_id = convert_gene_to_entrez_id(gene_id, species)
+            entrez_id = convert_gene_to_entrez_id(gene_id, self.species)
             if entrez_id != 'not_found':
                 pass
             else:
-                result_promoter = f'Please verify if {gene_id} exist for {species}'
+                result_promoter = f'Please verify if {gene_id} exist for {self.species}'
                 return result_promoter
 
         gene_info = get_gene_info(entrez_id)
