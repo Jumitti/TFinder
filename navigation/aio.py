@@ -826,27 +826,44 @@ def aio_page():
                                     if getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
                                         species = 'human'  # This is just a remnant of the past
-                                        try:
-                                            result_promoter = find_promoters(gene_id, species, upstream, downstream, prom_term)
-                                        except Exception as e:
-                                            st.error(f"Error finding {gene_id}: {str(e)}")
+
+                                        result_promoter_output = find_promoters(gene_id, species, upstream, downstream,
+                                                                                prom_term)
+                                        if not result_promoter_output.startswith('P'):
+                                            st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted',
+                                                     icon='🧬')
+                                            result_promoter.append(result_promoter_output)
+                                            pass
+
+                                        else:
+                                            st.error(result_promoter_output)
+                                            continue
+
                                         pbar.update(1)
                             else:
                                 for species in species_list:
                                     for search_type in search_types:
                                         if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
                                             prom_term = search_type.capitalize()
-                                            try:
-                                                result_promoter = find_promoters(gene_id, species, upstream,
+
+                                            result_promoter_output = find_promoters(gene_id, species, upstream,
                                                                                  downstream, prom_term)
-                                            except Exception as e:
-                                                st.error(f"Error finding {gene_id}: {str(e)}")
+                                            if not result_promoter_output.startswith('P'):
+                                                st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted',
+                                                         icon='🧬')
+                                                result_promoter.append(result_promoter_output)
+                                                pass
+
+                                            else:
+                                                st.error(result_promoter_output)
+                                                continue
+
                                             pbar.update(1)
 
-                        result_promoter_text = "\n".join(result_promoter)
-                        st.session_state['result_promoter_text'] = result_promoter_text
-                        st.success(f"{prom_term} extraction complete !")
-                        st.toast(f"{prom_term} extraction complete !", icon='😊')
+                    result_promoter_text = "\n".join(result_promoter)
+                    st.session_state['result_promoter_text'] = result_promoter_text
+                    st.success(f"{prom_term} extraction complete !")
+                    st.toast(f"{prom_term} extraction complete !", icon='😊')
 
     # Promoter output state
     st.divider()
