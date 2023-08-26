@@ -73,6 +73,26 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream, prom_te
     except Exception as e:
         raise Exception(f"Error: {str(e)}")
 
+# Convert gene to ENTREZ_GENE_ID
+def convert_gene_to_entrez_id(self):
+    if self.gene_id.isdigit():
+        return gene  # Already an ENTREZ_GENE_ID
+
+    # Request for ENTREZ_GENE_ID
+    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={self.gene_id}[Gene%20Name]+AND+{self.species}[Organism]&retmode=json&rettype=xml "
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        response_data = response.json()
+
+        if response_data['esearchresult']['count'] == '0':
+            gene_id = 'not_found'
+            return gene_id
+
+        else:
+            gene_id = response_data['esearchresult']['idlist'][0]
+            return gene_id
+
 
 class NCBI_dna:
     def __init__(self,
@@ -160,23 +180,3 @@ class NCBI_dna:
             result_promoter = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
 
         return result_promoter
-
-    # Convert gene to ENTREZ_GENE_ID
-    def convert_gene_to_entrez_id(self):
-        if self.gene_id.isdigit():
-            return gene  # Already an ENTREZ_GENE_ID
-
-        # Request for ENTREZ_GENE_ID
-        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={self.gene_id}[Gene%20Name]+AND+{self.species}[Organism]&retmode=json&rettype=xml "
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            response_data = response.json()
-
-            if response_data['esearchresult']['count'] == '0':
-                gene_id = 'not_found'
-                return gene_id
-
-            else:
-                gene_id = response_data['esearchresult']['idlist'][0]
-                return gene_id
