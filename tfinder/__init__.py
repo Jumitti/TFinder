@@ -156,11 +156,11 @@ class NCBI_dna:
     def get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop):
         # Determine sens of gene + coordinate for upstream and downstream
         if chrstop > chrstart:
-            start = (chrstart if self.prom_term == 'Promoter' else chrstop) - self.upstream
-            end = (chrstart if self.prom_term == 'Promoter' else chrstop) + self.downstream
+            start = (chrstart if prom_term == 'Promoter' else chrstop) - upstream
+            end = (chrstart if prom_term == 'Promoter' else chrstop) + downstream
         else:
-            start = (chrstart if self.prom_term == 'Promoter' else chrstop) + self.upstream
-            end = (chrstart if self.prom_term == 'Promoter' else chrstop) - self.downstream
+            start = (chrstart if prom_term == 'Promoter' else chrstop) + upstream
+            end = (chrstart if prom_term == 'Promoter' else chrstop) - downstream
 
         # Request for DNA sequence
         url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
