@@ -92,7 +92,6 @@ class NCBI_dna:
 
         return gene_analyse
 
-
     # Sequence extractor
     def find_sequences(self):
         time.sleep(1)
