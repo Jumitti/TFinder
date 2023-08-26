@@ -97,9 +97,9 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream, prom_te
 class NCBI_dna:
     def __init__(self,
                  gene_id,
-                 upstream,
-                 downstream,
-                 prom_term,
+                 upstream=None,
+                 downstream=None,
+                 prom_term=None,
                  species=None):
         self.gene_id = gene_id
         self.upstream = upstream
