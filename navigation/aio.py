@@ -602,7 +602,7 @@ def aio_page():
                 }
             )
 
-            species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
+            species_list = ['human', 'mouse', 'rat', 'drosophila', 'zebrafish']
             search_types = ['Promoter', 'Terminator']
 
             st.markdown('**🔹 :blue[Step 1.2]** Select species for all genes:',
