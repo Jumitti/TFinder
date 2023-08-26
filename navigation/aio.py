@@ -679,7 +679,7 @@ def aio_page():
                 gene_disponibility.append(gene_disponibility)
 
             species_columns = ['Gene'] + species_list
-            gene_disponibility = pd.DataFrame(gene_disponibility, columns=species_columns)
+            gene_disponibility = pd.DataFrame(gene_disponibility)
 
             st.session_state['gene_disponibility'] = gene_disponibility
 
