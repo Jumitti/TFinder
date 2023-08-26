@@ -29,12 +29,12 @@ def reverse_complement(sequence):
     return complement_sequence
 
 # Convert gene to ENTREZ_GENE_ID
-def convert_gene_to_entrez_id(self, gene_id):
+def convert_gene_to_entrez_id(gene, species):
     if gene.isdigit():
         return gene  # Already an ENTREZ_GENE_ID
 
     # Request for ENTREZ_GENE_ID
-    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene}[Gene%20Name]+AND+{self.species}[Organism]&retmode=json&rettype=xml "
+    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml "
     response = requests.get(url)
 
     if response.status_code == 200:
@@ -140,16 +140,16 @@ class NCBI_dna:
 
     # Sequence extractor
     @classmethod
-    def find_sequences(cls, self, gene_id, upstream, downstream, prom_term):
+    def find_sequences(cls, gene_id, species, upstream, downstream, prom_term):
         time.sleep(1)
         if gene_id.isdigit():
             entrez_id = gene_id
         else:
-            entrez_id = convert_gene_to_entrez_id(self, gene_id)
+            entrez_id = convert_gene_to_entrez_id(gene_id, species)
             if entrez_id != 'not_found':
                 pass
             else:
-                result_promoter = f'Please verify if {gene_id} exist for {self.species}'
+                result_promoter = f'Please verify if {gene_id} exist for {species}'
                 return result_promoter
 
         gene_info = get_gene_info(entrez_id)
