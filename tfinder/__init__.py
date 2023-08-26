@@ -47,10 +47,10 @@ class NCBI_dna:
                  downstream=None,
                  prom_term=None):
         self.gene_id = gene_id
-        self.upstream = int(upstream)
-        self.downstream = int(downstream)
-        self.prom_term = prom_term
-        self.species = species
+        self.upstream = int(upstream) if upstream is not None else None
+        self.downstream = int(downstream) if downstream is not None else None
+        self.prom_term = prom_term if prom_term is not None else None
+        self.species = species if species is not None else None
 
     @staticmethod
     # Analyse if gene is available
