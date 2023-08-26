@@ -680,7 +680,7 @@ def aio_page():
 
             st.session_state['gene_disponibility'] = gene_disponibility
 
-        if 'gene_disponibility' in st.gene_disponibility:
+        if 'gene_disponibility' in st.session_state:
             st.dataframe(st.session_state['gene_disponibility'], hide_index=True)
 
     with colprom2:
