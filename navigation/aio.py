@@ -632,19 +632,19 @@ def aio_page():
                 all_term = st.checkbox("Terminator")
 
             if all_human:
-                data_df["Human"] = True
+                data_df["human"] = True
             if all_mouse:
-                data_df["Mouse"] = True
+                data_df["mouse"] = True
             if all_rat:
-                data_df["Rat"] = True
+                data_df["rat"] = True
             if all_droso:
-                data_df["Drosophila"] = True
+                data_df["drosophila"] = True
             if all_zebra:
-                data_df["Zebrafish"] = True
+                data_df["zebrafish"] = True
             if all_prom:
-                data_df["Promoter"] = True
+                data_df["promoter"] = True
             if all_term:
-                data_df["Terminator"] = True
+                data_df["terminator"] = True
 
             st.markdown('**🔹 :blue[Step 1.2]** On demand genes table',
                         help="Check the boxes for which you want to extract a sequence. Pay attention that the gene name is equivalent for each species. The choice of species is not available for gene IDs. Parameterize the table last, if you check the boxes above, it resets the whole table.")
@@ -652,31 +652,31 @@ def aio_page():
             data_dff = st.data_editor(
                 data_df,
                 column_config={
-                    "Human": st.column_config.CheckboxColumn(
+                    "human": st.column_config.CheckboxColumn(
                         "Human",
                         default=False,
                     ),
-                    "Mouse": st.column_config.CheckboxColumn(
+                    "mouse": st.column_config.CheckboxColumn(
                         "Mouse",
                         default=False,
                     ),
-                    "Rat": st.column_config.CheckboxColumn(
+                    "rat": st.column_config.CheckboxColumn(
                         "Rat",
                         default=False,
                     ),
-                    "Drosophila": st.column_config.CheckboxColumn(
+                    "drosophila": st.column_config.CheckboxColumn(
                         "Drosophila",
                         default=False,
                     ),
-                    "Zebrafish": st.column_config.CheckboxColumn(
+                    "zebrafish": st.column_config.CheckboxColumn(
                         "Zebrafish",
                         default=False,
                     ),
-                    "Promoter": st.column_config.CheckboxColumn(
+                    "promoter": st.column_config.CheckboxColumn(
                         "Promoter",
                         default=False,
                     ),
-                    "Terminator": st.column_config.CheckboxColumn(
+                    "terminator": st.column_config.CheckboxColumn(
                         "Terminator",
                         default=False,
                     )
@@ -720,7 +720,7 @@ def aio_page():
                             if gene_id.isdigit():
                                 for search_type in search_types:
                                     if getattr(gene_info, f'{search_type}'):
-                                        prom_term = search_type
+                                        prom_term = search_type.capitalize()
                                         species = 'human'  # This is just a remnant of the past
 
                                         result_promoter_output = NCBI_dna.find_sequences(gene_id, species, upstream, downstream,
@@ -740,7 +740,8 @@ def aio_page():
                                 for species in species_list:
                                     for search_type in search_types:
                                         if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
-                                            prom_term = search_type
+                                            prom_term = search_type.capitalize()
+                                            species = species.capitalize()
 
                                             result_promoter_output = NCBI_dna.find_sequences(gene_id, species, upstream,
                                                                                  downstream, prom_term)
