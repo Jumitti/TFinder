@@ -39,6 +39,45 @@ def get_gene_info(entrez_id):
         gene_info = response_data['result'][str(entrez_id)]
         return gene_info
 
+# Analyse if gene is available
+def analyse_gene(gene_id):
+    disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
+    time.sleep(0.25)
+    gene_analyse = [gene_id]
+    for species_test in disponibility_list:
+        if not gene_id.isdigit():
+            if species_test == 'ID':
+                gene_analyse.append('n.d')
+            else:
+                time.sleep(0.5)
+                url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_id}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
+                response = requests.get(url)
+
+                if response.status_code == 200:
+                    response_data = response.json()
+
+                    if response_data['esearchresult']['count'] != '0':
+                        gene_analyse.append("✅")
+                    else:
+                        gene_analyse.append("❌")
+
+        if self.gene_id.isdigit():
+            if species_test != 'ID':
+                gene_analyse.append('n.d')
+            else:
+                url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml"
+                response = requests.get(url)
+
+                if response.status_code == 200:
+                    response_data = response.json()
+
+                    if 'chraccver' in str(response_data):
+                        gene_analyse.append("✅")
+                    else:
+                        gene_analyse.append("❌")
+
+    return gene_analyse
+
 class NCBI_dna:
     def __init__(self,
                  gene_id,
@@ -51,47 +90,6 @@ class NCBI_dna:
         self.downstream = int(downstream) if downstream is not None else None
         self.prom_term = prom_term if prom_term is not None else None
         self.species = species if species is not None else None
-
-    @staticmethod
-    # Analyse if gene is available
-    def analyse_gene(gene_id):
-        disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
-        time.sleep(0.25)
-        gene_analyse = [self.gene_id]
-        for species_test in disponibility_list:
-            if not self.gene_id.isdigit():
-                if species_test == 'ID':
-                    gene_analyse.append('n.d')
-                else:
-                    time.sleep(0.5)
-                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={self.gene_id}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
-                    response = requests.get(url)
-
-                    if response.status_code == 200:
-                        response_data = response.json()
-
-                        if response_data['esearchresult']['count'] != '0':
-                            gene_analyse.append("✅")
-                        else:
-                            gene_analyse.append("❌")
-
-            if self.gene_id.isdigit():
-                if species_test != 'ID':
-                    gene_analyse.append('n.d')
-                else:
-                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={self.gene_id}&retmode=json&rettype=xml"
-                    response = requests.get(url)
-
-                    if response.status_code == 200:
-                        response_data = response.json()
-
-                        if 'chraccver' in str(response_data):
-                            gene_analyse.append("✅")
-                        else:
-                            gene_analyse.append("❌")
-
-        return gene_analyse
-
 
     # Sequence extractor
     def find_sequences(self):
