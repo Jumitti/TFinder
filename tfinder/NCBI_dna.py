@@ -111,7 +111,7 @@ class NCBI_dna:
                     gene_analyse.append('n.d')
                 else:
                     time.sleep(0.5)
-                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_id}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
+                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={self.gene_id}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
                     response = requests.get(url)
 
                     if response.status_code == 200:
@@ -126,7 +126,7 @@ class NCBI_dna:
                 if species_test != 'ID':
                     gene_analyse.append('n.d')
                 else:
-                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml"
+                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={self.gene_id}&retmode=json&rettype=xml"
                     response = requests.get(url)
 
                     if response.status_code == 200:
