@@ -674,7 +674,7 @@ def aio_page():
             for gene_id in stqdm(gene_ids,
                                     desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
                                     mininterval=0.1):
-                gene_disponibility.append(analyse_gene(gene_id))
+                gene_disponibility.append(gene_id + analyse_gene(gene_id))
 
             species_columns = ['Gene'] + species_list
             gene_disponibility = pd.DataFrame(gene_disponibility, columns=species_columns)
