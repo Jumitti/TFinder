@@ -99,8 +99,8 @@ class NCBI_dna:
     def __init__(self):
         self.gene_name = gene_name
 
-    @classmethod
-    def analyse_gene(cls, gene_id):
+    # Analyse if gene is available for species or if ID exist
+    def analyse_gene(self, gene_id):
         disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         time.sleep(0.25)
         gene_analyse = [gene_id]
@@ -139,8 +139,7 @@ class NCBI_dna:
         return gene_analyse
 
     # Sequence extractor
-    @classmethod
-    def find_sequences(cls, gene_id, species, upstream, downstream, prom_term):
+    def find_sequences(self, gene_id, species, upstream, downstream, prom_term):
         time.sleep(1)
         if gene_id.isdigit():
             entrez_id = gene_id
