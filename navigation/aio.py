@@ -510,7 +510,7 @@ def aio_page():
             for gene_id in stqdm(gene_ids,
                                     desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
                                     mininterval=0.1):
-                gene_disponibility_output.append(NCBI_dna(gene_id).analyse_gene())
+                gene_disponibility_output.append(NCBI_dna.analyse_gene(gene_id))
 
             species_columns = ['Gene'] + species_list
             gene_disponibility_output = pd.DataFrame(gene_disponibility_output, columns=species_columns)
@@ -562,7 +562,7 @@ def aio_page():
                     for gene_id in stqdm(gene_ids,
                                          desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                                          mininterval=0.1):
-                        result_promoter_output = NCBI_dna(gene_id, species, upstream, downstream, prom_term).find_sequences()
+                        result_promoter_output = NCBI_dna.find_sequences(gene_id, species, upstream, downstream, prom_term)
                         if not result_promoter_output.startswith('P'):
                             st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
                             result_promoter.append(result_promoter_output)
