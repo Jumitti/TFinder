@@ -56,6 +56,7 @@ def aio_page():
     def analyse_gene(gene_id):
         disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         time.sleep(0.25)
+        gene_disponibility = []
         gene_analyse = [gene_id]
         for species_test in disponibility_list:
             if not gene_id.isdigit():
@@ -675,8 +676,7 @@ def aio_page():
             for gene_id in stqdm(gene_ids,
                                     desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
                                     mininterval=0.1):
-                gene_disponibility = analyse_gene(gene_id)
-                gene_disponibility.append(gene_disponibility)
+                gene_disponibility.append(analyse_gene(gene_id))
 
             species_columns = ['Gene'] + species_list
             gene_disponibility = pd.DataFrame(gene_disponibility, columns=species_columns)
