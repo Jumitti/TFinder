@@ -33,7 +33,7 @@ def get_gene_info(gene_id):
     # Request gene information
     url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml"
     response = requests.get(url)
-    st.write(response)
+    print(response)
 
     if response.status_code == 200:
         response_data = response.json()
