@@ -676,8 +676,6 @@ def aio_page():
             # Run Promoter Finder
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
                 with colprom1:
-                    if 'result_promoter_text' in st.session_state:
-                        del st.session_state['result_promoter_text']
                     for gene_id in stqdm(gene_ids,
                                          desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                                          mininterval=0.1):
