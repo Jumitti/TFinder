@@ -684,7 +684,6 @@ def aio_page():
                         result_promoter_output = find_promoters(gene_id, species, upstream, downstream)
                         if not result_promoter_output.startswith('P'):
                             st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
-                            st.write(result_promoter_output)
                             result_promoter.append(result_promoter_output)
                             pass
 
@@ -692,8 +691,8 @@ def aio_page():
                             st.error(result_promoter_output)
                             continue
 
-                        result_promoter_text = "\n".join(result_promoter)
-                        st.session_state['result_promoter_text'] = result_promoter_text
+                    result_promoter_text = "\n".join(result_promoter)
+                    st.session_state['result_promoter_text'] = result_promoter_text
 
                     st.success(f"{prom_term} extraction complete !")
                     st.toast(f"{prom_term} extraction complete !", icon='😊')
