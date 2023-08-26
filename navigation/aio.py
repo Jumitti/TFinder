@@ -22,28 +22,19 @@ import streamlit as st
 import requests
 import pandas as pd
 import altair as alt
-import math
-import pickle
 import numpy as np
-import json
 import logomaker
 import random
 import io
-from openpyxl import Workbook
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email import encoders
-import base64
 import datetime
-import matplotlib.pyplot as plt
-from PIL import Image
-import time
-from tqdm import tqdm
 from stqdm import stqdm
-from tfinder.NCBI_dna import NCBI_dna
+from tfinder import NCBI_dna
 
 
 def aio_page():
