@@ -804,26 +804,26 @@ def aio_page():
                     upstream = int(upstream_entry)
                     downstream = int(downstream_entry)
                     iterration = 0
-                    for gene_id in (data_dff.itertuples(index=False)):
-                        gene_name = gene_id.Gene
+                    for gene_info in (data_dff.itertuples(index=False)):
+                        gene_id = gene_info.Gene
                         if gene_name.isdigit():
                             for search_type in search_types:
-                                if getattr(gene_id, f'{search_type}'):
+                                if getattr(gene_info, f'{search_type}'):
                                     iterration += 1
                         else:
                             for species in species_list:
                                 for search_type in search_types:
-                                    if getattr(gene_id, f'{species}') and getattr(gene_id,
+                                    if getattr(gene_info, f'{species}') and getattr(gene_info,
                                                                                     f'{search_type}'):
                                         iterration += 1
                     with stqdm(total=iterration,
                                desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                                mininterval=0.1) as pbar:
-                        for gene_id in (data_dff.itertuples(index=False)):
-                            gene_name = gene_id.Gene
-                            if gene_name.isdigit():
+                        for gene_info in (data_dff.itertuples(index=False)):
+                            gene_id = gene_info.Gene
+                            if gene_id.isdigit():
                                 for search_type in search_types:
-                                    if getattr(gene_id, f'{search_type}'):
+                                    if getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
                                         species = 'human'  # This is just a remnant of the past
                                         try:
@@ -834,7 +834,7 @@ def aio_page():
                             else:
                                 for species in species_list:
                                     for search_type in search_types:
-                                        if getattr(gene_id, f'{species}') and getattr(gene_id, f'{search_type}'):
+                                        if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
                                             prom_term = search_type.capitalize()
                                             try:
                                                 result_promoter = find_promoters(gene_id, species, upstream,
