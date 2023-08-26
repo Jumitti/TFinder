@@ -75,9 +75,6 @@ def aio_page():
                 gene_id = response_data['esearchresult']['idlist'][0]
                 return gene_id
 
-        else:
-            raise Exception(f"Error during gene search: {response.status_code}")
-
     # Get gene information
     def get_gene_info(gene_id):
         try:
