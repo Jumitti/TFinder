@@ -134,7 +134,6 @@ with colrate2:
     st.write(f"{average_rating:.2f} ⭐ ({num_ratings} votes)")
 
 # Help
-
 st.sidebar.title("Help")
 with st.sidebar.expander("Video tutorials"):
     st.write('coming soon')
@@ -198,25 +197,11 @@ if st.sidebar.button("Check"):
     st.sidebar.table(df)
 
 st.sidebar.title("More")
-st.sidebar.markdown("Report an issue/bug 🆘 -> [Click here](https://github.com/Jumitti/TFinder/issues/new/choose)")
-
+st.sidebar.markdown("Report a bug 🆘 -> [Click here](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=&projects=&template=bug_report.md&title=)")
+st.sidebar.markdown("Want an issue/bug 🆘 -> [Click here](https://github.com/Jumitti/TFinder/issues/new/choose)")
 st.sidebar.markdown("Want to talk ? 🙋🏼‍♂️ -> [Chat Room](https://github.com/Jumitti/TFinder/discussions)")
 
-
-class SessionState:
-    def __init__(self, session, run_hash):
-        self.__dict__["_custom_hashes"] = {}
-        self._session = session
-        self._run_hash = run_hash
-
-    def __setattr__(self, key, value):
-        if hasattr(self, "_run_hash") and self._run_hash != _CodeHasher.get_session_id():
-            raise RuntimeError("Cannot modify session state outside of session state callbacks.")
-        else:
-            super().__setattr__(key, value)
-
-
 streamlit_analytics.stop_tracking()
-views = streamlit_analytics.main.counts["total_pageviews"]
 
+views = streamlit_analytics.main.counts["total_pageviews"]
 st.sidebar.markdown(f"Total users 👥: {int(views)}")
