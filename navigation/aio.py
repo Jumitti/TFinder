@@ -603,7 +603,7 @@ def aio_page():
             )
 
             species_list = ['human', 'mouse', 'rat', 'drosophila', 'zebrafish']
-            search_types = ['Promoter', 'Terminator']
+            search_types = ['promoter', 'terminator']
 
             st.markdown('**🔹 :blue[Step 1.2]** Select species for all genes:',
                         help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
