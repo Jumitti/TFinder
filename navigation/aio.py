@@ -89,9 +89,7 @@ def aio_page():
                         else:
                             gene_analyse.append("❌")
 
-        gene_disponibility.append(gene_analyse)
-
-        return gene_disponibility
+        return gene_analyse
 
     # Convert gene to ENTREZ_GENE_ID
     def convert_gene_to_entrez_id(gene, species):
