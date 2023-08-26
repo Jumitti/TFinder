@@ -226,3 +226,4 @@ if not st.session_state.popup_closed:
             value = st.checkbox("By checking this box, you agree with data usage polices of NCBI and JASPAR")
             if value:
                 st.button('Close')
+                st.session_state.popup_closed = True
