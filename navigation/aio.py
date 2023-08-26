@@ -822,7 +822,7 @@ def aio_page():
                         for gene_info in (data_dff.itertuples(index=False)):
                             gene_name = gene_info.Gene
                             gene_id = gene_name.strip().split('\n')
-                            if gene_name.isdigit():
+                            if gene_id.isdigit():
                                 for search_type in search_types:
                                     if getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
