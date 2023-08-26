@@ -56,7 +56,7 @@ def aio_page():
     def analyse_gene(gene_id):
         disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         time.sleep(0.25)
-        gene_analyse = {gene_id}
+        gene_analyse = [gene_id]
         for species_test in disponibility_list:
             if not gene_id.isdigit():
                 if species_test == 'ID':
@@ -679,6 +679,7 @@ def aio_page():
                 gene_disponibility.append(gene_disponibility)
 
             species_columns = ['Gene'] + species_list
+            st.write(gene_disponibility)
             gene_disponibility = pd.DataFrame(gene_disponibility, columns=species_columns)
 
             st.session_state['gene_disponibility'] = gene_disponibility
