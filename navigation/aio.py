@@ -54,44 +54,6 @@ def aio_page():
         complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
         return complement_sequence
 
-    '''def analyse_gene(gene_id):
-        disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
-        time.sleep(0.25)
-        gene_analyse = [gene_id]
-        for species_test in disponibility_list:
-            if not gene_id.isdigit():
-                if species_test == 'ID':
-                    gene_analyse.append('n.d')
-                else:
-                    time.sleep(0.5)
-                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_id}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
-                    response = requests.get(url)
-
-                    if response.status_code == 200:
-                        response_data = response.json()
-
-                        if response_data['esearchresult']['count'] != '0':
-                            gene_analyse.append("✅")
-                        else:
-                            gene_analyse.append("❌")
-
-            if gene_id.isdigit():
-                if species_test != 'ID':
-                    gene_analyse.append('n.d')
-                else:
-                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml"
-                    response = requests.get(url)
-
-                    if response.status_code == 200:
-                        response_data = response.json()
-
-                        if 'chraccver' in str(response_data):
-                            gene_analyse.append("✅")
-                        else:
-                            gene_analyse.append("❌")
-
-        return gene_analyse'''
-
     # Convert gene to ENTREZ_GENE_ID
     def convert_gene_to_entrez_id(gene, species):
         if gene.isdigit():
@@ -162,46 +124,39 @@ def aio_page():
             raise Exception(f"Error: {str(e)}")
 
     # Promoter Finder
-    def find_promoters(gene_ids, species, upstream, downstream):
-        try:
-            for gene_id in gene_ids:
-                time.sleep(1)
-                if gene_id.isdigit():
-                    entrez_id = gene_id
-                else:
-                    entrez_id = convert_gene_to_entrez_id(gene_id, species)
-                    if entrez_id != 'not_found':
-                        pass
-                    else:
-                        continue
+    def find_promoters(gene_id, species, upstream, downstream):
+        time.sleep(1)
+        if gene_id.isdigit():
+            entrez_id = gene_id
+        else:
+            entrez_id = convert_gene_to_entrez_id(gene_id, species)
+            if entrez_id != 'not_found':
+                pass
+            else:
+                result_promoter = f'Please verify if {gene_id} exist for {species}'
+                return result_promoter
 
-                gene_info = get_gene_info(entrez_id)
-                if 'chraccver' in str(gene_info):
-                    gene_name = gene_info['name']
-                    chraccver = gene_info['genomicinfo'][0]['chraccver']
-                    chrstart = gene_info['genomicinfo'][0]['chrstart']
-                    chrstop = gene_info['genomicinfo'][0]['chrstop']
-                    species_API = gene_info['organism']['scientificname']
-                else:
-                    st.error(f'Please verify ID of {gene_id}')
-                    continue
-
-                dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
-
-                st.toast(f'{prom_term} **{gene_name}** from **{species_API}** extracted', icon='🧬')
-
-                # Append the result to the result_promoter
-                if prom_term == 'Promoter':
-                    result_promoter.append(
-                        f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {upstream}\n{dna_sequence}\n")
-                else:
-                    result_promoter.append(
-                        f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {upstream}\n{dna_sequence}\n")
-
+        gene_info = get_gene_info(entrez_id)
+        if 'chraccver' in str(gene_info):
+            gene_name = gene_info['name']
+            chraccver = gene_info['genomicinfo'][0]['chraccver']
+            chrstart = gene_info['genomicinfo'][0]['chrstart']
+            chrstop = gene_info['genomicinfo'][0]['chrstop']
+            species_API = gene_info['organism']['scientificname']
+        else:
+            result_promoter = f'Please verify ID of {gene_id}'
             return result_promoter
 
-        except Exception as e:
-            raise Exception(f"Error retrieving gene information: {entrez_id}")
+        dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
+
+        if prom_term == 'Promoter':
+            result_promoter.append(
+                f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {upstream}\n{dna_sequence}\n")
+        else:
+            result_promoter.append(
+                f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {upstream}\n{dna_sequence}\n")
+
+        return result_promoter
 
     # Extract JASPAR matrix
     def matrix_extraction(sequence_consensus_input):
@@ -729,10 +684,14 @@ def aio_page():
                         for gene_id in stqdm(gene_ids,
                                              desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                                              mininterval=0.1):
-                            gene_ids = gene_id.strip().split('\n')
-                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                            result_promoter_text = "\n".join(result_promoter)
-                            st.session_state['result_promoter_text'] = result_promoter_text
+                            result_promoter = find_promoters(gene_id, species, upstream, downstream)
+                            if not result_promoter.startswith('P'):
+                                st.toast(f'{prom_term} **{gene_name}** from **{species_API}** extracted', icon='🧬')
+                                result_promoter_text = "\n".join(result_promoter)
+                                st.session_state['result_promoter_text'] = result_promoter_text
+                            else:
+                                st.error(result_promoter)
+
                         st.success(f"{prom_term} extraction complete !")
                         st.toast(f"{prom_term} extraction complete !", icon='😊')
                     except Exception as e:
