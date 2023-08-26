@@ -90,7 +90,7 @@ def aio_page():
                         else:
                             gene_analyse.append("❌")
 
-            gene_disponibility.append(gene_analyse)
+        gene_disponibility.append(gene_analyse)
 
         return gene_disponibility
 
