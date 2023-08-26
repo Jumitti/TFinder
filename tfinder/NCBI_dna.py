@@ -96,11 +96,12 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream, prom_te
 
 class NCBI_dna:
     species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
-    def __init__(self):
+    def __init__(self, gene_id):
         self.gene_name = gene_name
+        self.gene_id = gene_id
 
     # Analyse if gene is available for species or if ID exist
-    def analyse_gene(self, gene_id):
+    def analyse_gene(self):
         disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         time.sleep(0.25)
         gene_analyse = [gene_id]
