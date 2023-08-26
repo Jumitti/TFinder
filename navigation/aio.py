@@ -813,7 +813,7 @@ def aio_page():
                         else:
                             for species in species_list:
                                 for search_type in search_types:
-                                    if getattr(gene_id, f'{species}') and getattr(gene_info,
+                                    if getattr(gene_id, f'{species}') and getattr(gene_id,
                                                                                     f'{search_type}'):
                                         iterration += 1
                     with stqdm(total=iterration,
