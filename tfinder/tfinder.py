@@ -29,7 +29,8 @@ class NCBI_dna:
         complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
         return complement_sequence
 
-    def analyse_gene(self, gene_id):
+    @classmethod
+    def analyse_gene(gene_id):
         disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         time.sleep(0.25)
         gene_analyse = [gene_id]
