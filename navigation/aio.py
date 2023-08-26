@@ -56,8 +56,8 @@ def aio_page():
     def analyse_gene(gene_id):
         disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         time.sleep(0.25)
-        gene_analyse = [gene_id]
         gene_disponibility = []
+        gene_analyse = [gene_id]
         for species_test in disponibility_list:
             if not gene_id.isdigit():
                 if species_test == 'ID':
