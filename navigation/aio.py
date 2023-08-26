@@ -805,8 +805,8 @@ def aio_page():
                     downstream = int(downstream_entry)
                     iterration = 0
                     for gene_info in (data_dff.itertuples(index=False)):
-                        gene_id = gene_info.Gene
-                        if gene_id.isdigit():
+                        gene_name = gene_info.Gene
+                        if gene_name.isdigit():
                             for search_type in search_types:
                                 if getattr(gene_info, f'{search_type}'):
                                     iterration += 1
@@ -820,14 +820,16 @@ def aio_page():
                                desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                                mininterval=0.1) as pbar:
                         for gene_info in (data_dff.itertuples(index=False)):
-                            gene_id = gene_info.Gene
-                            if gene_id.isdigit():
+                            gene_name = gene_info.Gene
+                            gene_id = gene_name.strip().split('\n')
+                            if gene_name.isdigit():
                                 for search_type in search_types:
                                     if getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
                                         species = 'human'  # This is just a remnant of the past
                                         try:
-                                            result_promoter = find_promoters(gene_id, species, upstream, downstream, prom_term)
+                                            result_promoter = find_promoters(gene_id, species, upstream, downstream,
+                                                                             prom_term)
                                         except Exception as e:
                                             st.error(f"Error finding {gene_id}: {str(e)}")
                                         pbar.update(1)
