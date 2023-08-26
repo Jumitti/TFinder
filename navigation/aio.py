@@ -684,6 +684,7 @@ def aio_page():
                         result_promoter = find_promoters(gene_id, species, upstream, downstream)
                         if not result_promoter.startswith('P'):
                             st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
+                            st.write(result_promoter)
                             result_promoter.append(result_promoter)
                             pass
 
