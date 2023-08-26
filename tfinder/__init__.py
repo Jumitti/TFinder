@@ -149,13 +149,16 @@ class NCBI_dna:
         if response.status_code == 200:
             response_data = response.json()
             gene_info = response_data['result'][str(entrez_id)]
-            return gene_info
+            if 'chraccver' in str(gene_info):
+                return gene_info
+            else:
+                gene_info = dict('not found')
+                return gene_info
+
 
     @staticmethod
     # Get DNA sequence
     def get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop):
-        print(prom_term)
-
         # Determine sens of gene + coordinate for upstream and downstream
         if chrstop > chrstart:
             start = (chrstart if prom_term == 'Promoter' else chrstop) - upstream
@@ -177,6 +180,3 @@ class NCBI_dna:
                 sequence = reverse_complement(dna_sequence)
 
             return sequence
-
-        else:
-            raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
