@@ -151,7 +151,7 @@ class NCBI_dna:
     # Sequence extractor
     def find_sequences(self):
         time.sleep(1)
-        if gene_id.isdigit():
+        if self.gene_id.isdigit():
             entrez_id = self.gene_id
         else:
             entrez_id = convert_gene_to_entrez_id(self.gene_id, self.species)
