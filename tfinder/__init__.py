@@ -95,7 +95,7 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream, prom_te
 
 
 class NCBI_dna:
-    def __init__(self, gene_id=None):
+    def __init__(self, gene_id):
         self.gene_id = gene_id
 
     # Analyse if gene is available
