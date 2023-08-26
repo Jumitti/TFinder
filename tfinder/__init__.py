@@ -43,10 +43,10 @@ def get_gene_info(entrez_id):
 class NCBI_dna:
     def __init__(self,
                  gene_id,
+                 species=None,
                  upstream=None,
                  downstream=None,
-                 prom_term=None,
-                 species=None):
+                 prom_term=None):
         self.gene_id = gene_id
         self.upstream = int(upstream)
         self.downstream = int(downstream)
