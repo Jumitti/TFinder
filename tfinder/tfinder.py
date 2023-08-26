@@ -30,7 +30,7 @@ class NCBI_dna:
         return complement_sequence
 
     @classmethod
-    def analyse_gene(gene_id):
+    def analyse_gene(cls, gene_id):
         disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         time.sleep(0.25)
         gene_analyse = [gene_id]
