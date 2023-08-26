@@ -827,7 +827,7 @@ def aio_page():
                                         prom_term = search_type.capitalize()
                                         species = 'human'  # This is just a remnant of the past
                                         try:
-                                            result_promoter = find_promoters(gene_id, species, upstream, downstream)
+                                            result_promoter = find_promoters(gene_id, species, upstream, downstream, prom_term)
                                         except Exception as e:
                                             st.error(f"Error finding {gene_id}: {str(e)}")
                                         pbar.update(1)
@@ -838,7 +838,7 @@ def aio_page():
                                             prom_term = search_type.capitalize()
                                             try:
                                                 result_promoter = find_promoters(gene_id, species, upstream,
-                                                                                 downstream)
+                                                                                 downstream, prom_term)
                                             except Exception as e:
                                                 st.error(f"Error finding {gene_id}: {str(e)}")
                                             pbar.update(1)
