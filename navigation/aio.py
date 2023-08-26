@@ -723,7 +723,7 @@ def aio_page():
                                         prom_term = search_type.capitalize()
                                         species = 'human'  # This is just a remnant of the past
 
-                                        result_promoter_output = NCBI_dna.find_sequences(gene_id, upstream, downstream,
+                                        result_promoter_output = NCBI_dna.find_sequences(gene_id, species, upstream, downstream,
                                                                                 prom_term)
                                         if not result_promoter_output.startswith('P'):
                                             st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted',
