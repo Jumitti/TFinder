@@ -75,7 +75,7 @@ class NCBI_dna:
                         else:
                             gene_analyse.append("❌")
 
-            if self.gene_id.isdigit():
+            if gene_id.isdigit():
                 if species_test != 'ID':
                     gene_analyse.append('n.d')
                 else:
