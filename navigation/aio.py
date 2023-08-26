@@ -43,7 +43,6 @@ from PIL import Image
 import time
 from tqdm import tqdm
 from stqdm import stqdm
-from tfinder import tfinder
 from tfinder import NCBI_dna
 
 
