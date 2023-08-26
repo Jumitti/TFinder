@@ -83,6 +83,7 @@ class NCBI_dna:
             entrez_id = self.gene_id
         else:
             entrez_id = self.convert_gene_to_entrez_id()
+            print(entrez_id)
             if entrez_id != 'not_found':
                 pass
             else:
