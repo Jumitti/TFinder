@@ -632,19 +632,19 @@ def aio_page():
                 all_term = st.checkbox("Terminator")
 
             if all_human:
-                data_df["human"] = True
+                data_df["Human"] = True
             if all_mouse:
-                data_df["mouse"] = True
+                data_df["Mouse"] = True
             if all_rat:
-                data_df["rat"] = True
+                data_df["Rat"] = True
             if all_droso:
-                data_df["drosophila"] = True
+                data_df["Drosophila"] = True
             if all_zebra:
-                data_df["zebrafish"] = True
+                data_df["Zebrafish"] = True
             if all_prom:
-                data_df["promoter"] = True
+                data_df["Promoter"] = True
             if all_term:
-                data_df["terminator"] = True
+                data_df["Terminator"] = True
 
             st.markdown('**🔹 :blue[Step 1.2]** On demand genes table',
                         help="Check the boxes for which you want to extract a sequence. Pay attention that the gene name is equivalent for each species. The choice of species is not available for gene IDs. Parameterize the table last, if you check the boxes above, it resets the whole table.")
@@ -652,31 +652,31 @@ def aio_page():
             data_dff = st.data_editor(
                 data_df,
                 column_config={
-                    "human": st.column_config.CheckboxColumn(
+                    "Human": st.column_config.CheckboxColumn(
                         "Human",
                         default=False,
                     ),
-                    "mouse": st.column_config.CheckboxColumn(
+                    "Mouse": st.column_config.CheckboxColumn(
                         "Mouse",
                         default=False,
                     ),
-                    "rat": st.column_config.CheckboxColumn(
+                    "Rat": st.column_config.CheckboxColumn(
                         "Rat",
                         default=False,
                     ),
-                    "drosophila": st.column_config.CheckboxColumn(
+                    "Drosophila": st.column_config.CheckboxColumn(
                         "Drosophila",
                         default=False,
                     ),
-                    "zebrafish": st.column_config.CheckboxColumn(
+                    "Zebrafish": st.column_config.CheckboxColumn(
                         "Zebrafish",
                         default=False,
                     ),
-                    "promoter": st.column_config.CheckboxColumn(
+                    "Promoter": st.column_config.CheckboxColumn(
                         "Promoter",
                         default=False,
                     ),
-                    "terminator": st.column_config.CheckboxColumn(
+                    "Terminator": st.column_config.CheckboxColumn(
                         "Terminator",
                         default=False,
                     )
