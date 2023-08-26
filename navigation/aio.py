@@ -54,30 +54,47 @@ def aio_page():
         return complement_sequence
 
     def analyse_gene(gene_id):
-        species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
+        species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         time.sleep(0.25)
+        gene_analyse = [gene_id]
+        gene_disponibilty = []
         if not gene_id.isdigit():
-            gene_species_available = [gene_id]
             for species_test in species_list:
-                time.sleep(0.5)
-                url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_id}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
-                response = requests.get(url)
+                if species_test == 'ID':
+                    gene_disponibilty.append('n.d')
+                else:
+                    time.sleep(0.5)
+                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_id}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
+                    response = requests.get(url)
 
-                if response.status_code == 200:
-                    response_data = response.json()
+                    if response.status_code == 200:
+                        response_data = response.json()
 
-                    if response_data['esearchresult']['count'] != '0':
-                        gene_species_available.append("✅")
-                    else:
-                        gene_species_available.append("❌")
+                        if response_data['esearchresult']['count'] != '0':
+                            gene_disponibilty.append("✅")
+                        else:
+                            gene_disponibilty.append("❌")
 
         if gene_id.isdigit():
-            get_gene_info(gene_id)
-            if not 'chraccver' in str(gene_info):
-                gene_id_available = f'Please verify ID of {gene_id}'
-                return gene_id_available
+            for species_test in species_list:
+                if species_test != 'ID':
+                    gene_disponibilty.append('n.d')
+                else:
+                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml"
+                    response = requests.get(url)
 
-        return gene_species_available, species_list
+                    if response.status_code == 200:
+                        response_data = response.json()
+
+                        if 'chraccver' in str(response_data):
+                            gene_disponibilty.append("✅")
+                        else:
+                            gene_disponibilty.append("❌")
+
+        species_columns = ['Gene'] + species_list
+        gene_disponibilty = pd.DataFrame(gene_disponibilty, columns=species_columns)
+
+        return gene_disponibilty
 
     # Convert gene to ENTREZ_GENE_ID
     def convert_gene_to_entrez_id(gene, species):
@@ -656,27 +673,15 @@ def aio_page():
         # Verify if gene is available for all species
         if st.button('🔎 Check genes avaibility',
                      help='Sometimes genes do not have the same name in all species or do not exist.'):
-            gene_notdigit = []
-            gene_digit = []
             for gene_id in stqdm(gene_ids,
                                     desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
                                     mininterval=0.1):
-                analyse_gene(gene_id)
-                gene_notdigit.append(gene_species_available)
+                gene_disponibility = analyse_gene(gene_id)
 
-            species_columns = ['Gene'] + species_list
-            dfgene = pd.DataFrame(gene_notdigit, columns=species_columns)
-            st.session_state['dfgene'] = dfgene
+            st.session_state['gene_disponibility'] = gene_disponibility
 
-            if gene_id_available in locals():
-                gene_digit.append(gene_species_available)
-                st.session_state['gene_id_available'] = gene_id_available
-
-
-        if 'dfgene' in st.session_state:
-            st.dataframe(st.session_state['dfgene'], hide_index=True)
-        if 'gene_id_available' in st.session_state:
-            st.error(gene_digit)
+        if 'gene_disponibility' in st.gene_disponibility:
+            st.dataframe(st.session_state['gene_disponibility'], hide_index=True)
 
     with colprom2:
         tab1, tab2 = st.tabs(['Default', 'Advance'])
