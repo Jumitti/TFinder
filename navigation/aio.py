@@ -90,8 +90,6 @@ def aio_page():
                         else:
                             gene_disponibility.append("❌")
 
-        species_columns = ['Gene'] + species_list
-
         return gene_disponibility
 
     # Convert gene to ENTREZ_GENE_ID
@@ -671,11 +669,14 @@ def aio_page():
         # Verify if gene is available for all species
         if st.button('🔎 Check genes avaibility',
                      help='Sometimes genes do not have the same name in all species or do not exist.'):
+            gene_disponibility = []
             for gene_id in stqdm(gene_ids,
                                     desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
                                     mininterval=0.1):
-                gene_disponibility = analyse_gene(gene_id)
+                gene_disponibility, species_list = analyse_gene(gene_id)
+                gene_disponibility.append(gene_disponibility)
 
+            species_columns = ['Gene'] + species_list
             gene_disponibility = pd.DataFrame(gene_disponibility, columns=species_columns)
 
             st.session_state['gene_disponibility'] = gene_disponibility
