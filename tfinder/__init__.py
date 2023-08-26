@@ -28,6 +28,18 @@ def reverse_complement(sequence):
     complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
     return complement_sequence
 
+# Get gene information
+def get_gene_info(entrez_id):
+    # Request gene information
+    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
+    response = requests.get(url)
+    print(response)
+
+    if response.status_code == 200:
+        response_data = response.json()
+        gene_info = response_data['result'][str(entrez_id)]
+        return gene_info
+
 class NCBI_dna:
     def __init__(self,
                  gene_id,
@@ -134,18 +146,6 @@ class NCBI_dna:
             else:
                 gene_id = response_data['esearchresult']['idlist'][0]
                 return gene_id
-
-    # Get gene information
-    def get_gene_info(self):
-        # Request gene information
-        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={self.gene_id}&retmode=json&rettype=xml"
-        response = requests.get(url)
-        print(response)
-
-        if response.status_code == 200:
-            response_data = response.json()
-            gene_info = response_data['result'][str(self.gene_id)]
-            return gene_info
 
     # Get DNA sequence
     def get_dna_sequence(self, chraccver, chrstart, chrstop):
