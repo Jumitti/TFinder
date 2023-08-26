@@ -713,7 +713,8 @@ def aio_page():
                                     if getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
 
-                                        result_promoter_output = NCBI_dna(gene_id, upstream, downstream, prom_term).find_sequences()
+                                        result_promoter_output = NCBI_dna(gene_id, upstream, downstream,
+                                                                          prom_term).find_sequences()
 
                                         if not result_promoter_output.startswith('P'):
                                             st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted',
@@ -733,7 +734,8 @@ def aio_page():
                                             prom_term = search_type.capitalize()
 
 
-                                            NCBI_dna(gene_id, species, upstream, downstream, prom_term).find_sequences()
+                                            result_promoter_output = NCBI_dna(gene_id, species, upstream, downstream,
+                                                                              prom_term).find_sequences()
 
                                             if not result_promoter_output.startswith('P'):
                                                 st.toast(f'{prom_term} **{gene_id}** from **{species.capitalize()}** extracted',
