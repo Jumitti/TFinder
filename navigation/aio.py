@@ -61,7 +61,7 @@ def aio_page():
         for species_test in disponibility_list:
             if not gene_id.isdigit():
                 if species_test == 'ID':
-                    gene_disponibility.append('n.d')
+                    gene_analyse.append('n.d')
                 else:
                     time.sleep(0.5)
                     url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_id}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
@@ -71,13 +71,13 @@ def aio_page():
                         response_data = response.json()
 
                         if response_data['esearchresult']['count'] != '0':
-                            gene_disponibility.append("✅")
+                            gene_analyse.append("✅")
                         else:
-                            gene_disponibility.append("❌")
+                            gene_analyse.append("❌")
 
             if gene_id.isdigit():
                 if species_test != 'ID':
-                    gene_disponibility.append('n.d')
+                    gene_analyse.append('n.d')
                 else:
                     url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml"
                     response = requests.get(url)
@@ -86,9 +86,11 @@ def aio_page():
                         response_data = response.json()
 
                         if 'chraccver' in str(response_data):
-                            gene_disponibility.append("✅")
+                            gene_analyse.append("✅")
                         else:
-                            gene_disponibility.append("❌")
+                            gene_analyse.append("❌")
+
+            gene_disponibility.append(gene_analyse)
 
         return gene_disponibility
 
@@ -674,7 +676,7 @@ def aio_page():
             for gene_id in stqdm(gene_ids,
                                     desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
                                     mininterval=0.1):
-                gene_disponibility.append(gene_id + analyse_gene(gene_id))
+                gene_disponibility.append(analyse_gene(gene_id))
 
             species_columns = ['Gene'] + species_list
             gene_disponibility = pd.DataFrame(gene_disponibility, columns=species_columns)
