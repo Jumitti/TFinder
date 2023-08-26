@@ -86,7 +86,7 @@ class NCBI_dna:
     def find_sequences(self):
         time.sleep(1)
         if self.gene_id.isdigit():
-            pass
+            entrez_id = sel.gene_id
         else:
             entrez_id = self.convert_gene_to_entrez_id()
             if entrez_id != 'not_found':
@@ -95,7 +95,7 @@ class NCBI_dna:
                 result_promoter = f'Please verify if {self.gene_id} exist for {self.species}'
                 return result_promoter
 
-        gene_info = self.get_gene_info()
+        gene_info = get_gene_info(entrez_id)
         if 'chraccver' in str(gene_info):
             gene_name = gene_info['name']
             chraccver = gene_info['genomicinfo'][0]['chraccver']
@@ -135,16 +135,16 @@ class NCBI_dna:
                 gene_id = response_data['esearchresult']['idlist'][0]
                 return gene_id
 
-
+    @staticmethod
     # Get gene information
-    def get_gene_info(self):
+    def get_gene_info(entrez_id):
         # Request gene information
-        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={self.gene_id}&retmode=json&rettype=xml"
+        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
         response = requests.get(url)
 
         if response.status_code == 200:
             response_data = response.json()
-            gene_info = response_data['result'][str(self.gene_id)]
+            gene_info = response_data['result'][str(entrez_id)]
             return gene_info
 
     # Get DNA sequence
