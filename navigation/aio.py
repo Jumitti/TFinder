@@ -120,7 +120,7 @@ def aio_page():
             raise Exception(f"Error: {str(e)}")
 
     # Promoter Finder
-    def find_promoters(gene_id, species, upstream, downstream):
+    def find_promoters(gene_id, species, upstream, downstream, prom_term):
         time.sleep(1)
         if gene_id.isdigit():
             entrez_id = gene_id
@@ -675,7 +675,7 @@ def aio_page():
                     for gene_id in stqdm(gene_ids,
                                          desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                                          mininterval=0.1):
-                        result_promoter_output = find_promoters(gene_id, species, upstream, downstream)
+                        result_promoter_output = find_promoters(gene_id, species, upstream, downstream, prom_term)
                         if not result_promoter_output.startswith('P'):
                             st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
                             result_promoter.append(result_promoter_output)
