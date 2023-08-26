@@ -29,6 +29,7 @@ from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 import streamlit_analytics
+from streamlit_modal import st_modal
 
 st.set_page_config(
     page_title='TFinder by Minniti Julien',
@@ -207,3 +208,9 @@ streamlit_analytics.stop_tracking()
 
 views = streamlit_analytics.main.counts["total_pageviews"]
 st.sidebar.markdown(f"Total users 👥: {int(views)}")
+
+st.sidebar.markdown('TFinder use NCBI API and JASPAR ID. See Resources for more information')
+
+with st_modal():
+    st.write("Contenu de la pop-up")
+    st.button("Fermer")
