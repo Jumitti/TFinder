@@ -741,7 +741,6 @@ def aio_page():
                                     for search_type in search_types:
                                         if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
                                             prom_term = search_type.capitalize()
-                                            species = species.capitalize()
 
                                             result_promoter_output = NCBI_dna.find_sequences(gene_id, species, upstream,
                                                                                  downstream, prom_term)
