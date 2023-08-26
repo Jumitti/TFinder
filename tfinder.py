@@ -98,13 +98,13 @@ class NCBI_dna:
     def __init__(self, gene_id=None):
         self.gene_id = gene_id
 
-    #Analyse if gene is available
+    # Analyse if gene is available
     def analyse_gene(self):
         disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         time.sleep(0.25)
         gene_analyse = [self.gene_id]
         for species_test in disponibility_list:
-            if not gene_id.isdigit():
+            if not self.gene_id.isdigit():
                 if species_test == 'ID':
                     gene_analyse.append('n.d')
                 else:
@@ -120,7 +120,7 @@ class NCBI_dna:
                         else:
                             gene_analyse.append("❌")
 
-            if gene_id.isdigit():
+            if self.gene_id.isdigit():
                 if species_test != 'ID':
                     gene_analyse.append('n.d')
                 else:
