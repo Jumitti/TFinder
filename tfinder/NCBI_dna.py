@@ -87,7 +87,7 @@ def get_gene_info(gene_id):
         raise Exception(f"Error: {str(e)}")
 
 # Get DNA sequence
-def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
+def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream, prom_term):
     try:
         # Determine sens of gene + coordinate for upstream and downstream
         if chrstop > chrstart:
@@ -186,7 +186,7 @@ class NCBI_dna:
             result_promoter = f'Please verify ID of {gene_id}'
             return result_promoter
 
-        dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
+        dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream, prom_term)
 
         if prom_term == 'Promoter':
             result_promoter = f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {upstream}\n{dna_sequence}\n"
