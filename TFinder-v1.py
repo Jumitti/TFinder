@@ -212,7 +212,9 @@ st.sidebar.markdown(f"Total users 👥: {int(views)}")
 st.sidebar.markdown('TFinder use NCBI API and JASPAR ID. See Resources for more information')
 
 modal = Modal(key="TFinder Key", title="Disclaimers")
-modal.open()
+if 'popup' not in st.session_sate:
+    modal.open()
+
 if modal.is_open():
     with modal.container():
         st.markdown('TFinder use [NCBI API](https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen)')
@@ -221,4 +223,5 @@ if modal.is_open():
         value = st.checkbox("By checking this box, you agree with data usage polices of NCBI and JASPAR")
         if value:
             if st.button('Close'):
+                st.session_state['popup'] = True
                 modal.close()
