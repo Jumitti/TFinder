@@ -211,7 +211,7 @@ st.sidebar.markdown(f"Total users 👥: {int(views)}")
 
 st.sidebar.markdown('TFinder use NCBI API and JASPAR ID. See Resources for more information')
 
-modal = Modal("Demo Modal")
+modal = Modal(key="Demo Key", title="This is Modal")
 open_modal = st.button("Open")
 if open_modal:
     modal.open()
