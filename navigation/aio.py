@@ -671,20 +671,21 @@ def aio_page():
         if st.button('🔎 Check genes avaibility',
                      help='Sometimes genes do not have the same name in all species or do not exist.'):
             species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
-            gene_disponibility = []
+            gene_disponibility_output = []
             for gene_id in stqdm(gene_ids,
                                     desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
                                     mininterval=0.1):
-                gene_disponibility.append(analyse_gene(gene_id))
-            '''
+                gene_disponibility = analyse_gene(gene_id)
+                gene_disponibility_output.append(gene_disponibility)
+
             species_columns = ['Gene'] + species_list
-            gene_disponibility = pd.DataFrame(gene_disponibility, columns=species_columns)'''
+            gene_disponibility_output = pd.DataFrame(gene_disponibility_output, columns=species_columns)
 
 
-            st.session_state['gene_disponibility'] = gene_disponibility
+            st.session_state['gene_disponibility_output'] = gene_disponibility_output
 
         if 'gene_disponibility' in st.session_state:
-            st.dataframe(st.session_state['gene_disponibility'], hide_index=True)
+            st.dataframe(st.session_state['gene_disponibility_output'], hide_index=True)
 
     with colprom2:
         tab1, tab2 = st.tabs(['Default', 'Advance'])
