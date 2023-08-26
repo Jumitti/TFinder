@@ -213,17 +213,15 @@ st.sidebar.markdown('TFinder use NCBI API and JASPAR ID. See Resources for more 
 
 modal = Modal(key="TFinder Key", title="Disclaimers")
 
-if not hasattr(st.session_state, 'popup_closed'):
+if 'popup_closed' not in st.session_state:
     st.session_state.popup_closed = False
 
 if not st.session_state.popup_closed:
-    st.session_state.popup_closed = not modal
-    if not st.session_state.popup_closed:
-        with modal.container():
-            st.markdown('TFinder use [NCBI API](https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen)')
-            st.markdown("[NCBI Website and Data Usage Policies and Disclaimers](https://www.ncbi.nlm.nih.gov/home/about/policies/)")
-            st.markdown("TFinder use [JASPAR API](https://doi.org/10.1093/bioinformatics/btx804)")
-            value = st.checkbox("By checking this box, you agree with data usage polices of NCBI and JASPAR")
-            if value:
-                st.button('Close')
-                st.session_state.popup_closed = True
+    with modal.container():
+        st.markdown('TFinder use [NCBI API](https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen)')
+        st.markdown("[NCBI Website and Data Usage Policies and Disclaimers](https://www.ncbi.nlm.nih.gov/home/about/policies/)")
+        st.markdown("TFinder use [JASPAR API](https://doi.org/10.1093/bioinformatics/btx804)")
+        value = st.checkbox("By checking this box, you agree with data usage polices of NCBI and JASPAR")
+        if value:
+            st.button('Close')
+            st.session_state.popup_closed = True
