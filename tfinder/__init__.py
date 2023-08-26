@@ -22,55 +22,6 @@ import time
 import requests
 
 
-def reverse_complement(sequence):
-    complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
-    reverse_sequence = sequence[::-1]
-    complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
-    return complement_sequence
-
-# Get gene information
-def get_gene_info(gene_id):
-    # Request gene information
-    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml"
-    response = requests.get(url)
-    print(response)
-
-    if response.status_code == 200:
-        response_data = response.json()
-        gene_info = response_data['result'][str(gene_id)]
-        return gene_info
-
-# Get DNA sequence
-def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream, prom_term):
-    try:
-        # Determine sens of gene + coordinate for upstream and downstream
-        if chrstop > chrstart:
-            start = (chrstart if prom_term == 'Promoter' else chrstop) - upstream
-            end = (chrstart if prom_term == 'Promoter' else chrstop) + downstream
-        else:
-            start = (chrstart if prom_term == 'Promoter' else chrstop) + upstream
-            end = (chrstart if prom_term == 'Promoter' else chrstop) - downstream
-
-        # Request for DNA sequence
-        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            # Extraction of DNA sequence
-            dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
-            if chrstop > chrstart:
-                sequence = dna_sequence
-            else:
-                sequence = reverse_complement(dna_sequence)
-
-            return sequence
-
-        else:
-            raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
-    except Exception as e:
-        raise Exception(f"Error: {str(e)}")
-
-
 class NCBI_dna:
     def __init__(self,
                  gene_id,
@@ -149,7 +100,7 @@ class NCBI_dna:
             result_promoter = f'Please verify ID of {self.gene_id}'
             return result_promoter
 
-        dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, self.upstream, self.downstream, self.prom_term)
+        dna_sequence = self.get_dna_sequence(chraccver, chrstart, chrstop)
 
         if prom_term == 'Promoter':
             result_promoter = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
@@ -177,3 +128,51 @@ class NCBI_dna:
             else:
                 gene_id = response_data['esearchresult']['idlist'][0]
                 return gene_id
+
+        def reverse_complement(sequence):
+            complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
+            reverse_sequence = sequence[::-1]
+            complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
+            return complement_sequence
+
+        # Get gene information
+        def get_gene_info(gene_id):
+            # Request gene information
+            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml"
+            response = requests.get(url)
+            print(response)
+
+            if response.status_code == 200:
+                response_data = response.json()
+                gene_info = response_data['result'][str(gene_id)]
+                return gene_info
+
+        # Get DNA sequence
+        def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream, prom_term):
+            try:
+                # Determine sens of gene + coordinate for upstream and downstream
+                if chrstop > chrstart:
+                    start = (chrstart if prom_term == 'Promoter' else chrstop) - upstream
+                    end = (chrstart if prom_term == 'Promoter' else chrstop) + downstream
+                else:
+                    start = (chrstart if prom_term == 'Promoter' else chrstop) + upstream
+                    end = (chrstart if prom_term == 'Promoter' else chrstop) - downstream
+
+                # Request for DNA sequence
+                url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
+                response = requests.get(url)
+
+                if response.status_code == 200:
+                    # Extraction of DNA sequence
+                    dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
+                    if chrstop > chrstart:
+                        sequence = dna_sequence
+                    else:
+                        sequence = reverse_complement(dna_sequence)
+
+                    return sequence
+
+                else:
+                    raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
+            except Exception as e:
+                raise Exception(f"Error: {str(e)}")
