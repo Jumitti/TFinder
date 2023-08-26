@@ -19,6 +19,7 @@
 # SOFTWARE.
 
 class NCBI_dna:
+    species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
     def __init__(self):
         self.gene_name = gene_name
 
@@ -29,7 +30,6 @@ class NCBI_dna:
         return complement_sequence
 
     def analyse_gene(gene_ids):
-        species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         results_gene_list = []
         data = []
         for gene_input in stqdm(gene_ids,

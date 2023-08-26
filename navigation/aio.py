@@ -53,40 +53,37 @@ def aio_page():
         complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
         return complement_sequence
 
-    def analyse_gene(gene_ids):
+    def analyse_gene(gene_id):
         species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
-        results_gene_list = []
         data = []
-        for gene_input in stqdm(gene_ids,
-                                desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
-                                mininterval=0.1):
-            time.sleep(0.25)
-            if not gene_input.isdigit():
-                row = [gene_input]
-                for species_test in species_list:
-                    time.sleep(0.5)
-                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
-                    response = requests.get(url)
+        time.sleep(0.25)
+        if not gene_id.isdigit():
+            row = [gene_input]
+            for species_test in species_list:
+                time.sleep(0.5)
+                url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
+                response = requests.get(url)
 
-                    if response.status_code == 200:
-                        response_data = response.json()
+                if response.status_code == 200:
+                    response_data = response.json()
 
-                        if response_data['esearchresult']['count'] != '0':
-                            row.append("✅")
-                        else:
-                            row.append("❌")
+                    if response_data['esearchresult']['count'] != '0':
+                        row.append("✅")
+                    else:
+                        row.append("❌")
 
-                data.append(row)
+            data.append(row)
 
-            if gene_input.isdigit():
-                gene_id = gene_input
-                gene_info = get_gene_info(gene_id)
-                if not 'chraccver' in str(gene_info):
-                    st.error(f'Please verify ID of {gene_id}')
+        if gene_input.isdigit():
+            gene_id = gene_input
+            gene_info = get_gene_info(gene_id)
+            if not 'chraccver' in str(gene_info):
+                st.error(f'Please verify ID of {gene_id}')
 
         species_columns = ['Gene'] + species_list
         dfgene = pd.DataFrame(data, columns=species_columns)
-        return dfgene
+
+        return data
 
     # Convert gene to ENTREZ_GENE_ID
     def convert_gene_to_entrez_id(gene, species):
@@ -665,7 +662,12 @@ def aio_page():
         # Verify if gene is available for all species
         if st.button('🔎 Check genes avaibility',
                      help='Sometimes genes do not have the same name in all species or do not exist.'):
-            dfgene = analyse_gene(gene_ids)
+            for gene_id in stqdm(gene_ids,
+                                    desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
+                                    mininterval=0.1):
+                analyse_gene(gene_id)
+
+            dfgene = pd.DataFrame(data, columns=species_columns)
             st.session_state['dfgene'] = dfgene
         if 'dfgene' in st.session_state:
             st.dataframe(st.session_state['dfgene'], hide_index=True)
