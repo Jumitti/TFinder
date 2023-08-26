@@ -135,7 +135,7 @@ class NCBI_dna:
                 gene_id = response_data['esearchresult']['idlist'][0]
                 return gene_id
 
-
+    @staticmethod
     # Get gene information
     def get_gene_info(entrez_id):
         # Request gene information
