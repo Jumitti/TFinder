@@ -29,7 +29,7 @@ from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 import streamlit_analytics
-from streamlit_modal import st_modal
+from streamlit_modal import Modal
 
 st.set_page_config(
     page_title='TFinder by Minniti Julien',
@@ -211,6 +211,14 @@ st.sidebar.markdown(f"Total users 👥: {int(views)}")
 
 st.sidebar.markdown('TFinder use NCBI API and JASPAR ID. See Resources for more information')
 
-with st_modal():
-    st.write("Contenu de la pop-up")
-    st.button("Fermer")
+modal = Modal("Demo Modal")
+open_modal = st.button("Open")
+if open_modal:
+    modal.open()
+
+if modal.is_open():
+    with modal.container():
+        st.write("Text goes here")
+        st.write("Some fancy text")
+        value = st.checkbox("Check me")
+        st.write(f"Checkbox checked: {value}")
