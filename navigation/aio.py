@@ -53,11 +53,11 @@ def aio_page():
         complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
         return complement_sequence
 
-    def analyse_gene(gene_list):
+    def analyse_gene(gene_ids):
         species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         results_gene_list = []
         data = []
-        for gene_input in stqdm(gene_list,
+        for gene_input in stqdm(gene_ids,
                                 desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
                                 mininterval=0.1):
             time.sleep(0.25)
@@ -660,13 +660,12 @@ def aio_page():
         st.markdown("🔹 :blue[**Step 1.1**] Gene ID:", help='NCBI gene name and NCBI gene ID allowed')
         gene_id_entry = st.text_area("🔹 :blue[**Step 1.1**] Gene ID:", value="PRKN\n351",
                                      label_visibility='collapsed')
-        gene_list = gene_id_entry.strip().split('\n')
         gene_ids = gene_id_entry.strip().split("\n")
 
         # Verify if gene is available for all species
         if st.button('🔎 Check genes avaibility',
                      help='Sometimes genes do not have the same name in all species or do not exist.'):
-            dfgene = analyse_gene(gene_list)
+            dfgene = analyse_gene(gene_ids)
             st.session_state['dfgene'] = dfgene
         if 'dfgene' in st.session_state:
             st.dataframe(st.session_state['dfgene'], hide_index=True)
@@ -728,14 +727,14 @@ def aio_page():
             # Advance mode extraction
             data_df = pd.DataFrame(
                 {
-                    "Gene": gene_list,
-                    "human": [False] * len(gene_list),
-                    "mouse": [False] * len(gene_list),
-                    "rat": [False] * len(gene_list),
-                    "drosophila": [False] * len(gene_list),
-                    "zebrafish": [False] * len(gene_list),
-                    "promoter": [False] * len(gene_list),
-                    "terminator": [False] * len(gene_list),
+                    "Gene": gene_ids,
+                    "human": [False] * len(gene_ids),
+                    "mouse": [False] * len(gene_ids),
+                    "rat": [False] * len(gene_ids),
+                    "drosophila": [False] * len(gene_ids),
+                    "zebrafish": [False] * len(gene_ids),
+                    "promoter": [False] * len(gene_ids),
+                    "terminator": [False] * len(gene_ids),
                 }
             )
 
