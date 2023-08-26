@@ -29,7 +29,7 @@ from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 import streamlit_analytics
-from streamlit_modal import Modal
+from streamlit_modal import st_modal, Modal
 
 st.set_page_config(
     page_title='TFinder by Minniti Julien',
@@ -217,11 +217,12 @@ if not hasattr(st.session_state, 'popup_closed'):
     st.session_state.popup_closed = False
 
 if not st.session_state.popup_closed:
-    st.session_state.popup_closed = not modal
-    with modal.container():
-        st.markdown('TFinder use [NCBI API](https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen)')
-        st.markdown("[NCBI Website and Data Usage Policies and Disclaimers](https://www.ncbi.nlm.nih.gov/home/about/policies/)")
-        st.markdown("TFinder use [JASPAR API](https://doi.org/10.1093/bioinformatics/btx804)")
-        value = st.checkbox("By checking this box, you agree with data usage polices of NCBI and JASPAR")
-        if value:
-            st.button('Close')
+    st.session_state.popup_closed = not st_modal(modal)
+    if not st.session_state.popup_closed:
+        with modal:
+            st.markdown('TFinder use [NCBI API](https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen)')
+            st.markdown("[NCBI Website and Data Usage Policies and Disclaimers](https://www.ncbi.nlm.nih.gov/home/about/policies/)")
+            st.markdown("TFinder use [JASPAR API](https://doi.org/10.1093/bioinformatics/btx804)")
+            value = st.checkbox("By checking this box, you agree with data usage polices of NCBI and JASPAR")
+            if value:
+                st.button('Close')
