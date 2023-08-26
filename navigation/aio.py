@@ -602,8 +602,8 @@ def aio_page():
                 }
             )
 
-            species_list = ['human', 'mouse', 'rat', 'drosophila', 'zebrafish']
-            search_types = ['promoter', 'terminator']
+            species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
+            search_types = ['Promoter', 'Terminator']
 
             st.markdown('**🔹 :blue[Step 1.2]** Select species for all genes:',
                         help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
@@ -720,7 +720,7 @@ def aio_page():
                             if gene_id.isdigit():
                                 for search_type in search_types:
                                     if getattr(gene_info, f'{search_type}'):
-                                        prom_term = search_type.capitalize()
+                                        prom_term = search_type
                                         species = 'human'  # This is just a remnant of the past
 
                                         result_promoter_output = NCBI_dna.find_sequences(gene_id, species, upstream, downstream,
@@ -740,7 +740,7 @@ def aio_page():
                                 for species in species_list:
                                     for search_type in search_types:
                                         if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
-                                            prom_term = search_type.capitalize()
+                                            prom_term = search_type
 
                                             result_promoter_output = NCBI_dna.find_sequences(gene_id, species, upstream,
                                                                                  downstream, prom_term)
