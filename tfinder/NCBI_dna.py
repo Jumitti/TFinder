@@ -29,7 +29,7 @@ def reverse_complement(sequence):
     return complement_sequence
 
 # Convert gene to ENTREZ_GENE_ID
-def convert_gene_to_entrez_id(self, gene):
+def convert_gene_to_entrez_id(self, gene_id):
     if gene.isdigit():
         return gene  # Already an ENTREZ_GENE_ID
 
