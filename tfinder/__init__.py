@@ -48,8 +48,8 @@ class NCBI_dna:
                  prom_term=None,
                  species=None):
         self.gene_id = gene_id
-        self.upstream = upstream
-        self.downstream = downstream
+        self.upstream = int(upstream)
+        self.downstream = int(downstream)
         self.prom_term = prom_term
         self.species = species
 
