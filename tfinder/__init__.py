@@ -149,30 +149,27 @@ class NCBI_dna:
 
     # Get DNA sequence
     def get_dna_sequence(self, chraccver, chrstart, chrstop):
-        try:
-            # Determine sens of gene + coordinate for upstream and downstream
+        # Determine sens of gene + coordinate for upstream and downstream
+        if chrstop > chrstart:
+            start = (chrstart if self.prom_term == 'Promoter' else chrstop) - self.upstream
+            end = (chrstart if self.prom_term == 'Promoter' else chrstop) + self.downstream
+        else:
+            start = (chrstart if self.prom_term == 'Promoter' else chrstop) + self.upstream
+            end = (chrstart if self.prom_term == 'Promoter' else chrstop) - self.downstream
+
+        # Request for DNA sequence
+        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            # Extraction of DNA sequence
+            dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
             if chrstop > chrstart:
-                start = (chrstart if self.prom_term == 'Promoter' else chrstop) - self.upstream
-                end = (chrstart if self.prom_term == 'Promoter' else chrstop) + self.downstream
+                sequence = dna_sequence
             else:
-                start = (chrstart if self.prom_term == 'Promoter' else chrstop) + self.upstream
-                end = (chrstart if self.prom_term == 'Promoter' else chrstop) - self.downstream
+                sequence = reverse_complement(dna_sequence)
 
-            # Request for DNA sequence
-            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
-            response = requests.get(url)
+            return sequence
 
-            if response.status_code == 200:
-                # Extraction of DNA sequence
-                dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
-                if chrstop > chrstart:
-                    sequence = dna_sequence
-                else:
-                    sequence = reverse_complement(dna_sequence)
-
-                return sequence
-
-            else:
-                raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
-        except Exception as e:
-            raise Exception(f"Error: {str(e)}")
+        else:
+            raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
