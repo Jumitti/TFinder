@@ -58,8 +58,8 @@ def aio_page():
         time.sleep(0.25)
         gene_analyse = [gene_id]
         gene_disponibilty = []
-        if not gene_id.isdigit():
-            for species_test in species_list:
+        for species_test in species_list:
+            if not gene_id.isdigit():
                 if species_test == 'ID':
                     gene_disponibilty.append('n.d')
                 else:
@@ -75,8 +75,7 @@ def aio_page():
                         else:
                             gene_disponibilty.append("❌")
 
-        if gene_id.isdigit():
-            for species_test in species_list:
+            if gene_id.isdigit():
                 if species_test != 'ID':
                     gene_disponibilty.append('n.d')
                 else:
