@@ -219,7 +219,7 @@ if not hasattr(st.session_state, 'popup_closed'):
 if not st.session_state.popup_closed:
     st.session_state.popup_closed = not modal
     if not st.session_state.popup_closed:
-        with modal.containers():
+        with modal.container():
             st.markdown('TFinder use [NCBI API](https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen)')
             st.markdown("[NCBI Website and Data Usage Policies and Disclaimers](https://www.ncbi.nlm.nih.gov/home/about/policies/)")
             st.markdown("TFinder use [JASPAR API](https://doi.org/10.1093/bioinformatics/btx804)")
