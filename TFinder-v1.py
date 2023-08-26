@@ -197,10 +197,11 @@ if st.sidebar.button("Check"):
     st.sidebar.table(df)
 
 st.sidebar.title("More")
-st.sidebar.markdown("[Report a bug 🆘](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=&projects=&template=bug_report.md&title=)")
-
+st.sidebar.markdown("[Report a bug 🐞](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=bug&projects=&template=bug_report.md&title=%5BBUG%5D)")
+st.sidebar.markdown("[Need HELP 🆘](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=help+wanted&projects=&template=help.md&title=%5BHELP%5D)")
+st.sidebar.markdown("[Have a question 🤔](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=question&projects=&template=question_report.md&title=%5BQUESTION%5D)")
 st.sidebar.markdown("[Features request 💡](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md&title=%5BFEATURE%5D)")
-st.sidebar.markdown("Want to talk ? 🙋🏼‍♂️ -> [Chat Room](https://github.com/Jumitti/TFinder/discussions)")
+st.sidebar.markdown("[Want to talk ? 🙋🏼‍♂](https://github.com/Jumitti/TFinder/discussions)")
 
 streamlit_analytics.stop_tracking()
 
