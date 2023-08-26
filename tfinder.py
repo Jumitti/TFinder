@@ -95,7 +95,6 @@ def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream, prom_te
 
 
 class NCBI_dna:
-    species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
     def __init__(self, gene_id=None):
         self.gene_id = gene_id
 
