@@ -120,7 +120,7 @@ class NCBI_dna:
 
         dna_sequence = self.get_dna_sequence(chraccver, chrstart, chrstop)
 
-        if prom_term == 'Promoter':
+        if self.prom_term == 'Promoter':
             result_promoter = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
         else:
             result_promoter = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
