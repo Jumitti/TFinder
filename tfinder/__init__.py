@@ -52,8 +52,6 @@ class NCBI_dna:
         self.prom_term = prom_term
         self.species = species
 
-
-
     # Analyse if gene is available
     def analyse_gene(self):
         disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
