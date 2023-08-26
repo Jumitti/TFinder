@@ -806,7 +806,9 @@ def aio_page():
                     iterration = 0
                     for gene_info in (data_dff.itertuples(index=False)):
                         gene_name = gene_info.Gene
+                        st.write(gene_name)
                         gene_ids = gene_name.strip().split('\n')
+                        st.write(gene_ids)
                         if gene_name.isdigit():
                             for search_type in search_types:
                                 if getattr(gene_info, f'{search_type}'):
