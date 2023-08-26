@@ -57,11 +57,11 @@ def aio_page():
         species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         time.sleep(0.25)
         gene_analyse = [gene_id]
-        gene_disponibilty = []
+        gene_disponibility = []
         for species_test in species_list:
             if not gene_id.isdigit():
                 if species_test == 'ID':
-                    gene_disponibilty.append('n.d')
+                    gene_disponibility.append('n.d')
                 else:
                     time.sleep(0.5)
                     url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_id}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
@@ -71,13 +71,13 @@ def aio_page():
                         response_data = response.json()
 
                         if response_data['esearchresult']['count'] != '0':
-                            gene_disponibilty.append("✅")
+                            gene_disponibility.append("✅")
                         else:
-                            gene_disponibilty.append("❌")
+                            gene_disponibility.append("❌")
 
             if gene_id.isdigit():
                 if species_test != 'ID':
-                    gene_disponibilty.append('n.d')
+                    gene_disponibility.append('n.d')
                 else:
                     url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml"
                     response = requests.get(url)
@@ -86,13 +86,13 @@ def aio_page():
                         response_data = response.json()
 
                         if 'chraccver' in str(response_data):
-                            gene_disponibilty.append("✅")
+                            gene_disponibility.append("✅")
                         else:
-                            gene_disponibilty.append("❌")
+                            gene_disponibility.append("❌")
 
         species_columns = ['Gene'] + species_list
 
-        return gene_disponibilty
+        return gene_disponibility
 
     # Convert gene to ENTREZ_GENE_ID
     def convert_gene_to_entrez_id(gene, species):
