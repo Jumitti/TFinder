@@ -29,7 +29,7 @@ from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 import streamlit_analytics
-from streamlit_modal import st_modal, Modal
+from streamlit_modal import Modal
 
 st.set_page_config(
     page_title='TFinder by Minniti Julien',
@@ -217,7 +217,7 @@ if not hasattr(st.session_state, 'popup_closed'):
     st.session_state.popup_closed = False
 
 if not st.session_state.popup_closed:
-    st.session_state.popup_closed = not st_modal(modal)
+    st.session_state.popup_closed = not modal
     if not st.session_state.popup_closed:
         with modal:
             st.markdown('TFinder use [NCBI API](https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen)')
