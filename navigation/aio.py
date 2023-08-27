@@ -49,6 +49,8 @@ def aio_page():
             TF_name = response_data['name']
             TF_species = response_data['species'][0]['name']
             matrix = response_data['pfm']
+            print(matrix)
+            st.write(matrix)
             weblogo = f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg"
         else:
             TF_name = 'not found'
@@ -59,6 +61,8 @@ def aio_page():
 
     # Transform JASPAR matrix
     def transform_matrix(matrix):
+        print(matrix)
+        st.write(matrix)
         reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
         complement_matrix = {
             'A': matrix['T'],
