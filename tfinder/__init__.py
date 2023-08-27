@@ -106,11 +106,11 @@ class NCBI_dna:
         dna_sequence = self.get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop)
 
         if self.prom_term == 'Promoter':
-            result_promoter = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
+            dna_sequence = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
         else:
-            result_promoter = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
+            dna_sequence = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
 
-        return result_promoter
+        return dna_sequence
 
     # Convert gene to ENTREZ_GENE_ID
     def convert_gene_to_entrez_id(self):
@@ -185,18 +185,22 @@ class IMO:
         ok = ok
 
     # Extract JASPAR matrix
-    def matrix_extraction(sequence_consensus_input):
-        jaspar_id = sequence_consensus_input
+    @staticmethod
+    def matrix_extraction(jaspar_id):
         url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
         response = requests.get(url)
         if response.status_code == 200:
             response_data = response.json()
+            TF_name = response_data['name']
+            TF_species = response_data['species'][0]['name']
             matrix = response_data['pfm']
+            weblogo = f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg"
         else:
-            st.error(f"Error while retrieving PWM: {response.status_code}")
-            return
-
-        return transform_matrix(matrix)
+            TF_name = 'not found'
+            TF_species = 'not found'
+            matrix = 'not found'
+            weblogo = 'not found'
+        return TF_name, TF_species, matrix, weblogo
 
     # Transform JASPAR matrix
     def transform_matrix(matrix):
