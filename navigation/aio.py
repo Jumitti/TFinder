@@ -292,8 +292,8 @@ def aio_page():
         return sequences
 
     # is PWM good ?
-    def has_uniform_column_length(pwm):
-        column_lengths = set(len(column) for column in pwm)
+    def has_uniform_column_length(matrix):
+        column_lengths = set(len(column) for column in matrix)
         if len(column_lengths) != 1:
             raise Exception('Invalid PWM lenght.')
 
@@ -862,15 +862,21 @@ def aio_page():
             isUIPAC = True
             with REcol2:
                 st.markdown("🔹 :blue[**Step 2.3**] Matrix:", help="Only PWM generated with our tools are allowed")
-                matrix_text = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
+                matrix_str = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
                                            value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
                                            label_visibility='collapsed', height=125)
 
-                pwm_rows = kmatrix_text.strip().split('\n')
-                pwm = [list(map(str, row.split())) for row in pwm_rows]
+                lines = matrix_str.split("\n")
+                matrix = {}
+
+                for line in lines:
+                    parts = line.split("[")
+                    base = parts[0].strip()
+                    values = [float(val.strip()) for val in parts[1][:-1].split()]  # Exclude the trailing ']'
+                    matrix[base] = values
 
                 try:
-                    has_uniform_column_length(pwm)
+                    has_uniform_column_length(matrix)
                     error_input_im = True
                 except Exception as e:
                     error_input_im = False
