@@ -18,187 +18,28 @@
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import streamlit as st
-import requests
-import pandas as pd
-import altair as alt
-import math
-import pickle
-import numpy as np
-import json
-import logomaker
-import random
+import datetime
 import io
-from openpyxl import Workbook
+import random
 import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
-from email import encoders
-import base64
-import datetime
-import matplotlib.pyplot as plt
-from PIL import Image
-import time
-from tqdm import tqdm
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+import altair as alt
+import logomaker
+import numpy as np
+import pandas as pd
+import requests
+import streamlit as st
 from stqdm import stqdm
+
+from tfinder import NCBI_dna
 
 
 def aio_page():
-    # Reverse complement
-    def reverse_complement(sequence):
-        complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
-        reverse_sequence = sequence[::-1]
-        complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
-        return complement_sequence
-
-    def analyse_gene(gene_list):
-        species_list = ['Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
-        results_gene_list = []
-        data = []
-        for gene_input in stqdm(gene_list,
-                                desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
-                                mininterval=0.1):
-            time.sleep(0.25)
-            if not gene_input.isdigit():
-                row = [gene_input]
-                for species_test in species_list:
-                    time.sleep(0.5)
-                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_input}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
-                    response = requests.get(url)
-
-                    if response.status_code == 200:
-                        response_data = response.json()
-
-                        if response_data['esearchresult']['count'] != '0':
-                            row.append("✅")
-                        else:
-                            row.append("❌")
-
-                data.append(row)
-
-            if gene_input.isdigit():
-                gene_id = gene_input
-                gene_info = get_gene_info(gene_id)
-                if not 'chraccver' in str(gene_info):
-                    st.error(f'Please verify ID of {gene_id}')
-
-        species_columns = ['Gene'] + species_list
-        dfgene = pd.DataFrame(data, columns=species_columns)
-        return dfgene
-
-    # Convert gene to ENTREZ_GENE_ID
-    def convert_gene_to_entrez_id(gene, species):
-        if gene.isdigit():
-            return gene  # Already an ENTREZ_GENE_ID
-
-        # Request for ENTREZ_GENE_ID
-        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml "
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            response_data = response.json()
-
-            if response_data['esearchresult']['count'] == '0':
-                st.error(f"No gene found for: {gene} from {species}")
-                gene_id = 'not_found'
-                return gene_id
-
-            else:
-                gene_id = response_data['esearchresult']['idlist'][0]
-                return gene_id
-
-        else:
-            raise Exception(f"Error during gene search: {response.status_code}")
-
-    # Get gene information
-    def get_gene_info(gene_id):
-        try:
-            # Request gene information
-            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml"
-            response = requests.get(url)
-
-            if response.status_code == 200:
-                response_data = response.json()
-                gene_info = response_data['result'][str(gene_id)]
-                return gene_info
-
-        except Exception as e:
-            raise Exception(f"Error: {str(e)}")
-
-    # Get DNA sequence
-    def get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream):
-        try:
-            # Determine sens of gene + coordinate for upstream and downstream
-            if chrstop > chrstart:
-                start = (chrstart if prom_term == 'Promoter' else chrstop) - upstream
-                end = (chrstart if prom_term == 'Promoter' else chrstop) + downstream
-            else:
-                start = (chrstart if prom_term == 'Promoter' else chrstop) + upstream
-                end = (chrstart if prom_term == 'Promoter' else chrstop) - downstream
-
-            # Request for DNA sequence
-            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
-            response = requests.get(url)
-
-            if response.status_code == 200:
-                # Extraction of DNA sequence
-                dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
-                if chrstop > chrstart:
-                    sequence = dna_sequence
-                else:
-                    sequence = reverse_complement(dna_sequence)
-
-                return sequence
-
-            else:
-                raise Exception(f"An error occurred while retrieving the DNA sequence: {response.status_code}")
-        except Exception as e:
-            raise Exception(f"Error: {str(e)}")
-
-    # Promoter Finder
-    def find_promoters(gene_ids, species, upstream, downstream):
-        try:
-            for gene_id in gene_ids:
-                time.sleep(1)
-                if gene_id.isdigit():
-                    entrez_id = gene_id
-                else:
-                    entrez_id = convert_gene_to_entrez_id(gene_id, species)
-                    if entrez_id != 'not_found':
-                        pass
-                    else:
-                        continue
-
-                gene_info = get_gene_info(entrez_id)
-                if 'chraccver' in str(gene_info):
-                    gene_name = gene_info['name']
-                    chraccver = gene_info['genomicinfo'][0]['chraccver']
-                    chrstart = gene_info['genomicinfo'][0]['chrstart']
-                    chrstop = gene_info['genomicinfo'][0]['chrstop']
-                    species_API = gene_info['organism']['scientificname']
-                else:
-                    st.error(f'Please verify ID of {gene_id}')
-                    continue
-
-                dna_sequence = get_dna_sequence(chraccver, chrstart, chrstop, upstream, downstream)
-
-                st.toast(f'{prom_term} **{gene_name}** from **{species_API}** extracted', icon='🧬')
-
-                # Append the result to the result_promoter
-                if prom_term == 'Promoter':
-                    result_promoter.append(
-                        f">{gene_name} | {species_API} | {chraccver} | {prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {upstream}\n{dna_sequence}\n")
-                else:
-                    result_promoter.append(
-                        f">{gene_name} | {species_API} | {chraccver} | {prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {upstream}\n{dna_sequence}\n")
-
-            return result_promoter
-
-        except Exception as e:
-            raise Exception(f"Error retrieving gene information: {entrez_id}")
-
     # Extract JASPAR matrix
     def matrix_extraction(sequence_consensus_input):
         jaspar_id = sequence_consensus_input
@@ -660,16 +501,25 @@ def aio_page():
         st.markdown("🔹 :blue[**Step 1.1**] Gene ID:", help='NCBI gene name and NCBI gene ID allowed')
         gene_id_entry = st.text_area("🔹 :blue[**Step 1.1**] Gene ID:", value="PRKN\n351",
                                      label_visibility='collapsed')
-        gene_list = gene_id_entry.strip().split('\n')
         gene_ids = gene_id_entry.strip().split("\n")
 
         # Verify if gene is available for all species
         if st.button('🔎 Check genes avaibility',
                      help='Sometimes genes do not have the same name in all species or do not exist.'):
-            dfgene = analyse_gene(gene_list)
-            st.session_state['dfgene'] = dfgene
-        if 'dfgene' in st.session_state:
-            st.dataframe(st.session_state['dfgene'], hide_index=True)
+            species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
+            gene_disponibility_output = []
+            for gene_id in stqdm(gene_ids,
+                                 desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
+                                 mininterval=0.1):
+                gene_disponibility_output.append(NCBI_dna(gene_id).analyse_gene())
+
+            species_columns = ['Gene'] + species_list
+            gene_disponibility_output = pd.DataFrame(gene_disponibility_output, columns=species_columns)
+
+            st.session_state['gene_disponibility_output'] = gene_disponibility_output
+
+        if 'gene_disponibility_output' in st.session_state:
+            st.dataframe(st.session_state['gene_disponibility_output'], hide_index=True)
 
     with colprom2:
         tab1, tab2 = st.tabs(['Default', 'Advance'])
@@ -709,33 +559,38 @@ def aio_page():
             # Run Promoter Finder
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
                 with colprom1:
-                    if 'result_promoter_text' in st.session_state:
-                        del st.session_state['result_promoter_text']
-                    try:
-                        for gene_id in stqdm(gene_ids,
-                                             desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
-                                             mininterval=0.1):
-                            gene_ids = gene_id.strip().split('\n')
-                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                            result_promoter_text = "\n".join(result_promoter)
-                            st.session_state['result_promoter_text'] = result_promoter_text
-                        st.success(f"{prom_term} extraction complete !")
-                        st.toast(f"{prom_term} extraction complete !", icon='😊')
-                    except Exception as e:
-                        st.error(f"Error finding {prom_term}: {str(e)}")
+                    for gene_id in stqdm(gene_ids,
+                                         desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
+                                         mininterval=0.1):
+                        result_promoter_output = NCBI_dna(gene_id, species, upstream, downstream,
+                                                          prom_term).find_sequences()
+                        if not result_promoter_output.startswith('P'):
+                            st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
+                            result_promoter.append(result_promoter_output)
+                            pass
+
+                        else:
+                            st.error(result_promoter_output)
+                            continue
+
+                    result_promoter_text = "\n".join(result_promoter)
+                    st.session_state['result_promoter_text'] = result_promoter_text
+
+                    st.success(f"{prom_term} extraction complete !")
+                    st.toast(f"{prom_term} extraction complete !", icon='😊')
 
         with tab2:
             # Advance mode extraction
             data_df = pd.DataFrame(
                 {
-                    "Gene": gene_list,
-                    "human": [False] * len(gene_list),
-                    "mouse": [False] * len(gene_list),
-                    "rat": [False] * len(gene_list),
-                    "drosophila": [False] * len(gene_list),
-                    "zebrafish": [False] * len(gene_list),
-                    "promoter": [False] * len(gene_list),
-                    "terminator": [False] * len(gene_list),
+                    "Gene": gene_ids,
+                    "human": [False] * len(gene_ids),
+                    "mouse": [False] * len(gene_ids),
+                    "rat": [False] * len(gene_ids),
+                    "drosophila": [False] * len(gene_ids),
+                    "zebrafish": [False] * len(gene_ids),
+                    "promoter": [False] * len(gene_ids),
+                    "terminator": [False] * len(gene_ids),
                 }
             )
 
@@ -838,9 +693,8 @@ def aio_page():
                     downstream = int(downstream_entry)
                     iterration = 0
                     for gene_info in (data_dff.itertuples(index=False)):
-                        gene_name = gene_info.Gene
-                        gene_ids = gene_name.strip().split('\n')
-                        if gene_name.isdigit():
+                        gene_id = gene_info.Gene
+                        if gene_id.isdigit():
                             for search_type in search_types:
                                 if getattr(gene_info, f'{search_type}'):
                                     iterration += 1
@@ -854,34 +708,52 @@ def aio_page():
                                desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                                mininterval=0.1) as pbar:
                         for gene_info in (data_dff.itertuples(index=False)):
-                            gene_name = gene_info.Gene
-                            gene_ids = gene_name.strip().split('\n')
-                            if gene_name.isdigit():
+                            gene_id = gene_info.Gene
+                            if gene_id.isdigit():
                                 for search_type in search_types:
                                     if getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
-                                        species = 'human'  # This is just a remnant of the past
-                                        try:
-                                            result_promoter = find_promoters(gene_ids, species, upstream, downstream)
-                                        except Exception as e:
-                                            st.error(f"Error finding {gene_ids}: {str(e)}")
+
+                                        result_promoter_output = NCBI_dna(gene_id, upstream=upstream, downstream=downstream,
+                                                                          prom_term=prom_term).find_sequences()
+
+                                        if not result_promoter_output.startswith('P'):
+                                            st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted',
+                                                     icon='🧬')
+                                            result_promoter.append(result_promoter_output)
+                                            pass
+
+                                        else:
+                                            st.error(result_promoter_output)
+                                            continue
+
                                         pbar.update(1)
                             else:
                                 for species in species_list:
                                     for search_type in search_types:
                                         if getattr(gene_info, f'{species}') and getattr(gene_info, f'{search_type}'):
                                             prom_term = search_type.capitalize()
-                                            try:
-                                                result_promoter = find_promoters(gene_ids, species, upstream,
-                                                                                 downstream)
-                                            except Exception as e:
-                                                st.error(f"Error finding {gene_ids}: {str(e)}")
+
+                                            result_promoter_output = NCBI_dna(gene_id, species, upstream, downstream,
+                                                                              prom_term).find_sequences()
+
+                                            if not result_promoter_output.startswith('P'):
+                                                st.toast(
+                                                    f'{prom_term} **{gene_id}** from **{species.capitalize()}** extracted',
+                                                    icon='🧬')
+                                                result_promoter.append(result_promoter_output)
+                                                pass
+
+                                            else:
+                                                st.error(result_promoter_output)
+                                                continue
+
                                             pbar.update(1)
 
-                        result_promoter_text = "\n".join(result_promoter)
-                        st.session_state['result_promoter_text'] = result_promoter_text
-                        st.success(f"{prom_term} extraction complete !")
-                        st.toast(f"{prom_term} extraction complete !", icon='😊')
+                    result_promoter_text = "\n".join(result_promoter)
+                    st.session_state['result_promoter_text'] = result_promoter_text
+                    st.success(f"{prom_term} extraction complete !")
+                    st.toast(f"{prom_term} extraction complete !", icon='😊')
 
     # Promoter output state
     st.divider()

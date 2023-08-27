@@ -17,25 +17,3 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-extra_streamlit_components==0.1.56
-pyvis==0.3.1
-seaborn
-streamlit-aggrid==0.3.3
-stringdb==0.1.5
-lxml
-requests
-beautifulsoup4
-streamlit-analytics
-pymed
-plotly
-hydralit_components
-weblogo
-Bio
-logomaker
-openpyxl
-sendgrid
-Pillow
-stqdm
-tqdm
-streamlit-modal

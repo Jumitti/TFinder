@@ -29,6 +29,7 @@ from navigation.resource import resource_page
 from navigation.contact import contact_page
 from navigation.allapp import allapp_page
 import streamlit_analytics
+from streamlit_modal import Modal
 
 st.set_page_config(
     page_title='TFinder by Minniti Julien',
@@ -197,11 +198,28 @@ if st.sidebar.button("Check"):
     st.sidebar.table(df)
 
 st.sidebar.title("More")
-st.sidebar.markdown("Report a bug 🆘 -> [Click here](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=&projects=&template=bug_report.md&title=)")
-st.sidebar.markdown("Want an issue/bug 🆘 -> [Click here](https://github.com/Jumitti/TFinder/issues/new/choose)")
-st.sidebar.markdown("Want to talk ? 🙋🏼‍♂️ -> [Chat Room](https://github.com/Jumitti/TFinder/discussions)")
+st.sidebar.markdown("[Report a bug 🐞](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=bug&projects=&template=bug_report.md&title=%5BBUG%5D)")
+st.sidebar.markdown("[Need HELP 🆘](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=help+wanted&projects=&template=help.md&title=%5BHELP%5D)")
+st.sidebar.markdown("[Have a question 🤔](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=question&projects=&template=question_report.md&title=%5BQUESTION%5D)")
+st.sidebar.markdown("[Features request 💡](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md&title=%5BFEATURE%5D)")
+st.sidebar.markdown("[Want to talk ? 🙋🏼‍♂](https://github.com/Jumitti/TFinder/discussions)")
 
 streamlit_analytics.stop_tracking()
 
 views = streamlit_analytics.main.counts["total_pageviews"]
 st.sidebar.markdown(f"Total users 👥: {int(views)}")
+
+modal = Modal(key="TFinder Key", title="Disclaimers")
+
+if 'popup_closed' not in st.session_state:
+    st.session_state.popup_closed = False
+
+if not st.session_state.popup_closed:
+    with modal.container():
+        st.markdown('TFinder use [NCBI API](https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen)'
+                    ': More information [NCBI Website and Data Usage Policies and Disclaimers](https://www.ncbi.nlm.nih.gov/home/about/policies/)')
+        st.markdown("TFinder use [JASPAR API](https://doi.org/10.1093/bioinformatics/btx804)")
+        value = st.checkbox("By checking this box, you agree with data usage polices of NCBI and JASPAR")
+        if value:
+            st.button('Close')
+            st.session_state.popup_closed = True
