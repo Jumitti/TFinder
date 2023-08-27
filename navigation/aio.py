@@ -292,8 +292,10 @@ def aio_page():
         return sequences
 
     # is PWM good ?
-    def has_uniform_column_length(matrix):
-        column_lengths = set(len(column) for column in matrix)
+    def has_uniform_column_length(matrix_str):
+        lines = matrix_str.strip().split('\n')
+        values_lists = [line.split('[')[1].split(']')[0].split() for line in lines]
+        column_lengths = set(len(values) for values in values_lists)
         if len(column_lengths) != 1:
             raise Exception('Invalid PWM length.')
 
@@ -866,14 +868,16 @@ def aio_page():
                                            value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
                                            label_visibility='collapsed', height=125)
 
-                lines = matrix_str.strip().split('\n')
-                matrix = []
+                lines = matrix_str.split("\n")
+                matrix = {}
                 for line in lines:
-                    values = line.split('[')[1].split(']')[0].split()
-                    matrix.append(list(map(float, values)))
+                    parts = line.split("[")
+                    base = parts[0].strip()
+                    values = [float(val.strip()) for val in parts[1][:-1].split()]  # Exclude the trailing ']'
+                    matrix[base] = values
 
                 try:
-                    has_uniform_column_length(matrix)
+                    has_uniform_column_length(matrix_str)
                     error_input_im = True
                 except Exception as e:
                     error_input_im = False
