@@ -41,18 +41,21 @@ from tfinder import NCBI_dna
 
 def aio_page():
     # Extract JASPAR matrix
-    def matrix_extraction(sequence_consensus_input):
-        jaspar_id = sequence_consensus_input
+    def matrix_extraction(jaspar_id):
         url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
         response = requests.get(url)
         if response.status_code == 200:
             response_data = response.json()
+            TF_name = response_data['name']
+            TF_species = response_data['species'][0]['name']
             matrix = response_data['pfm']
+            weblogo = f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg"
         else:
-            st.error(f"Error while retrieving PWM: {response.status_code}")
-            return
-
-        return transform_matrix(matrix)
+            TF_name = 'not found'
+            TF_species = 'not found'
+            matrix = 'not found'
+            weblogo = 'not found'
+        return TF_name, TF_species, matrix, weblogo
 
     # Transform JASPAR matrix
     def transform_matrix(matrix):
@@ -835,16 +838,12 @@ def aio_page():
     if jaspar == 'JASPAR_ID':
         with REcol1:
             st.markdown("🔹 :blue[**Step 2.3**] JASPAR ID:")
-            entry_sequence = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:", value="MA0106.1",
+            jaspar_id = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:", value="MA0106.1",
                                            label_visibility='collapsed')
-            url = f"https://jaspar.genereg.net/api/v1/matrix/{entry_sequence}/"
-            response = requests.get(url)
-            if response.status_code == 200:
-                response_data = response.json()
-                TF_name = response_data['name']
-                TF_species = response_data['species'][0]['name']
+
+            TF_name, TF_species, matrix, weblogo = matrix_extraction(jaspar_id)
+            if TF_name != 'not found':
                 st.success(f"{TF_species} transcription factor {TF_name}")
-                matrix = response_data['pfm']
                 with REcol2:
                     st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
                 button = False
