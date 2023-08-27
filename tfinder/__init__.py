@@ -22,13 +22,6 @@ import time
 
 import requests
 
-
-def reverse_complement(sequence):
-    complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
-    reverse_sequence = sequence[::-1]
-    complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
-    return complement_sequence
-
 class NCBI_dna:
     def __init__(self,
                  gene_id,
@@ -177,6 +170,16 @@ class NCBI_dna:
             if chrstop > chrstart:
                 sequence = dna_sequence
             else:
-                sequence = reverse_complement(dna_sequence)
+                sequence = self.reverse_complement(dna_sequence)
 
             return sequence
+    @staticmethod
+    def reverse_complement(dna_sequence):
+        complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
+        reverse_sequence = dna_sequence[::-1]
+        complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
+        return complement_sequence
+
+class IMO:
+    def __init__(self):
+        ok = ok
