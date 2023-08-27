@@ -893,7 +893,7 @@ def aio_page():
                                  disabled=False)
                     st.pyplot(weblogo.fig)
                     weblogo = io.BytesIO()
-                    logo.fig.savefig(weblogo, format='png')
+                    weblogo.fig.savefig(weblogo, format='png')
                     weblogo.seek(0)
                     st.session_state['weblogo'] = weblogo
                 error_input_im = True
@@ -926,7 +926,7 @@ def aio_page():
                                     disabled=False)
                     st.pyplot(weblogo.fig)
                     weblogo = io.BytesIO()
-                    logo.fig.savefig(weblogo, format='png')
+                    weblogo.fig.savefig(weblogo, format='png')
                     weblogo.seek(0)
                     st.session_state['weblogo'] = weblogo
                 error_input_im = True
