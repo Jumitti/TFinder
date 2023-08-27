@@ -170,7 +170,7 @@ class NCBI_dna:
             if chrstop > chrstart:
                 sequence = dna_sequence
             else:
-                sequence = self.reverse_complement(dna_sequence)
+                sequence = NCBI_dna.reverse_complement(dna_sequence)
 
             return sequence
     @staticmethod
