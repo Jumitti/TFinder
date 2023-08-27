@@ -337,11 +337,11 @@ def aio_page():
         return matrix
 
     # PWM with multiple FASTA
-    def parse_fasta(fasta_text):
+    def parse_fasta(individual_motif):
         sequences = []
         current_sequence = ""
 
-        for line in fasta_text.splitlines():
+        for line in individual_motif.splitlines():
             if line.startswith(">"):
                 if current_sequence:
                     sequences.append(current_sequence)
