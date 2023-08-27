@@ -152,7 +152,7 @@ class NCBI_dna:
             if 'chraccver' in str(gene_info):
                 return gene_info
             else:
-                gene_info = int(str('not found'))
+                gene_info = int(str('0'))
                 return gene_info
 
 
