@@ -868,7 +868,6 @@ def aio_page():
 
                 lines = matrix_str.split("\n")
                 matrix = {}
-
                 for line in lines:
                     parts = line.split("[")
                     base = parts[0].strip()
