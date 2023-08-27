@@ -845,7 +845,7 @@ def aio_page():
             if TF_name != 'not found':
                 st.success(f"{TF_species} transcription factor {TF_name}")
                 with REcol2:
-                    st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
+                    st.image(weblogo)
                 button = False
                 error_input_im = True
             else:
