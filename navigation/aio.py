@@ -893,9 +893,10 @@ def aio_page():
             try:
                 matrix, weblogo = individual_motif_pwm(individual_motif)
                 formatted_matrix = json.dumps(matrix, indent=4)
-                REcol2.st.text_area('PWM', formatted_matrix, height=125, help='Copy to use later. Not editable.',
-                                    disabled=False)
-                REcol2.st.image(weblogo)
+                with REcol2:
+                    st.text_area('PWM', value=formatted_matrix, height=125, help='Copy to use later. Not editable.',
+                                 disabled=False)
+                    st.image(weblogo)
                 error_input_im = True
             except Exception as e:
                 error_input_im = False
@@ -921,9 +922,10 @@ def aio_page():
             try:
                 matrix, weblogo = individual_motif_pwm(individual_motif)
                 formatted_matrix = json.dumps(matrix, indent=4)
-                REcol2.st.text_area('PWM', formatted_matrix, height=125, help='Copy to use later. Not editable.',
+                with REcol2:
+                    st.text_area('PWM', value=formatted_matrix, height=125, help='Copy to use later. Not editable.',
                                     disabled=False)
-                REcol2.st.image(weblogo)
+                    st.image(weblogo)
                 error_input_im = True
             except Exception as e:
                 error_input_im = False
