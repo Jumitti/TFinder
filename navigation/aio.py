@@ -720,7 +720,8 @@ def aio_page():
                                     if getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
 
-                                        result_promoter_output = NCBI_dna(gene_id, upstream=upstream, downstream=downstream,
+                                        result_promoter_output = NCBI_dna(gene_id, upstream=upstream,
+                                                                          downstream=downstream,
                                                                           prom_term=prom_term).find_sequences()
 
                                         if not result_promoter_output.startswith('P'):
@@ -771,9 +772,9 @@ def aio_page():
             result_promoter_text = ''
             st.session_state['result_promoter_text'] = result_promoter_text
         dna_sequence = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
-                                       value=st.session_state['result_promoter_text'],
-                                       placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
-                                       label_visibility='collapsed', height=125)
+                                    value=st.session_state['result_promoter_text'],
+                                    placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
+                                    label_visibility='collapsed', height=125)
 
     with promcol2:
         st.markdown('')
@@ -842,7 +843,7 @@ def aio_page():
         with REcol1:
             st.markdown("🔹 :blue[**Step 2.3**] JASPAR ID:")
             jaspar_id = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:", value="MA0106.1",
-                                           label_visibility='collapsed')
+                                      label_visibility='collapsed')
 
             TF_name, TF_species, matrix, weblogo = matrix_extraction(jaspar_id)
             if TF_name != 'not found':
@@ -883,14 +884,16 @@ def aio_page():
                 st.markdown("🔹 :blue[**Step 2.3**] Sequences:",
                             help='Put FASTA sequences. Same sequence length required ⚠')
                 individual_motif = st.text_area("🔹 :blue[**Step 2.3**] Sequences:",
-                                          value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG",
-                                          label_visibility='collapsed')
+                                                value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG",
+                                                label_visibility='collapsed')
                 individual_motif = individual_motif.upper()
             isUIPAC = True
 
             try:
                 matrix, weblogo = individual_motif_pwm(individual_motif)
-                REcol2.st.text_area('PWM', value=matrix, height = 125, help='Copy to use later. Not editable.', disabled = False)
+                formatted_matrix = json.dumps(matrix, indent=4)
+                REcol2.st.text_area('PWM', value=formatted_matrix, height=125, help='Copy to use later. Not editable.',
+                                    disabled=False)
                 REcol2.st.image(weblogo)
                 error_input_im = True
             except Exception as e:
@@ -916,8 +919,9 @@ def aio_page():
 
             try:
                 matrix, weblogo = individual_motif_pwm(individual_motif)
-                st.write(matrix)
-                REcol2.st.text_area('PWM', value=matrix, height = 125, help='Copy to use later. Not editable.', disabled = False)
+                formatted_matrix = json.dumps(matrix, indent=4)
+                REcol2.st.text_area('PWM', value=formatted_matrix, height=125, help='Copy to use later. Not editable.',
+                                    disabled=False)
                 REcol2.st.image(weblogo)
                 error_input_im = True
             except Exception as e:
