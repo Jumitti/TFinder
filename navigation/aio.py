@@ -887,9 +887,12 @@ def aio_page():
 
             try:
                 matrix, weblogo = individual_motif_pwm(individual_motif)
-                formatted_matrix = json.dumps(matrix, indent=4)
+                matrix_str = ""
+                for base, values in matrix.items():
+                    values_str = " ".join([f"{val:.1f}" for val in values])
+                    matrix_str += f"{base} [ {values_str} ]\\n"
                 with REcol2:
-                    st.text_area('PWM', value=formatted_matrix, height=125, help='Copy to use later. Not editable.',
+                    st.text_area('PWM', value=matrix_str, height=125, help='Copy to use later. Not editable.',
                                  disabled=False)
                     st.pyplot(weblogo.fig)
                     logo = io.BytesIO()
@@ -920,9 +923,12 @@ def aio_page():
 
             try:
                 matrix, weblogo = individual_motif_pwm(individual_motif)
-                formatted_matrix = json.dumps(matrix, indent=4)
+                matrix_str = ""
+                for base, values in matrix.items():
+                    values_str = " ".join([f"{val:.1f}" for val in values])
+                    matrix_str += f"{base} [ {values_str} ]\\n"
                 with REcol2:
-                    st.text_area('PWM', value=formatted_matrix, height=125, help='Copy to use later. Not editable.',
+                    st.text_area('PWM', value=matrix_str, height=125, help='Copy to use later. Not editable.',
                                     disabled=False)
                     st.pyplot(weblogo.fig)
                     logo = io.BytesIO()
