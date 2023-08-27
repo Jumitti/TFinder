@@ -114,18 +114,18 @@ def aio_page():
             return isfasta
 
     # Find with JASPAR and manual matrix
-    def search_sequence(threshold, tis_value, dna_sequences, matrix, total_promoter_region_length, total_promoter):
+    def search_sequence(threshold, tis_value, dna_sequences, matrix, total_sequences_region_length, total_sequences):
         global table2
         table2 = []
 
         matrices = transform_matrix(matrix)
 
         seq_length = len(matrices['Original']['A'])
-        sequence_iteration = len(matrices.items()) * total_promoter_region_length
+        sequence_iteration = len(matrices.items()) * total_sequences_region_length
 
         num_random_seqs = 1000000
-        if total_promoter <= 10:
-            random_gen = len(dna_sequences) * num_random_seqs
+        if total_sequences <= 10:
+            random_gen = total_sequences * num_random_seqs
         else:
             random_gen = num_random_seqs
         random_score = random_gen * len(matrices.items())
@@ -138,7 +138,7 @@ def aio_page():
         with stqdm(total=total_iterations,
                    desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                    mininterval=0.1) as pbar:
-            if calc_pvalue and total_promoter > 10:
+            if calc_pvalue and total_sequences > 10:
                 percentage_a = 0.275
                 percentage_t = 0.275
                 percentage_g = 0.225
@@ -148,7 +148,7 @@ def aio_page():
 
                 random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
 
-            if calc_pvalue and total_promoter > 10:
+            if calc_pvalue and total_sequences > 10:
                 random_scores = {}
                 matrix_random_scores = []
                 for matrix_name, matrix in matrices.items():
@@ -164,7 +164,7 @@ def aio_page():
                 random_scores = np.array(matrix_random_scores)
 
             for name, dna_sequence, species, region in dna_sequences:
-                if calc_pvalue and total_promoter <= 10:
+                if calc_pvalue and total_sequences <= 10:
                     count_a = dna_sequence.count('A')
                     count_t = dna_sequence.count('T')
                     count_g = dna_sequence.count('G')
@@ -180,7 +180,7 @@ def aio_page():
 
                     random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
 
-                    if calc_pvalue and total_promoter <= 10:
+                    if calc_pvalue and total_sequences <= 10:
                         random_scores = {}
 
                 for matrix_name, matrix in matrices.items():
@@ -190,7 +190,7 @@ def aio_page():
                     max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
                     min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
 
-                    if calc_pvalue and total_promoter <= 10:
+                    if calc_pvalue and total_sequences <= 10:
                         matrix_random_scores = []
                         for random_sequence in random_sequences:
                             sequence = random_sequence
@@ -828,8 +828,8 @@ def aio_page():
     else:
         isfasta = False
 
-    total_promoter_region_length = sum(len(dna_sequence) for _, dna_sequence, _, _ in dna_sequences)
-    total_promoter = len(dna_sequences)
+    total_sequences_region_length = sum(len(dna_sequence) for _, dna_sequence, _, _ in dna_sequences)
+    total_sequences = len(dna_sequences)
 
     # RE entry
     REcol1, REcol2 = st.columns([0.30, 0.70])
@@ -873,7 +873,7 @@ def aio_page():
                 for line in lines:
                     parts = line.split("[")
                     base = parts[0].strip()
-                    values = [float(val.strip()) for val in parts[1][:-1].split()]  # Exclude the trailing ']'
+                    values = [float(val.strip()) for val in parts[1][:-1].split()]
                     matrix[base] = values
 
                 try:
@@ -974,7 +974,7 @@ def aio_page():
                                         label_visibility="collapsed")
     with BSFcol3:
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times.')
-        if total_promoter > 10:
+        if total_sequences > 10:
             st.markdown(
                 '⚠️Proportion of A, T, G, C imposed for the calculation of the p-value for more than 10 sequences. See "Resource" for more information')
             st.markdown('A 0.275 | C 0.225 | G 0.225 | T 0.275')
@@ -1003,8 +1003,8 @@ def aio_page():
     st.markdown("")
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True,
                  disabled=button):
-        table2 = search_sequence(threshold, tis_value, dna_sequences, matrix, total_promoter_region_length,
-                                 total_promoter)
+        table2 = search_sequence(threshold, tis_value, dna_sequences, matrix, total_sequences_region_length,
+                                 total_sequences)
         st.session_state['table2'] = table2
 
     st.divider()
