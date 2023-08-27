@@ -397,7 +397,7 @@ def aio_page():
                     buffer.seek(0)
 
                     st.session_state['buffer'] = buffer
-
+                    st.write(matrix_text)
                     return matrix_text, buffer
 
         else:
