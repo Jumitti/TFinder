@@ -380,29 +380,28 @@ def aio_page():
             else:
                 matrix = calculate_pwm(sequences)
 
-                with REcol2:
-                    sequences_text = fasta_text
-                    sequences = []
-                    current_sequence = ""
-                    for line in sequences_text.splitlines():
-                        line = line.strip()
-                        if line.startswith(">"):
-                            if current_sequence:
-                                sequences.append(current_sequence)
-                            current_sequence = ""
-                        else:
-                            current_sequence += line
+                sequences_text = individual_motif
+                sequences = []
+                current_sequence = ""
+                for line in sequences_text.splitlines():
+                    line = line.strip()
+                    if line.startswith(">"):
+                        if current_sequence:
+                            sequences.append(current_sequence)
+                        current_sequence = ""
+                    else:
+                        current_sequence += line
 
-                    sequences.append(current_sequence)
+                sequences.append(current_sequence)
 
-                    logo = create_web_logo(sequences)
-                    st.pyplot(logo.fig)
-                    weblogo = io.BytesIO()
-                    logo.fig.savefig(weblogo, format='png')
-                    weblogo.seek(0)
+                logo = create_web_logo(sequences)
+                st.pyplot(logo.fig)
+                weblogo = io.BytesIO()
+                logo.fig.savefig(weblogo, format='png')
+                weblogo.seek(0)
 
-                    st.session_state['weblogo'] = weblogo
-                    return matrix, weblogo
+                st.session_state['weblogo'] = weblogo
+                return matrix, weblogo
 
         else:
             raise Exception(f"You forget FASTA sequences :)")
