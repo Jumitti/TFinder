@@ -890,10 +890,10 @@ def aio_page():
                 matrix_str = ""
                 for base, values in matrix.items():
                     values_str = " ".join([f"{val:.1f}" for val in values])
-                    matrix_str += f"{base} [ {values_str} ]\\n"
+                    matrix_str += f"{base} [ {values_str} ]\n"
                 with REcol2:
                     st.text_area('PWM', value=matrix_str, height=125, help='Copy to use later. Not editable.',
-                                 disabled=False)
+                                 disabled=True)
                     st.pyplot(weblogo.fig)
                     logo = io.BytesIO()
                     weblogo.fig.savefig(logo, format='png')
@@ -926,10 +926,10 @@ def aio_page():
                 matrix_str = ""
                 for base, values in matrix.items():
                     values_str = " ".join([f"{val:.1f}" for val in values])
-                    matrix_str += f"{base} [ {values_str} ]\\n"
+                    matrix_str += f"{base} [ {values_str} ]\n"
                 with REcol2:
                     st.text_area('PWM', value=matrix_str, height=125, help='Copy to use later. Not editable.',
-                                    disabled=False)
+                                    disabled=True)
                     st.pyplot(weblogo.fig)
                     logo = io.BytesIO()
                     weblogo.fig.savefig(logo, format='png')
