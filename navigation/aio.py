@@ -889,7 +889,7 @@ def aio_page():
                 matrix, weblogo = individual_motif_pwm(individual_motif)
                 matrix_str = ""
                 for base, values in matrix.items():
-                    values_str = " ".join([f"{val:.1f}" for val in values])
+                    values_str = " ".join([f"{val:.4f}" for val in values])
                     matrix_str += f"{base} [ {values_str} ]\n"
                 with REcol2:
                     st.text_area('PWM', value=matrix_str, height=125, help='Copy to use later. Not editable.',
@@ -925,7 +925,7 @@ def aio_page():
                 matrix, weblogo = individual_motif_pwm(individual_motif)
                 matrix_str = ""
                 for base, values in matrix.items():
-                    values_str = " ".join([f"{val:.1f}" for val in values])
+                    values_str = " ".join([f"{val:.4f}" for val in values])
                     matrix_str += f"{base} [ {values_str} ]\n"
                 with REcol2:
                     st.text_area('PWM', value=matrix_str, height=125, help='Copy to use later. Not editable.',
