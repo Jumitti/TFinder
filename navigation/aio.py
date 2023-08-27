@@ -113,9 +113,11 @@ def aio_page():
             return isfasta
 
     # Find with JASPAR and manual matrix
-    def search_sequence(threshold, tis_value, dna_sequences, matrices, total_promoter_region_length, total_promoter):
+    def search_sequence(threshold, tis_value, dna_sequences, matrix, total_promoter_region_length, total_promoter):
         global table2
         table2 = []
+
+        matrices = transform_matrix(matrix)
 
         seq_length = len(matrices['Original']['A'])
         sequence_iteration = len(matrices.items()) * total_promoter_region_length
@@ -978,12 +980,10 @@ def aio_page():
         else:
             button = False
 
-    matrices = transform_matrix(matrix)
-
     st.markdown("")
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True,
                  disabled=button):
-        table2 = search_sequence(threshold, tis_value, dna_sequences, matrices, total_promoter_region_length,
+        table2 = search_sequence(threshold, tis_value, dna_sequences, matrix, total_promoter_region_length,
                                  total_promoter)
         st.session_state['table2'] = table2
 
