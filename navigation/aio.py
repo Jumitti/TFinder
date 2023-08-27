@@ -104,9 +104,9 @@ def aio_page():
         return ''.join(sequence)
 
     # Analyse sequence for non authorized characters
-    def isdna(promoter_region):
+    def isdna(dna_sequence):
         DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
-        if not all(char in DNA_code for char in promoter_region):
+        if not all(char in DNA_code for char in dna_sequence):
             isfasta = True
             return isfasta
         else:
