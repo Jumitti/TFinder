@@ -49,8 +49,6 @@ def aio_page():
             TF_name = response_data['name']
             TF_species = response_data['species'][0]['name']
             matrix = response_data['pfm']
-            print(matrix)
-            st.write(matrix)
             weblogo = f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg"
         else:
             TF_name = 'not found'
@@ -61,8 +59,6 @@ def aio_page():
 
     # Transform JASPAR matrix
     def transform_matrix(matrix):
-        print(matrix)
-        st.write(matrix)
         reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
         complement_matrix = {
             'A': matrix['T'],
@@ -371,7 +367,7 @@ def aio_page():
 
                     base_str += "]\n"
                     pwm_text += base_str
-
+                st.write(pwm_text)
                 with REcol2:
                     st.markdown("PWM", help="Modification not allowed. Still select and copy for later use.")
                     matrix_text = st.text_area("PWM:", value=pwm_text,
