@@ -96,7 +96,7 @@ class NCBI_dna:
                 return result_promoter
 
         gene_info = self.get_gene_info(entrez_id)
-        if not 'not found' in str(gene_info):
+        if 'chraccver' in str(gene_info):
             gene_name = gene_info['name']
             chraccver = gene_info['genomicinfo'][0]['chraccver']
             chrstart = int(gene_info['genomicinfo'][0]['chrstart'])
@@ -152,7 +152,7 @@ class NCBI_dna:
             if 'chraccver' in str(gene_info):
                 return gene_info
             else:
-                gene_info = dict('not found')
+                gene_info = {'status': 'not found'}
                 return gene_info
 
 
