@@ -361,8 +361,8 @@ def aio_page():
         return logo
 
     # Individual motif PWM and weblogo
-    def im(fasta_text):
-        sequences = parse_fasta(fasta_text)
+    def individual_motif_pwm(individual_motif):
+        sequences = parse_fasta(individual_motif)
         sequences = [seq.upper() for seq in sequences]
 
         if len(sequences) > 0:
@@ -379,13 +379,6 @@ def aio_page():
 
             else:
                 matrix = calculate_pwm(sequences)
-                '''
-                with REcol2:
-                    st.markdown("PWM", help="Modification not allowed. Still select and copy for later use.")
-                    matrix_text = st.text_area("PWM:", value=pwm_text,
-                                               label_visibility='collapsed',
-                                               height=125,
-                                               disabled=True)'''
 
                 with REcol2:
                     sequences_text = fasta_text
@@ -404,12 +397,12 @@ def aio_page():
 
                     logo = create_web_logo(sequences)
                     st.pyplot(logo.fig)
-                    buffer = io.BytesIO()
-                    logo.fig.savefig(buffer, format='png')
-                    buffer.seek(0)
+                    weblogo = io.BytesIO()
+                    logo.fig.savefig(weblogo, format='png')
+                    weblogo.seek(0)
 
-                    st.session_state['buffer'] = buffer
-                    return matrix, buffer
+                    st.session_state['weblogo'] = weblogo
+                    return matrix, weblogo
 
         else:
             raise Exception(f"You forget FASTA sequences :)")
@@ -890,14 +883,16 @@ def aio_page():
             with REcol1:
                 st.markdown("🔹 :blue[**Step 2.3**] Sequences:",
                             help='Put FASTA sequences. Same sequence length required ⚠')
-                fasta_text = st.text_area("🔹 :blue[**Step 2.3**] Sequences:",
+                individual_motif = st.text_area("🔹 :blue[**Step 2.3**] Sequences:",
                                           value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG",
                                           label_visibility='collapsed')
-                fasta_text = fasta_text.upper()
+                individual_motif = individual_motif.upper()
             isUIPAC = True
 
             try:
-                matrix, buffer = im(fasta_text)
+                matrix, weblogo = individual_motif_pwm(individual_motif)
+                RELcol2.st.text_area('PWM', value=matrix, height = 125, help='Copy to use later. Not editable.', disabled = False)
+                RELcol2.st.image(weblogo)
                 error_input_im = True
             except Exception as e:
                 error_input_im = False
@@ -916,12 +911,14 @@ def aio_page():
             isUIPAC = True
 
             sequences = generate_iupac_variants(IUPAC)
-            fasta_text = ""
+            individual_motif = ""
             for i, seq in enumerate(sequences):
-                fasta_text += f">seq{i + 1}\n{seq}\n"
+                individual_motif += f">seq{i + 1}\n{seq}\n"
 
             try:
-                matrix, buffer = im(fasta_text)
+                matrix, weblogo = individual_motif_pwm(individual_motif)
+                RELcol2.st.text_area('PWM', value=matrix, height = 125, help='Copy to use later. Not editable.', disabled = False)
+                RELcol2.st.image(weblogo)
                 error_input_im = True
             except Exception as e:
                 error_input_im = False
