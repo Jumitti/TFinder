@@ -113,7 +113,7 @@ def aio_page():
             return isfasta
 
     # Find with JASPAR and manual matrix
-    def search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length, total_promoter):
+    def search_sequence(threshold, tis_value, dna_sequences, matrices, total_promoter_region_length, total_promoter):
         global table2
         table2 = []
 
@@ -122,7 +122,7 @@ def aio_page():
 
         num_random_seqs = 1000000
         if total_promoter <= 10:
-            random_gen = len(promoters) * num_random_seqs
+            random_gen = len(dna_sequences) * num_random_seqs
         else:
             random_gen = num_random_seqs
         random_score = random_gen * len(matrices.items())
@@ -160,14 +160,14 @@ def aio_page():
 
                 random_scores = np.array(matrix_random_scores)
 
-            for shortened_promoter_name, promoter_region, found_species, region in promoters:
+            for name, dna_sequence, species, region in dna_sequences:
                 if calc_pvalue and total_promoter <= 10:
-                    count_a = promoter_region.count('A')
-                    count_t = promoter_region.count('T')
-                    count_g = promoter_region.count('G')
-                    count_c = promoter_region.count('C')
+                    count_a = dna_sequence.count('A')
+                    count_t = dna_sequence.count('T')
+                    count_g = dna_sequence.count('G')
+                    count_c = dna_sequence.count('C')
 
-                    length_prom = len(promoter_region)
+                    length_prom = len(dna_sequence)
                     percentage_a = count_a / length_prom
                     percentage_t = count_t / length_prom
                     percentage_g = count_g / length_prom
@@ -198,7 +198,7 @@ def aio_page():
 
                         random_scores = np.array(matrix_random_scores)
 
-                    for i in range(len(promoter_region) - seq_length + 1):
+                    for i in range(len(dna_sequence) - seq_length + 1):
                         seq = promoter_region[i:i + seq_length]
                         score = calculate_score(seq, matrix)
                         normalized_score = (score - min_score) / (max_score - min_score)
@@ -245,7 +245,7 @@ def aio_page():
                                        "{:.6f}".format(normalized_score).ljust(12)]
                                 if calc_pvalue:
                                     row.append("{:.3e}".format(p_value).ljust(12))
-                                row += [shortened_promoter_name, found_species, region]
+                                row += [name, species, region]
                                 table2.append(row)
 
         if len(table2) > 0:
@@ -777,22 +777,22 @@ def aio_page():
         st.markdown('')
         st.markdown('')
         current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        txt_output = f"{result_promoter}"
+        txt_output = f"{dna_sequence}"
         st.download_button(label="💾 Download (.fasta)", data=txt_output,
                            file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain")
 
     # Promoter detection information
-    lines = result_promoter
-    promoters = []
+    lines = dna_sequence
+    dna_sequences = []
     if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
-        promoter_region = lines.upper()
-        isfasta = isdna(promoter_region)
-        shortened_promoter_name = "n.d."
-        found_species = "n.d"
+        dna_sequence = lines.upper()
+        isfasta = isdna(dna_sequence)
+        name = "n.d."
+        species = "n.d"
         region = "n.d"
-        promoters.append((shortened_promoter_name, promoter_region, found_species, region))
+        dna_sequences.append((name, dna_sequence, species, region))
     elif lines.startswith(">"):
-        lines = result_promoter.split("\n")
+        lines = dna_sequence.split("\n")
         i = 0
         while i < len(lines):
             line = lines[i]
@@ -801,7 +801,7 @@ def aio_page():
                                 'Danio rerio']
                 promoter_name = line[1:]
                 words = promoter_name.lstrip('>').split()
-                shortened_promoter_name = words[0]
+                name = words[0]
                 for species in species_prom:
                     if species.lower() in promoter_name.lower():
                         found_species = species
@@ -815,9 +815,9 @@ def aio_page():
                         break
                     else:
                         region = "n.d"
-                promoter_region = lines[i + 1].upper()
-                isfasta = isdna(promoter_region)
-                promoters.append((shortened_promoter_name, promoter_region, found_species, region))
+                dna_sequence = lines[i + 1].upper()
+                isfasta = isdna(dna_sequence)
+                dna_sequences.append((name, dna_sequence, found_species, region))
                 i += 1
             else:
                 i += 1
@@ -826,8 +826,8 @@ def aio_page():
     else:
         isfasta = False
 
-    total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
-    total_promoter = len(promoters)
+    total_promoter_region_length = sum(len(dna_sequence) for _, dna_sequence, _, _ in dna_sequences)
+    total_promoter = len(dna_sequences)
 
     # RE entry
     REcol1, REcol2 = st.columns([0.30, 0.70])
@@ -983,7 +983,7 @@ def aio_page():
     st.markdown("")
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True,
                  disabled=button):
-        table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length,
+        table2 = search_sequence(threshold, tis_value, dna_sequences, matrices, total_promoter_region_length,
                                  total_promoter)
         st.session_state['table2'] = table2
 
