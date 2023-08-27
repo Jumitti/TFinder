@@ -104,7 +104,7 @@ def aio_page():
         return ''.join(sequence)
 
     # Analyse sequence for non authorized characters
-    def isdna(dna_sequence):
+    def is_dna(dna_sequence):
         DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
         if not all(char in DNA_code for char in dna_sequence):
             isfasta = True
@@ -788,7 +788,7 @@ def aio_page():
     dna_sequences = []
     if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
         dna_sequence = lines.upper()
-        isfasta = isdna(dna_sequence)
+        isfasta = is_dna(dna_sequence)
         name = "n.d."
         species = "n.d"
         region = "n.d"
@@ -818,7 +818,7 @@ def aio_page():
                     else:
                         region = "n.d"
                 dna_sequence = lines[i + 1].upper()
-                isfasta = isdna(dna_sequence)
+                isfasta = is_dna(dna_sequence)
                 dna_sequences.append((name, dna_sequence, found_species, region))
                 i += 1
             else:
