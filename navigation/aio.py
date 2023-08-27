@@ -310,7 +310,29 @@ def aio_page():
             pwm[2, i] = counts['G'] / num_sequences
             pwm[3, i] = counts['C'] / num_sequences
 
-        return pwm
+        bases = ['A', 'T', 'G', 'C']
+        pwm_text = ""
+        for i in range(len(pwm)):
+            base_name = bases[i]
+            base_values = pwm[i]
+
+            base_str = base_name + " ["
+            for value in base_values:
+                base_str += " " + format(value) + " " if np.isfinite(value) else " " + "NA" + " "
+
+            base_str += "]\n"
+            pwm_text += base_str
+
+        matrix_lines = pwm_text.split('\n')
+        matrix = {}
+        for line in matrix_lines:
+            line = line.strip()
+            if line:
+                key, values = line.split('[', 1)
+                values = values.replace(']', '').split()
+                values = [float(value) for value in values]
+                matrix[key.strip()] = values
+        return matrix
 
     # PWM with multiple FASTA
     def parse_fasta(fasta_text):
@@ -354,26 +376,14 @@ def aio_page():
                 raise Exception(f"Sequence lengths are not consistent.")
 
             else:
-                pwm = calculate_pwm(sequences)
-                bases = ['A', 'T', 'G', 'C']
-                pwm_text = ""
-                for i in range(len(pwm)):
-                    base_name = bases[i]
-                    base_values = pwm[i]
-
-                    base_str = base_name + " ["
-                    for value in base_values:
-                        base_str += " " + format(value) + " " if np.isfinite(value) else " " + "NA" + " "
-
-                    base_str += "]\n"
-                    pwm_text += base_str
-                st.write(pwm_text)
+                matrix = calculate_pwm(sequences)
+                '''
                 with REcol2:
                     st.markdown("PWM", help="Modification not allowed. Still select and copy for later use.")
                     matrix_text = st.text_area("PWM:", value=pwm_text,
                                                label_visibility='collapsed',
                                                height=125,
-                                               disabled=True)
+                                               disabled=True)'''
 
                 with REcol2:
                     sequences_text = fasta_text
@@ -397,8 +407,7 @@ def aio_page():
                     buffer.seek(0)
 
                     st.session_state['buffer'] = buffer
-                    st.write(matrix_text)
-                    return matrix_text, buffer
+                    return matrix, buffer
 
         else:
             raise Exception(f"You forget FASTA sequences :)")
@@ -886,7 +895,7 @@ def aio_page():
             isUIPAC = True
 
             try:
-                matrix_text, buffer = im(fasta_text)
+                matrix, buffer = im(fasta_text)
                 error_input_im = True
             except Exception as e:
                 error_input_im = False
@@ -910,7 +919,7 @@ def aio_page():
                 fasta_text += f">seq{i + 1}\n{seq}\n"
 
             try:
-                matrix_text, buffer = im(fasta_text)
+                matrix, buffer = im(fasta_text)
                 error_input_im = True
             except Exception as e:
                 error_input_im = False
@@ -967,15 +976,6 @@ def aio_page():
             st.error("Please use only A, T, G, C, N in your sequence")
             button = True
         else:
-            matrix_lines = matrix_text.split('\n')
-            matrix = {}
-            for line in matrix_lines:
-                line = line.strip()
-                if line:
-                    key, values = line.split('[', 1)
-                    values = values.replace(']', '').split()
-                    values = [float(value) for value in values]
-                    matrix[key.strip()] = values
             button = False
 
     matrices = transform_matrix(matrix)
