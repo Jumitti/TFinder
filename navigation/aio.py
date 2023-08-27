@@ -20,6 +20,7 @@
 
 import datetime
 import io
+import json
 import random
 import smtplib
 from email import encoders
@@ -41,18 +42,21 @@ from tfinder import NCBI_dna
 
 def aio_page():
     # Extract JASPAR matrix
-    def matrix_extraction(sequence_consensus_input):
-        jaspar_id = sequence_consensus_input
+    def matrix_extraction(jaspar_id):
         url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
         response = requests.get(url)
         if response.status_code == 200:
             response_data = response.json()
+            TF_name = response_data['name']
+            TF_species = response_data['species'][0]['name']
             matrix = response_data['pfm']
+            weblogo = f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg"
         else:
-            st.error(f"Error while retrieving PWM: {response.status_code}")
-            return
-
-        return transform_matrix(matrix)
+            TF_name = 'not found'
+            TF_species = 'not found'
+            matrix = 'not found'
+            weblogo = 'not found'
+        return TF_name, TF_species, matrix, weblogo
 
     # Transform JASPAR matrix
     def transform_matrix(matrix):
@@ -100,9 +104,9 @@ def aio_page():
         return ''.join(sequence)
 
     # Analyse sequence for non authorized characters
-    def isdna(promoter_region):
+    def is_dna(dna_sequence):
         DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
-        if not all(char in DNA_code for char in promoter_region):
+        if not all(char in DNA_code for char in dna_sequence):
             isfasta = True
             return isfasta
         else:
@@ -110,16 +114,18 @@ def aio_page():
             return isfasta
 
     # Find with JASPAR and manual matrix
-    def search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length, total_promoter):
+    def search_sequence(threshold, tis_value, dna_sequences, matrix, total_promoter_region_length, total_promoter):
         global table2
         table2 = []
+
+        matrices = transform_matrix(matrix)
 
         seq_length = len(matrices['Original']['A'])
         sequence_iteration = len(matrices.items()) * total_promoter_region_length
 
         num_random_seqs = 1000000
         if total_promoter <= 10:
-            random_gen = len(promoters) * num_random_seqs
+            random_gen = len(dna_sequences) * num_random_seqs
         else:
             random_gen = num_random_seqs
         random_score = random_gen * len(matrices.items())
@@ -157,14 +163,14 @@ def aio_page():
 
                 random_scores = np.array(matrix_random_scores)
 
-            for shortened_promoter_name, promoter_region, found_species, region in promoters:
+            for name, dna_sequence, species, region in dna_sequences:
                 if calc_pvalue and total_promoter <= 10:
-                    count_a = promoter_region.count('A')
-                    count_t = promoter_region.count('T')
-                    count_g = promoter_region.count('G')
-                    count_c = promoter_region.count('C')
+                    count_a = dna_sequence.count('A')
+                    count_t = dna_sequence.count('T')
+                    count_g = dna_sequence.count('G')
+                    count_c = dna_sequence.count('C')
 
-                    length_prom = len(promoter_region)
+                    length_prom = len(dna_sequence)
                     percentage_a = count_a / length_prom
                     percentage_t = count_t / length_prom
                     percentage_g = count_g / length_prom
@@ -195,8 +201,8 @@ def aio_page():
 
                         random_scores = np.array(matrix_random_scores)
 
-                    for i in range(len(promoter_region) - seq_length + 1):
-                        seq = promoter_region[i:i + seq_length]
+                    for i in range(len(dna_sequence) - seq_length + 1):
+                        seq = dna_sequence[i:i + seq_length]
                         score = calculate_score(seq, matrix)
                         normalized_score = (score - min_score) / (max_score - min_score)
                         position = int(i)
@@ -219,8 +225,8 @@ def aio_page():
 
                         for position, seq, normalized_score in found_positions:
                             start_position = max(0, position - 3)
-                            end_position = min(len(promoter_region), position + len(seq) + 3)
-                            sequence_with_context = promoter_region[start_position:end_position]
+                            end_position = min(len(dna_sequence), position + len(seq) + 3)
+                            sequence_with_context = dna_sequence[start_position:end_position]
 
                             sequence_parts = []
                             for j in range(start_position, end_position):
@@ -242,7 +248,7 @@ def aio_page():
                                        "{:.6f}".format(normalized_score).ljust(12)]
                                 if calc_pvalue:
                                     row.append("{:.3e}".format(p_value).ljust(12))
-                                row += [shortened_promoter_name, found_species, region]
+                                row += [name, species, region]
                                 table2.append(row)
 
         if len(table2) > 0:
@@ -286,10 +292,12 @@ def aio_page():
         return sequences
 
     # is PWM good ?
-    def has_uniform_column_length(pwm):
-        column_lengths = set(len(column) for column in pwm)
+    def has_uniform_column_length(matrix_str):
+        lines = matrix_str.strip().split('\n')
+        values_lists = [line.split('[')[1].split(']')[0].split() for line in lines]
+        column_lengths = set(len(values) for values in values_lists)
         if len(column_lengths) != 1:
-            raise Exception('Invalid PWM lenght.')
+            raise Exception('Invalid PWM length.')
 
     # Calculate PWM
     def calculate_pwm(sequences):
@@ -307,14 +315,36 @@ def aio_page():
             pwm[2, i] = counts['G'] / num_sequences
             pwm[3, i] = counts['C'] / num_sequences
 
-        return pwm
+        bases = ['A', 'T', 'G', 'C']
+        pwm_text = ""
+        for i in range(len(pwm)):
+            base_name = bases[i]
+            base_values = pwm[i]
+
+            base_str = base_name + " ["
+            for value in base_values:
+                base_str += " " + format(value) + " " if np.isfinite(value) else " " + "NA" + " "
+
+            base_str += "]\n"
+            pwm_text += base_str
+
+        matrix_lines = pwm_text.split('\n')
+        matrix = {}
+        for line in matrix_lines:
+            line = line.strip()
+            if line:
+                key, values = line.split('[', 1)
+                values = values.replace(']', '').split()
+                values = [float(value) for value in values]
+                matrix[key.strip()] = values
+        return matrix
 
     # PWM with multiple FASTA
-    def parse_fasta(fasta_text):
+    def parse_fasta(individual_motif):
         sequences = []
         current_sequence = ""
 
-        for line in fasta_text.splitlines():
+        for line in individual_motif.splitlines():
             if line.startswith(">"):
                 if current_sequence:
                     sequences.append(current_sequence)
@@ -334,8 +364,8 @@ def aio_page():
         return logo
 
     # Individual motif PWM and weblogo
-    def im(fasta_text):
-        sequences = parse_fasta(fasta_text)
+    def individual_motif_pwm(individual_motif):
+        sequences = parse_fasta(individual_motif)
         sequences = [seq.upper() for seq in sequences]
 
         if len(sequences) > 0:
@@ -351,51 +381,25 @@ def aio_page():
                 raise Exception(f"Sequence lengths are not consistent.")
 
             else:
-                pwm = calculate_pwm(sequences)
-                bases = ['A', 'T', 'G', 'C']
-                pwm_text = ""
-                for i in range(len(pwm)):
-                    base_name = bases[i]
-                    base_values = pwm[i]
+                matrix = calculate_pwm(sequences)
 
-                    base_str = base_name + " ["
-                    for value in base_values:
-                        base_str += " " + format(value) + " " if np.isfinite(value) else " " + "NA" + " "
+                sequences_text = individual_motif
+                sequences = []
+                current_sequence = ""
+                for line in sequences_text.splitlines():
+                    line = line.strip()
+                    if line.startswith(">"):
+                        if current_sequence:
+                            sequences.append(current_sequence)
+                        current_sequence = ""
+                    else:
+                        current_sequence += line
 
-                    base_str += "]\n"
-                    pwm_text += base_str
+                sequences.append(current_sequence)
 
-                with REcol2:
-                    st.markdown("PWM", help="Modification not allowed. Still select and copy for later use.")
-                    matrix_text = st.text_area("PWM:", value=pwm_text,
-                                               label_visibility='collapsed',
-                                               height=125,
-                                               disabled=True)
+                weblogo = create_web_logo(sequences)
 
-                with REcol2:
-                    sequences_text = fasta_text
-                    sequences = []
-                    current_sequence = ""
-                    for line in sequences_text.splitlines():
-                        line = line.strip()
-                        if line.startswith(">"):
-                            if current_sequence:
-                                sequences.append(current_sequence)
-                            current_sequence = ""
-                        else:
-                            current_sequence += line
-
-                    sequences.append(current_sequence)
-
-                    logo = create_web_logo(sequences)
-                    st.pyplot(logo.fig)
-                    buffer = io.BytesIO()
-                    logo.fig.savefig(buffer, format='png')
-                    buffer.seek(0)
-
-                    st.session_state['buffer'] = buffer
-
-                    return matrix_text, buffer
+                return matrix, weblogo
 
         else:
             raise Exception(f"You forget FASTA sequences :)")
@@ -714,7 +718,8 @@ def aio_page():
                                     if getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
 
-                                        result_promoter_output = NCBI_dna(gene_id, upstream=upstream, downstream=downstream,
+                                        result_promoter_output = NCBI_dna(gene_id, upstream=upstream,
+                                                                          downstream=downstream,
                                                                           prom_term=prom_term).find_sequences()
 
                                         if not result_promoter_output.startswith('P'):
@@ -764,32 +769,32 @@ def aio_page():
         if not 'result_promoter_text' in st.session_state:
             result_promoter_text = ''
             st.session_state['result_promoter_text'] = result_promoter_text
-        result_promoter = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
-                                       value=st.session_state['result_promoter_text'],
-                                       placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
-                                       label_visibility='collapsed', height=125)
+        dna_sequence = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
+                                    value=st.session_state['result_promoter_text'],
+                                    placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
+                                    label_visibility='collapsed', height=125)
 
     with promcol2:
         st.markdown('')
         st.markdown('')
         st.markdown('')
         current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        txt_output = f"{result_promoter}"
+        txt_output = f"{dna_sequence}"
         st.download_button(label="💾 Download (.fasta)", data=txt_output,
                            file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain")
 
     # Promoter detection information
-    lines = result_promoter
-    promoters = []
+    lines = dna_sequence
+    dna_sequences = []
     if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
-        promoter_region = lines.upper()
-        isfasta = isdna(promoter_region)
-        shortened_promoter_name = "n.d."
-        found_species = "n.d"
+        dna_sequence = lines.upper()
+        isfasta = is_dna(dna_sequence)
+        name = "n.d."
+        species = "n.d"
         region = "n.d"
-        promoters.append((shortened_promoter_name, promoter_region, found_species, region))
+        dna_sequences.append((name, dna_sequence, species, region))
     elif lines.startswith(">"):
-        lines = result_promoter.split("\n")
+        lines = dna_sequence.split("\n")
         i = 0
         while i < len(lines):
             line = lines[i]
@@ -798,7 +803,7 @@ def aio_page():
                                 'Danio rerio']
                 promoter_name = line[1:]
                 words = promoter_name.lstrip('>').split()
-                shortened_promoter_name = words[0]
+                name = words[0]
                 for species in species_prom:
                     if species.lower() in promoter_name.lower():
                         found_species = species
@@ -812,9 +817,9 @@ def aio_page():
                         break
                     else:
                         region = "n.d"
-                promoter_region = lines[i + 1].upper()
-                isfasta = isdna(promoter_region)
-                promoters.append((shortened_promoter_name, promoter_region, found_species, region))
+                dna_sequence = lines[i + 1].upper()
+                isfasta = is_dna(dna_sequence)
+                dna_sequences.append((name, dna_sequence, found_species, region))
                 i += 1
             else:
                 i += 1
@@ -823,8 +828,8 @@ def aio_page():
     else:
         isfasta = False
 
-    total_promoter_region_length = sum(len(promoter_region) for _, promoter_region, _, _ in promoters)
-    total_promoter = len(promoters)
+    total_promoter_region_length = sum(len(dna_sequence) for _, dna_sequence, _, _ in dna_sequences)
+    total_promoter = len(dna_sequences)
 
     # RE entry
     REcol1, REcol2 = st.columns([0.30, 0.70])
@@ -835,18 +840,14 @@ def aio_page():
     if jaspar == 'JASPAR_ID':
         with REcol1:
             st.markdown("🔹 :blue[**Step 2.3**] JASPAR ID:")
-            entry_sequence = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:", value="MA0106.1",
-                                           label_visibility='collapsed')
-            url = f"https://jaspar.genereg.net/api/v1/matrix/{entry_sequence}/"
-            response = requests.get(url)
-            if response.status_code == 200:
-                response_data = response.json()
-                TF_name = response_data['name']
-                TF_species = response_data['species'][0]['name']
+            jaspar_id = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:", value="MA0106.1",
+                                      label_visibility='collapsed')
+
+            TF_name, TF_species, matrix, weblogo = matrix_extraction(jaspar_id)
+            if TF_name != 'not found':
                 st.success(f"{TF_species} transcription factor {TF_name}")
-                matrix = response_data['pfm']
                 with REcol2:
-                    st.image(f"https://jaspar.genereg.net/static/logos/all/svg/{entry_sequence}.svg")
+                    st.image(weblogo)
                 button = False
                 error_input_im = True
             else:
@@ -863,15 +864,20 @@ def aio_page():
             isUIPAC = True
             with REcol2:
                 st.markdown("🔹 :blue[**Step 2.3**] Matrix:", help="Only PWM generated with our tools are allowed")
-                matrix_text = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
+                matrix_str = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
                                            value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
                                            label_visibility='collapsed', height=125)
 
-                pwm_rows = kmatrix_text.strip().split('\n')
-                pwm = [list(map(str, row.split())) for row in pwm_rows]
+                lines = matrix_str.split("\n")
+                matrix = {}
+                for line in lines:
+                    parts = line.split("[")
+                    base = parts[0].strip()
+                    values = [float(val.strip()) for val in parts[1][:-1].split()]  # Exclude the trailing ']'
+                    matrix[base] = values
 
                 try:
-                    has_uniform_column_length(pwm)
+                    has_uniform_column_length(matrix_str)
                     error_input_im = True
                 except Exception as e:
                     error_input_im = False
@@ -880,14 +886,26 @@ def aio_page():
             with REcol1:
                 st.markdown("🔹 :blue[**Step 2.3**] Sequences:",
                             help='Put FASTA sequences. Same sequence length required ⚠')
-                fasta_text = st.text_area("🔹 :blue[**Step 2.3**] Sequences:",
-                                          value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG",
-                                          label_visibility='collapsed')
-                fasta_text = fasta_text.upper()
+                individual_motif = st.text_area("🔹 :blue[**Step 2.3**] Sequences:",
+                                                value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG",
+                                                label_visibility='collapsed')
+                individual_motif = individual_motif.upper()
             isUIPAC = True
 
             try:
-                matrix_text, buffer = im(fasta_text)
+                matrix, weblogo = individual_motif_pwm(individual_motif)
+                matrix_str = ""
+                for base, values in matrix.items():
+                    values_str = " ".join([f"{val:.4f}" for val in values])
+                    matrix_str += f"{base} [ {values_str} ]\n"
+                with REcol2:
+                    st.text_area('PWM', value=matrix_str, height=125, help='Copy to use later. Not editable.',
+                                 disabled=True)
+                    st.pyplot(weblogo.fig)
+                    logo = io.BytesIO()
+                    weblogo.fig.savefig(logo, format='png')
+                    logo.seek(0)
+                    st.session_state['weblogo'] = logo
                 error_input_im = True
             except Exception as e:
                 error_input_im = False
@@ -906,12 +924,24 @@ def aio_page():
             isUIPAC = True
 
             sequences = generate_iupac_variants(IUPAC)
-            fasta_text = ""
+            individual_motif = ""
             for i, seq in enumerate(sequences):
-                fasta_text += f">seq{i + 1}\n{seq}\n"
+                individual_motif += f">seq{i + 1}\n{seq}\n"
 
             try:
-                matrix_text, buffer = im(fasta_text)
+                matrix, weblogo = individual_motif_pwm(individual_motif)
+                matrix_str = ""
+                for base, values in matrix.items():
+                    values_str = " ".join([f"{val:.4f}" for val in values])
+                    matrix_str += f"{base} [ {values_str} ]\n"
+                with REcol2:
+                    st.text_area('PWM', value=matrix_str, height=125, help='Copy to use later. Not editable.',
+                                    disabled=True)
+                    st.pyplot(weblogo.fig)
+                    logo = io.BytesIO()
+                    weblogo.fig.savefig(logo, format='png')
+                    logo.seek(0)
+                    st.session_state['weblogo'] = logo
                 error_input_im = True
             except Exception as e:
                 error_input_im = False
@@ -957,7 +987,7 @@ def aio_page():
     tis_value = int(entry_tis)
     threshold = float(threshold_entry)
     if jaspar == 'JASPAR_ID':
-        sequence_consensus_input = entry_sequence
+        pass
     else:
         if not isUIPAC:
             st.error("Please use IUPAC code for Responsive Elements")
@@ -968,23 +998,12 @@ def aio_page():
             st.error("Please use only A, T, G, C, N in your sequence")
             button = True
         else:
-            matrix_lines = matrix_text.split('\n')
-            matrix = {}
-            for line in matrix_lines:
-                line = line.strip()
-                if line:
-                    key, values = line.split('[', 1)
-                    values = values.replace(']', '').split()
-                    values = [float(value) for value in values]
-                    matrix[key.strip()] = values
             button = False
-
-    matrices = transform_matrix(matrix)
 
     st.markdown("")
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True,
                  disabled=button):
-        table2 = search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length,
+        table2 = search_sequence(threshold, tis_value, dna_sequences, matrix, total_promoter_region_length,
                                  total_promoter)
         st.session_state['table2'] = table2
 
@@ -1028,7 +1047,7 @@ def aio_page():
                         if matrix_type == 'With FASTA sequences':
                             body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                     elif jaspar == 'JASPAR_ID':
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {sequence_consensus_input} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                     else:
                         body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                     email(excel_file, txt_output, email_receiver, body)
