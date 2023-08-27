@@ -873,7 +873,7 @@ def aio_page():
                 for line in lines:
                     parts = line.split("[")
                     base = parts[0].strip()
-                    values = [float(val.strip()) for val in parts[1][:-1].split()]  # Exclude the trailing ']'
+                    values = [float(val.strip()) for val in parts[1][:-1].split()]
                     matrix[base] = values
 
                 try:
