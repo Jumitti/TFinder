@@ -395,13 +395,8 @@ def aio_page():
 
                 sequences.append(current_sequence)
 
-                logo = create_web_logo(sequences)
-                st.pyplot(logo.fig)
-                weblogo = io.BytesIO()
-                logo.fig.savefig(weblogo, format='png')
-                weblogo.seek(0)
+                weblogo = create_web_logo(sequences)
 
-                st.session_state['weblogo'] = weblogo
                 return matrix, weblogo
 
         else:
@@ -896,7 +891,11 @@ def aio_page():
                 with REcol2:
                     st.text_area('PWM', value=formatted_matrix, height=125, help='Copy to use later. Not editable.',
                                  disabled=False)
-                    st.image(weblogo)
+                    st.pyplot(weblogo.fig)
+                    logo = io.BytesIO()
+                    weblogo.fig.savefig(logo, format='png')
+                    logo.seek(0)
+                    st.session_state['weblogo'] = logo
                 error_input_im = True
             except Exception as e:
                 error_input_im = False
@@ -925,7 +924,11 @@ def aio_page():
                 with REcol2:
                     st.text_area('PWM', value=formatted_matrix, height=125, help='Copy to use later. Not editable.',
                                     disabled=False)
-                    st.image(weblogo)
+                    st.pyplot(weblogo.fig)
+                    logo = io.BytesIO()
+                    weblogo.fig.savefig(logo, format='png')
+                    logo.seek(0)
+                    st.session_state['weblogo'] = logo
                 error_input_im = True
             except Exception as e:
                 error_input_im = False
