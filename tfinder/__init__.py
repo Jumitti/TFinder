@@ -304,7 +304,7 @@ class IMO:
                     else:
                         normalized_random_score = (random_score - min_score) / (max_score - min_score)
                     matrix_random_scores.append(normalized_random_score)
-                    progress_bar.update(1)
+                    progress_bar.update(0.1)
 
             random_scores = np.array(matrix_random_scores)
 
