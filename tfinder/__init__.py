@@ -29,7 +29,6 @@ import smtplib
 import time
 
 
-
 class NCBIdna:
     def __init__(self,
                  gene_id,
@@ -384,7 +383,7 @@ class IMO:
 
                         sequence_with_context = ''.join(sequence_parts)
 
-                        if tss_ge_distance is not None or tss_ge_distance == '0':
+                        if tss_ge_distance is not None:
                             tis_position = position - tss_ge_distance
 
                         if normalized_score >= threshold:
@@ -392,7 +391,7 @@ class IMO:
                                 p_value = (random_scores >= normalized_score).sum() / len(random_scores)
 
                             row = [str(position).ljust(8)]
-                            if tss_ge_distance is not None or tss_ge_distance == '0':
+                            if tss_ge_distance is not None:
                                 row.append(str(tis_position).ljust(15))
                             row += [sequence_with_context,
                                     "{:.6f}".format(normalized_score).ljust(12)]
@@ -404,7 +403,7 @@ class IMO:
         if len(individual_motif_occurence) > 0:
             individual_motif_occurence.sort(key=lambda x: float(x[3]), reverse=True)
             header = ["Position"]
-            if tss_ge_distance is not None or tss_ge_distance == '0':
+            if tss_ge_distance is not None:
                 header.append("Rel Position")
             header += ["Sequence", "Rel Score"]
             if calc_pvalue is not None:

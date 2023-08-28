@@ -625,7 +625,11 @@ def aio_page():
         else:
             calc_pvalue = None
 
-    tss_ge_distance = int(tss_ge_input)
+    if tss_ge_input != 0:
+        tss_ge_distance = int(tss_ge_input)
+    else:
+        tss_ge_distance = None
+
     threshold = float(threshold_entry)
     if jaspar == 'JASPAR_ID':
         pass
@@ -660,8 +664,8 @@ def aio_page():
                    desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                    mininterval=0.1) as progress_bar:
             individual_motif_occurence = IMO.search_sequence(dna_sequences, threshold, matrix, progress_bar,
-                                                                  calc_pvalue,
-                                                                  tss_ge_distance)
+                                                             calc_pvalue,
+                                                             tss_ge_distance)
         st.session_state['individual_motif_occurence'] = individual_motif_occurence
 
     st.divider()
