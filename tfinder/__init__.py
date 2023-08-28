@@ -416,7 +416,7 @@ class IMO:
 
     @staticmethod
     # IUPAC code
-    def generate_iupac_variants(sequence, max_variant_allowed = None):
+    def generate_iupac_variants(sequence, max_variant_allowed = None, progress_bar = None):
         iupac_codes = {
             "R": ["A", "G"],
             "Y": ["C", "T"],
@@ -450,7 +450,6 @@ class IMO:
         for base in sequence:
             if base.upper() in iupac_codes_score:
                 total_variants *= iupac_codes_score[base.upper()]
-            print(total_variants)
         if total_variants > max_variant_allowed:
             sequence = f'Too many variants. Limit: {max_variant_allowed} | Total variants : {total_variants}'
             return sequence
@@ -463,6 +462,8 @@ class IMO:
                     for alternative in iupac_codes[base.upper()]:
                         new_sequence = seq[:i] + alternative + seq[i + 1:]
                         new_sequences.append(new_sequence)
+                        if progress_bar is not None:
+                            progress_bar.update(1)
                 sequences = new_sequences
 
         return sequences
