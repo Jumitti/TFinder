@@ -238,7 +238,6 @@ class IMO:
             random_sequence = IMO.generate_random_sequence(motif_length, probabilities)
             random_sequences.append(random_sequence)
             progress_bar.update(1)
-            time.sleep(0.1)
 
         return random_sequences
 
@@ -308,7 +307,6 @@ class IMO:
                     normalized_random_score = (random_score - min_score) / (max_score - min_score)
                     matrix_random_scores.append(normalized_random_score)
                     progress_bar.update(1)
-                    time.sleep(0.1)
 
             random_scores = np.array(matrix_random_scores)
 
@@ -347,7 +345,6 @@ class IMO:
                         normalized_random_score = (random_score - min_score) / (max_score - min_score)
                         matrix_random_scores.append(normalized_random_score)
                         progress_bar.update(1)
-                        time.sleep(0.1)
 
                     random_scores = np.array(matrix_random_scores)
 
@@ -359,7 +356,6 @@ class IMO:
 
                     found_positions.append((position, seq, normalized_score))
                     progress_bar.update(1)
-                    time.sleep(0.1)
 
                 # Sort positions in descending order of score percentage
                 found_positions.sort(key=lambda x: x[1], reverse=True)
