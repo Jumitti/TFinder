@@ -429,7 +429,7 @@ class IMO:
             "H": ["A", "C", "T"],
             "V": ["A", "C", "G"],
             "N": ["A", "C", "G", "T"],
-            "-": []
+            "_": []
         }
 
         iupac_codes_score = {
@@ -489,7 +489,7 @@ class IMO:
             gap_found = False
             for sequence in sequences:
                 nucleotide = sequence[i]
-                if nucleotide == '-':
+                if nucleotide == '_':
                     gap_found = True
                     break
                 elif nucleotide in counts:
