@@ -36,7 +36,7 @@ import requests
 import streamlit as st
 from stqdm import stqdm
 
-from tfinder import NCBI_dna
+from tfinder import NCBIdna
 
 
 def prom_extractor_page():
