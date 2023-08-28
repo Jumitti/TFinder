@@ -437,7 +437,7 @@ class IMO:
                 if base.upper() in iupac_codes:
                     total_variants *= iupac_codes[base.upper()]
             if total_variants > max_variant_allowed:
-                sequence = 'too many variant'
+                sequence = f'Too many variants. Limit: {max_variant_allowed} | Total variants : {total_variants}'
                 return sequence
 
         sequences = [sequence]

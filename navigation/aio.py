@@ -559,29 +559,33 @@ def aio_page():
             isUIPAC = True
 
             sequences = IMO.generate_iupac_variants(IUPAC, max_variant_allowed = 10)
-            individual_motif = ""
-            for i, seq in enumerate(sequences):
-                individual_motif += f">seq{i + 1}\n{seq}\n"
+            if 'Too many' not in sequence:
+                individual_motif = ""
+                for i, seq in enumerate(sequences):
+                    individual_motif += f">seq{i + 1}\n{seq}\n"
 
-            try:
-                matrix, weblogo = IMO.individual_motif_pwm(individual_motif)
-                matrix_str = ""
-                for base, values in matrix.items():
-                    values_str = " ".join([f"{val:.4f}" for val in values])
-                    matrix_str += f"{base} [ {values_str} ]\n"
-                with REcol2:
-                    matrix_text = st.text_area('PWM', value=matrix_str, height=125,
-                                               help='Copy to use later. Not editable.',
-                                               disabled=True)
-                    st.pyplot(weblogo.fig)
-                    logo = io.BytesIO()
-                    weblogo.fig.savefig(logo, format='png')
-                    logo.seek(0)
-                    st.session_state['weblogo'] = logo
-                error_input_im = True
-            except Exception as e:
-                error_input_im = False
-                st.error(e)
+                try:
+                    matrix, weblogo = IMO.individual_motif_pwm(individual_motif)
+                    matrix_str = ""
+                    for base, values in matrix.items():
+                        values_str = " ".join([f"{val:.4f}" for val in values])
+                        matrix_str += f"{base} [ {values_str} ]\n"
+                    with REcol2:
+                        matrix_text = st.text_area('PWM', value=matrix_str, height=125,
+                                                   help='Copy to use later. Not editable.',
+                                                   disabled=True)
+                        st.pyplot(weblogo.fig)
+                        logo = io.BytesIO()
+                        weblogo.fig.savefig(logo, format='png')
+                        logo.seek(0)
+                        st.session_state['weblogo'] = logo
+                    error_input_im = True
+                except Exception as e:
+                    error_input_im = False
+                    st.error(e)
+            else:
+                st.error(sequence)
+                isUIPAC = False
 
         else:
             isUIPAC = False
