@@ -350,7 +350,7 @@ class IMO:
 
                 for i in range(len(dna_sequence) - seq_length + 1):
                     seq = dna_sequence[i:i + seq_length]
-                    score = calculate_score(seq, matrix)
+                    score = IMO.calculate_score(seq, matrix)
                     normalized_score = (score - min_score) / (max_score - min_score)
                     position = int(i)
 
