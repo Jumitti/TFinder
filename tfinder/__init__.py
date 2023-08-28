@@ -518,7 +518,7 @@ class IMO:
     @staticmethod
     # Individual motif PWM and weblogo
     def individual_motif_pwm(individual_motif):
-        sequences = parse_fasta(individual_motif)
+        sequences = IMO.parse_fasta(individual_motif)
         sequences = [seq.upper() for seq in sequences]
 
         if len(sequences) > 0:
