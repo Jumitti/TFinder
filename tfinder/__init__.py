@@ -18,9 +18,15 @@
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import time
-
+import io
+import json
+import logomaker
+import numpy as np
+import pandas as pd
+import random
 import requests
+import smtplib
+import time
 
 
 class NCBIdna:
