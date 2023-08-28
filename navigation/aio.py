@@ -36,7 +36,7 @@ import pandas as pd
 import requests
 import streamlit as st
 from stqdm import stqdm
-from tqdm import tdqm
+from tqdm import tqdm
 
 from tfinder import NCBI_dna
 
