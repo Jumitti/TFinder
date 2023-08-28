@@ -233,7 +233,7 @@ class IMO:
         for _ in range(num_random_seqs):
             random_sequence = IMO.generate_random_sequence(motif_length, probabilities)
             random_sequences.append(random_sequence)
-            progress_bar.update(1)
+            progress_bar.update(0.1)
 
         return random_sequences
 
