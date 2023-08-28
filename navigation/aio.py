@@ -78,14 +78,14 @@ def aio_page():
         }
 
     # Generate random sequences for p_value
-    def generate_ranseq(probabilities, seq_length, pbar, num_random_seqs):
+    def generate_ranseq(probabilities, seq_length, progress_bar, num_random_seqs):
         motif_length = seq_length
         random_sequences = []
 
         for _ in range(num_random_seqs):
             random_sequence = generate_random_sequence(motif_length, probabilities)
             random_sequences.append(random_sequence)
-            pbar.update(1)
+            progress_bar.update(1)
 
         return random_sequences
 
@@ -116,9 +116,9 @@ def aio_page():
 
     # Find with JASPAR and manual matrix
     def search_sequence(threshold, tis_value, dna_sequences, matrix, total_sequences_region_length, total_sequences,
-                        pbar):
-        global table2
-        table2 = []
+                        progress_bar):
+        global individual_motif_occurence
+        individual_motif_occurence = []
 
         matrices = transform_matrix(matrix)
 
@@ -145,7 +145,7 @@ def aio_page():
 
             probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
-            random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
+            random_sequences = generate_ranseq(probabilities, seq_length, progress_bar, num_random_seqs)
 
         if calc_pvalue and total_sequences > 10:
             random_scores = {}
@@ -158,7 +158,7 @@ def aio_page():
                     random_score = calculate_score(sequence, matrix)
                     normalized_random_score = (random_score - min_score) / (max_score - min_score)
                     matrix_random_scores.append(normalized_random_score)
-                    pbar.update(1)
+                    progress_bar.update(1)
 
             random_scores = np.array(matrix_random_scores)
 
@@ -177,7 +177,7 @@ def aio_page():
 
                 probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
-                random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
+                random_sequences = generate_ranseq(probabilities, seq_length, progress_bar, num_random_seqs)
 
                 if calc_pvalue and total_sequences <= 10:
                     random_scores = {}
@@ -196,7 +196,7 @@ def aio_page():
                         random_score = calculate_score(sequence, matrix)
                         normalized_random_score = (random_score - min_score) / (max_score - min_score)
                         matrix_random_scores.append(normalized_random_score)
-                        pbar.update(1)
+                        progress_bar.update(1)
 
                     random_scores = np.array(matrix_random_scores)
 
@@ -207,7 +207,7 @@ def aio_page():
                     position = int(i)
 
                     found_positions.append((position, seq, normalized_score))
-                    pbar.update(1)
+                    progress_bar.update(1)
 
                 # Sort positions in descending order of score percentage
                 found_positions.sort(key=lambda x: x[1], reverse=True)
@@ -248,19 +248,19 @@ def aio_page():
                             if calc_pvalue:
                                 row.append("{:.3e}".format(p_value).ljust(12))
                             row += [name, species, region]
-                            table2.append(row)
+                            individual_motif_occurence.append(row)
 
-        if len(table2) > 0:
-            table2.sort(key=lambda x: float(x[3]), reverse=True)
+        if len(individual_motif_occurence) > 0:
+            individual_motif_occurence.sort(key=lambda x: float(x[3]), reverse=True)
             header = ["Position", "Rel Position", "Sequence", "Rel Score"]
             if calc_pvalue:
                 header.append("p-value")
             header += ["Gene", "Species", "Region"]
-            table2.insert(0, header)
+            individual_motif_occurence.insert(0, header)
         else:
             "No consensus sequence found with the specified threshold."
 
-        return table2
+        return individual_motif_occurence
 
     # IUPAC code
     def generate_iupac_variants(sequence):
@@ -709,7 +709,7 @@ def aio_page():
                                         iterration += 1
                     with stqdm(total=iterration,
                                desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
-                               mininterval=0.1) as pbar:
+                               mininterval=0.1) as progress_bar:
                         for gene_info in (data_dff.itertuples(index=False)):
                             gene_id = gene_info.Gene
                             if gene_id.isdigit():
@@ -731,7 +731,7 @@ def aio_page():
                                             st.error(result_promoter_output)
                                             continue
 
-                                        pbar.update(1)
+                                        progress_bar.update(1)
                             else:
                                 for species in species_list:
                                     for search_type in search_types:
@@ -752,7 +752,7 @@ def aio_page():
                                                 st.error(result_promoter_output)
                                                 continue
 
-                                            pbar.update(1)
+                                            progress_bar.update(1)
 
                     result_promoter_text = "\n".join(result_promoter)
                     st.session_state['result_promoter_text'] = result_promoter_text
@@ -1016,18 +1016,20 @@ def aio_page():
             total_iterations = sequence_iteration
         with stqdm(total=total_iterations,
                    desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
-                   mininterval=0.1) as pbar:
-            table2 = search_sequence(threshold, tis_value, dna_sequences, matrix, total_sequences_region_length,
-                                     total_sequences, pbar)
-        st.session_state['table2'] = table2
+                   mininterval=0.1) as progress_bar:
+            individual_motif_occurence = search_sequence(threshold, tis_value, dna_sequences, matrix,
+                                                         total_sequences_region_length,
+                                                         total_sequences, progress_bar)
+        st.session_state['individual_motif_occurence'] = individual_motif_occurence
 
     st.divider()
-    if 'table2' in st.session_state:
-        if len(st.session_state['table2']) > 1:
+    if 'individual_motif_occurence' in st.session_state:
+        if len(st.session_state['individual_motif_occurence']) > 1:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
 
-            df = pd.DataFrame(st.session_state['table2'][1:], columns=st.session_state['table2'][0])
+            df = pd.DataFrame(st.session_state['individual_motif_occurence'][1:],
+                              columns=st.session_state['individual_motif_occurence'][0])
             st.session_state['df'] = df
 
             st.markdown('**Table**')
