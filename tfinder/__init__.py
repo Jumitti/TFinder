@@ -438,7 +438,8 @@ class IMO:
             "H": ["A", "C", "T"],
             "V": ["A", "C", "G"],
             "N": ["A", "C", "G", "T"],
-            "-": ['-']
+            "-": ['-'],
+            ".": ['-']
         }
 
         iupac_codes_score = {
@@ -461,7 +462,7 @@ class IMO:
             if base.upper() in iupac_codes_score:
                 total_variants *= iupac_codes_score[base.upper()]
         if total_variants > max_variant_allowed:
-            sequence = f'Too many variants. Use - instead N. Limit: {max_variant_allowed} | Total variants : {total_variants}'
+            sequence = f'Too many variants. Use - or . instead N. Limit: {max_variant_allowed} | Total variants : {total_variants}'
             return sequence
 
         sequences = [sequence]
