@@ -63,10 +63,10 @@ def aio_page():
 
             if jaspar == 'PWM':
                 if matrix_type == 'With FASTA sequences':
-                    image = MIMEImage(st.session_state['buffer'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
+                    image = MIMEImage(st.session_state['weblogo'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
                     msg.attach(image)
             elif jaspar == 'Manual sequence':
-                image = MIMEImage(st.session_state['buffer'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
+                image = MIMEImage(st.session_state['weblogo'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
                 msg.attach(image)
 
             attachment_text = MIMEText(txt_output, 'plain', 'utf-8')
