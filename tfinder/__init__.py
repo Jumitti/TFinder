@@ -290,7 +290,6 @@ class IMO:
             if calc_pvalue not in ["ATGCPreset", "ATGCProportion"]:
                 raise ValueError("Use 'ATGCPreset' or 'ATGCProportion'")
 
-        global individual_motif_occurence
         individual_motif_occurence = []
 
         matrices = IMO.transform_matrix(matrix)
