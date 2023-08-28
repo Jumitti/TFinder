@@ -299,7 +299,10 @@ class IMO:
                 for random_sequence in random_sequences:
                     sequence = random_sequence
                     random_score = IMO.calculate_score(sequence, matrix)
-                    normalized_random_score = (random_score - min_score) / (max_score - min_score)
+                    if max_score == min_score:
+                        normalized_random_score = random_score / max_score
+                    else:
+                        normalized_random_score = (random_score - min_score) / (max_score - min_score)
                     matrix_random_scores.append(normalized_random_score)
                     progress_bar.update(1)
 
@@ -337,7 +340,10 @@ class IMO:
                     for random_sequence in random_sequences:
                         sequence = random_sequence
                         random_score = IMO.calculate_score(sequence, matrix)
-                        normalized_random_score = (random_score - min_score) / (max_score - min_score)
+                        if max_score == min_score:
+                            normalized_random_score = random_score / max_score
+                        else:
+                            normalized_random_score = (random_score - min_score) / (max_score - min_score)
                         matrix_random_scores.append(normalized_random_score)
                         progress_bar.update(1)
 
@@ -346,7 +352,10 @@ class IMO:
                 for i in range(len(dna_sequence) - seq_length + 1):
                     seq = dna_sequence[i:i + seq_length]
                     score = IMO.calculate_score(seq, matrix)
-                    normalized_score = (score - min_score) / (max_score - min_score)
+                    if max_score == min_score:
+                        normalized_score = score / max_score
+                    else:
+                        normalized_score = (score - min_score) / (max_score - min_score)
                     position = int(i)
 
                     found_positions.append((position, seq, normalized_score))
