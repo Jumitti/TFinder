@@ -650,28 +650,30 @@ def aio_page():
         else:
             button = False
 
-    st.markdown("")
-    if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True,
-                 disabled=button):
-        sequence_iteration = 4 * total_sequences_region_length
-        num_random_seqs = 1000000
-        if total_sequences <= 10:
-            random_gen = total_sequences * num_random_seqs
-        else:
-            random_gen = num_random_seqs
-        random_score = random_gen * 4
+    sequence_iteration = 4 * total_sequences_region_length
+    num_random_seqs = 1000000
+    if total_sequences <= 10:
+        random_gen = total_sequences * num_random_seqs
+    else:
+        random_gen = num_random_seqs
+    random_score = random_gen * 4
 
-        if pvalue:
-            iteration = sequence_iteration + random_gen + random_score
-        else:
-            iteration = sequence_iteration
-        with stqdm(total=iteration,
-                   desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
-                   mininterval=0.1) as progress_bar:
-            individual_motif_occurrences = IMO.individual_motif_finder(dna_sequences, threshold, matrix, progress_bar,
-                                                             calc_pvalue,
-                                                             tss_ge_distance)
-        st.session_state['individual_motif_occurrences'] = individual_motif_occurrences
+    if pvalue:
+        iteration = sequence_iteration + random_gen + random_score
+    else:
+        iteration = sequence_iteration
+
+    st.markdown("")
+    with st.form('individual motif'):
+        if st.form_submit_button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True,
+                     disabled=button):
+            with stqdm(total=iteration,
+                       desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
+                       mininterval=0.1) as progress_bar:
+                individual_motif_occurrences = IMO.individual_motif_finder(dna_sequences, threshold, matrix, progress_bar,
+                                                                 calc_pvalue,
+                                                                 tss_ge_distance)
+            st.session_state['individual_motif_occurrences'] = individual_motif_occurrences
 
     st.divider()
     if 'individual_motif_occurrences' in st.session_state:
