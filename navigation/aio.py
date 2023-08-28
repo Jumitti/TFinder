@@ -105,7 +105,7 @@ def aio_page():
 
         dropdown = alt.binding_select(
             options=['Beginning of sequences', 'From TSS/gene end' if "Rel Position" in source else []],
-            name='(X-axis) Position from:')
+            name='(X-axis) Position from: ')
 
         xcol_param = alt.param(value='Beginning of sequences', bind=dropdown)
 
