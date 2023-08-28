@@ -18,23 +18,22 @@
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import altair as alt
 import datetime
 import io
 import json
+import logomaker
+import numpy as np
+import pandas as pd
 import random
+import requests
 import smtplib
+import streamlit as st
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
-import altair as alt
-import logomaker
-import numpy as np
-import pandas as pd
-import requests
-import streamlit as st
 from stqdm import stqdm
 from tqdm import tqdm
 
