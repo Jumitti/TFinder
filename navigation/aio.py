@@ -651,15 +651,12 @@ def aio_page():
         random_score = random_gen * 4
 
         if pvalue:
-            total_iterations = sequence_iteration + random_gen + random_score
+            iteration = sequence_iteration + random_gen + random_score
         else:
-            total_iterations = sequence_iteration
-        with stqdm(total=total_iterations/10,
-                   desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
-                   mininterval=0.1) as progress_bar:
-            individual_motif_occurence = IMO.search_sequence(dna_sequences, threshold, matrix, progress_bar,
-                                                             calc_pvalue,
-                                                             tss_ge_distance)
+            iteration = sequence_iteration
+        individual_motif_occurence = IMO.search_sequence_streamlit(dna_sequences, threshold, matrix, iteration,
+                                                                   calc_pvalue,
+                                                                   tss_ge_distance)
         st.session_state['individual_motif_occurence'] = individual_motif_occurence
 
     st.divider()
