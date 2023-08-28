@@ -115,7 +115,8 @@ def aio_page():
             return isfasta
 
     # Find with JASPAR and manual matrix
-    def search_sequence(threshold, tis_value, dna_sequences, matrix, total_sequences_region_length, total_sequences):
+    def search_sequence(threshold, tis_value, dna_sequences, matrix, total_sequences_region_length, total_sequences,
+                        pbar):
         global table2
         table2 = []
 
@@ -136,25 +137,60 @@ def aio_page():
         else:
             total_iterations = sequence_iteration
 
-        with tqdm(total=total_iterations,
-                   desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
-                   mininterval=0.1) as pbar:
-            if calc_pvalue and total_sequences > 10:
-                percentage_a = 0.275
-                percentage_t = 0.275
-                percentage_g = 0.225
-                percentage_c = 0.225
+        if calc_pvalue and total_sequences > 10:
+            percentage_a = 0.275
+            percentage_t = 0.275
+            percentage_g = 0.225
+            percentage_c = 0.225
+
+            probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
+
+            random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
+
+        if calc_pvalue and total_sequences > 10:
+            random_scores = {}
+            matrix_random_scores = []
+            for matrix_name, matrix in matrices.items():
+                max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                for random_sequence in random_sequences:
+                    sequence = random_sequence
+                    random_score = calculate_score(sequence, matrix)
+                    normalized_random_score = (random_score - min_score) / (max_score - min_score)
+                    matrix_random_scores.append(normalized_random_score)
+                    pbar.update(1)
+
+            random_scores = np.array(matrix_random_scores)
+
+        for name, dna_sequence, species, region in dna_sequences:
+            if calc_pvalue and total_sequences <= 10:
+                count_a = dna_sequence.count('A')
+                count_t = dna_sequence.count('T')
+                count_g = dna_sequence.count('G')
+                count_c = dna_sequence.count('C')
+
+                length_prom = len(dna_sequence)
+                percentage_a = count_a / length_prom
+                percentage_t = count_t / length_prom
+                percentage_g = count_g / length_prom
+                percentage_c = count_c / length_prom
 
                 probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
                 random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
 
-            if calc_pvalue and total_sequences > 10:
-                random_scores = {}
-                matrix_random_scores = []
-                for matrix_name, matrix in matrices.items():
-                    max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-                    min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                if calc_pvalue and total_sequences <= 10:
+                    random_scores = {}
+
+            for matrix_name, matrix in matrices.items():
+                found_positions = []
+
+                # Max score per matrix
+                max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+
+                if calc_pvalue and total_sequences <= 10:
+                    matrix_random_scores = []
                     for random_sequence in random_sequences:
                         sequence = random_sequence
                         random_score = calculate_score(sequence, matrix)
@@ -162,95 +198,57 @@ def aio_page():
                         matrix_random_scores.append(normalized_random_score)
                         pbar.update(1)
 
-                random_scores = np.array(matrix_random_scores)
+                    random_scores = np.array(matrix_random_scores)
 
-            for name, dna_sequence, species, region in dna_sequences:
-                if calc_pvalue and total_sequences <= 10:
-                    count_a = dna_sequence.count('A')
-                    count_t = dna_sequence.count('T')
-                    count_g = dna_sequence.count('G')
-                    count_c = dna_sequence.count('C')
+                for i in range(len(dna_sequence) - seq_length + 1):
+                    seq = dna_sequence[i:i + seq_length]
+                    score = calculate_score(seq, matrix)
+                    normalized_score = (score - min_score) / (max_score - min_score)
+                    position = int(i)
 
-                    length_prom = len(dna_sequence)
-                    percentage_a = count_a / length_prom
-                    percentage_t = count_t / length_prom
-                    percentage_g = count_g / length_prom
-                    percentage_c = count_c / length_prom
+                    found_positions.append((position, seq, normalized_score))
+                    pbar.update(1)
 
-                    probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
+                # Sort positions in descending order of score percentage
+                found_positions.sort(key=lambda x: x[1], reverse=True)
 
-                    random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
+                # Creating a results table
+                if len(found_positions) > 0:
+                    if auto_thre:
+                        highest_normalized_score = max(
+                            [normalized_score for _, _, normalized_score in found_positions])
+                        if highest_normalized_score >= 0.6:
+                            threshold = highest_normalized_score - 0.10
+                        else:
+                            threshold = 0.5
 
-                    if calc_pvalue and total_sequences <= 10:
-                        random_scores = {}
+                    for position, seq, normalized_score in found_positions:
+                        start_position = max(0, position - 3)
+                        end_position = min(len(dna_sequence), position + len(seq) + 3)
+                        sequence_with_context = dna_sequence[start_position:end_position]
 
-                for matrix_name, matrix in matrices.items():
-                    found_positions = []
-
-                    # Max score per matrix
-                    max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-                    min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-
-                    if calc_pvalue and total_sequences <= 10:
-                        matrix_random_scores = []
-                        for random_sequence in random_sequences:
-                            sequence = random_sequence
-                            random_score = calculate_score(sequence, matrix)
-                            normalized_random_score = (random_score - min_score) / (max_score - min_score)
-                            matrix_random_scores.append(normalized_random_score)
-                            pbar.update(1)
-
-                        random_scores = np.array(matrix_random_scores)
-
-                    for i in range(len(dna_sequence) - seq_length + 1):
-                        seq = dna_sequence[i:i + seq_length]
-                        score = calculate_score(seq, matrix)
-                        normalized_score = (score - min_score) / (max_score - min_score)
-                        position = int(i)
-
-                        found_positions.append((position, seq, normalized_score))
-                        pbar.update(1)
-
-                    # Sort positions in descending order of score percentage
-                    found_positions.sort(key=lambda x: x[1], reverse=True)
-
-                    # Creating a results table
-                    if len(found_positions) > 0:
-                        if auto_thre:
-                            highest_normalized_score = max(
-                                [normalized_score for _, _, normalized_score in found_positions])
-                            if highest_normalized_score >= 0.6:
-                                threshold = highest_normalized_score - 0.10
+                        sequence_parts = []
+                        for j in range(start_position, end_position):
+                            if j < position or j >= position + len(seq):
+                                sequence_parts.append(sequence_with_context[j - start_position].lower())
                             else:
-                                threshold = 0.5
+                                sequence_parts.append(sequence_with_context[j - start_position].upper())
 
-                        for position, seq, normalized_score in found_positions:
-                            start_position = max(0, position - 3)
-                            end_position = min(len(dna_sequence), position + len(seq) + 3)
-                            sequence_with_context = dna_sequence[start_position:end_position]
+                        sequence_with_context = ''.join(sequence_parts)
+                        tis_position = position - tis_value
 
-                            sequence_parts = []
-                            for j in range(start_position, end_position):
-                                if j < position or j >= position + len(seq):
-                                    sequence_parts.append(sequence_with_context[j - start_position].lower())
-                                else:
-                                    sequence_parts.append(sequence_with_context[j - start_position].upper())
+                        if normalized_score >= threshold:
+                            if calc_pvalue:
+                                p_value = (random_scores >= normalized_score).sum() / len(random_scores)
 
-                            sequence_with_context = ''.join(sequence_parts)
-                            tis_position = position - tis_value
-
-                            if normalized_score >= threshold:
-                                if calc_pvalue:
-                                    p_value = (random_scores >= normalized_score).sum() / len(random_scores)
-
-                                row = [str(position).ljust(8),
-                                       str(tis_position).ljust(15),
-                                       sequence_with_context,
-                                       "{:.6f}".format(normalized_score).ljust(12)]
-                                if calc_pvalue:
-                                    row.append("{:.3e}".format(p_value).ljust(12))
-                                row += [name, species, region]
-                                table2.append(row)
+                            row = [str(position).ljust(8),
+                                   str(tis_position).ljust(15),
+                                   sequence_with_context,
+                                   "{:.6f}".format(normalized_score).ljust(12)]
+                            if calc_pvalue:
+                                row.append("{:.3e}".format(p_value).ljust(12))
+                            row += [name, species, region]
+                            table2.append(row)
 
         if len(table2) > 0:
             table2.sort(key=lambda x: float(x[3]), reverse=True)
@@ -866,8 +864,8 @@ def aio_page():
             with REcol2:
                 st.markdown("🔹 :blue[**Step 2.3**] Matrix:", help="Only PWM generated with our tools are allowed")
                 matrix_str = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
-                                           value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
-                                           label_visibility='collapsed', height=125)
+                                          value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
+                                          label_visibility='collapsed', height=125)
 
                 lines = matrix_str.split("\n")
                 matrix = {}
@@ -937,7 +935,7 @@ def aio_page():
                     matrix_str += f"{base} [ {values_str} ]\n"
                 with REcol2:
                     st.text_area('PWM', value=matrix_str, height=125, help='Copy to use later. Not editable.',
-                                    disabled=True)
+                                 disabled=True)
                     st.pyplot(weblogo.fig)
                     logo = io.BytesIO()
                     weblogo.fig.savefig(logo, format='png')
@@ -1004,8 +1002,11 @@ def aio_page():
     st.markdown("")
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True,
                  disabled=button):
-        table2 = search_sequence(threshold, tis_value, dna_sequences, matrix, total_sequences_region_length,
-                                 total_sequences)
+        with stqdm(total=total_iterations,
+                   desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
+                   mininterval=0.1) as pbar:
+            table2 = search_sequence(threshold, tis_value, dna_sequences, matrix, total_sequences_region_length,
+                                     total_sequences, pbar)
         st.session_state['table2'] = table2
 
     st.divider()
