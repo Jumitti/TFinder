@@ -22,7 +22,8 @@ import time
 
 import requests
 
-class NCBI_dna:
+
+class NCBIdna:
     def __init__(self,
                  gene_id,
                  species=None,
@@ -34,7 +35,6 @@ class NCBI_dna:
         self.downstream = int(downstream) if downstream is not None else None
         self.prom_term = prom_term if prom_term is not None else None
         self.species = species if species is not None else None
-
 
     # Analyse if gene is available
     def analyse_gene(self):
@@ -148,7 +148,6 @@ class NCBI_dna:
                 gene_info = int(str('0'))
                 return gene_info
 
-
     @staticmethod
     # Get DNA sequence
     def get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop):
@@ -173,6 +172,7 @@ class NCBI_dna:
                 sequence = NCBI_dna.reverse_complement(dna_sequence)
 
             return sequence
+
     @staticmethod
     def reverse_complement(dna_sequence):
         complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
@@ -180,12 +180,13 @@ class NCBI_dna:
         complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
         return complement_sequence
 
+
 class IMO:
     def __init__(self):
         ok = ok
 
-    # Extract JASPAR matrix
     @staticmethod
+    # Extract JASPAR matrix
     def matrix_extraction(jaspar_id):
         url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
         response = requests.get(url)
@@ -202,6 +203,7 @@ class IMO:
             weblogo = 'not found'
         return TF_name, TF_species, matrix, weblogo
 
+    @staticmethod
     # Transform JASPAR matrix
     def transform_matrix(matrix):
         reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
@@ -220,18 +222,20 @@ class IMO:
             'Reversed Complement': reversed_complement_matrix
         }
 
+    @staticmethod
     # Generate random sequences for p_value
-    def generate_ranseq(probabilities, seq_length, pbar, num_random_seqs):
+    def generate_ranseq(probabilities, seq_length, progress_bar, num_random_seqs):
         motif_length = seq_length
         random_sequences = []
 
         for _ in range(num_random_seqs):
-            random_sequence = generate_random_sequence(motif_length, probabilities)
+            random_sequence = IMO.generate_random_sequence(motif_length, probabilities)
             random_sequences.append(random_sequence)
-            pbar.update(1)
+            progress_bar.update(1)
 
         return random_sequences
 
+    @staticmethod
     # Calculate matrix score
     def calculate_score(sequence, matrix):
         score = 0
@@ -241,170 +245,172 @@ class IMO:
                 score += base_score[i]
         return score
 
+    @staticmethod
     # Generate random sequences
     def generate_random_sequence(length, probabilities):
         nucleotides = ['A', 'C', 'G', 'T']
         sequence = random.choices(nucleotides, probabilities, k=length)
         return ''.join(sequence)
 
+    @staticmethod
     # Analyse sequence for non authorized characters
-    def isdna(promoter_region):
+    def is_dna(dna_sequence):
         DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
-        if not all(char in DNA_code for char in promoter_region):
+        if not all(char in DNA_code for char in dna_sequence):
             isfasta = True
             return isfasta
         else:
             isfasta = False
             return isfasta
 
+    @staticmethod
     # Find with JASPAR and manual matrix
-    def search_sequence(threshold, tis_value, promoters, matrices, total_promoter_region_length, total_promoter):
-        global table2
-        table2 = []
+    def search_sequence(dna_sequences, threshold, matrix, progress_bar, calc_pvalue=None, tss_ge_distance=None):
+        if calc_pvalue is not None:
+            if calc_pvalue not in ["ATGCPreset", "ATGCProportion"]:
+                raise ValueError("Use 'ATGCPreset' or 'ATGCProportion'")
 
-        seq_length = len(matrices['Original']['A'])
-        sequence_iteration = len(matrices.items()) * total_promoter_region_length
+        global individual_motif_occurence
+        individual_motif_occurence = []
+
+        matrices = IMO.transform_matrix(matrix)
 
         num_random_seqs = 1000000
-        if total_promoter <= 10:
-            random_gen = len(promoters) * num_random_seqs
-        else:
-            random_gen = num_random_seqs
-        random_score = random_gen * len(matrices.items())
 
-        if calc_pvalue:
-            total_iterations = sequence_iteration + random_gen + random_score
-        else:
-            total_iterations = sequence_iteration
+        seq_length = len(matrices['Original']['A'])
 
-        with stqdm(total=total_iterations,
-                   desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
-                   mininterval=0.1) as pbar:
-            if calc_pvalue and total_promoter > 10:
-                percentage_a = 0.275
-                percentage_t = 0.275
-                percentage_g = 0.225
-                percentage_c = 0.225
+        if calc_pvalue == 'ATGCPreset':
+            percentage_a = 0.275
+            percentage_t = 0.275
+            percentage_g = 0.225
+            percentage_c = 0.225
+
+            probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
+
+            random_sequences = IMO.generate_ranseq(probabilities, seq_length, progress_bar, num_random_seqs)
+
+        if calc_pvalue == 'ATGCPreset':
+            random_scores = {}
+            matrix_random_scores = []
+            for matrix_name, matrix in matrices.items():
+                max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                for random_sequence in random_sequences:
+                    sequence = random_sequence
+                    random_score = IMO.calculate_score(sequence, matrix)
+                    normalized_random_score = (random_score - min_score) / (max_score - min_score)
+                    matrix_random_scores.append(normalized_random_score)
+                    progress_bar.update(1)
+
+            random_scores = np.array(matrix_random_scores)
+
+        for name, dna_sequence, species, region in dna_sequences:
+            if calc_pvalue == 'ATGCProportion':
+                count_a = dna_sequence.count('A')
+                count_t = dna_sequence.count('T')
+                count_g = dna_sequence.count('G')
+                count_c = dna_sequence.count('C')
+
+                length_prom = len(dna_sequence)
+                percentage_a = count_a / length_prom
+                percentage_t = count_t / length_prom
+                percentage_g = count_g / length_prom
+                percentage_c = count_c / length_prom
 
                 probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
-                random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
+                random_sequences = IMO.generate_ranseq(probabilities, seq_length, progress_bar, num_random_seqs)
 
-            if calc_pvalue and total_promoter > 10:
-                random_scores = {}
-                matrix_random_scores = []
-                for matrix_name, matrix in matrices.items():
-                    max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-                    min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                if calc_pvalue == 'ATGCProportion':
+                    random_scores = {}
+
+            for matrix_name, matrix in matrices.items():
+                found_positions = []
+
+                # Max score per matrix
+                max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+
+                if calc_pvalue == 'ATGCProportion':
+                    matrix_random_scores = []
                     for random_sequence in random_sequences:
                         sequence = random_sequence
-                        random_score = calculate_score(sequence, matrix)
+                        random_score = IMO.calculate_score(sequence, matrix)
                         normalized_random_score = (random_score - min_score) / (max_score - min_score)
                         matrix_random_scores.append(normalized_random_score)
-                        pbar.update(1)
+                        progress_bar.update(1)
 
-                random_scores = np.array(matrix_random_scores)
+                    random_scores = np.array(matrix_random_scores)
 
-            for shortened_promoter_name, promoter_region, found_species, region in promoters:
-                if calc_pvalue and total_promoter <= 10:
-                    count_a = promoter_region.count('A')
-                    count_t = promoter_region.count('T')
-                    count_g = promoter_region.count('G')
-                    count_c = promoter_region.count('C')
+                for i in range(len(dna_sequence) - seq_length + 1):
+                    seq = dna_sequence[i:i + seq_length]
+                    score = calculate_score(seq, matrix)
+                    normalized_score = (score - min_score) / (max_score - min_score)
+                    position = int(i)
 
-                    length_prom = len(promoter_region)
-                    percentage_a = count_a / length_prom
-                    percentage_t = count_t / length_prom
-                    percentage_g = count_g / length_prom
-                    percentage_c = count_c / length_prom
+                    found_positions.append((position, seq, normalized_score))
+                    progress_bar.update(1)
 
-                    probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
+                # Sort positions in descending order of score percentage
+                found_positions.sort(key=lambda x: x[1], reverse=True)
 
-                    random_sequences = generate_ranseq(probabilities, seq_length, pbar, num_random_seqs)
+                # Creating a results table
+                if len(found_positions) > 0:
+                    if threshold < 50:
+                        highest_normalized_score = max(
+                            [normalized_score for _, _, normalized_score in found_positions])
+                        if highest_normalized_score >= 0.6:
+                            threshold = highest_normalized_score - 0.10
+                        else:
+                            threshold = 0.5
 
-                    if calc_pvalue and total_promoter <= 10:
-                        random_scores = {}
+                    for position, seq, normalized_score in found_positions:
+                        start_position = max(0, position - 3)
+                        end_position = min(len(dna_sequence), position + len(seq) + 3)
+                        sequence_with_context = dna_sequence[start_position:end_position]
 
-                for matrix_name, matrix in matrices.items():
-                    found_positions = []
-
-                    # Max score per matrix
-                    max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-                    min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-
-                    if calc_pvalue and total_promoter <= 10:
-                        matrix_random_scores = []
-                        for random_sequence in random_sequences:
-                            sequence = random_sequence
-                            random_score = calculate_score(sequence, matrix)
-                            normalized_random_score = (random_score - min_score) / (max_score - min_score)
-                            matrix_random_scores.append(normalized_random_score)
-                            pbar.update(1)
-
-                        random_scores = np.array(matrix_random_scores)
-
-                    for i in range(len(promoter_region) - seq_length + 1):
-                        seq = promoter_region[i:i + seq_length]
-                        score = calculate_score(seq, matrix)
-                        normalized_score = (score - min_score) / (max_score - min_score)
-                        position = int(i)
-
-                        found_positions.append((position, seq, normalized_score))
-                        pbar.update(1)
-
-                    # Sort positions in descending order of score percentage
-                    found_positions.sort(key=lambda x: x[1], reverse=True)
-
-                    # Creating a results table
-                    if len(found_positions) > 0:
-                        if auto_thre:
-                            highest_normalized_score = max(
-                                [normalized_score for _, _, normalized_score in found_positions])
-                            if highest_normalized_score >= 0.6:
-                                threshold = highest_normalized_score - 0.10
+                        sequence_parts = []
+                        for j in range(start_position, end_position):
+                            if j < position or j >= position + len(seq):
+                                sequence_parts.append(sequence_with_context[j - start_position].lower())
                             else:
-                                threshold = 0.5
+                                sequence_parts.append(sequence_with_context[j - start_position].upper())
 
-                        for position, seq, normalized_score in found_positions:
-                            start_position = max(0, position - 3)
-                            end_position = min(len(promoter_region), position + len(seq) + 3)
-                            sequence_with_context = promoter_region[start_position:end_position]
+                        sequence_with_context = ''.join(sequence_parts)
 
-                            sequence_parts = []
-                            for j in range(start_position, end_position):
-                                if j < position or j >= position + len(seq):
-                                    sequence_parts.append(sequence_with_context[j - start_position].lower())
-                                else:
-                                    sequence_parts.append(sequence_with_context[j - start_position].upper())
+                        if tss_ge_distance is not None or tss_ge_distance == '0':
+                            tis_position = position - tss_ge_distance
 
-                            sequence_with_context = ''.join(sequence_parts)
-                            tis_position = position - tis_value
+                        if normalized_score >= threshold:
+                            if calc_pvalue is not None:
+                                p_value = (random_scores >= normalized_score).sum() / len(random_scores)
 
-                            if normalized_score >= threshold:
-                                if calc_pvalue:
-                                    p_value = (random_scores >= normalized_score).sum() / len(random_scores)
+                            row = [str(position).ljust(8)]
+                            if tss_ge_distance is not None or tss_ge_distance == '0':
+                                row.append(str(tis_position).ljust(15))
+                            row += [sequence_with_context,
+                                    "{:.6f}".format(normalized_score).ljust(12)]
+                            if calc_pvalue is not None:
+                                row.append("{:.3e}".format(p_value).ljust(12))
+                            row += [name, species, region]
+                            individual_motif_occurence.append(row)
 
-                                row = [str(position).ljust(8),
-                                       str(tis_position).ljust(15),
-                                       sequence_with_context,
-                                       "{:.6f}".format(normalized_score).ljust(12)]
-                                if calc_pvalue:
-                                    row.append("{:.3e}".format(p_value).ljust(12))
-                                row += [shortened_promoter_name, found_species, region]
-                                table2.append(row)
-
-        if len(table2) > 0:
-            table2.sort(key=lambda x: float(x[3]), reverse=True)
-            header = ["Position", "Rel Position", "Sequence", "Rel Score"]
-            if calc_pvalue:
+        if len(individual_motif_occurence) > 0:
+            individual_motif_occurence.sort(key=lambda x: float(x[3]), reverse=True)
+            header = ["Position"]
+            if tss_ge_distance is not None or tss_ge_distance == '0':
+                header.append("Rel Position")
+            header += ["Sequence", "Rel Score"]
+            if calc_pvalue is not None:
                 header.append("p-value")
             header += ["Gene", "Species", "Region"]
-            table2.insert(0, header)
+            individual_motif_occurence.insert(0, header)
         else:
             "No consensus sequence found with the specified threshold."
 
-        return table2
+        return individual_motif_occurence
 
+    @staticmethod
     # IUPAC code
     def generate_iupac_variants(sequence):
         iupac_codes = {
@@ -433,12 +439,16 @@ class IMO:
 
         return sequences
 
+    @staticmethod
     # is PWM good ?
-    def has_uniform_column_length(pwm):
-        column_lengths = set(len(column) for column in pwm)
+    def has_uniform_column_length(matrix_str):
+        lines = matrix_str.strip().split('\n')
+        values_lists = [line.split('[')[1].split(']')[0].split() for line in lines]
+        column_lengths = set(len(values) for values in values_lists)
         if len(column_lengths) != 1:
-            raise Exception('Invalid PWM lenght.')
+            raise Exception('Invalid PWM length.')
 
+    @staticmethod
     # Calculate PWM
     def calculate_pwm(sequences):
         num_sequences = len(sequences)
@@ -455,14 +465,37 @@ class IMO:
             pwm[2, i] = counts['G'] / num_sequences
             pwm[3, i] = counts['C'] / num_sequences
 
-        return pwm
+        bases = ['A', 'T', 'G', 'C']
+        pwm_text = ""
+        for i in range(len(pwm)):
+            base_name = bases[i]
+            base_values = pwm[i]
 
+            base_str = base_name + " ["
+            for value in base_values:
+                base_str += " " + format(value) + " " if np.isfinite(value) else " " + "NA" + " "
+
+            base_str += "]\n"
+            pwm_text += base_str
+
+        matrix_lines = pwm_text.split('\n')
+        matrix = {}
+        for line in matrix_lines:
+            line = line.strip()
+            if line:
+                key, values = line.split('[', 1)
+                values = values.replace(']', '').split()
+                values = [float(value) for value in values]
+                matrix[key.strip()] = values
+        return matrix
+
+    @staticmethod
     # PWM with multiple FASTA
-    def parse_fasta(fasta_text):
+    def parse_fasta(individual_motif):
         sequences = []
         current_sequence = ""
 
-        for line in fasta_text.splitlines():
+        for line in individual_motif.splitlines():
             if line.startswith(">"):
                 if current_sequence:
                     sequences.append(current_sequence)
@@ -475,15 +508,17 @@ class IMO:
 
         return sequences
 
+    @staticmethod
     # generate Weblogo
     def create_web_logo(sequences):
         matrix = logomaker.alignment_to_matrix(sequences)
         logo = logomaker.Logo(matrix, color_scheme='classic')
         return logo
 
+    @staticmethod
     # Individual motif PWM and weblogo
-    def im(fasta_text):
-        sequences = parse_fasta(fasta_text)
+    def individual_motif_pwm(individual_motif):
+        sequences = parse_fasta(individual_motif)
         sequences = [seq.upper() for seq in sequences]
 
         if len(sequences) > 0:
@@ -499,51 +534,25 @@ class IMO:
                 raise Exception(f"Sequence lengths are not consistent.")
 
             else:
-                pwm = calculate_pwm(sequences)
-                bases = ['A', 'T', 'G', 'C']
-                pwm_text = ""
-                for i in range(len(pwm)):
-                    base_name = bases[i]
-                    base_values = pwm[i]
+                matrix = IMO.calculate_pwm(sequences)
 
-                    base_str = base_name + " ["
-                    for value in base_values:
-                        base_str += " " + format(value) + " " if np.isfinite(value) else " " + "NA" + " "
+                sequences_text = individual_motif
+                sequences = []
+                current_sequence = ""
+                for line in sequences_text.splitlines():
+                    line = line.strip()
+                    if line.startswith(">"):
+                        if current_sequence:
+                            sequences.append(current_sequence)
+                        current_sequence = ""
+                    else:
+                        current_sequence += line
 
-                    base_str += "]\n"
-                    pwm_text += base_str
+                sequences.append(current_sequence)
 
-                with REcol2:
-                    st.markdown("PWM", help="Modification not allowed. Still select and copy for later use.")
-                    matrix_text = st.text_area("PWM:", value=pwm_text,
-                                               label_visibility='collapsed',
-                                               height=125,
-                                               disabled=True)
+                weblogo = IMO.create_web_logo(sequences)
 
-                with REcol2:
-                    sequences_text = fasta_text
-                    sequences = []
-                    current_sequence = ""
-                    for line in sequences_text.splitlines():
-                        line = line.strip()
-                        if line.startswith(">"):
-                            if current_sequence:
-                                sequences.append(current_sequence)
-                            current_sequence = ""
-                        else:
-                            current_sequence += line
-
-                    sequences.append(current_sequence)
-
-                    logo = create_web_logo(sequences)
-                    st.pyplot(logo.fig)
-                    buffer = io.BytesIO()
-                    logo.fig.savefig(buffer, format='png')
-                    buffer.seek(0)
-
-                    st.session_state['buffer'] = buffer
-
-                    return matrix_text, buffer
+                return matrix, weblogo
 
         else:
             raise Exception(f"You forget FASTA sequences :)")
