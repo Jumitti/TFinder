@@ -401,7 +401,10 @@ class IMO:
                             individual_motif_occurence.append(row)
 
         if len(individual_motif_occurence) > 0:
-            individual_motif_occurence.sort(key=lambda x: float(x[3]), reverse=True)
+            if tss_ge_distance is not None:
+                individual_motif_occurence.sort(key=lambda x: float(x[3]), reverse=True)
+            else:
+                individual_motif_occurence.sort(key=lambda x: float(x[2]), reverse=True)
             header = ["Position"]
             if tss_ge_distance is not None:
                 header.append("Rel Position")
