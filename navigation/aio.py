@@ -584,7 +584,7 @@ def aio_page():
                     error_input_im = False
                     st.error(e)
             else:
-                st.error(sequence)
+                st.error(sequences)
                 isUIPAC = False
 
         else:
