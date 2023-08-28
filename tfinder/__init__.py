@@ -28,6 +28,7 @@ import requests
 import smtplib
 import time
 from stqdm import stqdm
+from tqdm import tqdm
 
 
 class NCBIdna:
@@ -433,7 +434,7 @@ class IMO:
 
         seq_length = len(matrices['Original']['A'])
 
-        with stqdm(total=iteration,
+        with tqdm(total=iteration,
                    desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                    mininterval=0.1) as progress_bar:
 
