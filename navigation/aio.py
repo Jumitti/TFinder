@@ -560,6 +560,7 @@ def aio_page():
                 isUIPAC = True
 
                 sequences = IMO.generate_iupac_variants(IUPAC, max_variant_allowed=1048576, progress_bar=progress_bar)
+
                 if 'Too many' not in sequences:
                     individual_motif = ""
                     for i, seq in enumerate(sequences):

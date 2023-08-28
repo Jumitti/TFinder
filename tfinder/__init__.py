@@ -486,14 +486,25 @@ class IMO:
         pwm = np.zeros((4, sequence_length))
         for i in range(sequence_length):
             counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
+            gap_found = False
             for sequence in sequences:
                 nucleotide = sequence[i]
-                if nucleotide in counts:
+                if nucleotide == '-':
+                    gap_found = True
+                    break
+                elif nucleotide in counts:
                     counts[nucleotide] += 1
-            pwm[0, i] = counts['A'] / num_sequences
-            pwm[1, i] = counts['T'] / num_sequences
-            pwm[2, i] = counts['G'] / num_sequences
-            pwm[3, i] = counts['C'] / num_sequences
+
+            if gap_found:
+                pwm[0, i] = 0
+                pwm[1, i] = 0
+                pwm[2, i] = 0
+                pwm[3, i] = 0
+            else:
+                pwm[0, i] = counts['A'] / num_sequences
+                pwm[1, i] = counts['T'] / num_sequences
+                pwm[2, i] = counts['G'] / num_sequences
+                pwm[3, i] = counts['C'] / num_sequences
 
         bases = ['A', 'T', 'G', 'C']
         pwm_text = ""
