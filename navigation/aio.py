@@ -536,8 +536,9 @@ def aio_page():
                     values_str = " ".join([f"{val:.4f}" for val in values])
                     matrix_str += f"{base} [ {values_str} ]\n"
                 with REcol2:
-                    st.text_area('PWM', value=matrix_str, height=125, help='Copy to use later. Not editable.',
-                                 disabled=True)
+                    matrix_text = st.text_area('PWM', value=matrix_str, height=125,
+                                               help='Copy to use later. Not editable.',
+                                               disabled=True)
                     st.pyplot(weblogo.fig)
                     logo = io.BytesIO()
                     weblogo.fig.savefig(logo, format='png')
@@ -572,8 +573,9 @@ def aio_page():
                     values_str = " ".join([f"{val:.4f}" for val in values])
                     matrix_str += f"{base} [ {values_str} ]\n"
                 with REcol2:
-                    st.text_area('PWM', value=matrix_str, height=125, help='Copy to use later. Not editable.',
-                                 disabled=True)
+                    matrix_text = st.text_area('PWM', value=matrix_str, height=125,
+                                               help='Copy to use later. Not editable.',
+                                               disabled=True)
                     st.pyplot(weblogo.fig)
                     logo = io.BytesIO()
                     weblogo.fig.savefig(logo, format='png')
@@ -707,7 +709,7 @@ def aio_page():
                         if matrix_type == 'With PWM':
                             body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                         if matrix_type == 'With FASTA sequences':
-                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{fasta_text}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{individual_motif}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                     elif jaspar == 'JASPAR_ID':
                         body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                     else:
