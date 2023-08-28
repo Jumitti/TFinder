@@ -271,12 +271,12 @@ class IMO:
 
     @staticmethod
     # Find with JASPAR and manual matrix
-    def search_sequence(dna_sequences, threshold, matrix, progress_bar, calc_pvalue=None, tss_ge_distance=None):
+    def individual_motif_finder(dna_sequences, threshold, matrix, progress_bar, calc_pvalue=None, tss_ge_distance=None):
         if calc_pvalue is not None:
             if calc_pvalue not in ["ATGCPreset", "ATGCProportion"]:
                 raise ValueError("Use 'ATGCPreset' or 'ATGCProportion'")
 
-        individual_motif_occurence = []
+        individual_motif_occurrences = []
 
         matrices = IMO.transform_matrix(matrix)
 
@@ -398,13 +398,13 @@ class IMO:
                             if calc_pvalue is not None:
                                 row.append("{:.3e}".format(p_value).ljust(12))
                             row += [name, species, region]
-                            individual_motif_occurence.append(row)
+                            individual_motif_occurrences.append(row)
 
-        if len(individual_motif_occurence) > 0:
+        if len(individual_motif_occurrences) > 0:
             if tss_ge_distance is not None:
-                individual_motif_occurence.sort(key=lambda x: float(x[3]), reverse=True)
+                individual_motif_occurrences.sort(key=lambda x: float(x[3]), reverse=True)
             else:
-                individual_motif_occurence.sort(key=lambda x: float(x[2]), reverse=True)
+                individual_motif_occurrences.sort(key=lambda x: float(x[2]), reverse=True)
             header = ["Position"]
             if tss_ge_distance is not None:
                 header.append("Rel Position")
@@ -412,11 +412,11 @@ class IMO:
             if calc_pvalue is not None:
                 header.append("p-value")
             header += ["Gene", "Species", "Region"]
-            individual_motif_occurence.insert(0, header)
+            individual_motif_occurrences.insert(0, header)
         else:
             "No consensus sequence found with the specified threshold."
 
-        return individual_motif_occurence
+        return individual_motif_occurrences
 
     @staticmethod
     # IUPAC code

@@ -665,19 +665,19 @@ def aio_page():
         with stqdm(total=iteration,
                    desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                    mininterval=0.1) as progress_bar:
-            individual_motif_occurence = IMO.search_sequence(dna_sequences, threshold, matrix, progress_bar,
+            individual_motif_occurrences = IMO.individual_motif_finder(dna_sequences, threshold, matrix, progress_bar,
                                                              calc_pvalue,
                                                              tss_ge_distance)
-        st.session_state['individual_motif_occurence'] = individual_motif_occurence
+        st.session_state['individual_motif_occurrences'] = individual_motif_occurrences
 
     st.divider()
-    if 'individual_motif_occurence' in st.session_state:
-        if len(st.session_state['individual_motif_occurence']) > 1:
+    if 'individual_motif_occurrences' in st.session_state:
+        if len(st.session_state['individual_motif_occurrences']) > 1:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             st.subheader(':blue[Results]')
 
-            df = pd.DataFrame(st.session_state['individual_motif_occurence'][1:],
-                              columns=st.session_state['individual_motif_occurence'][0])
+            df = pd.DataFrame(st.session_state['individual_motif_occurrences'][1:],
+                              columns=st.session_state['individual_motif_occurrences'][0])
             st.session_state['df'] = df
 
             st.markdown('**Table**')
