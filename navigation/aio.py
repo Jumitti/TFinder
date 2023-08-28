@@ -653,9 +653,10 @@ def aio_page():
             iteration = sequence_iteration + random_gen + random_score
         else:
             iteration = sequence_iteration
-        individual_motif_occurence = IMO.search_sequence(dna_sequences, threshold, matrix, progress_bar,
-                                                         calc_pvalue,
-                                                         tss_ge_distance)
+        with st.spinner():
+            individual_motif_occurence = IMO.search_sequence(dna_sequences, threshold, matrix, progress_bar,
+                                                             calc_pvalue,
+                                                             tss_ge_distance)
         st.session_state['individual_motif_occurence'] = individual_motif_occurence
 
     st.divider()
