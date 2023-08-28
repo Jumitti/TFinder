@@ -27,6 +27,7 @@ import random
 import requests
 import smtplib
 import time
+from stqdm import stqdm
 
 
 class NCBIdna:
