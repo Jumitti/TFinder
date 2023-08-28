@@ -553,7 +553,7 @@ def aio_page():
                                   label_visibility='collapsed')
             IUPAC = IUPAC.upper()
 
-        IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N', '-']
+        IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N', '_']
 
         with stqdm(total=None, mininterval=0.1) as progress_bar:
             if all(char in IUPAC_code for char in IUPAC):
