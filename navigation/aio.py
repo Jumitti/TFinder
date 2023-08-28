@@ -1002,6 +1002,18 @@ def aio_page():
     st.markdown("")
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True,
                  disabled=button):
+        sequence_iteration = 4 * total_sequences_region_length
+        num_random_seqs = 1000000
+        if total_sequences <= 10:
+            random_gen = total_sequences * num_random_seqs
+        else:
+            random_gen = num_random_seqs
+        random_score = random_gen * 4
+
+        if calc_pvalue:
+            total_iterations = sequence_iteration + random_gen + random_score
+        else:
+            total_iterations = sequence_iteration
         with stqdm(total=total_iterations,
                    desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                    mininterval=0.1) as pbar:
