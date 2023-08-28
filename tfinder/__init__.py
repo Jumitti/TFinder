@@ -445,14 +445,15 @@ class IMO:
             "N": 4  # A or C or G or T
         }
 
-        if max_variant_allowed is not None:
-            total_variants = 1
-            for base in sequence:
-                if base.upper() in iupac_codes_score:
-                    total_variants *= iupac_codes_score[base.upper()]
-            if total_variants > max_variant_allowed:
-                sequence = f'Too many variants. Limit: {max_variant_allowed} | Total variants : {total_variants}'
-                return sequence
+        #if max_variant_allowed is not None:
+        total_variants = 1
+        for base in sequence:
+            if base.upper() in iupac_codes_score:
+                total_variants *= iupac_codes_score[base.upper()]
+            print(total_variants)
+        if total_variants > max_variant_allowed:
+            sequence = f'Too many variants. Limit: {max_variant_allowed} | Total variants : {total_variants}'
+            return sequence
 
         sequences = [sequence]
         for i, base in enumerate(sequence):
