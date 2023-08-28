@@ -432,7 +432,7 @@ class IMO:
 
     @staticmethod
     # Find with JASPAR and manual matrix
-    def search_sequence_tqdm(dna_sequences, threshold, matrix, calc_pvalue=None, tss_ge_distance=None):
+    def search_sequence_streamlit(dna_sequences, threshold, matrix, calc_pvalue=None, tss_ge_distance=None):
         if calc_pvalue is not None:
             if calc_pvalue not in ["ATGCPreset", "ATGCProportion"]:
                 raise ValueError("Use 'ATGCPreset' or 'ATGCProportion'")
