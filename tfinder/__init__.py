@@ -18,15 +18,11 @@
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import io
-import json
+import random
+import time
 import logomaker
 import numpy as np
-import pandas as pd
-import random
 import requests
-import smtplib
-import time
 
 
 class NCBIdna:
@@ -259,7 +255,7 @@ class IMO:
         return ''.join(sequence)
 
     @staticmethod
-    # Analyse sequence for non authorized characters
+    # Analyse sequence for non-authorized characters
     def is_dna(dna_sequence):
         DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
         if not all(char in DNA_code for char in dna_sequence):
@@ -303,7 +299,10 @@ class IMO:
                 for random_sequence in random_sequences:
                     sequence = random_sequence
                     random_score = IMO.calculate_score(sequence, matrix)
-                    normalized_random_score = (random_score - min_score) / (max_score - min_score)
+                    if max_score == min_score:
+                        normalized_random_score = random_score / max_score
+                    else:
+                        normalized_random_score = (random_score - min_score) / (max_score - min_score)
                     matrix_random_scores.append(normalized_random_score)
                     progress_bar.update(1)
 
@@ -341,7 +340,10 @@ class IMO:
                     for random_sequence in random_sequences:
                         sequence = random_sequence
                         random_score = IMO.calculate_score(sequence, matrix)
-                        normalized_random_score = (random_score - min_score) / (max_score - min_score)
+                        if max_score == min_score:
+                            normalized_random_score = random_score / max_score
+                        else:
+                            normalized_random_score = (random_score - min_score) / (max_score - min_score)
                         matrix_random_scores.append(normalized_random_score)
                         progress_bar.update(1)
 
@@ -350,7 +352,10 @@ class IMO:
                 for i in range(len(dna_sequence) - seq_length + 1):
                     seq = dna_sequence[i:i + seq_length]
                     score = IMO.calculate_score(seq, matrix)
-                    normalized_score = (score - min_score) / (max_score - min_score)
+                    if max_score == min_score:
+                        normalized_score = score / max_score
+                    else:
+                        normalized_score = (score - min_score) / (max_score - min_score)
                     position = int(i)
 
                     found_positions.append((position, seq, normalized_score))
@@ -420,7 +425,7 @@ class IMO:
 
     @staticmethod
     # IUPAC code
-    def generate_iupac_variants(sequence):
+    def generate_iupac_variants(sequence, max_variant_allowed = None, progress_bar = None):
         iupac_codes = {
             "R": ["A", "G"],
             "Y": ["C", "T"],
@@ -432,8 +437,33 @@ class IMO:
             "D": ["A", "G", "T"],
             "H": ["A", "C", "T"],
             "V": ["A", "C", "G"],
-            "N": ["A", "C", "G", "T"]
+            "N": ["A", "C", "G", "T"],
+            "-": ['-'],
+            ".": ['-']
         }
+
+        iupac_codes_score = {
+            "R": 2,  # A or G
+            "Y": 2,  # C or T
+            "M": 2,  # A or C
+            "K": 2,  # G or T
+            "W": 2,  # A or T
+            "S": 2,  # C or G
+            "B": 3,  # C or G or T
+            "D": 3,  # A or G or T
+            "H": 3,  # A or C or T
+            "V": 3,  # A or C or G
+            "N": 4  # A or C or G or T
+        }
+
+        #if max_variant_allowed is not None:
+        total_variants = 1
+        for base in sequence:
+            if base.upper() in iupac_codes_score:
+                total_variants *= iupac_codes_score[base.upper()]
+        if total_variants > max_variant_allowed:
+            sequence = f'Too many variants. Use - or . instead N. Limit: {max_variant_allowed} | Total variants : {total_variants}'
+            return sequence
 
         sequences = [sequence]
         for i, base in enumerate(sequence):
@@ -443,6 +473,8 @@ class IMO:
                     for alternative in iupac_codes[base.upper()]:
                         new_sequence = seq[:i] + alternative + seq[i + 1:]
                         new_sequences.append(new_sequence)
+                        if progress_bar is not None:
+                            progress_bar.update(1)
                 sequences = new_sequences
 
         return sequences
@@ -464,14 +496,25 @@ class IMO:
         pwm = np.zeros((4, sequence_length))
         for i in range(sequence_length):
             counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
+            gap_found = False
             for sequence in sequences:
                 nucleotide = sequence[i]
-                if nucleotide in counts:
+                if nucleotide == '_':
+                    gap_found = True
+                    break
+                elif nucleotide in counts:
                     counts[nucleotide] += 1
-            pwm[0, i] = counts['A'] / num_sequences
-            pwm[1, i] = counts['T'] / num_sequences
-            pwm[2, i] = counts['G'] / num_sequences
-            pwm[3, i] = counts['C'] / num_sequences
+
+            if gap_found:
+                pwm[0, i] = 0
+                pwm[1, i] = 0
+                pwm[2, i] = 0
+                pwm[3, i] = 0
+            else:
+                pwm[0, i] = counts['A'] / num_sequences
+                pwm[1, i] = counts['T'] / num_sequences
+                pwm[2, i] = counts['G'] / num_sequences
+                pwm[3, i] = counts['C'] / num_sequences
 
         bases = ['A', 'T', 'G', 'C']
         pwm_text = ""

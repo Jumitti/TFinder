@@ -18,25 +18,22 @@
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import altair as alt
 import datetime
 import io
-import json
-import logomaker
-import numpy as np
-import pandas as pd
-import random
-import requests
 import smtplib
-import streamlit as st
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
+import altair as alt
+import pandas as pd
+import streamlit as st
 from stqdm import stqdm
-from tfinder import NCBIdna
+
 from tfinder import IMO
+from tfinder import NCBIdna
 
 
 def aio_page():
@@ -108,7 +105,7 @@ def aio_page():
 
         dropdown = alt.binding_select(
             options=['Beginning of sequences', 'From TSS/gene end' if "Rel Position" in source else []],
-            name='(X-axis) Position from:')
+            name='(X-axis) Position from: ')
 
         xcol_param = alt.param(value='Beginning of sequences', bind=dropdown)
 
@@ -131,7 +128,7 @@ def aio_page():
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
     colprom1, colprom2 = st.columns([0.8, 1.2], gap="small")
 
-    # Promoter Finder
+    # Extraction of DNA sequence
     with colprom1:
         st.info("💡 If you have a FASTA sequence, go to :blue[**Step 2**]")
 
@@ -552,42 +549,48 @@ def aio_page():
     else:
         with REcol1:
             st.markdown("🔹 :blue[**Step 2.3**] Responsive element:", help="IUPAC authorized")
-            IUPAC = st.text_input("🔹 :blue[**Step 2.3**] Responsive element (IUPAC authorized):", value="GGGRNYYYCC",
+            IUPAC = st.text_input("🔹 :blue[**Step 2.3**] Responsive element (IUPAC authorized):", value="GGGRNYYYCC" if 'IUPAC_seq' not in st.session_state else st.session_state['IUPAC_seq'],
                                   label_visibility='collapsed')
             IUPAC = IUPAC.upper()
 
-        IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N']
+        IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N', '-', '.']
 
-        if all(char in IUPAC_code for char in IUPAC):
-            isUIPAC = True
+        with stqdm(total=None, mininterval=0.1) as progress_bar:
+            if all(char in IUPAC_code for char in IUPAC):
+                isUIPAC = True
 
-            sequences = IMO.generate_iupac_variants(IUPAC)
-            individual_motif = ""
-            for i, seq in enumerate(sequences):
-                individual_motif += f">seq{i + 1}\n{seq}\n"
+                sequences = IMO.generate_iupac_variants(IUPAC, max_variant_allowed=1048576, progress_bar=progress_bar)
 
-            try:
-                matrix, weblogo = IMO.individual_motif_pwm(individual_motif)
-                matrix_str = ""
-                for base, values in matrix.items():
-                    values_str = " ".join([f"{val:.4f}" for val in values])
-                    matrix_str += f"{base} [ {values_str} ]\n"
-                with REcol2:
-                    matrix_text = st.text_area('PWM', value=matrix_str, height=125,
-                                               help='Copy to use later. Not editable.',
-                                               disabled=True)
-                    st.pyplot(weblogo.fig)
-                    logo = io.BytesIO()
-                    weblogo.fig.savefig(logo, format='png')
-                    logo.seek(0)
-                    st.session_state['weblogo'] = logo
-                error_input_im = True
-            except Exception as e:
-                error_input_im = False
-                st.error(e)
+                if 'Too many' not in sequences:
+                    individual_motif = ""
+                    for i, seq in enumerate(sequences):
+                        individual_motif += f">seq{i + 1}\n{seq}\n"
 
-        else:
-            isUIPAC = False
+                    try:
+                        matrix, weblogo = IMO.individual_motif_pwm(individual_motif)
+                        matrix_str = ""
+                        for base, values in matrix.items():
+                            values_str = " ".join([f"{val:.4f}" for val in values])
+                            matrix_str += f"{base} [ {values_str} ]\n"
+                        with REcol2:
+                            matrix_text = st.text_area('PWM', value=matrix_str, height=125,
+                                                       help='Copy to use later. Not editable.',
+                                                       disabled=True)
+                            st.pyplot(weblogo.fig)
+                            logo = io.BytesIO()
+                            weblogo.fig.savefig(logo, format='png')
+                            logo.seek(0)
+                            st.session_state['weblogo'] = logo
+                        error_input_im = True
+                    except Exception as e:
+                        error_input_im = False
+                        st.error(e)
+                else:
+                    st.error(sequences)
+                    isUIPAC = False
+
+            else:
+                isUIPAC = False
 
     # TSS entry
     BSFcol1, BSFcol2, BSFcol3 = st.columns([2, 2, 2], gap="medium")
@@ -647,21 +650,22 @@ def aio_page():
         else:
             button = False
 
+    sequence_iteration = 4 * total_sequences_region_length
+    num_random_seqs = 1000000
+    if total_sequences <= 10:
+        random_gen = total_sequences * num_random_seqs
+    else:
+        random_gen = num_random_seqs
+    random_score = random_gen * 4
+
+    if pvalue:
+        iteration = sequence_iteration + random_gen + random_score
+    else:
+        iteration = sequence_iteration
+
     st.markdown("")
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True,
                  disabled=button):
-        sequence_iteration = 4 * total_sequences_region_length
-        num_random_seqs = 1000000
-        if total_sequences <= 10:
-            random_gen = total_sequences * num_random_seqs
-        else:
-            random_gen = num_random_seqs
-        random_score = random_gen * 4
-
-        if pvalue:
-            iteration = sequence_iteration + random_gen + random_score
-        else:
-            iteration = sequence_iteration
         with stqdm(total=iteration,
                    desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                    mininterval=0.1) as progress_bar:
