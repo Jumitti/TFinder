@@ -35,7 +35,6 @@ from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from stqdm import stqdm
-from tqdm import tqdm
 
 from tfinder import NCBI_dna
 
