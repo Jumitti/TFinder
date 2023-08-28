@@ -659,7 +659,7 @@ def aio_page():
         with stqdm(total=iteration,
                    desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                    mininterval=0.1) as progress_bar:
-            individual_motif_occurence = IMO.search_sequence_tqdm(dna_sequences, threshold, matrix, progress_bar,
+            individual_motif_occurence = IMO.search_sequence(dna_sequences, threshold, matrix, progress_bar,
                                                                   calc_pvalue,
                                                                   tss_ge_distance)
         st.session_state['individual_motif_occurence'] = individual_motif_occurence
