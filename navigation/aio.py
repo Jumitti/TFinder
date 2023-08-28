@@ -616,11 +616,13 @@ def aio_page():
             st.markdown(
                 '⚠️Proportion of A, T, G, C imposed for the calculation of the p-value for more than 10 sequences. See "Resources" for more information')
             st.markdown('A 0.275 | C 0.225 | G 0.225 | T 0.275')
-            calc_pvalue = 'ATGCPreset'
+            if pvalue:
+                calc_pvalue = 'ATGCPreset'
         else:
             st.markdown(
                 '⚠️Proportion of A, T, G, C depending on the proportions in the sequence. See "Resources" for more information')
-            calc_pvalue = 'ATGCProportion'
+            if pvalue:
+                calc_pvalue = 'ATGCProportion'
 
     tss_ge_distance = int(tss_ge_input)
     threshold = float(threshold_entry)
