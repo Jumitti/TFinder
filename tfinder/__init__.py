@@ -18,15 +18,11 @@
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import io
-import json
+import random
+import time
 import logomaker
 import numpy as np
-import pandas as pd
-import random
 import requests
-import smtplib
-import time
 
 
 class NCBIdna:
@@ -259,7 +255,7 @@ class IMO:
         return ''.join(sequence)
 
     @staticmethod
-    # Analyse sequence for non authorized characters
+    # Analyse sequence for non-authorized characters
     def is_dna(dna_sequence):
         DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
         if not all(char in DNA_code for char in dna_sequence):
@@ -420,7 +416,7 @@ class IMO:
 
     @staticmethod
     # IUPAC code
-    def generate_iupac_variants(sequence):
+    def generate_iupac_variants(sequence, max_variant_allowed = None):
         iupac_codes = {
             "R": ["A", "G"],
             "Y": ["C", "T"],
@@ -434,6 +430,15 @@ class IMO:
             "V": ["A", "C", "G"],
             "N": ["A", "C", "G", "T"]
         }
+
+        if max_variant_allowed is not None:
+            total_variants = 1
+            for base in sequence:
+                if base.upper() in iupac_codes:
+                    total_variants *= iupac_codes[base.upper()]
+            if total_variants > max_variant_allowed:
+                sequence = 'too many variant'
+                return sequence
 
         sequences = [sequence]
         for i, base in enumerate(sequence):

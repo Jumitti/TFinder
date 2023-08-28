@@ -18,25 +18,22 @@
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import altair as alt
 import datetime
 import io
-import json
-import logomaker
-import numpy as np
-import pandas as pd
-import random
-import requests
 import smtplib
-import streamlit as st
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
+import altair as alt
+import pandas as pd
+import streamlit as st
 from stqdm import stqdm
-from tfinder import NCBIdna
+
 from tfinder import IMO
+from tfinder import NCBIdna
 
 
 def aio_page():
@@ -131,7 +128,7 @@ def aio_page():
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
     colprom1, colprom2 = st.columns([0.8, 1.2], gap="small")
 
-    # Promoter Finder
+    # Extraction of DNA sequence
     with colprom1:
         st.info("💡 If you have a FASTA sequence, go to :blue[**Step 2**]")
 
@@ -561,7 +558,7 @@ def aio_page():
         if all(char in IUPAC_code for char in IUPAC):
             isUIPAC = True
 
-            sequences = IMO.generate_iupac_variants(IUPAC)
+            sequences = IMO.generate_iupac_variants(IUPAC, max_variant_allowed = 10)
             individual_motif = ""
             for i, seq in enumerate(sequences):
                 individual_motif += f">seq{i + 1}\n{seq}\n"
