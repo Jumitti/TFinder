@@ -431,11 +431,25 @@ class IMO:
             "N": ["A", "C", "G", "T"]
         }
 
+        iupac_codes_score = {
+            "R": 2,  # A or G
+            "Y": 2,  # C or T
+            "M": 2,  # A or C
+            "K": 2,  # G or T
+            "W": 2,  # A or T
+            "S": 2,  # C or G
+            "B": 3,  # C or G or T
+            "D": 3,  # A or G or T
+            "H": 3,  # A or C or T
+            "V": 3,  # A or C or G
+            "N": 4  # A or C or G or T
+        }
+
         if max_variant_allowed is not None:
             total_variants = 1
             for base in sequence:
-                if base.upper() in iupac_codes:
-                    total_variants *= iupac_codes[base.upper()]
+                if base.upper() in iupac_codes_score:
+                    total_variants *= iupac_codes_score[base.upper()]
             if total_variants > max_variant_allowed:
                 sequence = f'Too many variants. Limit: {max_variant_allowed} | Total variants : {total_variants}'
                 return sequence
