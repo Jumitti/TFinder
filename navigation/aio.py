@@ -553,13 +553,13 @@ def aio_page():
                                   label_visibility='collapsed')
             IUPAC = IUPAC.upper()
 
-        IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N']
+        IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N', '-']
 
         with stqdm(total=None, mininterval=0.1) as progress_bar:
             if all(char in IUPAC_code for char in IUPAC):
                 isUIPAC = True
 
-                sequences = IMO.generate_iupac_variants(IUPAC, max_variant_allowed=10000000000, progress_bar=progress_bar)
+                sequences = IMO.generate_iupac_variants(IUPAC, max_variant_allowed=1048576, progress_bar=progress_bar)
                 if 'Too many' not in sequences:
                     individual_motif = ""
                     for i, seq in enumerate(sequences):
