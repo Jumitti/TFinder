@@ -654,7 +654,7 @@ def aio_page():
             total_iterations = sequence_iteration + random_gen + random_score
         else:
             total_iterations = sequence_iteration
-        with stqdm(total=total_iterations,
+        with stqdm(total=total_iterations/10,
                    desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                    mininterval=0.1) as progress_bar:
             individual_motif_occurence = IMO.search_sequence(dna_sequences, threshold, matrix, progress_bar,
