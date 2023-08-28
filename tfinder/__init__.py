@@ -230,7 +230,7 @@ class IMO:
 
     @staticmethod
     # Generate random sequences for p_value
-    def generate_ranseq_tqdm(probabilities, seq_length, progress_bar, num_random_seqs):
+    def generate_ranseq(probabilities, seq_length, progress_bar, num_random_seqs):
         motif_length = seq_length
         random_sequences = []
 
