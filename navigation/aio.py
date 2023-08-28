@@ -664,16 +664,15 @@ def aio_page():
         iteration = sequence_iteration
 
     st.markdown("")
-    with st.form('individual motif'):
-        if st.form_submit_button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True,
-                     disabled=button):
-            with stqdm(total=iteration,
-                       desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
-                       mininterval=0.1) as progress_bar:
-                individual_motif_occurrences = IMO.individual_motif_finder(dna_sequences, threshold, matrix, progress_bar,
-                                                                 calc_pvalue,
-                                                                 tss_ge_distance)
-            st.session_state['individual_motif_occurrences'] = individual_motif_occurrences
+    if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬", use_container_width=True,
+                 disabled=button):
+        with stqdm(total=iteration,
+                   desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
+                   mininterval=0.1) as progress_bar:
+            individual_motif_occurrences = IMO.individual_motif_finder(dna_sequences, threshold, matrix, progress_bar,
+                                                             calc_pvalue,
+                                                             tss_ge_distance)
+        st.session_state['individual_motif_occurrences'] = individual_motif_occurrences
 
     st.divider()
     if 'individual_motif_occurrences' in st.session_state:
