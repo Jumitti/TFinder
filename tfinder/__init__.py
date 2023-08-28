@@ -429,7 +429,7 @@ class IMO:
             "H": ["A", "C", "T"],
             "V": ["A", "C", "G"],
             "N": ["A", "C", "G", "T"],
-            "_": []
+            "_": [_]
         }
 
         iupac_codes_score = {
