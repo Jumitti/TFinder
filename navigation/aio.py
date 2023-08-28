@@ -36,6 +36,7 @@ import pandas as pd
 import requests
 import streamlit as st
 from stqdm import stqdm
+from tqdm import tdqm
 
 from tfinder import NCBI_dna
 
@@ -135,7 +136,7 @@ def aio_page():
         else:
             total_iterations = sequence_iteration
 
-        with stqdm(total=total_iterations,
+        with tqdm(total=total_iterations,
                    desc='**:blue[Processing...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                    mininterval=0.1) as pbar:
             if calc_pvalue and total_sequences > 10:
