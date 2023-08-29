@@ -408,7 +408,7 @@ def aio_page():
                                     value=default_value,
                                     placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
                                     label_visibility='collapsed', height=125)
-        st.session_state['dna_sequence'] = dna_sequence
+        st.session_state['dna_sequence'] = default_value
 
     with promcol2:
         st.markdown('')
