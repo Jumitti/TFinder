@@ -549,7 +549,9 @@ def aio_page():
     else:
         with REcol1:
             st.markdown("🔹 :blue[**Step 2.3**] Responsive element:", help="IUPAC authorized")
-            IUPAC = st.text_input("🔹 :blue[**Step 2.3**] Responsive element (IUPAC authorized):", value="GGGRNYYYCC" if 'IUPAC_seq' not in st.session_state else st.session_state['IUPAC_seq'],
+            IUPAC = st.text_input("🔹 :blue[**Step 2.3**] Responsive element (IUPAC authorized):",
+                                  value="GGGRNYYYCC" if 'IUPAC_seq' not in st.session_state else st.session_state[
+                                      'IUPAC_seq'],
                                   label_visibility='collapsed')
             IUPAC = IUPAC.upper()
 
@@ -624,9 +626,16 @@ def aio_page():
                 st.markdown('A 0.275 | C 0.225 | G 0.225 | T 0.275')
                 calc_pvalue = 'ATGCPreset'
             else:
-                st.markdown(
-                    '⚠️Proportion of A, T, G, C depending on the proportions in the sequence. See "Resources" for more information')
-                calc_pvalue = 'ATGCProportion'
+                pvalue_type = st.radio('Nucleotides proportion', ['Sequence dependent', 'Imposed'], horizontal=True)
+                if pvalue_type == 'Sequence dependent':
+                    st.markdown(
+                        '⚠️Proportion of A, T, G, C depending on the proportions in the sequence. See "Resources" for more information')
+                    calc_pvalue = 'ATGCProportion'
+                else:
+                    st.markdown(
+                        '⚠️Proportion of A, T, G, C imposed for the calculation of the p-value. See "Resources" for more information')
+                    st.markdown('A 0.275 | C 0.225 | G 0.225 | T 0.275')
+                    calc_pvalue = 'ATGCPreset'
         else:
             calc_pvalue = None
 
@@ -670,8 +679,8 @@ def aio_page():
                    desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                    mininterval=0.1) as progress_bar:
             individual_motif_occurrences = IMO.individual_motif_finder(dna_sequences, threshold, matrix, progress_bar,
-                                                             calc_pvalue,
-                                                             tss_ge_distance)
+                                                                       calc_pvalue,
+                                                                       tss_ge_distance)
         st.session_state['individual_motif_occurrences'] = individual_motif_occurrences
 
     st.divider()

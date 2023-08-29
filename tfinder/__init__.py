@@ -456,7 +456,6 @@ class IMO:
             "N": 4  # A or C or G or T
         }
 
-        #if max_variant_allowed is not None:
         total_variants = 1
         for base in sequence:
             if base.upper() in iupac_codes_score:
