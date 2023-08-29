@@ -131,6 +131,7 @@ def aio_page():
 
         result_promoter = []
         upstream_entry = []
+        result_promoter_display = []
 
         # Gene ID
         st.markdown("🔹 :blue[**Step 1.1**] Gene ID:", help='NCBI gene name and NCBI gene ID allowed')
@@ -209,6 +210,7 @@ def aio_page():
                             continue
 
                     result_promoter_text = "\n".join(result_promoter)
+                    result_promoter_display.append(result_promoter_text)
                     # st.session_state['result_promoter_text'] = result_promoter_text
 
                     st.success(f"{prom_term} extraction complete !")
@@ -397,10 +399,10 @@ def aio_page():
     promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
     with promcol1:
         st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-        if 'dna_sequence' in st.session_state and 'result_promoter_text' not in locals():
+        if 'dna_sequence' in st.session_state and result_promoter_display <= 0:
             default_value = st.session_state['dna_sequence']
-        elif 'result_promoter_text' in locals() and st.session_state['dna_sequence'] != result_promoter_text:
-            default_value = result_promoter_text
+        elif result_promoter_display > 0:
+            default_value = result_promoter_display
         else:
             default_value = ""
 
@@ -409,7 +411,6 @@ def aio_page():
                                     value=st.session_state['dna_sequence'],
                                     placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
                                     label_visibility='collapsed', height=125)
-
 
     with promcol2:
         st.markdown('')
