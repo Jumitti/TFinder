@@ -425,7 +425,7 @@ class IMO:
 
     @staticmethod
     # IUPAC code
-    def generate_iupac_variants(sequence, max_variant_allowed = None, progress_bar = None):
+    def generate_iupac_variants(sequence, max_variant_allowed=None, progress_bar=None):
         iupac_codes = {
             "R": ["A", "G"],
             "Y": ["C", "T"],
