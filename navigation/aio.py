@@ -121,9 +121,6 @@ def aio_page():
             gene_region_selection, xcol_param)
         st.altair_chart(chart, theme=None, use_container_width=True)
 
-    if 'button' not in st.session_state:
-        st.session_state.button = False
-
     # Disposition
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
     colprom1, colprom2 = st.columns([0.8, 1.2], gap="small")
@@ -212,7 +209,7 @@ def aio_page():
                             continue
 
                     result_promoter_text = "\n".join(result_promoter)
-                    st.session_state['result_promoter_text'] = result_promoter_text
+                    # st.session_state['result_promoter_text'] = result_promoter_text
 
                     st.success(f"{prom_term} extraction complete !")
                     st.toast(f"{prom_term} extraction complete !", icon='😊')
@@ -390,7 +387,7 @@ def aio_page():
                                             progress_bar.update(1)
 
                     result_promoter_text = "\n".join(result_promoter)
-                    st.session_state['result_promoter_text'] = result_promoter_text
+                    # st.session_state['result_promoter_text'] = result_promoter_text
                     st.success(f"{prom_term} extraction complete !")
                     st.toast(f"{prom_term} extraction complete !", icon='😊')
 
@@ -400,13 +397,18 @@ def aio_page():
     promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
     with promcol1:
         st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-        if not 'result_promoter_text' in st.session_state:
-            result_promoter_text = ''
-            st.session_state['result_promoter_text'] = result_promoter_text
+        if 'dna_sequence' in st.session_state:
+            default_value = st.session_state['dna_sequence']
+        elif 'result_promoter_output' in locals():
+            default_value = result_promoter_output
+        else:
+            default_value = ""
+
         dna_sequence = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
-                                    value=st.session_state['result_promoter_text'],
+                                    value=default_value,
                                     placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
                                     label_visibility='collapsed', height=125)
+        st.session_state['dna_sequence'] = dna_sequence
 
     with promcol2:
         st.markdown('')
@@ -626,7 +628,7 @@ def aio_page():
                 st.markdown('A 0.275 | C 0.225 | G 0.225 | T 0.275')
                 calc_pvalue = 'ATGCPreset'
             else:
-                pvalue_type = st.radio('Nucleotides proportion', ['Sequence dependent', 'Imposed'], horizontal=True)
+                pvalue_type = st.radio('Nucleotides proportion:', ['Sequence dependent', 'Imposed'], horizontal=True)
                 if pvalue_type == 'Sequence dependent':
                     st.markdown(
                         '⚠️Proportion of A, T, G, C depending on the proportions in the sequence. See "Resources" for more information')
