@@ -397,9 +397,9 @@ def aio_page():
     promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
     with promcol1:
         st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-        if 'dna_sequence' in st.session_state:
+        if 'dna_sequence' in st.session_state and 'result_promoter_output' not in locals():
             default_value = st.session_state['dna_sequence']
-        elif 'result_promoter_output' in locals():
+        elif 'result_promoter_output' in locals() or st.session_state['dna_sequence'] != result_promoter_output:
             default_value = result_promoter_output
         else:
             default_value = ""
