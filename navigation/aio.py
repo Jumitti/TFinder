@@ -378,7 +378,7 @@ def aio_page():
     with REcol1:
         st.markdown('🔹 :blue[**Step 2.2**] Responsive elements type:')
         jaspar = st.radio('🔹 :blue[**Step 2.2**] Responsive elements type:',
-                          ('Manual sequence', 'JASPAR_ID', 'PWM'),
+                          ('Individual Motif', 'JASPAR_ID', 'PWM'),
                           label_visibility='collapsed')
     if jaspar == 'JASPAR_ID':
         with REcol1:
@@ -613,6 +613,7 @@ def aio_page():
             tablecol1, tablecol2 = st.columns([0.75, 0.25])
             with tablecol1:
                 st.dataframe(df, hide_index=True)
+                csv_file = df.to_csv(index=False)
                 excel_file = io.BytesIO()
                 df.to_excel(excel_file, index=False, sheet_name='Sheet1')
                 excel_file.seek(0)
@@ -630,6 +631,8 @@ def aio_page():
                 st.download_button("💾 Download table (.xlsx)", excel_file,
                                    file_name=f'Results_TFinder_{current_date_time}.xlsx',
                                    mime="application/vnd.ms-excel", key='download-excel')
+                st.download_button(label="💾 Download table (.csv)", data=csv_file,
+                                   file_name="Results_TFinder_{current_date_time}.csv", mime="text/csv")
                 email_receiver = st.text_input('Send results by email ✉',
                                                value='Send results by email ✉',
                                                label_visibility="collapsed")
