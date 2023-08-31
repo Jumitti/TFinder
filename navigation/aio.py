@@ -36,7 +36,7 @@ from tfinder import IMO
 from tfinder import NCBIdna
 
 
-def email(excel_file, csv_file, txt_output, email_receiver, body):
+def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
     try:
         current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         subject = f'Results TFinder - {current_date_time}'
@@ -746,6 +746,6 @@ def aio_page():
                         body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                     else:
                         body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                    email(excel_file, csv_file, txt_output, email_receiver, body)
+                    email(excel_file, csv_file, txt_output, email_receiver, body, jaspar)
         else:
             st.error(f"No consensus sequence found with the specified threshold")
