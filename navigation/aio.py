@@ -508,7 +508,7 @@ def aio_page():
                     matrix[base] = values
 
                 try:
-                    has_uniform_column_length(matrix_str)
+                    IMO.has_uniform_column_length(matrix_str)
                     error_input_im = True
                 except Exception as e:
                     error_input_im = False
