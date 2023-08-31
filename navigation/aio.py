@@ -34,7 +34,7 @@ def aio_page():
     class RegulatoryRegionExtractor:
 
         @staticmethod
-        def display_RRE(self):
+        def display_RRE():
             st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
             colprom1, colprom2 = st.columns([0.8, 1.2], gap="small")
 
@@ -312,7 +312,7 @@ def aio_page():
     class IndividualMotifFinder:
 
         @staticmethod
-        def display_IMF(self):
+        def display_IMF():
             st.subheader(':blue[Step 2] Binding Sites Finder')
             promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
             with promcol1:
