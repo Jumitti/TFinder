@@ -32,6 +32,8 @@ import pandas as pd
 import streamlit as st
 from stqdm import stqdm
 
+from utils import results_display_and_export
+
 from tfinder import IMO
 from tfinder import NCBIdna
 
@@ -312,93 +314,6 @@ def aio_page():
     st.divider()
 
     class IndividualMotifFinder:
-        @staticmethod
-        def email(excel_file, txt_output, email_receiver, body):
-            try:
-                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                subject = f'Results TFinder - {current_date_time}'
-                email_sender = st.secrets['sender']
-                password = st.secrets['password']
-
-                msg = MIMEMultipart()
-                msg['From'] = email_sender
-                msg['To'] = email_receiver
-                msg['Subject'] = subject
-
-                msg.attach(MIMEText(body, 'plain'))
-
-                attachment_excel = MIMEBase('application', 'octet-stream')
-                attachment_excel.set_payload(excel_file.getvalue())
-                encoders.encode_base64(attachment_excel)
-                attachment_excel.add_header('Content-Disposition', 'attachment',
-                                            filename=f'Results_TFinder_{current_date_time}.xlsx')
-                msg.attach(attachment_excel)
-
-                if jaspar == 'PWM':
-                    if matrix_type == 'With FASTA sequences':
-                        image = MIMEImage(st.session_state['weblogo'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
-                        msg.attach(image)
-                elif jaspar == 'Manual sequence':
-                    image = MIMEImage(st.session_state['weblogo'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
-                    msg.attach(image)
-
-                attachment_text = MIMEText(txt_output, 'plain', 'utf-8')
-                attachment_text.add_header('Content-Disposition', 'attachment',
-                                           filename=f'Sequences_{current_date_time}.fasta')
-                msg.attach(attachment_text)
-
-                server = smtplib.SMTP('smtp.gmail.com', 587)
-                server.starttls()
-                server.login(email_sender, password)
-                server.sendmail(email_sender, email_receiver, msg.as_string())
-                server.quit()
-                st.toast('Email sent successfully !', icon='🚀')
-
-            except smtplib.SMTPAuthenticationError:
-                st.toast("Failed to authenticate. Please check your email and password.")
-            except smtplib.SMTPServerDisconnected:
-                st.toast("Failed to connect to the SMTP server. Please check your internet connection.")
-            except smtplib.SMTPRecipientsRefused:
-                st.toast(f"Error sending email to {email_receiver}")
-            except smtplib.SMTPException as e:
-                st.toast(f"Error sending email: {e}")
-            except Exception as e:
-                st.toast(f"Unknown error occurred: {e}")
-
-        @staticmethod
-        def result_table_output(df):
-            source = df
-            score_range = source['Rel Score'].astype(float)
-            ystart = score_range.min() - 0.02
-            ystop = score_range.max() + 0.02
-            source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
-            source['Beginning of sequences'] = source['Position']
-            if 'Rel Position' in source:
-                source['From TSS/gene end'] = source['Rel Position']
-            scale = alt.Scale(scheme='category10')
-            color_scale = alt.Color("Gene_Region:N", scale=scale)
-
-            gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
-
-            dropdown = alt.binding_select(
-                options=['Beginning of sequences', 'From TSS/gene end' if "Rel Position" in source else []],
-                name='(X-axis) Position from: ')
-
-            xcol_param = alt.param(value='Beginning of sequences', bind=dropdown)
-
-            chart = alt.Chart(source).mark_circle().encode(
-                x=alt.X('x:Q').title('Position (bp)'),
-                y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
-                        scale=alt.Scale(domain=[ystart, ystop])),
-                color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-                tooltip=['Position'] + (['Rel Position'] if "Rel Position" in source else []) + ['Rel Score'] + (
-                    ['p-value'] if 'p-value' in source else []) + ['Sequence', 'Gene', 'Species', 'Region'],
-                opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
-            ).transform_calculate(x=f'datum[{xcol_param.name}]').properties(width=600,
-                                                                            height=400).interactive().add_params(
-                gene_region_selection, xcol_param)
-            st.altair_chart(chart, theme=None, use_container_width=True)
-
         st.subheader(':blue[Step 2] Binding Sites Finder')
         promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
         with promcol1:
@@ -715,7 +630,7 @@ def aio_page():
                 st.markdown('**Graph**',
                             help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
 
-                IndividualMotifFinder.result_table_output(df)
+                ResultDisplayExport.result_table_output(df)
 
                 with tablecol2:
                     st.download_button("💾 Download table (.xlsx)", excel_file,
@@ -734,6 +649,6 @@ def aio_page():
                             body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                         else:
                             body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                        IndividualMotifFinder.email(excel_file, txt_output, email_receiver, body)
+                        ResultDisplayExport.email(excel_file, txt_output, email_receiver, body)
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
