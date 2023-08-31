@@ -715,7 +715,7 @@ def aio_page():
                 st.markdown('**Graph**',
                             help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
 
-                result_table_output(df)
+                IndividualMotifFinder.result_table_output(df)
 
                 with tablecol2:
                     st.download_button("💾 Download table (.xlsx)", excel_file,
@@ -734,6 +734,6 @@ def aio_page():
                             body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                         else:
                             body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                        email(excel_file, txt_output, email_receiver, body)
+                        IndividualMotifFinder.email(excel_file, txt_output, email_receiver, body)
             else:
                 st.error(f"No consensus sequence found with the specified threshold")
