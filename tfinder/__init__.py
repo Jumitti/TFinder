@@ -20,6 +20,7 @@
 
 import random
 import time
+
 import logomaker
 import numpy as np
 import requests
@@ -184,8 +185,6 @@ class NCBIdna:
 
 
 class IMO:
-    def __init__(self):
-        ok = ok
 
     @staticmethod
     # Extract JASPAR matrix

@@ -18,18 +18,20 @@
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import streamlit as st
-import hydralit_components as hc
-import requests
-import pandas as pd
 import pickle
-from utils.components import footer_style, footer
-from navigation.home import home_page
-from navigation.resource import resource_page
-from navigation.contact import contact_page
-from navigation.allapp import allapp_page
+
+import hydralit_components as hc
+import pandas as pd
+import requests
+import streamlit as st
 import streamlit_analytics
 from streamlit_modal import Modal
+
+from navigation.allapp import allapp_page
+from navigation.contact import contact_page
+from navigation.home import home_page
+from navigation.resource import resource_page
+from utils.components import footer_style, footer
 
 st.set_page_config(
     page_title='TFinder by Minniti Julien',

@@ -20,22 +20,14 @@
 
 import datetime
 import io
-import smtplib
-from email import encoders
-from email.mime.base import MIMEBase
-from email.mime.image import MIMEImage
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
-import altair as alt
 import pandas as pd
 import streamlit as st
 from stqdm import stqdm
 
-from utils.results_display_and_export import ResultDisplayExport
-
 from tfinder import IMO
 from tfinder import NCBIdna
+from utils.results_display_and_export import ResultDisplayExport
 
 
 def aio_page():
