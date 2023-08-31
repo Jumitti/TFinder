@@ -30,7 +30,7 @@ from email.mime.text import MIMEText
 import altair as alt
 import pandas as pd
 import streamlit as st
-import stqdm
+from stqdm import stqdm
 
 from tfinder import IMO
 from tfinder import NCBIdna
