@@ -634,7 +634,7 @@ def aio_page():
                 st.download_button(label="💾 Download table (.csv)", data=csv_file,
                                    file_name=f"Results_TFinder_{current_date_time}.csv", mime="text/csv")
                 email_receiver = st.text_input('Send results by email ✉',
-                                               value='', placeholder='Send results by email ✉', autocomplete='<email>',
+                                               value='', placeholder='Send results by email ✉',
                                                label_visibility="collapsed")
                 if st.button("Send ✉"):
                     if jaspar == 'PWM':
