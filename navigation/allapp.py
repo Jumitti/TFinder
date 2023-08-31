@@ -28,14 +28,14 @@ import pickle
 
 from navigation.aio import aio_page
 from navigation.pwm import pwm_page
-from navigation.BSF import BSF_page
-from navigation.prom_extractor import prom_extractor_page
+from navigation.IMF import BSF_page
+from navigation.regulatory_regions_extractor import prom_extractor_page
 
 #NavBar
 
 AIO = 'All in One'
 PROM = 'Region Extractor'
-REF = 'Binding Sites Finder'
+REF = 'Individual Motif Finder'
 PWM = 'Position Weight Matrix'
 
 tabs = [

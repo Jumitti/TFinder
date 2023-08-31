@@ -18,22 +18,6 @@
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from io import TextIOWrapper
-import re
-from typing import Tuple
-import uuid
-import numpy as np
-import stringdb
-from PIL import Image
-import extra_streamlit_components as stx
-import streamlit as st
-from pyvis.network import Network
-import streamlit.components.v1 as components
-from matplotlib import colors
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-
 footer_style = f"""
     <style>
         MainMenu {{visibility: hidden;}}

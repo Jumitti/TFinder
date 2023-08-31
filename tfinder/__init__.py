@@ -20,6 +20,7 @@
 
 import random
 import time
+
 import logomaker
 import numpy as np
 import requests
@@ -184,8 +185,6 @@ class NCBIdna:
 
 
 class IMO:
-    def __init__(self):
-        ok = ok
 
     @staticmethod
     # Extract JASPAR matrix
@@ -356,7 +355,7 @@ class IMO:
                         normalized_score = score / max_score
                     else:
                         normalized_score = (score - min_score) / (max_score - min_score)
-                    position = int(i)
+                    position = int(i)+1
 
                     found_positions.append((position, seq, normalized_score))
                     progress_bar.update(1)
@@ -425,7 +424,7 @@ class IMO:
 
     @staticmethod
     # IUPAC code
-    def generate_iupac_variants(sequence, max_variant_allowed = None, progress_bar = None):
+    def generate_iupac_variants(sequence, max_variant_allowed=None, progress_bar=None):
         iupac_codes = {
             "R": ["A", "G"],
             "Y": ["C", "T"],
@@ -456,7 +455,6 @@ class IMO:
             "N": 4  # A or C or G or T
         }
 
-        #if max_variant_allowed is not None:
         total_variants = 1
         for base in sequence:
             if base.upper() in iupac_codes_score:
