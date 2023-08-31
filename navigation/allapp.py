@@ -29,7 +29,7 @@ import pickle
 from navigation.aio import aio_page
 from navigation.pwm import pwm_page
 from navigation.BSF import BSF_page
-from navigation.prom_extractor import prom_extractor_page
+from navigation.regulatory_regions_extractor import prom_extractor_page
 
 #NavBar
 
