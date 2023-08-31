@@ -307,7 +307,6 @@ def aio_page():
 
     class IndividualMotifFinder:
         st.subheader(':blue[Step 2] Binding Sites Finder')
-        IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N', '-', '.']
         promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
         with promcol1:
             st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
@@ -467,9 +466,9 @@ def aio_page():
                                       label_visibility='collapsed')
                 IUPAC = IUPAC.upper()
 
+            IUPAC_code_list = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N', '-', '.']
 
-
-            if all(char in IUPAC_code for char in IUPAC):
+            if all(char in IUPAC_code_list for char in IUPAC):
                 isUIPAC = True
 
                 sequences = IMO.generate_iupac_variants(IUPAC, max_variant_allowed=1048576)
