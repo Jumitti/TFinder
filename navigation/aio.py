@@ -28,9 +28,9 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import altair as alt
-from pandas import pandas as pd
+import pandas as pd
 import streamlit as st
-from stqdm import stqdm
+import stqdm
 
 from tfinder import IMO
 from tfinder import NCBIdna
