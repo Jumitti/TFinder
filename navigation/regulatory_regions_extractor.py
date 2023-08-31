@@ -42,4 +42,4 @@ from navigation.aio import aio_page
 
 
 def prom_extractor_page():
-    aio_page().ResultDisplayExport.display_RRE()
+    aio_page.RegulatoryRegionExtractor.display_RRE()
