@@ -306,9 +306,6 @@ def aio_page():
     st.divider()
 
     class IndividualMotifFinder:
-        def __init__(self, IUPAC_code):
-            self.IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N', '-', '.']
-
         st.subheader(':blue[Step 2] Binding Sites Finder')
         promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
         with promcol1:
@@ -469,7 +466,9 @@ def aio_page():
                                       label_visibility='collapsed')
                 IUPAC = IUPAC.upper()
 
-            if all(char in self.IUPAC_code for char in IUPAC):
+            IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N', '-', '.']
+
+            if all(char in IUPAC_code for char in IUPAC):
                 isUIPAC = True
 
                 sequences = IMO.generate_iupac_variants(IUPAC, max_variant_allowed=1048576)
