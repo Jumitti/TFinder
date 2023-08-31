@@ -632,7 +632,7 @@ def aio_page():
                                    file_name=f'Results_TFinder_{current_date_time}.xlsx',
                                    mime="application/vnd.ms-excel", key='download-excel')
                 st.download_button(label="💾 Download table (.csv)", data=csv_file,
-                                   file_name="Results_TFinder_{current_date_time}.csv", mime="text/csv")
+                                   file_name=f"Results_TFinder_{current_date_time}.csv", mime="text/csv")
                 email_receiver = st.text_input('Send results by email ✉',
                                                value='Send results by email ✉',
                                                label_visibility="collapsed")
@@ -646,6 +646,6 @@ def aio_page():
                         body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                     else:
                         body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                    ResultDisplayExport.email(excel_file, txt_output, email_receiver, body)
+                    ResultDisplayExport.email(excel_file, csv_file, txt_output, email_receiver, body)
         else:
             st.error(f"No consensus sequence found with the specified threshold")

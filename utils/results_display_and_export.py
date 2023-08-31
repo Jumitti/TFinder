@@ -33,7 +33,7 @@ import streamlit as st
 class ResultDisplayExport:
 
     @staticmethod
-    def email(excel_file, txt_output, email_receiver, body):
+    def email(excel_file, csv_file, txt_output, email_receiver, body):
         try:
             current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             subject = f'Results TFinder - {current_date_time}'
@@ -53,6 +53,13 @@ class ResultDisplayExport:
             attachment_excel.add_header('Content-Disposition', 'attachment',
                                         filename=f'Results_TFinder_{current_date_time}.xlsx')
             msg.attach(attachment_excel)
+
+            attachment_csv = MIMEBase('application', 'octet-stream')
+            attachment_csv.set_payload(csv_file.getvalue())
+            encoders.encode_base64(attachment_csv)
+            attachment_csv.add_header('Content-Disposition', 'attachment',
+                                      filename=f'Results_TFinder_{current_date_time}.csv')
+            msg.attach(attachment_csv)
 
             if jaspar == 'PWM':
                 if matrix_type == 'With FASTA sequences':
