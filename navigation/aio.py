@@ -28,7 +28,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import altair as alt
-import pandas as pd
+from pandas import pandas as pd
 import streamlit as st
 from stqdm import stqdm
 
