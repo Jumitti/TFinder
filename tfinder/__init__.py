@@ -356,7 +356,7 @@ class IMO:
                         normalized_score = score / max_score
                     else:
                         normalized_score = (score - min_score) / (max_score - min_score)
-                    position = int(i)
+                    position = int(i)+1
 
                     found_positions.append((position, seq, normalized_score))
                     progress_bar.update(1)
