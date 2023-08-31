@@ -147,24 +147,31 @@ with st.sidebar.expander("Regulatory regions extractor"):
         "(like those displayed by default). You can mix ENTREZ_GENE_ID and gene names as long as they "
         "are of the same species.")
     st.write("**Advance mode** allows you to select multiple species for genes")
+    st.write("⚠️A **Check genes avaibility** button allows you to analyse if your gene is accessible for species"
+             "and if ID is correct. Please use it. ")
+
     st.subheader("Species:")
     st.write("Human, mouse, rat, drosophila and zebrafish are allowed.")
     st.write("If you use several ENTREZ_GENE_ID/gene names, make sure you select the correct species.")
-    st.subheader("Promoter/Terminator and Upstream/Downstream")
+    st.write("⚠️Use **Check genes avaibility** button for checking species")
+    st.write("**Advance mode** allows you to select multiple species for genes")
+
+    st.subheader("Regulatory regions and Upstream/Downstream")
     st.write("Distance to Transcription Start Site (TSS) or gene end in bp.")
     st.image("https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/whatisagene.png")
-    st.subheader("Promoter & Terminator:")
+
+    st.subheader("Sequences to analyse:")
     st.write(
         'Use "Find promoter/extractor" button or paste your sequences. FASTA format allowed and required for multiple sequences.')
     st.write(
         'FASTA format: All sequences must have the TSS at the same distance, otherwise you assume the inconsistency of the positions of found sequences')
 
-with st.sidebar.expander("Binding Sites Finder"):
+with st.sidebar.expander("Individual Motif Finder"):
     st.subheader("Responsive element:")
-    st.write('IUPAC code is authorized for manual sequences')
+    st.write('For ** Individual Motif**: IUPAC code is authorized')
     st.write(
-        'You can generate a PWM with several sequences in FASTA format (same lenght required) or use a PWM already generated with our tools')
-    st.write("For JASPAR option, use the JASPAR_ID of your transcription factor.")
+        'For **PWM**: You can generate a PWM with several sequences in FASTA format or use a PWM already generated with our tools  (same length required)')
+    st.write("For **JASPAR_ID** option, use the JASPAR_ID of your transcription factor.")
     st.image("https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/IUPAC.png")
     st.subheader("Transcription Start Site (TSS) or gene end:")
     st.write('Distance to Transcription Start Site (TSS) or gene end in bp')
