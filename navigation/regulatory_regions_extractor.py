@@ -38,8 +38,8 @@ from stqdm import stqdm
 
 from tfinder import NCBIdna
 
-from navigation.aio import aio_page
+from navigation.aio.aio_page import display_RRE
 
 
 def prom_extractor_page():
-    aio_page.display_RRE()
+    display_RRE()
