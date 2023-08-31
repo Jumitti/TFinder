@@ -68,7 +68,7 @@ def email(excel_file, csv_file, txt_output, email_receiver, body):
             if matrix_type == 'With FASTA sequences':
                 image = MIMEImage(st.session_state['weblogo'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
                 msg.attach(image)
-        elif jaspar == 'Manual sequence':
+        elif jaspar == 'Individual Motif':
             image = MIMEImage(st.session_state['weblogo'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
             msg.attach(image)
 
