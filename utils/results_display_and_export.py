@@ -31,6 +31,8 @@ import streamlit as st
 
 
 class ResultDisplayExport:
+    def __init__(self):
+        ok = ok
     @staticmethod
     def email(excel_file, txt_output, email_receiver, body):
         try:
