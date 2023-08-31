@@ -40,4 +40,6 @@ from tfinder import NCBIdna
 
 from navigation.aio import ResultDisplayExport
 
-ResultDisplayExport()
+
+def prom_extractor_page():
+    ResultDisplayExport()
