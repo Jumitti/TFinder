@@ -557,7 +557,7 @@ def aio_page():
         if all(char in IUPAC_code for char in IUPAC):
             isUIPAC = True
 
-            sequences = IMO.generate_iupac_variants(IUPAC, max_variant_allowed=1048576, progress_bar=progress_bar)
+            sequences = IMO.generate_iupac_variants(IUPAC, max_variant_allowed=1048576)
 
             if 'Too many' not in sequences:
                 individual_motif = ""
