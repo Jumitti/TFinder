@@ -32,7 +32,7 @@ import pandas as pd
 import streamlit as st
 from stqdm import stqdm
 
-from utils import results_display_and_export
+from utils.results_display_and_export import ResultDisplayExport
 
 from tfinder import IMO
 from tfinder import NCBIdna
