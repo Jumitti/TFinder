@@ -42,4 +42,4 @@ from navigation.aio import ResultDisplayExport
 
 
 def prom_extractor_page():
-    ResultDisplayExport()
+    ResultDisplayExport.display_RRE()
