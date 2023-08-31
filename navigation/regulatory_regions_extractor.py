@@ -38,7 +38,7 @@ from stqdm import stqdm
 
 from tfinder import NCBIdna
 
-from navigation.aio.aio_page import display_RRE
+from navigation.aio import aio_page
 
 
 def prom_extractor_page():
