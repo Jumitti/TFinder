@@ -139,11 +139,14 @@ st.sidebar.title("Help")
 with st.sidebar.expander("Video tutorials"):
     st.write('coming soon')
 
-with st.sidebar.expander("Promoter & Terminator Extractor"):
+with st.sidebar.expander("Regulatory regions extractor"):
     st.subheader("Gene ID:")
     st.write("ENTREZ_GENE_ID of NCBI and gene names are allowed.")
     st.write(
-        "There is no limit to the number of gene names/ENTREZ_GENE_ID. Add them with a line break (like those displayed by default). You can mix ENTREZ_GENE_ID and gene names as long as they are of the same species.")
+        "There is no limit to the number of gene names/ENTREZ_GENE_ID. Add them with a line break "
+        "(like those displayed by default). You can mix ENTREZ_GENE_ID and gene names as long as they "
+        "are of the same species.")
+    st.write("**Advance mode** allows you to select multiple species for genes")
     st.subheader("Species:")
     st.write("Human, mouse, rat, drosophila and zebrafish are allowed.")
     st.write("If you use several ENTREZ_GENE_ID/gene names, make sure you select the correct species.")
@@ -198,10 +201,14 @@ if st.sidebar.button("Check"):
     st.sidebar.table(df)
 
 st.sidebar.title("More")
-st.sidebar.markdown("[Report a bug 🐞](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=bug&projects=&template=bug_report.md&title=%5BBUG%5D)")
-st.sidebar.markdown("[Need HELP 🆘](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=help+wanted&projects=&template=help.md&title=%5BHELP%5D)")
-st.sidebar.markdown("[Have a question 🤔](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=question&projects=&template=question_report.md&title=%5BQUESTION%5D)")
-st.sidebar.markdown("[Features request 💡](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md&title=%5BFEATURE%5D)")
+st.sidebar.markdown(
+    "[Report a bug 🐞](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=bug&projects=&template=bug_report.md&title=%5BBUG%5D)")
+st.sidebar.markdown(
+    "[Need HELP 🆘](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=help+wanted&projects=&template=help.md&title=%5BHELP%5D)")
+st.sidebar.markdown(
+    "[Have a question 🤔](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=question&projects=&template=question_report.md&title=%5BQUESTION%5D)")
+st.sidebar.markdown(
+    "[Features request 💡](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md&title=%5BFEATURE%5D)")
 st.sidebar.markdown("[Want to talk ? 🙋🏼‍♂](https://github.com/Jumitti/TFinder/discussions)")
 
 streamlit_analytics.stop_tracking()
@@ -216,8 +223,9 @@ if 'popup_closed' not in st.session_state:
 
 if not st.session_state.popup_closed:
     with modal.container():
-        st.markdown('TFinder use [NCBI API](https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen)'
-                    ': More information [NCBI Website and Data Usage Policies and Disclaimers](https://www.ncbi.nlm.nih.gov/home/about/policies/)')
+        st.markdown(
+            'TFinder use [NCBI API](https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen)'
+            ': More information [NCBI Website and Data Usage Policies and Disclaimers](https://www.ncbi.nlm.nih.gov/home/about/policies/)')
         st.markdown("TFinder use [JASPAR API](https://doi.org/10.1093/bioinformatics/btx804)")
         value = st.checkbox("By checking this box, you agree with data usage polices of NCBI and JASPAR")
         if value:
