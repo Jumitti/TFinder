@@ -57,13 +57,12 @@ def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
                                     filename=f'Results_TFinder_{current_date_time}.xlsx')
         msg.attach(attachment_excel)
 
-        '''
         attachment_csv = MIMEBase('application', 'octet-stream')
         attachment_csv.set_payload(csv_file)
         encoders.encode_base64(attachment_csv)
         attachment_csv.add_header('Content-Disposition', 'attachment',
                                   filename=f'Results_TFinder_{current_date_time}.csv')
-        msg.attach(attachment_csv)'''
+        msg.attach(attachment_csv)
 
         if jaspar == 'PWM':
             if matrix_type == 'With FASTA sequences':
