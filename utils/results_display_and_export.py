@@ -42,7 +42,7 @@ class ResultDisplayExport:
 
             msg = MIMEMultipart()
             msg['From'] = email_sender
-            msg['To'] = email_receiver
+            msg['To'] = email_receiver.getvalue()
             msg['Subject'] = subject
 
             msg.attach(MIMEText(body, 'plain'))
