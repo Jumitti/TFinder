@@ -306,7 +306,7 @@ def aio_page():
     st.divider()
 
     class IndividualMotifFinder:
-        def __init__(self):
+        def __init__(self, IUPAC_code):
             self.IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N', '-', '.']
 
         st.subheader(':blue[Step 2] Binding Sites Finder')
