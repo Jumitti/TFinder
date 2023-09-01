@@ -35,7 +35,7 @@ from utils.components import footer_style, footer
 
 st.set_page_config(
     page_title='TFinder by Minniti Julien',
-    page_icon="./.streamlit/REF.png",
+    # page_icon="./.streamlit/REF.png",
     initial_sidebar_state="expanded"
 )
 
@@ -114,7 +114,7 @@ st.markdown(footer, unsafe_allow_html=True)
 streamlit_analytics.start_tracking()
 
 # Credit rating
-st.sidebar.image("https://raw.githubusercontent.com/Jumitti/TFinder/main/img/REF.png")
+# st.sidebar.image("https://raw.githubusercontent.com/Jumitti/TFinder/main/img/REF.png")
 try:
     with open("ratings.pkl", "rb") as file:
         ratings = pickle.load(file)
