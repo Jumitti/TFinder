@@ -129,8 +129,18 @@ def resource_page():
         unsafe_allow_html=True)
     dispcol1, dispcol2 = st.columns(2, gap='small')
     with dispcol1:
-        st.image("img/calcul_dispersion.png",
-                 caption='To do')
+        st.code("""
+        import numpy as np
+
+        proportions = {'A': 0.5, 'T': 0.2, 'G': 0.2, 'C': 0.1}
+
+        def coefficient_dispersion(proportions):
+            proportions_array = np.array(list(proportions.values()))
+            mean_proportions = np.mean(proportions_array)
+            squared_deviations = (proportions_array - mean_proportions) ** 2
+            variance = np.sum(squared_deviations) / len(proportions)
+            dispersion_coefficient = np.sqrt(variance) / mean_proportions
+        """, language="python")
     with dispcol2:
         st.image('img/dispersion.jpg',
                  caption='To do')
