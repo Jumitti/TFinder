@@ -102,18 +102,18 @@ def resource_page():
         unsafe_allow_html=True)
     ttab1, ttab2, ttab3, ttab4, ttab5 = st.tabs(["Figure 1", "Figure 2", "Figure 3", "Figure 4", "Figure 5"])
     with ttab1:
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/bsfMS.png?raw=true',
+        st.image('img/bsfMS.png',
                  caption='Figure 1: Screenshot of TFinder Binding Site Finder tools (option Manual Sequence)')
     with ttab2:
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/IUPAC.png?raw=true', caption='Figure 2: IUPAC code')
+        st.image('img/IUPAC.png', caption='Figure 2: IUPAC code')
     with ttab3:
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/bsfJI.png?raw=true',
+        st.image('img/bsfJI.png',
                  caption='Figure 3: Screenshot of TFinder Binding Site Finder tools (option JASPAR)')
     with ttab4:
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/JASPAR%20ID.png?raw=true',
+        st.image('img/JASPAR_ID.png',
                  caption='Figure 4: JASPAR_ID')
     with ttab5:
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/bsfM.png?raw=true',
+        st.image('img/bsfM.png',
                  caption='Figure 5: Screenshot of TFinder Binding Site Finder tools (option PWM)')
 
     st.divider()
