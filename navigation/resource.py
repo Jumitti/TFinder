@@ -19,6 +19,7 @@
 # SOFTWARE.
 
 import streamlit as st
+
 import img
 
 TEST = "TFinder makes it easy to extract gene regulatory regions by simply providing the gene name or its Gene ID " \
@@ -54,25 +55,25 @@ def resource_page():
     tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(
         ["Figure 1", "Figure 2", "Figure 3", "Figure 4", "Figure 5", "Figure 6", "Figure 7", "Figure 8"])
     with tab1:
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/promtermoriginal.png?raw=true',
+        st.image('img/promtermoriginal.png',
                  caption='Figure 1: Screenshot of TFinder promoter and terminator extraction tool')
     with tab2:
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/promtermcheckgene.png?raw=true',
+        st.image('img/promtermcheckgene.png',
                  caption='Figure 2: Check genes avaibility')
     with tab3:
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/NCBI%20gene%20ID.png?raw=true',
+        st.image('img/NCBI_gene_ID.png',
                  caption='Figure 3: NCBI gene name (upper red rectangle) and Gene ID (lower red rectangle)')
     with tab4:
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/whatisagene.png?raw=true',
+        st.image('img/whatisagene.png',
                  caption='Figure 4: What is a gene ?')
     with tab6:
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/promtermadvance.png?raw=true',
+        st.image('img/promtermadvance.png',
                  caption='Figure 6: Advance mode')
     with tab5:
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/GeneBank.png?raw=true',
+        st.image('img/GeneBank.png',
                  caption='Figure 5: GeneBank of a gene')
     with tab8:
-        st.image('https://github.com/Jumitti/TFinder/blob/main/img/coordinates.png?raw=true',
+        st.image('img/coordinates.png',
                  caption='Figure 8: Chromosic coordinates on a genetic map from NCBI')
     with tab7:
         st.code(
