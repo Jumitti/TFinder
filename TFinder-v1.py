@@ -33,9 +33,11 @@ from navigation.home import home_page
 from navigation.resource import resource_page
 from utils.components import footer_style, footer
 
+import img
+
 st.set_page_config(
     page_title='TFinder by Minniti Julien',
-    page_icon="./.streamlit/REF.png",
+    # page_icon="./.streamlit/REF.png",
     initial_sidebar_state="expanded"
 )
 
@@ -114,7 +116,7 @@ st.markdown(footer, unsafe_allow_html=True)
 streamlit_analytics.start_tracking()
 
 # Credit rating
-st.sidebar.image("https://raw.githubusercontent.com/Jumitti/TFinder/main/img/REF.png")
+# st.sidebar.image("https://raw.githubusercontent.com/Jumitti/TFinder/main/img/REF.png")
 try:
     with open("ratings.pkl", "rb") as file:
         ratings = pickle.load(file)
@@ -160,7 +162,7 @@ with st.sidebar.expander("Regulatory regions extractor"):
 
     st.subheader("Regulatory regions and Upstream/Downstream")
     st.write("Distance to Transcription Start Site (TSS) or gene end in bp.")
-    st.image("https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/whatisagene.png")
+    st.image("img/whatisagene.png")
 
     st.subheader("Sequences to analyse:")
     st.write(
@@ -174,7 +176,7 @@ with st.sidebar.expander("Individual Motif Finder"):
     st.write(
         'For **PWM**: You can generate a PWM with several sequences in FASTA format or use a PWM already generated with our tools  (same length required)')
     st.write("For **JASPAR_ID** option, use the JASPAR_ID of your transcription factor.")
-    st.image("https://raw.githubusercontent.com/Jumitti/Responsive-Elements-Finder/main/img/IUPAC.png")
+    st.image("img/IUPAC.png")
     st.subheader("Transcription Start Site (TSS) or gene end:")
     st.write('Distance to Transcription Start Site (TSS) or gene end in bp')
     st.write('Note: If you use Step 1 , it will be defined automatically.')
