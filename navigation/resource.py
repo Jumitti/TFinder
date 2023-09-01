@@ -130,7 +130,7 @@ def resource_page():
     dispcol1, discol2 = st.columns(2, gap='small')
     with dispcol1:
         st.image("img/calcul_dispersion.png",
-             caption='Figure 5: Screenshot of TFinder Binding Site Finder tools (option PWM)')
+                 caption='Figure 5: Screenshot of TFinder Binding Site Finder tools (option PWM)')
     with dispcol2:
         st.image('https://github.com/Jumitti/TFinder/blob/main/img/bsfM.png?raw=true',
-                      caption='Figure 5: Screenshot of TFinder Binding Site Finder tools (option PWM)')
+                 caption='Figure 5: Screenshot of TFinder Binding Site Finder tools (option PWM)')
