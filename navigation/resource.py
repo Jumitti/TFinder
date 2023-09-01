@@ -76,32 +76,32 @@ def resource_page():
 
     st.divider()
     st.markdown("<h3 style='text-align: center; color: black;'>References 🔎</h1>", unsafe_allow_html=True)
-    st.write("Bailey TL, Johnson J, Grant CE et al. The MEME Suite. Nucleic Acids Res 2015;43:W39–49.")
-    st.write(
-        "Castro-Mondragon JA, Riudavets-Puig R, Rauluseviciute I et al. JASPAR 2022: the 9th release of the open-access database of transcription factor binding profiles. Nucleic Acids Research 2022;50:D165–73.")
-    st.write(
-        "Farre D. Identification of patterns in biological sequences at the ALGGEN server: PROMO and MALGEN. Nucleic Acids Research 2003;31:3651–3.")
-    st.write(
-        "Grant CE, Bailey TL, Noble WS. FIMO: scanning for occurrences of a given motif. Bioinformatics 2011;27:1017–8.")
-    st.write(
-        "Jayaram N, Usvyat D, R. Martin AC. Evaluating tools for transcription factor binding site prediction. BMC Bioinformatics 2016;17:547.")
-    st.write(
-        "Khan A, Fornes O, Stigliani A et al. JASPAR 2018: update of the open-access database of transcription factor binding profiles and its web framework. Nucleic Acids Research 2018;46:D260–6.")
-    st.write(
-        "Khan A, Mathelier A. JASPAR RESTful API: accessing JASPAR data from any programming language. Wren J (ed.). Bioinformatics 2018;34:1612–4.")
-    st.write(
-        "Matys V. TRANSFAC(R) and its module TRANSCompel(R): transcriptional gene regulation in eukaryotes. Nucleic Acids Research 2006;34:D108–10.")
-    st.write(
-        "Sayers EW, Bolton EE, Brister JR et al. Database resources of the national center for biotechnology information. Nucleic Acids Research 2022;50:D20–6.")
-    st.write(
-        "Tareen A, Kinney JB. Logomaker: beautiful sequence logos in Python. Valencia A (ed.). Bioinformatics 2020;36:2272–4.")
-    st.write(
-        "Touzet H, Varré J-S. Efficient and accurate P-value computation for Position Weight Matrices. Algorithms Mol Biol 2007;2:15.")
-    st.write(
-        "Tsunoda T, Takagi T. Estimating transcription factor bindability on DNA. Bioinformatics 1999;15:622–30.")
-    st.write(
-        "Turatsinze J-V, Thomas-Chollier M, Defrance M et al. Using RSAT to scan genome sequences for transcription factor binding sites and cis-regulatory modules. Nat Protoc 2008;3:1578–88.")
-    st.write(
-        "Wasserman WW, Sandelin A. Applied bioinformatics for the identification of regulatory elements. Nat Rev Genet 2004;5:276–87.")
+    st.write("Bailey TL, Johnson J, Grant CE et al. The MEME Suite. Nucleic Acids Res 2015;43:W39–49.", unsafe_allow_html=True)
+    st.markdown(
+        "Castro-Mondragon JA, Riudavets-Puig R, Rauluseviciute I et al. JASPAR 2022: the 9th release of the open-access database of transcription factor binding profiles. Nucleic Acids Research 2022;50:D165–73.", unsafe_allow_html=True)
+    st.markdown(
+        "Farre D. Identification of patterns in biological sequences at the ALGGEN server: PROMO and MALGEN. Nucleic Acids Research 2003;31:3651–3.", unsafe_allow_html=True)
+    st.markdown(
+        "Grant CE, Bailey TL, Noble WS. FIMO: scanning for occurrences of a given motif. Bioinformatics 2011;27:1017–8.", unsafe_allow_html=True)
+    st.markdown(
+        "Jayaram N, Usvyat D, R. Martin AC. Evaluating tools for transcription factor binding site prediction. BMC Bioinformatics 2016;17:547.", unsafe_allow_html=True)
+    st.markdown(
+        "Khan A, Fornes O, Stigliani A et al. JASPAR 2018: update of the open-access database of transcription factor binding profiles and its web framework. Nucleic Acids Research 2018;46:D260–6.", unsafe_allow_html=True)
+    st.markdown(
+        "Khan A, Mathelier A. JASPAR RESTful API: accessing JASPAR data from any programming language. Wren J (ed.). Bioinformatics 2018;34:1612–4.", unsafe_allow_html=True)
+    st.markdown(
+        "Matys V. TRANSFAC(R) and its module TRANSCompel(R): transcriptional gene regulation in eukaryotes. Nucleic Acids Research 2006;34:D108–10.", unsafe_allow_html=True)
+    st.markdown(
+        "Sayers EW, Bolton EE, Brister JR et al. Database resources of the national center for biotechnology information. Nucleic Acids Research 2022;50:D20–6.", unsafe_allow_html=True)
+    st.markdown(
+        "Tareen A, Kinney JB. Logomaker: beautiful sequence logos in Python. Valencia A (ed.). Bioinformatics 2020;36:2272–4.", unsafe_allow_html=True)
+    st.markdown(
+        "Touzet H, Varré J-S. Efficient and accurate P-value computation for Position Weight Matrices. Algorithms Mol Biol 2007;2:15.", unsafe_allow_html=True)
+    st.markdown(
+        "Tsunoda T, Takagi T. Estimating transcription factor bindability on DNA. Bioinformatics 1999;15:622–30.", unsafe_allow_html=True)
+    st.markdown(
+        "Turatsinze J-V, Thomas-Chollier M, Defrance M et al. Using RSAT to scan genome sequences for transcription factor binding sites and cis-regulatory modules. Nat Protoc 2008;3:1578–88.", unsafe_allow_html=True)
+    st.markdown(
+        "Wasserman WW, Sandelin A. Applied bioinformatics for the identification of regulatory elements. Nat Rev Genet 2004;5:276–87.", unsafe_allow_html=True)
 
     
