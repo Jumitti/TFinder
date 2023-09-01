@@ -76,7 +76,7 @@ def resource_page():
 
     st.divider()
     st.markdown("<h3 style='text-align: center; color: black;'>References 🔎</h1>", unsafe_allow_html=True)
-    st.write("Bailey TL, Johnson J, Grant CE et al. The MEME Suite. Nucleic Acids Res 2015;43:W39–49.", unsafe_allow_html=True)
+    st.markdown("Bailey TL, Johnson J, Grant CE et al. The MEME Suite. Nucleic Acids Res 2015;43:W39–49.", unsafe_allow_html=True)
     st.markdown(
         "Castro-Mondragon JA, Riudavets-Puig R, Rauluseviciute I et al. JASPAR 2022: the 9th release of the open-access database of transcription factor binding profiles. Nucleic Acids Research 2022;50:D165–73.", unsafe_allow_html=True)
     st.markdown(
@@ -92,7 +92,7 @@ def resource_page():
     st.markdown(
         "Matys V. TRANSFAC(R) and its module TRANSCompel(R): transcriptional gene regulation in eukaryotes. Nucleic Acids Research 2006;34:D108–10.", unsafe_allow_html=True)
     st.markdown(
-        "Sayers EW, Bolton EE, Brister JR et al. Database resources of the national center for biotechnology information. Nucleic Acids Research 2022;50:D20<br>–6.", unsafe_allow_html=True)
+        "Sayers EW, Bolton EE, Brister JR et al. Database resources of the national center for biotechnology information. Nucleic Acids Research 2022;50:D20–6.", unsafe_allow_html=True)
     st.markdown(
         "Tareen A, Kinney JB. Logomaker: beautiful sequence logos in Python. Valencia A (ed.). Bioinformatics 2020;36:2272–4.", unsafe_allow_html=True)
     st.markdown(
