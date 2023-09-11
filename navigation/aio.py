@@ -155,7 +155,7 @@ def aio_page():
             pbar = st.progress(0, text='**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
             for i, gene_id in enumerate(gene_ids):
                 pbar.progress((i + 1) / len(gene_ids),
-                              text=f'**:blue[Analyse genes...{gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                              text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                 gene_disponibility_output.append(NCBIdna(gene_id).analyse_gene())
 
             species_columns = ['Gene'] + species_list
@@ -204,9 +204,11 @@ def aio_page():
             # Run Promoter Finder
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
                 with colprom1:
-                    for gene_id in stqdm(gene_ids,
-                                         desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
-                                         mininterval=0.1):
+                    pbar = st.progress(0,
+                                       text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                    for i, gene_id in enumerate(gene_ids):
+                        pbar.progress((i + 1) / len(gene_ids),
+                                      text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                         result_promoter_output = NCBIdna(gene_id, species, upstream, downstream,
                                                          prom_term).find_sequences()
                         if not result_promoter_output.startswith('P'):
