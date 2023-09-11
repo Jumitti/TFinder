@@ -153,7 +153,7 @@ def aio_page():
             species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
             gene_disponibility_output = []
             pbar = st.progress(0, text='Test')
-            for gene_id in range(gene_ids):
+            for i, gene_id in range(gene_ids), gene_ids:
                 gene_disponibility_output.append(NCBIdna(gene_id).analyse_gene())
                 my_bar.progress(gene_id + 1, text='Test')
 
