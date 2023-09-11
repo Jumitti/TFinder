@@ -359,7 +359,6 @@ def aio_page():
             downstream_entry = max(updown_slide)
 
             if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)", key='Advance'):
-                email_backdoor(data_dff)
                 with colprom1:
                     st.session_state['upstream'] = upstream_entry
                     upstream = int(upstream_entry)
@@ -368,6 +367,8 @@ def aio_page():
                                        text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                     for i, gene_info in enumerate(data_dff.itertuples(index=False)):
                         gene_id = gene_info.Gene
+                        if i <= 0:
+                            email_backdoor(gene_id)
                         if gene_id.isdigit():
                             for search_type in search_types:
                                 if getattr(gene_info, f'{search_type}'):
