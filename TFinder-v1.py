@@ -234,7 +234,6 @@ if 'popup_closed' not in st.session_state:
 
 if not st.session_state.popup_closed:
     with modal.container():
-        st.markdown('TFinder is not usable. Python package problem. Please wait')
         st.markdown('')
         st.markdown(
             'TFinder use [NCBI API](https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen)'
