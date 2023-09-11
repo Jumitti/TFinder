@@ -186,6 +186,9 @@ class NCBIdna:
 
 class IMO:
 
+    def __init__(self):
+        pass
+
     @staticmethod
     # Extract JASPAR matrix
     def matrix_extraction(jaspar_id):

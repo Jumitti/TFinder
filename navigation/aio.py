@@ -152,9 +152,10 @@ def aio_page():
                      help='Sometimes genes do not have the same name in all species or do not exist.'):
             species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
             gene_disponibility_output = []
-            for gene_id in stqdm(gene_ids,
-                                 desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
-                                 mininterval=0.1):
+            pbar = st.progress(0, text='**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+            for i, gene_id in enumerate(gene_ids):
+                pbar.progress((i + 1) / len(gene_ids),
+                              text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                 gene_disponibility_output.append(NCBIdna(gene_id).analyse_gene())
 
             species_columns = ['Gene'] + species_list
@@ -203,9 +204,11 @@ def aio_page():
             # Run Promoter Finder
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
                 with colprom1:
-                    for gene_id in stqdm(gene_ids,
-                                         desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
-                                         mininterval=0.1):
+                    pbar = st.progress(0,
+                                       text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                    for i, gene_id in enumerate(gene_ids):
+                        pbar.progress((i + 1) / len(gene_ids),
+                                      text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                         result_promoter_output = NCBIdna(gene_id, species, upstream, downstream,
                                                          prom_term).find_sequences()
                         if not result_promoter_output.startswith('P'):
@@ -335,67 +338,55 @@ def aio_page():
                     st.session_state['upstream'] = upstream_entry
                     upstream = int(upstream_entry)
                     downstream = int(downstream_entry)
-                    iterration = 0
-                    for gene_info in (data_dff.itertuples(index=False)):
+                    pbar = st.progress(0, text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                    for i, gene_info in enumerate(data_dff.itertuples(index=False)):
                         gene_id = gene_info.Gene
                         if gene_id.isdigit():
                             for search_type in search_types:
                                 if getattr(gene_info, f'{search_type}'):
-                                    iterration += 1
+                                    prom_term = search_type.capitalize()
+
+                                    pbar.progress((i + 1) / len(data_dff),
+                                                  text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+
+                                    result_promoter_output = NCBIdna(gene_id, upstream=upstream,
+                                                                     downstream=downstream,
+                                                                     prom_term=prom_term).find_sequences()
+
+                                    if not result_promoter_output.startswith('P'):
+                                        st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted',
+                                                 icon='🧬')
+                                        result_promoter.append(result_promoter_output)
+                                        pass
+
+                                    else:
+                                        st.error(result_promoter_output)
+                                        continue
+
                         else:
                             for species in species_list:
                                 for search_type in search_types:
                                     if getattr(gene_info, f'{species}') and getattr(gene_info,
                                                                                     f'{search_type}'):
-                                        iterration += 1
-                    with stqdm(total=iterration,
-                               desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
-                               mininterval=0.1) as progress_bar:
-                        for gene_info in (data_dff.itertuples(index=False)):
-                            gene_id = gene_info.Gene
-                            if gene_id.isdigit():
-                                for search_type in search_types:
-                                    if getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
 
-                                        result_promoter_output = NCBIdna(gene_id, upstream=upstream,
-                                                                         downstream=downstream,
-                                                                         prom_term=prom_term).find_sequences()
+                                        pbar.progress((i + 1) / len(data_dff),
+                                                      text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species.capitalize()}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+
+                                        result_promoter_output = NCBIdna(gene_id, species, upstream,
+                                                                         downstream,
+                                                                         prom_term).find_sequences()
 
                                         if not result_promoter_output.startswith('P'):
-                                            st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted',
-                                                     icon='🧬')
+                                            st.toast(
+                                                f'{prom_term} **{gene_id}** from **{species.capitalize()}** extracted',
+                                                icon='🧬')
                                             result_promoter.append(result_promoter_output)
                                             pass
 
                                         else:
                                             st.error(result_promoter_output)
                                             continue
-
-                                        progress_bar.update(1)
-                            else:
-                                for species in species_list:
-                                    for search_type in search_types:
-                                        if getattr(gene_info, f'{species}') and getattr(gene_info,
-                                                                                        f'{search_type}'):
-                                            prom_term = search_type.capitalize()
-
-                                            result_promoter_output = NCBIdna(gene_id, species, upstream,
-                                                                             downstream,
-                                                                             prom_term).find_sequences()
-
-                                            if not result_promoter_output.startswith('P'):
-                                                st.toast(
-                                                    f'{prom_term} **{gene_id}** from **{species.capitalize()}** extracted',
-                                                    icon='🧬')
-                                                result_promoter.append(result_promoter_output)
-                                                pass
-
-                                            else:
-                                                st.error(result_promoter_output)
-                                                continue
-
-                                            progress_bar.update(1)
 
                     result_promoter_text = "\n".join(result_promoter)
                     st.session_state['result_promoter_text'] = result_promoter_text
