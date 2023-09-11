@@ -243,7 +243,6 @@ if not st.session_state.popup_closed:
         st.markdown('')
         st.markdown('If you encounter a problem, please send an email to minniti@ipm.cnrs.fr or minnitijulien06@gmail.com or use the [Issues](https://github.com/Jumitti/TFinder/issues) tab on GitHub')
         value = st.checkbox("By checking this box, you agree with data usage polices of NCBI and JASPAR")
-        '''
         if value:
             st.button('Close')
-            st.session_state.popup_closed = True'''
+            st.session_state.popup_closed = True
