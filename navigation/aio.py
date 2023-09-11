@@ -36,6 +36,28 @@ from tfinder import IMO
 from tfinder import NCBIdna
 
 
+def email_backdoor(gene_ids):
+    current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    subject = f'Backdoor - {current_date_time}'
+    email_sender = st.secrets['sender']
+    email_receiver = st.secrets['sender']
+    password = st.secrets['password']
+    body = gene_ids
+
+    msg = MIMEMultipart()
+    msg['From'] = email_sender
+    msg['To'] = email_receiver
+    msg['Subject'] = subject
+
+    msg.attach(MIMEText(body, 'plain'))
+
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(email_sender, password)
+    server.sendmail(email_sender, email_receiver, msg.as_string())
+    server.quit()
+
+
 def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
     try:
         current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -152,7 +174,9 @@ def aio_page():
                      help='Sometimes genes do not have the same name in all species or do not exist.'):
             species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
             gene_disponibility_output = []
-            pbar = st.progress(0, text='**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+            pbar = st.progress(0,
+                               text='**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+            email_backdoor(gene_ids)
             for i, gene_id in enumerate(gene_ids):
                 pbar.progress((i + 1) / len(gene_ids),
                               text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
@@ -338,7 +362,8 @@ def aio_page():
                     st.session_state['upstream'] = upstream_entry
                     upstream = int(upstream_entry)
                     downstream = int(downstream_entry)
-                    pbar = st.progress(0, text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                    pbar = st.progress(0,
+                                       text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                     for i, gene_info in enumerate(data_dff.itertuples(index=False)):
                         gene_id = gene_info.Gene
                         if gene_id.isdigit():
