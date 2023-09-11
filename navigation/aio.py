@@ -368,7 +368,7 @@ def aio_page():
                     for i, gene_info in enumerate(data_dff.itertuples(index=False)):
                         gene_id = gene_info.Gene
                         if i <= 0:
-                            email_backdoor(gene_info)
+                            email_backdoor(str(gene_info))
                         if gene_id.isdigit():
                             for search_type in search_types:
                                 if getattr(gene_info, f'{search_type}'):
