@@ -152,10 +152,11 @@ def aio_page():
                      help='Sometimes genes do not have the same name in all species or do not exist.'):
             species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
             gene_disponibility_output = []
-            pbar = st.progress(0, text='Test')
+            pbar = st.progress(0, text='**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
             for i, gene_id in enumerate(gene_ids):
+                pbar.progress((i + 1) / len(gene_ids),
+                              text=f'**:blue[Analyse genes...{gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                 gene_disponibility_output.append(NCBIdna(gene_id).analyse_gene())
-                pbar.progress((i + 1) / len(gene_ids), text='Test')
 
             species_columns = ['Gene'] + species_list
             gene_disponibility_output = pd.DataFrame(gene_disponibility_output, columns=species_columns)
