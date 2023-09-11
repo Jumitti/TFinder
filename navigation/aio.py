@@ -227,6 +227,7 @@ def aio_page():
 
             # Run Promoter Finder
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
+                email_backdoor(gene_ids)
                 with colprom1:
                     pbar = st.progress(0,
                                        text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
@@ -358,6 +359,7 @@ def aio_page():
             downstream_entry = max(updown_slide)
 
             if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)", key='Advance'):
+                email_backdoor(data_dff)
                 with colprom1:
                     st.session_state['upstream'] = upstream_entry
                     upstream = int(upstream_entry)
