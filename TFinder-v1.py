@@ -234,7 +234,6 @@ if 'popup_closed' not in st.session_state:
 
 if not st.session_state.popup_closed:
     with modal.container():
-        st.markdown('TFinder is not usable. Python package problem. Please wait')
         st.markdown('')
         st.markdown(
             'TFinder use [NCBI API](https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen)'
@@ -243,7 +242,6 @@ if not st.session_state.popup_closed:
         st.markdown('')
         st.markdown('If you encounter a problem, please send an email to minniti@ipm.cnrs.fr or minnitijulien06@gmail.com or use the [Issues](https://github.com/Jumitti/TFinder/issues) tab on GitHub')
         value = st.checkbox("By checking this box, you agree with data usage polices of NCBI and JASPAR")
-        '''
         if value:
             st.button('Close')
-            st.session_state.popup_closed = True'''
+            st.session_state.popup_closed = True
