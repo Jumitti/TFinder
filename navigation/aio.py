@@ -363,6 +363,9 @@ def aio_page():
                                 if getattr(gene_info, f'{search_type}'):
                                     prom_term = search_type.capitalize()
 
+                                    pbar.progress((i + 1) / len(data_dff),
+                                                  text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+
                                     result_promoter_output = NCBIdna(gene_id, upstream=upstream,
                                                                      downstream=downstream,
                                                                      prom_term=prom_term).find_sequences()
@@ -377,13 +380,15 @@ def aio_page():
                                         st.error(result_promoter_output)
                                         continue
 
-                                    pbar.progress((i + 1) / len(data_dff), text=f'**:blue[Extract sequence... {gene_info}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                         else:
                             for species in species_list:
                                 for search_type in search_types:
                                     if getattr(gene_info, f'{species}') and getattr(gene_info,
                                                                                     f'{search_type}'):
                                         prom_term = search_type.capitalize()
+
+                                        pbar.progress((i + 1) / len(data_dff),
+                                                      text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species.capitalize()}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
 
                                         result_promoter_output = NCBIdna(gene_id, species, upstream,
                                                                          downstream,
@@ -399,8 +404,6 @@ def aio_page():
                                         else:
                                             st.error(result_promoter_output)
                                             continue
-
-                                        pbar.progress((i + 1) / len(data_dff), text=f'**:blue[Extract sequence... {gene_info}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
 
                     result_promoter_text = "\n".join(result_promoter)
                     st.session_state['result_promoter_text'] = result_promoter_text
