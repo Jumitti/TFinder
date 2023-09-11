@@ -225,7 +225,7 @@ st.sidebar.markdown("[Want to talk ? 🙋🏼‍♂](https://github.com/Jumitti/
 streamlit_analytics.stop_tracking()
 
 views = streamlit_analytics.main.counts["total_pageviews"]
-st.sidebar.markdown(f"Total users 👥: {int(views)}")
+st.sidebar.markdown(f"Total users 👥: {int(views) + 49}")
 
 modal = Modal(key="TFinder Key", title="Disclaimers")
 
