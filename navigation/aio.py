@@ -356,7 +356,7 @@ def aio_page():
                                desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                                mininterval=0.1) as progress_bar:'''
                     pbar = st.progress(0, text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                    for i, gene_info in enumate(data_dff.itertuples(index=False)):
+                    for i, gene_info in enumerate(data_dff.itertuples(index=False)):
                         gene_id = gene_info.Gene
                         if gene_id.isdigit():
                             for search_type in search_types:
