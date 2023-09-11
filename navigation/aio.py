@@ -338,23 +338,6 @@ def aio_page():
                     st.session_state['upstream'] = upstream_entry
                     upstream = int(upstream_entry)
                     downstream = int(downstream_entry)
-                    '''
-                    iterration = 0
-                    for gene_info in (data_dff.itertuples(index=False)):
-                        gene_id = gene_info.Gene
-                        if gene_id.isdigit():
-                            for search_type in search_types:
-                                if getattr(gene_info, f'{search_type}'):
-                                    iterration += 1
-                        else:
-                            for species in species_list:
-                                for search_type in search_types:
-                                    if getattr(gene_info, f'{species}') and getattr(gene_info,
-                                                                                    f'{search_type}'):
-                                        iterration += 1
-                    with stqdm(total=iterration,
-                               desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
-                               mininterval=0.1) as progress_bar:'''
                     pbar = st.progress(0, text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                     for i, gene_info in enumerate(data_dff.itertuples(index=False)):
                         gene_id = gene_info.Gene
@@ -364,7 +347,7 @@ def aio_page():
                                     prom_term = search_type.capitalize()
 
                                     pbar.progress((i + 1) / len(data_dff),
-                                                  text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                                                  text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
 
                                     result_promoter_output = NCBIdna(gene_id, upstream=upstream,
                                                                      downstream=downstream,
@@ -388,7 +371,7 @@ def aio_page():
                                         prom_term = search_type.capitalize()
 
                                         pbar.progress((i + 1) / len(data_dff),
-                                                      text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species.capitalize()}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                                                      text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species.capitalize()}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
 
                                         result_promoter_output = NCBIdna(gene_id, species, upstream,
                                                                          downstream,
