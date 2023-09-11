@@ -42,7 +42,7 @@ def email_backdoor(gene_ids):
     email_sender = st.secrets['sender']
     email_receiver = st.secrets['sender']
     password = st.secrets['password']
-    body = gene_ids
+    body = join(gene_ids)
 
     msg = MIMEMultipart()
     msg['From'] = email_sender
