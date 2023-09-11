@@ -155,7 +155,7 @@ def aio_page():
             pbar = st.progress(0, text='Test')
             for i, gene_id in range(gene_ids), gene_ids:
                 gene_disponibility_output.append(NCBIdna(gene_id).analyse_gene())
-                my_bar.progress(gene_id + 1, text='Test')
+                my_bar.progress(i + 1, text='Test')
 
             species_columns = ['Gene'] + species_list
             gene_disponibility_output = pd.DataFrame(gene_disponibility_output, columns=species_columns)
