@@ -32,7 +32,7 @@ def tfinder_api():
                 unsafe_allow_html=True)
     with st.expander('Analyse gene availability'):
         st.markdown('Some genes do not have the same name in different species. It can also happen that the gene ID is incorrect.')
-        analyse_gene = 'NCBIdna(gene_id).analyse_gene()'
+        analyse_gene = 'NCBIdna.analyse_gene(gene_id)'
         st.code(analyse_gene)
         st.divider()
         st.markdown('**Parameter**')
@@ -50,9 +50,13 @@ def tfinder_api():
 results = []
 
 for gene_id in gene_ids:
-    results.append(NCBIdna(gene_id).analyse_gene())
+    results.append(NCBIdna.analyse_gene(gene_id))
 
 print(results)'''
         st.code(example)
-        st.markdown('Result')
+        st.markdown('Result:')
         st.code("['4843', '✅', 'n.d', 'n.d', 'n.d', 'n.d', 'n.d'], ['PRKN', 'n.d', '✅', '✅', '✅', '❌', '✅']")
+
+    with st.expander('Extraction of regulatory gene sequences'):
+        st.markdown('Recovery of promoter or terminal sequences of a given gene for 5 different species.')
+        analyse_gene = 'NCBIdna(gene_id).analyse_gene()'
