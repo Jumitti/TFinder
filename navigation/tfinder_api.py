@@ -20,6 +20,8 @@
 
 import streamlit as st
 
-st.divider()
-st.markdown("<h3 style='text-align: center; color: black;'>Documentation for TFinder API</h1>", unsafe_allow_html=True)
 
+def tfinder_api():
+    st.divider()
+    st.markdown("<h3 style='text-align: center; color: black;'>Documentation for TFinder API</h1>",
+                unsafe_allow_html=True)

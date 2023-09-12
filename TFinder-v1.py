@@ -31,7 +31,7 @@ from navigation.allapp import allapp_page
 from navigation.contact import contact_page
 from navigation.home import home_page
 from navigation.resource import resource_page
-from navigation.resource import tfinder_api
+from navigation.tfinder_api import tfinder_api
 from utils.components import footer_style, footer
 
 import img
@@ -116,7 +116,7 @@ elif chosen_tab == TFINDER_API:
 elif chosen_tab == CONTACT:
     contact_page()
 
-for i in range(5):
+for i in range(4):
     st.markdown('#')
 st.markdown(footer, unsafe_allow_html=True)
 
