@@ -74,7 +74,7 @@ class NCBIdna:
                             gene_analyse.append("✅")
                         else:
                             gene_analyse.append("❌")
-        print(type(gene_analyse))
+
         return gene_analyse
 
     # Sequence extractor
