@@ -59,4 +59,12 @@ print(results)'''
 
     with st.expander('Extraction of regulatory gene sequences'):
         st.markdown('Recovery of promoter or terminal sequences of a given gene for 5 different species.')
-        analyse_gene = 'NCBIdna(gene_id).analyse_gene()'
+        find_sequences = 'NCBIdna(gene_id, prom_term, upstream, downstream, species = None).find_sequences()'
+        st.code(find_sequences)
+        st.divider()
+        st.markdown('**Parameters**')
+        st.markdown('**gene_id** (list):')
+        st.markdown('Support only one by one gene_id.')
+        st.markdown('**prom_term** ("Promoter" or "Terminator":')
+        st.markdown('Choose between "Promoter" or "Terminator". Default is "Promoter"')
+
