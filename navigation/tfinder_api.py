@@ -36,7 +36,8 @@ def tfinder_api():
         st.code(analyse_gene)
         st.divider()
         st.markdown('**Parameter**')
-        st.markdown('**gene_id** (list): Support only one by one gene_id. See example. Analyse if ID GENE is valid or if NAME GENE exist for Human, Mouse, Rat, Drosophila, Zebrafish')
+        st.markdown('**gene_id** (list):')
+        st.markdown('Support only one by one gene_id. See example. Analyse if ID GENE is valid or if NAME GENE exist for Human, Mouse, Rat, Drosophila, Zebrafish')
         st.divider()
         st.markdown('**Return**')
         st.markdown('(list)')
@@ -55,5 +56,3 @@ print(results)'''
         st.code(example)
         st.markdown('Result')
         st.code("['4843', '✅', 'n.d', 'n.d', 'n.d', 'n.d', 'n.d'], ['PRKN', 'n.d', '✅', '✅', '✅', '❌', '✅']")
-
-
