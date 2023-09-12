@@ -23,5 +23,6 @@ import streamlit as st
 
 def tfinder_api():
     st.divider()
-    st.markdown("<h3 style='text-align: center; color: black;'>Documentation for TFinder API</h1>",
+    st.markdown("<h3 style='text-align: center; color: black;'>Documentation for TFinder python package</h1>",
                 unsafe_allow_html=True)
+    st.sidebar.markdown('Hello')
