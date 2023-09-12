@@ -18,12 +18,11 @@
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import random
-import time
-
 import logomaker
 import numpy as np
+import random
 import requests
+import time
 
 
 class NCBIdna:

@@ -31,6 +31,7 @@ from navigation.allapp import allapp_page
 from navigation.contact import contact_page
 from navigation.home import home_page
 from navigation.resource import resource_page
+from navigation.resource import tfinder_api
 from utils.components import footer_style, footer
 
 import img
@@ -70,12 +71,14 @@ st.markdown(footer_style, unsafe_allow_html=True)
 HOME = 'Home'
 APPLICATION = 'Tools/Software'
 RESOURCE = 'Resources'
+TFINDER_API = 'Package documentation'
 CONTACT = 'Contact'
 
 tabs = [
     HOME,
     APPLICATION,
     RESOURCE,
+    TFINDER_API,
     CONTACT
 ]
 
@@ -83,6 +86,7 @@ option_data = [
     {'icon': "🏠", 'label': HOME},
     {'icon': "🖥️", 'label': APPLICATION},
     {'icon': "📑", 'label': RESOURCE},
+    {'icon': "🐍", 'label': TFINDER_API},
     {'icon': "✉️", 'label': CONTACT}
 
 ]
@@ -105,6 +109,9 @@ elif chosen_tab == APPLICATION:
 
 elif chosen_tab == RESOURCE:
     resource_page()
+
+elif chosen_tab == TFINDER_API:
+    tfinder_api()
 
 elif chosen_tab == CONTACT:
     contact_page()
