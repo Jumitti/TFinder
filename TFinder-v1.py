@@ -116,7 +116,7 @@ elif chosen_tab == TFINDER_API:
 elif chosen_tab == CONTACT:
     contact_page()
 
-for i in range(4):
+for i in range(5):
     st.markdown('#')
 st.markdown(footer, unsafe_allow_html=True)
 
