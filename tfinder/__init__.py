@@ -40,6 +40,7 @@ class NCBIdna:
 
     # Analyse if gene is available
     def analyse_gene(self):
+        print(type[self.gene_id])
         disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         time.sleep(0.25)
         gene_analyse = [self.gene_id]
