@@ -43,5 +43,5 @@ def tfinder_api():
         st.divider()
         st.markdown('**Examples**')
         example = '''for gene_id in gene_ids:
-            NCBIdna(gene_id).analyse_gene())'''
+         NCBIdna(gene_id).analyse_gene())'''
         st.code(example)
