@@ -40,10 +40,17 @@ def tfinder_api():
         st.divider()
         st.markdown('**Return**')
         st.markdown('(list)')
+        st.markdown('Order of results: gene_id | ID | Human | Mouse | Rat | Drosophila | Zebrafish')
         st.divider()
-        st.markdown('**Examples**')
+        st.markdown('**Example**')
+
         example = '''gene_ids = ['4843', 'PRKN']
-        
+results = []
+
 for gene_id in gene_ids:
-    NCBIdna(gene_id).analyse_gene())'''
+    results.append(NCBIdna(gene_id).analyse_gene())
+
+print(results)'''
+
         st.code(example)
+
