@@ -177,9 +177,9 @@ def aio_page():
                 gene_disponibility_output = []
                 pbar = st.progress(0,
                                    text='**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                email_backdoor(gene_ids)
+                # email_backdoor(gene_ids)
                 for i, gene_id in enumerate(gene_ids):
-                    pbar.progress((i) / len(gene_ids),
+                    pbar.progress(i / len(gene_ids),
                                   text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                     gene_disponibility_output.append(NCBIdna.analyse_gene(gene_id))
                     pbar.progress((i + 1) / len(gene_ids),
@@ -230,7 +230,7 @@ def aio_page():
 
             # Run Promoter Finder
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
-                email_backdoor(gene_ids)
+                # email_backdoor(gene_ids)
                 with colprom1:
                     pbar = st.progress(0,
                                        text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
@@ -370,7 +370,7 @@ def aio_page():
                                        text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                     for i, gene_info in enumerate(data_dff.itertuples(index=False)):
                         gene_id = gene_info.Gene
-                        email_backdoor(str(gene_info))
+                        # email_backdoor(str(gene_info))
                         if gene_id.isdigit():
                             for search_type in search_types:
                                 if getattr(gene_info, f'{search_type}'):
