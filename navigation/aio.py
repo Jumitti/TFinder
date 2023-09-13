@@ -180,7 +180,7 @@ def aio_page():
             for i, gene_id in enumerate(gene_ids):
                 pbar.progress((i + 1) / len(gene_ids),
                               text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                gene_disponibility_output.append(NCBIdna(gene_id).analyse_gene())
+                gene_disponibility_output.append(NCBIdna.analyse_gene(gene_id))
 
             species_columns = ['Gene'] + species_list
             gene_disponibility_output = pd.DataFrame(gene_disponibility_output, columns=species_columns)
@@ -234,8 +234,8 @@ def aio_page():
                     for i, gene_id in enumerate(gene_ids):
                         pbar.progress((i + 1) / len(gene_ids),
                                       text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                        result_promoter_output = NCBIdna(gene_id, species, upstream, downstream,
-                                                         prom_term).find_sequences()
+                        result_promoter_output = NCBIdna(gene_id, prom_term, upstream, downstream,
+                                                         species).find_sequences()
                         if not result_promoter_output.startswith('P'):
                             st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
                             result_promoter.append(result_promoter_output)
@@ -376,9 +376,8 @@ def aio_page():
                                     pbar.progress((i + 1) / len(data_dff),
                                                   text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
 
-                                    result_promoter_output = NCBIdna(gene_id, upstream=upstream,
-                                                                     downstream=downstream,
-                                                                     prom_term=prom_term).find_sequences()
+                                    result_promoter_output = NCBIdna(gene_id, prom_term, upstream,
+                                                                     downstream).find_sequences()
 
                                     if not result_promoter_output.startswith('P'):
                                         st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted',
@@ -400,9 +399,9 @@ def aio_page():
                                         pbar.progress((i + 1) / len(data_dff),
                                                       text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species.capitalize()}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
 
-                                        result_promoter_output = NCBIdna(gene_id, species, upstream,
+                                        result_promoter_output = NCBIdna(gene_id, prom_term, upstream,
                                                                          downstream,
-                                                                         prom_term).find_sequences()
+                                                                         species).find_sequences()
 
                                         if not result_promoter_output.startswith('P'):
                                             st.toast(
