@@ -194,7 +194,7 @@ class NCBIdna:
             isdna = 'Please use only A T G C'
             return isdna
         complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
-        reverse_sequence = dna_sequence[::-1]
+        reverse_sequence = dna_sequence[::-1].upper()
         complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
         return complement_sequence
 
