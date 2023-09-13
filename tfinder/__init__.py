@@ -18,39 +18,39 @@
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import random
-import time
-
 import logomaker
 import numpy as np
+import random
 import requests
+import time
 
 
 class NCBIdna:
     def __init__(self,
                  gene_id,
-                 species=None,
-                 upstream=None,
-                 downstream=None,
-                 prom_term=None):
+                 prom_term,
+                 upstream,
+                 downstream,
+                 species=None):
         self.gene_id = gene_id
-        self.upstream = int(upstream) if upstream is not None else None
-        self.downstream = int(downstream) if downstream is not None else None
         self.prom_term = prom_term if prom_term is not None else None
+        self.upstream = upstream if upstream is not None else None
+        self.downstream = downstream if downstream is not None else None
         self.species = species if species is not None else None
 
+    @staticmethod
     # Analyse if gene is available
-    def analyse_gene(self):
+    def analyse_gene(gene_id):
         disponibility_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
         time.sleep(0.25)
-        gene_analyse = [self.gene_id]
+        gene_analyse = [gene_id]
         for species_test in disponibility_list:
-            if not self.gene_id.isdigit():
+            if not gene_id.isdigit():
                 if species_test == 'ID':
                     gene_analyse.append('n.d')
                 else:
                     time.sleep(0.5)
-                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={self.gene_id}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
+                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_id}[Gene%20Name]+AND+{species_test}[Organism]&retmode=json&rettype=xml"
                     response = requests.get(url)
 
                     if response.status_code == 200:
@@ -65,7 +65,7 @@ class NCBIdna:
                 if species_test != 'ID':
                     gene_analyse.append('n.d')
                 else:
-                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={self.gene_id}&retmode=json&rettype=xml"
+                    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={gene_id}&retmode=json&rettype=xml"
                     response = requests.get(url)
 
                     if response.status_code == 200:
@@ -84,14 +84,14 @@ class NCBIdna:
         if self.gene_id.isdigit():
             entrez_id = self.gene_id
         else:
-            entrez_id = self.convert_gene_to_entrez_id()
+            entrez_id = NCBIdna.convert_gene_to_entrez_id(self.gene_id, self.species)
             if entrez_id != 'not_found':
                 pass
             else:
                 result_promoter = f'Please verify if {self.gene_id} exist for {self.species}'
                 return result_promoter
 
-        gene_info = self.get_gene_info(entrez_id)
+        gene_info = NCBIdna.get_gene_info(entrez_id)
         if 'chraccver' in str(gene_info):
             gene_name = gene_info['name']
             chraccver = gene_info['genomicinfo'][0]['chraccver']
@@ -102,38 +102,48 @@ class NCBIdna:
             result_promoter = f'Please verify ID of {self.gene_id}'
             return result_promoter
 
-        prom_term = self.prom_term
-        upstream = self.upstream
-        downstream = self.downstream
+        prom_term = self.prom_term.lower()
+        if prom_term not in ['promoter', 'terminator']:
+            result_promoter = f"'{self.prom_term}' not valid. Please use 'Promoter' or 'Terminator'."
+            return result_promoter
 
-        dna_sequence = self.get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop)
-
-        if self.prom_term == 'Promoter':
-            dna_sequence = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
+        if isinstance(self.upstream, int) and isinstance(self.downstream, int):
+            upstream = int(self.upstream)
+            downstream = int(self.downstream)
         else:
-            dna_sequence = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
+            result_window = f'Upstream {self.upstream} and Downstream {self.downstream} must be integer'
+            return result_window
+
+        dna_sequence = NCBIdna.get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop)
+
+        if prom_term == 'promoter':
+            dna_sequence = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}"
+        else:
+            dna_sequence = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}"
 
         return dna_sequence
 
+    @staticmethod
     # Convert gene to ENTREZ_GENE_ID
-    def convert_gene_to_entrez_id(self):
-        if self.gene_id.isdigit():
-            return gene  # Already an ENTREZ_GENE_ID
+    def convert_gene_to_entrez_id(gene_name, species):
+        if gene_name.isdigit():
+            gene_name = 'Already gene ID'
+            return gene_name  # Already an ENTREZ_GENE_ID
 
         # Request for ENTREZ_GENE_ID
-        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={self.gene_id}[Gene%20Name]+AND+{self.species}[Organism]&retmode=json&rettype=xml "
+        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_name}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml "
         response = requests.get(url)
 
         if response.status_code == 200:
             response_data = response.json()
 
             if response_data['esearchresult']['count'] == '0':
-                gene_id = 'not_found'
-                return gene_id
+                gene_name = 'not_found'
+                return gene_name
 
             else:
-                gene_id = response_data['esearchresult']['idlist'][0]
-                return gene_id
+                gene_name = response_data['esearchresult']['idlist'][0]
+                return gene_name
 
     @staticmethod
     # Get gene information
@@ -149,6 +159,7 @@ class NCBIdna:
                 return gene_info
             else:
                 gene_info = int(str('0'))
+
                 return gene_info
 
     @staticmethod
@@ -156,11 +167,11 @@ class NCBIdna:
     def get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop):
         # Determine sens of gene + coordinate for upstream and downstream
         if chrstop > chrstart:
-            start = (chrstart if prom_term == 'Promoter' else chrstop) - upstream
-            end = (chrstart if prom_term == 'Promoter' else chrstop) + downstream
+            start = (chrstart if prom_term.lower() == 'promoter' else chrstop) - upstream
+            end = (chrstart if prom_term.lower() == 'promoter' else chrstop) + downstream
         else:
-            start = (chrstart if prom_term == 'Promoter' else chrstop) + upstream
-            end = (chrstart if prom_term == 'Promoter' else chrstop) - downstream
+            start = (chrstart if prom_term.lower() == 'promoter' else chrstop) + upstream
+            end = (chrstart if prom_term.lower() == 'promoter' else chrstop) - downstream
 
         # Request for DNA sequence
         url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
@@ -178,8 +189,12 @@ class NCBIdna:
 
     @staticmethod
     def reverse_complement(dna_sequence):
+        DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
+        if not all(char in DNA_code for char in dna_sequence):
+            isdna = 'Please use only A T G C'
+            return isdna
         complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
-        reverse_sequence = dna_sequence[::-1]
+        reverse_sequence = dna_sequence[::-1].upper()
         complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)
         return complement_sequence
 
@@ -358,7 +373,7 @@ class IMO:
                         normalized_score = score / max_score
                     else:
                         normalized_score = (score - min_score) / (max_score - min_score)
-                    position = int(i)+1
+                    position = int(i) + 1
 
                     found_positions.append((position, seq, normalized_score))
                     progress_bar.update(1)
@@ -377,13 +392,13 @@ class IMO:
                             threshold = 0.5
 
                     for position, seq, normalized_score in found_positions:
-                        start_position = max(0, position - 3)
-                        end_position = min(len(dna_sequence), position + len(seq) + 3)
+                        start_position = max(0, position - 4)
+                        end_position = min(len(dna_sequence), position + len(seq) + 2)
                         sequence_with_context = dna_sequence[start_position:end_position]
 
                         sequence_parts = []
                         for j in range(start_position, end_position):
-                            if j < position or j >= position + len(seq):
+                            if j < position - 1 or j + 2 > position + len(seq):
                                 sequence_parts.append(sequence_with_context[j - start_position].lower())
                             else:
                                 sequence_parts.append(sequence_with_context[j - start_position].upper())

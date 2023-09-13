@@ -31,6 +31,7 @@ from navigation.allapp import allapp_page
 from navigation.contact import contact_page
 from navigation.home import home_page
 from navigation.resource import resource_page
+from navigation.tfinder_api import tfinder_api
 from utils.components import footer_style, footer
 
 import img
@@ -70,12 +71,14 @@ st.markdown(footer_style, unsafe_allow_html=True)
 HOME = 'Home'
 APPLICATION = 'Tools/Software'
 RESOURCE = 'Resources'
+# TFINDER_API = 'Package documentation'
 CONTACT = 'Contact'
 
 tabs = [
     HOME,
     APPLICATION,
     RESOURCE,
+    # TFINDER_API,
     CONTACT
 ]
 
@@ -83,6 +86,7 @@ option_data = [
     {'icon': "🏠", 'label': HOME},
     {'icon': "🖥️", 'label': APPLICATION},
     {'icon': "📑", 'label': RESOURCE},
+    # {'icon': "🐍", 'label': TFINDER_API},
     {'icon': "✉️", 'label': CONTACT}
 
 ]
@@ -105,6 +109,9 @@ elif chosen_tab == APPLICATION:
 
 elif chosen_tab == RESOURCE:
     resource_page()
+
+# elif chosen_tab == TFINDER_API:
+    # tfinder_api()
 
 elif chosen_tab == CONTACT:
     contact_page()
@@ -225,7 +232,7 @@ st.sidebar.markdown("[Want to talk ? 🙋🏼‍♂](https://github.com/Jumitti/
 streamlit_analytics.stop_tracking()
 
 views = streamlit_analytics.main.counts["total_pageviews"]
-st.sidebar.markdown(f"Total users 👥: {int(views)+49}")
+st.sidebar.markdown(f"Total users 👥: {int(views) + 49}")
 
 modal = Modal(key="TFinder Key", title="Disclaimers")
 
@@ -240,7 +247,8 @@ if not st.session_state.popup_closed:
             ': More information [NCBI Website and Data Usage Policies and Disclaimers](https://www.ncbi.nlm.nih.gov/home/about/policies/)')
         st.markdown("TFinder use [JASPAR API](https://doi.org/10.1093/bioinformatics/btx804)")
         st.markdown('')
-        st.markdown('If you encounter a problem, please send an email to minniti@ipm.cnrs.fr or minnitijulien06@gmail.com or use the [Issues](https://github.com/Jumitti/TFinder/issues) tab on GitHub')
+        st.markdown(
+            'If you encounter a problem, please send an email to minniti@ipm.cnrs.fr or minnitijulien06@gmail.com or use the [Issues](https://github.com/Jumitti/TFinder/issues) tab on GitHub')
         value = st.checkbox("By checking this box, you agree with data usage polices of NCBI and JASPAR")
         if value:
             st.button('Close')
