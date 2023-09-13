@@ -199,7 +199,7 @@ st.sidebar.title("Servers status",
                  help='✅: servers are reachable. You can use extract regions via NCBI/use the JASPAR_IDs\n\n❌: servers are unreachable. You can still use TFinder if you have a sequence in FASTA format and a pattern to search in the sequence')
 
 if st.sidebar.button("Check"):
-    with st.spinner('Please wait...'):
+    with st.sidebar.spinner('Please wait...'):
         response = requests.get(
             'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term=nos2[Gene%20Name]+AND+human[Organism]&retmode=json&rettype=xml')
         response1 = requests.get('https://jaspar.genereg.net/api/v1/matrix/MA0106.1')
