@@ -102,10 +102,9 @@ class NCBIdna:
             result_promoter = f'Please verify ID of {self.gene_id}'
             return result_promoter
 
-        if self.prom_term.lower() == 'promoter' or 'terminator':
-            prom_term = self.prom_term.lower()
-        else:
-            result_promoter = f"{self.prom_term} not valid. Please use 'Promoter' or 'Terminator'."
+        prom_term = self.prom_term.lower()
+        if prom_term not in ['promoter', 'terminator']:
+            result_promoter = f"'{self.prom_term}' not valid. Please use 'Promoter' or 'Terminator'."
             return result_promoter
 
         upstream = self.upstream
@@ -363,7 +362,7 @@ class IMO:
                         normalized_score = score / max_score
                     else:
                         normalized_score = (score - min_score) / (max_score - min_score)
-                    position = int(i)+1
+                    position = int(i) + 1
 
                     found_positions.append((position, seq, normalized_score))
                     progress_bar.update(1)
