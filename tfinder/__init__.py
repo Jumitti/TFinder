@@ -189,6 +189,10 @@ class NCBIdna:
 
     @staticmethod
     def reverse_complement(dna_sequence):
+        DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
+        if not all(char in DNA_code for char in dna_sequence):
+            isdna = 'Please use only A T G C'
+            return isdna
         complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
         reverse_sequence = dna_sequence[::-1]
         complement_sequence = ''.join(complement_dict.get(base, base) for base in reverse_sequence)

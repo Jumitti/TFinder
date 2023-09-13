@@ -191,11 +191,11 @@ print(results)'''
         st.markdown('**Parameters**')
         st.markdown('**prom_term** ("promoter" or "terminator"):')
         st.markdown(
-            'Choose between "promoter" or "terminator". It allows to choose between TSS or gene end.')
+            'Choose between "promoter" or "terminator". It allows to choose between TSS or gene end')
         st.markdown('**upstream** (integer):')
-        st.markdown('Upstream defines the number of base pairs (bp) before the TSS/gene end ')
+        st.markdown('Upstream defines the number of base pairs (bp) before the TSS/gene end')
         st.markdown('**downstream** (integer):')
-        st.markdown('Downstream defines the number of base pairs (bp) after the TSS/gene end"')
+        st.markdown('Downstream defines the number of base pairs (bp) after the TSS/gene end')
         st.markdown('**chraccver** (str):')
         st.markdown(
             'ACCESSION of the chromosome')
@@ -226,4 +226,32 @@ print(results)'''
         st.code(exemple)
         st.markdown("**Result**")
         result = '''TTTGAGAGGCTGAAGTGGGCAGATCACTTGAGCTTCAGAGTTCGAGACCAGCATGGACAACATGGTGAAACCCAGTCTCTACCAAAAACACAAAAATATTAGCTGGGTGTGGTGGTGCATGCCTGTAGTCCCAGCTACTCAGGAGGCTGAGGTGGGAGGATCGCTTGAGCCTGGGAGGCAGAAGTTGCAATGAGCAGAGATCGTGCCACTCCGCTCCAGTCTTGGTGACAGAATGAGACTCCATCTCAAAAATAAATAAATAAATAAAATAAATGAAATGAAATTATAAGAAATTACCACTTTTTCATGTAAGAAGTGATCATTTCCATTATAAGGGAAGGAATTTAATCCTACCTGCCATTCCACCAAAGCTTACCTAGTGCTAAAGGATGAGGTGTTAGTAAGACCAACATCTCAGAGGCCTCTCTGTGCCAATAGCCTTCCTTCCTTTCCCTTCCAAAAACCTCAAGTGACTAGTTCAGAGGCCTGTCTGGAATAATGGCATCATCTAATATCACTGGCCTTCTGGAACCTGGGCATTTTCCAGTGTGTTCCATACTGTCAATATTCCCCCAGCTTCCTGGACTCCTGTCACAAGCTGGAAAAGTGAGAGGATGGACAGGGATTAACCAGAGAGCTCCCTGCTGAGGAAAAAATCTCCCAGATGCTGAAAGTGAGGCCATGTGGCTTGGCCAAATAAAACCTGGCTCCGTGGTGCCTCTATCTTAGCAGCCACCCTGCTGATGAACTGCCACCTTGGACTTGGGACCAGAAAGAGGTGGGTTGGGTGAAGAGGCACCACACAGAGTGATGTAACAGCAAGATCAGGTCACCCACAGGCCCTGGCAGTCACAGTCATAAATTAGCTAACTGTACACAAGCTGGGGACACTCCCTTTGGAAACCAAAAAAAAAAAAAAAAAAAAGAGACCTTTATGCAAAAACAACTCTCTGGATGGCATGGGGTGAGTATAAATACTTCTTGGCTGCCAGTGTGTTCATAACTTTGTAGCGAGTCGAAAACTGAGGCTCCGGCCGCAGAGAACTCAGCCTCATTCCTGCTTTAAAATCTCTCGGCCACCTTTGATGAGGGGACTGGGCAGTTCTAGACAGTCCCGAAGTTCTCAAGGCACAGGTCTCTTCCTGGTTTGACTGTCCTTACCCCGGGGAGGCAGTGCAGCCAGCTGCAAGGTGAGTTGCCTTCATTTCTGGGGAAGCGGCTGTTTTGAGAGGGTTTTGTTTCTTCCTCTTTGAGAAGGCTCAGAAAATTGTGGGAATTTTCTGCCTACAGAGAGAAGGTGTTGGAAAGTCTAGGTAAAAAAATGCCGACATGAGGTTTGGTCATTTGAACATGGCATCTTGGTCAGATTTCTTTTCTGCAAATATTAGCTGTGGTTGTTACATGACAAGGAAAAACTTTCTGAAAAGTTCAAAATGGGAGTTTGTATCTGCTAAGAATTTTTTTTAACAGAGATTATCTTATCAGTCCTTATAACATGTAA'''
+        st.code(result)
+
+    with st.expander('Reverse complement a sequence'):
+        st.markdown('As expected...')
+        reverse_complement = 'NCBIdna.reverse_complement(dna_sequence)'
+        st.code(reverse_complement)
+
+        st.divider()
+        st.markdown('**Parameter**')
+        st.markdown('**dna_sequence** (str):')
+        st.markdown(
+            'Use only A, T, G, C')
+
+        st.divider()
+        st.markdown('**Return**')
+        st.markdown('(str)')
+        st.markdown('DNA sequence reverse complemented')
+
+        st.divider()
+        st.markdown('**Example**')
+        exemple = '''dna_sequence = 'TTTGAGAGGCTGAAGTGGGCAGATCACTTGAGCTTCAGAGTTCGAGACCA'
+
+results = NCBIdna.reverse_complement(dna_sequence)
+
+print(results)'''
+        st.code(exemple)
+        st.markdown("**Result**")
+        result = '''TGGTCTCGAACTCTGAAGCTCAAGTGATCTGCCCACTTCAGCCTCTCAAA'''
         st.code(result)
