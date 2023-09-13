@@ -102,13 +102,18 @@ class NCBIdna:
             result_promoter = f'Please verify ID of {self.gene_id}'
             return result_promoter
 
-        prom_term = self.prom_term
+        if self.prom_term.lower() == 'promoter' or 'terminator':
+            prom_term = self.prom_term.lower()
+        else:
+            result_promoter = f"{self.prom_term} not valid. Please use 'Promoter' or 'Terminator'."
+            return result_promoter
+
         upstream = self.upstream
         downstream = self.downstream
 
         dna_sequence = self.get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop)
 
-        if self.prom_term == 'Promoter':
+        if self.prom_term == 'promoter':
             dna_sequence = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
         else:
             dna_sequence = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
@@ -156,11 +161,11 @@ class NCBIdna:
     def get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop):
         # Determine sens of gene + coordinate for upstream and downstream
         if chrstop > chrstart:
-            start = (chrstart if prom_term == 'Promoter' else chrstop) - upstream
-            end = (chrstart if prom_term == 'Promoter' else chrstop) + downstream
+            start = (chrstart if prom_term == 'promoter' else chrstop) - upstream
+            end = (chrstart if prom_term == 'promoter' else chrstop) + downstream
         else:
-            start = (chrstart if prom_term == 'Promoter' else chrstop) + upstream
-            end = (chrstart if prom_term == 'Promoter' else chrstop) - downstream
+            start = (chrstart if prom_term == 'promoter' else chrstop) + upstream
+            end = (chrstart if prom_term == 'promoter' else chrstop) - downstream
 
         # Request for DNA sequence
         url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
