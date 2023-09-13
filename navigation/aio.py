@@ -235,7 +235,7 @@ def aio_page():
                     pbar = st.progress(0,
                                        text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                     for i, gene_id in enumerate(gene_ids):
-                        pbar.progress((i + 1) / len(gene_ids),
+                        pbar.progress(i / len(gene_ids),
                                       text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                         result_promoter_output = NCBIdna(gene_id, prom_term, upstream, downstream,
                                                          species).find_sequences()
