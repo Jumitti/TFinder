@@ -113,36 +113,36 @@ TGTCTGAAGATCTGCCGACTCCAGCATGGCCCCATGGTGACAACAGACCTGCGACAGGAAGCCCAAAGCTCACATCGAAA
 '''
         st.code(result)
 
-        with st.expander('Convert gene name to gene ID'):
-            st.markdown('Convert gene name to gene ID')
-            convert_gene_to_entrez_id = 'NCBIdna.convert_gene_to_entrez_id(gene_name, species)'
-            st.code(convert_gene_to_entrez_id)
+    with st.expander('Convert gene name to gene ID'):
+        st.markdown('Convert gene name to gene ID')
+        convert_gene_to_entrez_id = 'NCBIdna.convert_gene_to_entrez_id(gene_name, species)'
+        st.code(convert_gene_to_entrez_id)
 
-            st.divider()
-            st.markdown('**Parameters**')
-            st.markdown('**gene_name** (list):')
-            st.markdown('It should be **gene name** or **gene ID**. Support only one by one gene_id.')
-            st.markdown('**species** (str):')
-            st.markdown(
-                'Any species of https://www.ncbi.nlm.nih.gov/genome/browse/#!/overview/.')
+        st.divider()
+        st.markdown('**Parameters**')
+        st.markdown('**gene_name** (list):')
+        st.markdown('It should be **gene name** or **gene ID**. Support only one by one gene_id.')
+        st.markdown('**species** (str):')
+        st.markdown(
+            'Any species of https://www.ncbi.nlm.nih.gov/genome/browse/#!/overview/.')
 
-            st.divider()
-            st.markdown('**Return**')
-            st.markdown('(str)')
-            st.markdown('Gene ID of the gene name for desire species')
+        st.divider()
+        st.markdown('**Return**')
+        st.markdown('(str)')
+        st.markdown('Gene ID of the gene name for desire species')
 
-            st.divider()
-            st.markdown('**Example**')
-            exemple = '''gene_ids = ['APP', 'PRKN']
-        species_list = ['Macaca mulatta', 'Human']
+        st.divider()
+        st.markdown('**Example**')
+        exemple = '''gene_ids = ['APP', 'PRKN']
+species_list = ['Macaca mulatta', 'Human']
 
-        results = []
-        for gene_id in gene_ids:
-            for species in species_list:
-                results.append(NCBIdna.convert_gene_to_entrez_id(gene_id, species))
+results = []
+for gene_id in gene_ids:
+    for species in species_list:
+        results.append(NCBIdna.convert_gene_to_entrez_id(gene_id, species))
 
-        print(results)'''
-            st.code(exemple)
-            st.markdown("**Result**")
-            result = """'100427716', '351', '710899', '5071'"""
-            st.code(result)
+print(results)'''
+        st.code(exemple)
+        st.markdown("**Result**")
+        result = """'100427716', '351', '710899', '5071'"""
+        st.code(result)
