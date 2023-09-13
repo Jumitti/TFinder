@@ -21,7 +21,25 @@ The in-silico research of TFBS can be tedious and time-consuming at various stag
 
 TFinder is an ultra-intuitive, easy-to-use and fast analysis open source and free tool that allows both the retrieval and search of TFBS in a unique site. TFinder allows the analysis of an unlimited number of genes; the selection of up to five different species (human, mouse, rat, drosophila, zebrafish); the choice and examination of either promoter or terminator gene regions; the configuration of an upstream downstream window of sequence analysis and the search of TFBS in different formats including IUPAC code, a JASPAR ID or a Position Weight Matrix. TFinder, searches for TFBS on the sense and antisense strand but also considers the search with the complementary forms. The software takes care of everything in record time.
 
+## How to install
+
+No installation is required. You can access it by clicking here [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tfinder-ipmc.streamlit.app/)
+
+A beta version of TFinder exists here. [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tfinder-fyvzny536kxu2qxaqlmbsx.streamlit.app/)
+
+A python package is under development. It will be effective later. The documentation is in beta
+
 ## Functions
+
+### Browser compatibility
+
+- Opera GX
+- Chrome (also Chromium)
+- Safari
+- Edge
+- Mozilla
+- Phone
+
 ### Gene regulatory regions Extractor
 - Extract mutliple regulatory regions (promoter/terminator) using ENTREZ_GENE_ID or NCBI Gene Name in FASTA format ([NCBI API](https://www.ncbi.nlm.nih.gov/home/develop/api/))
 - Species: Human 🙋🏼‍♂️, Mouse 🖱, Rat 🐀, Drosophila 🦟, Zebrafish 🐟
@@ -55,15 +73,6 @@ TFinder is an ultra-intuitive, easy-to-use and fast analysis open source and fre
 ![graph_webui](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/promtermoriginal.png)
 ![graph_webui](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/bsfMS.png)
 ![graph_webui](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/Graph%20WebUI.png)
-
-## Browser compatibility
-
-- Opera GX
-- Chrome (also Chromium)
-- Safari
-- Edge
-- Mozilla
-- Phone
 
 ## More
 
