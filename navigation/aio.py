@@ -230,29 +230,32 @@ def aio_page():
 
             # Run Promoter Finder
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
-                # email_backdoor(gene_ids)
-                with colprom1:
-                    pbar = st.progress(0,
-                                       text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                    for i, gene_id in enumerate(gene_ids):
-                        pbar.progress(i / len(gene_ids),
-                                      text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                        result_promoter_output = NCBIdna(gene_id, prom_term, upstream, downstream,
-                                                         species).find_sequences()
-                        if not result_promoter_output.startswith('P'):
-                            st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
-                            result_promoter.append(result_promoter_output)
-                            pass
+                with st.spinner('Please wait...'):
+                    # email_backdoor(gene_ids)
+                    with colprom1:
+                        pbar = st.progress(0,
+                                           text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                        for i, gene_id in enumerate(gene_ids):
+                            pbar.progress(i / len(gene_ids),
+                                          text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                            result_promoter_output = NCBIdna(gene_id, prom_term, upstream, downstream,
+                                                             species).find_sequences()
+                            if not result_promoter_output.startswith('P'):
+                                pbar.progress((i + 1) / len(gene_ids),
+                                              text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                                st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
+                                result_promoter.append(result_promoter_output)
+                                pass
 
-                        else:
-                            st.error(result_promoter_output)
-                            continue
+                            else:
+                                st.error(result_promoter_output)
+                                continue
 
-                    result_promoter_text = "\n".join(result_promoter)
-                    st.session_state['result_promoter_text'] = result_promoter_text
+                        result_promoter_text = "\n".join(result_promoter)
+                        st.session_state['result_promoter_text'] = result_promoter_text
 
-                    st.success(f"{prom_term} extraction complete !")
-                    st.toast(f"{prom_term} extraction complete !", icon='😊')
+                        st.success(f"{prom_term} extraction complete !")
+                        st.toast(f"{prom_term} extraction complete !", icon='😊')
 
         with tab2:
             # Advance mode extraction
