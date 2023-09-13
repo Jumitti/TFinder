@@ -121,7 +121,7 @@ TGTCTGAAGATCTGCCGACTCCAGCATGGCCCCATGGTGACAACAGACCTGCGACAGGAAGCCCAAAGCTCACATCGAAA
         st.divider()
         st.markdown('**Parameters**')
         st.markdown('**gene_name** (list):')
-        st.markdown('It should be **gene name** or **gene ID**. Support only one by one gene_id.')
+        st.markdown('It should be **gene name** or **gene ID**. Support only one by one gene_name.')
         st.markdown('**species** (str):')
         st.markdown(
             'Any species of https://www.ncbi.nlm.nih.gov/genome/browse/#!/overview/.')
@@ -133,13 +133,13 @@ TGTCTGAAGATCTGCCGACTCCAGCATGGCCCCATGGTGACAACAGACCTGCGACAGGAAGCCCAAAGCTCACATCGAAA
 
         st.divider()
         st.markdown('**Example**')
-        exemple = '''gene_ids = ['APP', 'PRKN']
+        exemple = '''gene_list = ['APP', 'PRKN']
 species_list = ['Macaca mulatta', 'Human']
 
 results = []
-for gene_id in gene_ids:
+for gene_name in gene_list:
     for species in species_list:
-        results.append(NCBIdna.convert_gene_to_entrez_id(gene_id, species))
+        results.append(NCBIdna.convert_gene_to_entrez_id(gene_name, species))
 
 print(results)'''
         st.code(exemple)
