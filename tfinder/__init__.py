@@ -393,7 +393,7 @@ class IMO:
 
                     for position, seq, normalized_score in found_positions:
                         start_position = max(0, position - 4)
-                        end_position = min(len(dna_sequence), position + len(seq) + 4)
+                        end_position = min(len(dna_sequence), position + len(seq) + 2)
                         sequence_with_context = dna_sequence[start_position:end_position]
 
                         sequence_parts = []
