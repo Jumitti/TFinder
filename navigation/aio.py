@@ -179,6 +179,8 @@ def aio_page():
                                    text='**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                 email_backdoor(gene_ids)
                 for i, gene_id in enumerate(gene_ids):
+                    pbar.progress((i) / len(gene_ids),
+                                  text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                     gene_disponibility_output.append(NCBIdna.analyse_gene(gene_id))
                     pbar.progress((i + 1) / len(gene_ids),
                                   text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
