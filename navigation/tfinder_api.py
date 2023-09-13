@@ -65,6 +65,10 @@ print(results)'''
         st.markdown('**Parameters**')
         st.markdown('**gene_id** (list):')
         st.markdown('Support only one by one gene_id.')
-        st.markdown('**prom_term** ("Promoter" or "Terminator":')
-        st.markdown('Choose between "Promoter" or "Terminator". Default is "Promoter"')
+        st.markdown('**prom_term** ("promoter" or "terminator"):')
+        st.markdown('Choose between "promoter" or "terminator"')
+        st.markdown('**upstream** (integer):')
+        st.markdown('Choose between "promoter" or "terminator"')
+        st.markdown('**downstream** (integer):')
+        st.markdown('Choose between "promoter" or "terminator"')
 

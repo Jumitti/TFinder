@@ -34,8 +34,8 @@ class NCBIdna:
                  species=None):
         self.gene_id = gene_id
         self.prom_term = prom_term if prom_term is not None else None
-        self.upstream = int(upstream) if upstream is not None else None
-        self.downstream = int(downstream) if downstream is not None else None
+        self.upstream = upstream if upstream is not None else None
+        self.downstream = downstream if downstream is not None else None
         self.species = species if species is not None else None
 
     @staticmethod
@@ -107,8 +107,12 @@ class NCBIdna:
             result_promoter = f"'{self.prom_term}' not valid. Please use 'Promoter' or 'Terminator'."
             return result_promoter
 
-        upstream = self.upstream
-        downstream = self.downstream
+        if isinstance(self.upstream, int) and isinstance(self.downstream, int):
+            upstream = int(self.upstream)
+            downstream = int(self.downstream)
+        else:
+            result_window = f'Upstream {self.upstream} and Downstream {self.downstream} must be integer'
+            return result_window
 
         dna_sequence = self.get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop)
 
