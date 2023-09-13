@@ -392,13 +392,13 @@ class IMO:
                             threshold = 0.5
 
                     for position, seq, normalized_score in found_positions:
-                        start_position = max(0, position - 4)
-                        end_position = min(len(dna_sequence), position + len(seq) + 4)
+                        start_position = max(0, position - 3)
+                        end_position = min(len(dna_sequence), position + len(seq) + 3)
                         sequence_with_context = dna_sequence[start_position:end_position]
 
                         sequence_parts = []
                         for j in range(start_position, end_position):
-                            if j < position - 1 or j - 1 >= position + len(seq):
+                            if j < position - 1 or j > position + len(seq):
                                 sequence_parts.append(sequence_with_context[j - start_position].lower())
                             else:
                                 sequence_parts.append(sequence_with_context[j - start_position].upper())
