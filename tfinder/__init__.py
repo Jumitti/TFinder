@@ -84,7 +84,7 @@ class NCBIdna:
         if self.gene_id.isdigit():
             entrez_id = self.gene_id
         else:
-            entrez_id = self.convert_gene_to_entrez_id()
+            entrez_id = NCBIdna.convert_gene_to_entrez_id(self.gene_id, self.species)
             if entrez_id != 'not_found':
                 pass
             else:
@@ -123,13 +123,15 @@ class NCBIdna:
 
         return dna_sequence
 
+    @staticmethod
     # Convert gene to ENTREZ_GENE_ID
-    def convert_gene_to_entrez_id(self):
-        if self.gene_id.isdigit():
-            return gene  # Already an ENTREZ_GENE_ID
+    def convert_gene_to_entrez_id(gene_name, species):
+        if gene_id.isdigit():
+            gene_id = 'Already gene ID'
+            return gene_id  # Already an ENTREZ_GENE_ID
 
         # Request for ENTREZ_GENE_ID
-        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={self.gene_id}[Gene%20Name]+AND+{self.species}[Organism]&retmode=json&rettype=xml "
+        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_id}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml "
         response = requests.get(url)
 
         if response.status_code == 200:
