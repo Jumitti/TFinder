@@ -401,7 +401,7 @@ class IMO:
                             if j < position - 1 or j > position + len(seq):
                                 sequence_parts.append(sequence_with_context[j - start_position].lower())
                             else:
-                                sequence_parts.append(sequence_with_context[j - start_position - 1].upper())
+                                sequence_parts.append(sequence_with_context[j - start_position].upper())
 
                         sequence_with_context = ''.join(sequence_parts)
 
