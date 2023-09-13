@@ -114,9 +114,9 @@ class NCBIdna:
             result_window = f'Upstream {self.upstream} and Downstream {self.downstream} must be integer'
             return result_window
 
-        dna_sequence = self.get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop)
+        dna_sequence = NCBIdna.get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop)
 
-        if self.prom_term == 'promoter':
+        if prom_term == 'promoter':
             dna_sequence = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}"
         else:
             dna_sequence = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}"
@@ -126,24 +126,24 @@ class NCBIdna:
     @staticmethod
     # Convert gene to ENTREZ_GENE_ID
     def convert_gene_to_entrez_id(gene_name, species):
-        if gene_id.isdigit():
-            gene_id = 'Already gene ID'
-            return gene_id  # Already an ENTREZ_GENE_ID
+        if gene_name.isdigit():
+            gene_name = 'Already gene ID'
+            return gene_name  # Already an ENTREZ_GENE_ID
 
         # Request for ENTREZ_GENE_ID
-        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_id}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml "
+        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_name}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml "
         response = requests.get(url)
 
         if response.status_code == 200:
             response_data = response.json()
 
             if response_data['esearchresult']['count'] == '0':
-                gene_id = 'not_found'
-                return gene_id
+                gene_name = 'not_found'
+                return gene_name
 
             else:
-                gene_id = response_data['esearchresult']['idlist'][0]
-                return gene_id
+                gene_name = response_data['esearchresult']['idlist'][0]
+                return gene_name
 
     @staticmethod
     # Get gene information
@@ -167,11 +167,11 @@ class NCBIdna:
     def get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop):
         # Determine sens of gene + coordinate for upstream and downstream
         if chrstop > chrstart:
-            start = (chrstart if prom_term == 'promoter' else chrstop) - upstream
-            end = (chrstart if prom_term == 'promoter' else chrstop) + downstream
+            start = (chrstart if prom_term.lower() == 'promoter' else chrstop) - upstream
+            end = (chrstart if prom_term.lower() == 'promoter' else chrstop) + downstream
         else:
-            start = (chrstart if prom_term == 'promoter' else chrstop) + upstream
-            end = (chrstart if prom_term == 'promoter' else chrstop) - downstream
+            start = (chrstart if prom_term.lower() == 'promoter' else chrstop) + upstream
+            end = (chrstart if prom_term.lower() == 'promoter' else chrstop) - downstream
 
         # Request for DNA sequence
         url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
