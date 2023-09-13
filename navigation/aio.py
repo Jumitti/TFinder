@@ -172,22 +172,21 @@ def aio_page():
         # Verify if gene is available for all species
         if st.button('🔎 Check genes avaibility',
                      help='Sometimes genes do not have the same name in all species or do not exist.'):
-            species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
-            gene_disponibility_output = []
-            pbar = st.progress(0,
-                               text='**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-            email_backdoor(gene_ids)
-            for i, gene_id in enumerate(gene_ids):
-                pbar.progress((i + 0.5) / len(gene_ids),
-                              text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                gene_disponibility_output.append(NCBIdna.analyse_gene(gene_id))
-                pbar.progress((i + 0.5) / len(gene_ids),
-                              text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+            with st.spinner('Please wait...'):
+                species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
+                gene_disponibility_output = []
+                pbar = st.progress(0,
+                                   text='**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                email_backdoor(gene_ids)
+                for i, gene_id in enumerate(gene_ids):
+                    gene_disponibility_output.append(NCBIdna.analyse_gene(gene_id))
+                    pbar.progress((i + 1) / len(gene_ids),
+                                  text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
 
-            species_columns = ['Gene'] + species_list
-            gene_disponibility_output = pd.DataFrame(gene_disponibility_output, columns=species_columns)
+                species_columns = ['Gene'] + species_list
+                gene_disponibility_output = pd.DataFrame(gene_disponibility_output, columns=species_columns)
 
-            st.session_state['gene_disponibility_output'] = gene_disponibility_output
+                st.session_state['gene_disponibility_output'] = gene_disponibility_output
 
         if 'gene_disponibility_output' in st.session_state:
             st.dataframe(st.session_state['gene_disponibility_output'], hide_index=True)
