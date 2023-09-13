@@ -398,7 +398,7 @@ class IMO:
 
                         sequence_parts = []
                         for j in range(start_position, end_position):
-                            if j < position or j >= position + len(seq):
+                            if j < position - 1 or j - 1 >= position + len(seq):
                                 sequence_parts.append(sequence_with_context[j - start_position].lower())
                             else:
                                 sequence_parts.append(sequence_with_context[j - start_position].upper())
