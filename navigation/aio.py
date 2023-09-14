@@ -647,7 +647,7 @@ def aio_page():
         st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
         auto_thre = st.checkbox("Automatic threshold", value=True)
         if auto_thre:
-            threshold_entry = 0
+            threshold_entry = 1
         else:
             threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.5, 1.0, 0.85,
                                         step=0.05,
