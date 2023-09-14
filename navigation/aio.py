@@ -172,20 +172,23 @@ def aio_page():
         # Verify if gene is available for all species
         if st.button('🔎 Check genes avaibility',
                      help='Sometimes genes do not have the same name in all species or do not exist.'):
-            species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
-            gene_disponibility_output = []
-            pbar = st.progress(0,
-                               text='**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-            email_backdoor(gene_ids)
-            for i, gene_id in enumerate(gene_ids):
-                pbar.progress((i + 1) / len(gene_ids),
-                              text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                gene_disponibility_output.append(NCBIdna.analyse_gene(gene_id))
+            with st.spinner('Please wait...'):
+                species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
+                gene_disponibility_output = []
+                pbar = st.progress(0,
+                                   text='**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                # email_backdoor(gene_ids)
+                for i, gene_id in enumerate(gene_ids):
+                    pbar.progress(i / len(gene_ids),
+                                  text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                    gene_disponibility_output.append(NCBIdna.analyse_gene(gene_id))
+                    pbar.progress((i + 1) / len(gene_ids),
+                                  text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
 
-            species_columns = ['Gene'] + species_list
-            gene_disponibility_output = pd.DataFrame(gene_disponibility_output, columns=species_columns)
+                species_columns = ['Gene'] + species_list
+                gene_disponibility_output = pd.DataFrame(gene_disponibility_output, columns=species_columns)
 
-            st.session_state['gene_disponibility_output'] = gene_disponibility_output
+                st.session_state['gene_disponibility_output'] = gene_disponibility_output
 
         if 'gene_disponibility_output' in st.session_state:
             st.dataframe(st.session_state['gene_disponibility_output'], hide_index=True)
@@ -227,29 +230,32 @@ def aio_page():
 
             # Run Promoter Finder
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
-                email_backdoor(gene_ids)
-                with colprom1:
-                    pbar = st.progress(0,
-                                       text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                    for i, gene_id in enumerate(gene_ids):
-                        pbar.progress((i + 1) / len(gene_ids),
-                                      text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                        result_promoter_output = NCBIdna(gene_id, prom_term, upstream, downstream,
-                                                         species).find_sequences()
-                        if not result_promoter_output.startswith('P'):
-                            st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
-                            result_promoter.append(result_promoter_output)
-                            pass
+                with st.spinner('Please wait...'):
+                    # email_backdoor(gene_ids)
+                    with colprom1:
+                        pbar = st.progress(0,
+                                           text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                        for i, gene_id in enumerate(gene_ids):
+                            pbar.progress(i / len(gene_ids),
+                                          text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                            result_promoter_output = NCBIdna(gene_id, prom_term, upstream, downstream,
+                                                             species).find_sequences()
+                            if not result_promoter_output.startswith('P'):
+                                pbar.progress((i + 1) / len(gene_ids),
+                                              text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                                st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
+                                result_promoter.append(result_promoter_output)
+                                pass
 
-                        else:
-                            st.error(result_promoter_output)
-                            continue
+                            else:
+                                st.error(result_promoter_output)
+                                continue
 
-                    result_promoter_text = "\n".join(result_promoter)
-                    st.session_state['result_promoter_text'] = result_promoter_text
+                        result_promoter_text = "\n".join(result_promoter)
+                        st.session_state['result_promoter_text'] = result_promoter_text
 
-                    st.success(f"{prom_term} extraction complete !")
-                    st.toast(f"{prom_term} extraction complete !", icon='😊')
+                        st.success(f"{prom_term} extraction complete !")
+                        st.toast(f"{prom_term} extraction complete !", icon='😊')
 
         with tab2:
             # Advance mode extraction
@@ -367,7 +373,7 @@ def aio_page():
                                        text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                     for i, gene_info in enumerate(data_dff.itertuples(index=False)):
                         gene_id = gene_info.Gene
-                        email_backdoor(str(gene_info))
+                        # email_backdoor(str(gene_info))
                         if gene_id.isdigit():
                             for search_type in search_types:
                                 if getattr(gene_info, f'{search_type}'):
