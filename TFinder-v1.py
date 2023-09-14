@@ -78,7 +78,7 @@ tabs = [
     HOME,
     APPLICATION,
     RESOURCE,
-    TFINDER_API,
+    # TFINDER_API,
     CONTACT
 ]
 
