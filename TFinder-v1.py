@@ -71,7 +71,7 @@ st.markdown(footer_style, unsafe_allow_html=True)
 HOME = 'Home'
 APPLICATION = 'Tools/Software'
 RESOURCE = 'Resources'
-TFINDER_API = 'Package documentation'
+# TFINDER_API = 'Package documentation'
 CONTACT = 'Contact'
 
 tabs = [
@@ -86,7 +86,7 @@ option_data = [
     {'icon': "🏠", 'label': HOME},
     {'icon': "🖥️", 'label': APPLICATION},
     {'icon': "📑", 'label': RESOURCE},
-    {'icon': "🐍", 'label': TFINDER_API},
+    # {'icon': "🐍", 'label': TFINDER_API},
     {'icon': "✉️", 'label': CONTACT}
 
 ]
@@ -110,8 +110,8 @@ elif chosen_tab == APPLICATION:
 elif chosen_tab == RESOURCE:
     resource_page()
 
-elif chosen_tab == TFINDER_API:
-    tfinder_api()
+# elif chosen_tab == TFINDER_API:
+    # tfinder_api()
 
 elif chosen_tab == CONTACT:
     contact_page()
