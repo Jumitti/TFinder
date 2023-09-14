@@ -383,7 +383,7 @@ class IMO:
 
                 # Creating a results table
                 if len(found_positions) > 0:
-                    if threshold < 50:
+                    if threshold < 0.5:
                         highest_normalized_score = max(
                             [normalized_score for _, _, normalized_score in found_positions])
                         if highest_normalized_score >= 0.6:
