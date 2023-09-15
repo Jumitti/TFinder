@@ -19,22 +19,9 @@
 # SOFTWARE.
 
 import datetime
-import io
-import random
-import smtplib
-from email import encoders
-from email.mime.base import MIMEBase
-from email.mime.image import MIMEImage
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
-import altair as alt
-import logomaker
-import numpy as np
 import pandas as pd
-import requests
 import streamlit as st
-from stqdm import stqdm
 
 from tfinder import NCBIdna
 
