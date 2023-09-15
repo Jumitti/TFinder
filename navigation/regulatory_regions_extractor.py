@@ -59,17 +59,23 @@ def prom_extractor_page():
         # Verify if gene is available for all species
         if st.button('🔎 Check genes avaibility',
                      help='Sometimes genes do not have the same name in all species or do not exist.'):
-            species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
-            gene_disponibility_output = []
-            for gene_id in stqdm(gene_ids,
-                                 desc="**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**",
-                                 mininterval=0.1):
-                gene_disponibility_output.append(NCBIdna(gene_id).analyse_gene())
+            with st.spinner('Please wait...'):
+                species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
+                gene_disponibility_output = []
+                pbar = st.progress(0,
+                                   text='**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                # email_backdoor(gene_ids)
+                for i, gene_id in enumerate(gene_ids):
+                    pbar.progress(i / len(gene_ids),
+                                  text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                    gene_disponibility_output.append(NCBIdna.analyse_gene(gene_id))
+                    pbar.progress((i + 1) / len(gene_ids),
+                                  text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
 
-            species_columns = ['Gene'] + species_list
-            gene_disponibility_output = pd.DataFrame(gene_disponibility_output, columns=species_columns)
+                species_columns = ['Gene'] + species_list
+                gene_disponibility_output = pd.DataFrame(gene_disponibility_output, columns=species_columns)
 
-            st.session_state['gene_disponibility_output'] = gene_disponibility_output
+                st.session_state['gene_disponibility_output'] = gene_disponibility_output
 
         if 'gene_disponibility_output' in st.session_state:
             st.dataframe(st.session_state['gene_disponibility_output'], hide_index=True)
@@ -111,26 +117,32 @@ def prom_extractor_page():
 
             # Run Promoter Finder
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
-                with colprom1:
-                    for gene_id in stqdm(gene_ids,
-                                         desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
-                                         mininterval=0.1):
-                        result_promoter_output = NCBIdna(gene_id, species, upstream, downstream,
-                                                         prom_term).find_sequences()
-                        if not result_promoter_output.startswith('P'):
-                            st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
-                            result_promoter.append(result_promoter_output)
-                            pass
+                with st.spinner('Please wait...'):
+                    # email_backdoor(gene_ids)
+                    with colprom1:
+                        pbar = st.progress(0,
+                                           text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                        for i, gene_id in enumerate(gene_ids):
+                            pbar.progress(i / len(gene_ids),
+                                          text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                            result_promoter_output = NCBIdna(gene_id, prom_term, upstream, downstream,
+                                                             species).find_sequences()
+                            if not result_promoter_output.startswith('P'):
+                                pbar.progress((i + 1) / len(gene_ids),
+                                              text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                                st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
+                                result_promoter.append(result_promoter_output)
+                                pass
 
-                        else:
-                            st.error(result_promoter_output)
-                            continue
+                            else:
+                                st.error(result_promoter_output)
+                                continue
 
-                    result_promoter_text = "\n".join(result_promoter)
-                    st.session_state['result_promoter_text'] = result_promoter_text
+                        result_promoter_text = "\n".join(result_promoter)
+                        st.session_state['result_promoter_text'] = result_promoter_text
 
-                    st.success(f"{prom_term} extraction complete !")
-                    st.toast(f"{prom_term} extraction complete !", icon='😊')
+                        st.success(f"{prom_term} extraction complete !")
+                        st.toast(f"{prom_term} extraction complete !", icon='😊')
 
         with tab2:
             # Advance mode extraction
@@ -244,67 +256,56 @@ def prom_extractor_page():
                     st.session_state['upstream'] = upstream_entry
                     upstream = int(upstream_entry)
                     downstream = int(downstream_entry)
-                    iterration = 0
-                    for gene_info in (data_dff.itertuples(index=False)):
+                    pbar = st.progress(0,
+                                       text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                    for i, gene_info in enumerate(data_dff.itertuples(index=False)):
                         gene_id = gene_info.Gene
+                        # email_backdoor(str(gene_info))
                         if gene_id.isdigit():
                             for search_type in search_types:
                                 if getattr(gene_info, f'{search_type}'):
-                                    iterration += 1
+                                    prom_term = search_type.capitalize()
+
+                                    pbar.progress((i + 1) / len(data_dff),
+                                                  text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+
+                                    result_promoter_output = NCBIdna(gene_id, prom_term, upstream,
+                                                                     downstream).find_sequences()
+
+                                    if not result_promoter_output.startswith('P'):
+                                        st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted',
+                                                 icon='🧬')
+                                        result_promoter.append(result_promoter_output)
+                                        pass
+
+                                    else:
+                                        st.error(result_promoter_output)
+                                        continue
+
                         else:
                             for species in species_list:
                                 for search_type in search_types:
                                     if getattr(gene_info, f'{species}') and getattr(gene_info,
                                                                                     f'{search_type}'):
-                                        iterration += 1
-                    with stqdm(total=iterration,
-                               desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
-                               mininterval=0.1) as progress_bar:
-                        for gene_info in (data_dff.itertuples(index=False)):
-                            gene_id = gene_info.Gene
-                            if gene_id.isdigit():
-                                for search_type in search_types:
-                                    if getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
 
-                                        result_promoter_output = NCBIdna(gene_id, upstream=upstream,
-                                                                         downstream=downstream,
-                                                                         prom_term=prom_term).find_sequences()
+                                        pbar.progress((i + 1) / len(data_dff),
+                                                      text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species.capitalize()}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+
+                                        result_promoter_output = NCBIdna(gene_id, prom_term, upstream,
+                                                                         downstream,
+                                                                         species).find_sequences()
 
                                         if not result_promoter_output.startswith('P'):
-                                            st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted',
-                                                     icon='🧬')
+                                            st.toast(
+                                                f'{prom_term} **{gene_id}** from **{species.capitalize()}** extracted',
+                                                icon='🧬')
                                             result_promoter.append(result_promoter_output)
                                             pass
 
                                         else:
                                             st.error(result_promoter_output)
                                             continue
-
-                                        progress_bar.update(1)
-                            else:
-                                for species in species_list:
-                                    for search_type in search_types:
-                                        if getattr(gene_info, f'{species}') and getattr(gene_info,
-                                                                                        f'{search_type}'):
-                                            prom_term = search_type.capitalize()
-
-                                            result_promoter_output = NCBIdna(gene_id, species, upstream,
-                                                                             downstream,
-                                                                             prom_term).find_sequences()
-
-                                            if not result_promoter_output.startswith('P'):
-                                                st.toast(
-                                                    f'{prom_term} **{gene_id}** from **{species.capitalize()}** extracted',
-                                                    icon='🧬')
-                                                result_promoter.append(result_promoter_output)
-                                                pass
-
-                                            else:
-                                                st.error(result_promoter_output)
-                                                continue
-
-                                            progress_bar.update(1)
 
                     result_promoter_text = "\n".join(result_promoter)
                     st.session_state['result_promoter_text'] = result_promoter_text
@@ -315,7 +316,7 @@ def prom_extractor_page():
     st.divider()
     promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
     with promcol1:
-        st.markdown("🔹 Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
+        st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
         if 'result_promoter_text' not in st.session_state:
             result_promoter_text = ''
             st.session_state['result_promoter_text'] = result_promoter_text
