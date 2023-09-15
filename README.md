@@ -13,6 +13,11 @@ TFinder is written in Python and is freely available on GitHub under the MIT lic
 
 Please cite as: "" | DOI: "".
 
+<picture>
+    <img
+        src="/img/tfinder_schema.png">
+</picture>
+
 ## Description
 Transcription factors (TFs) are proteins that bind to DNA to regulate gene expression. They specifically recognize a nucleotide sequence called a transcription factor binding site (TFBS) in the promoter and terminator regions of genes. The search of these TFBSs is an empirical discipline in the field of genomics that concerns a key step before TFBS functional validation by gel shift assays (EMSA) and chromatin immunoprecipitation (ChIP) that allow the examination of the interaction between a TF and DNA (Jayaram, Usvyat and R. Martin 2016)
 
