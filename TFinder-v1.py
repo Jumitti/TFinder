@@ -235,7 +235,7 @@ streamlit_analytics.stop_tracking()
 
 views = streamlit_analytics.main.counts["total_pageviews"]
 previous_views = st.secrets['previous_views']
-st.sidebar.markdown(f"Total users 👥: {int(views) + previous_views}")
+st.sidebar.markdown(f"Total users 👥: {int(views) + int(previous_views)}")
 
 modal = Modal(key="TFinder Key", title="Disclaimers")
 
