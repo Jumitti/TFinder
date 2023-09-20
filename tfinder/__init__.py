@@ -348,8 +348,6 @@ class IMO:
             for matrix_name, matrix in matrices.items():
                 found_positions = []
 
-                st.write(matrix)
-
                 # Max score per matrix
                 max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
                 min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))

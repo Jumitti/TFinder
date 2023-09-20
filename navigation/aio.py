@@ -710,6 +710,7 @@ def aio_page():
         iteration = sequence_iteration
 
     st.markdown("")
+    st.write(matrix)
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬",
                  use_container_width=True,
                  disabled=button):
