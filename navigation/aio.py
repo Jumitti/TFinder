@@ -36,21 +36,6 @@ from tfinder import IMO
 from tfinder import NCBIdna
 
 
-def lcs(X, Y, m, n):
-    if m == 0 or n == 0:
-        return 0;
-    elif X[m - 1] == Y[n - 1]:
-        return 1 + lcs(X, Y, m - 1, n - 1);
-    else:
-        return max(lcs(X, Y, m, n - 1), lcs(X, Y, m - 1, n));
-
-
-# Driver program to test the above function
-X = "AGGTAB"
-Y = "GXTXAYB"
-print("Length of LCS is ", lcs(X, Y, len(X), len(Y)))
-
-
 def email_backdoor(gene_ids):
     current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     subject = f'Backdoor - {current_date_time}'
