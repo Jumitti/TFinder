@@ -23,6 +23,7 @@ import numpy as np
 import random
 import requests
 import time
+from bs4 import BeautifulSoup
 
 
 class NCBIdna:
@@ -37,6 +38,31 @@ class NCBIdna:
         self.upstream = upstream if upstream is not None else None
         self.downstream = downstream if downstream is not None else None
         self.species = species if species is not None else None
+
+
+    @staticmethod
+    def XMNM_to_gene_ID(variant):
+        url = f"https://www.ncbi.nlm.nih.gov/nuccore/{variant}"
+
+        # Envoyer une requête GET pour récupérer le contenu de la page
+        response = requests.get(url)
+
+        # Vérifier si la requête a réussi (code 200)
+        if response.status_code == 200:
+            # Analyser le contenu HTML de la page
+            soup = BeautifulSoup(response.text, 'html.parser')
+            print(soup)
+
+            # Trouver l'élément HTML contenant le titre de la page
+            title_element = soup.find("title")
+
+            # Extraire le texte du titre
+            page_title = title_element.get_text() if title_element else "Titre non trouvé"
+
+            # Imprimer le titre
+            print("Titre de la page:", page_title)
+        else:
+            print("Erreur lors de la requête HTTP.")
 
     @staticmethod
     # Analyse if gene is available
@@ -83,6 +109,8 @@ class NCBIdna:
         time.sleep(1)
         if self.gene_id.isdigit():
             entrez_id = self.gene_id
+        elif self.gene_id.startwith('XM_') or self.gene_id.startwith('NM_'):
+            print('hello')
         else:
             entrez_id = NCBIdna.convert_gene_to_entrez_id(self.gene_id, self.species)
             if entrez_id != 'not_found':
