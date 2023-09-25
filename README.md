@@ -13,6 +13,11 @@ TFinder is written in Python and is freely available on GitHub under the MIT lic
 
 Please cite as: "" | DOI: "".
 
+<picture>
+    <img
+        src="/img/tfinder_schema.png">
+</picture>
+
 ## Description
 Transcription factors (TFs) are proteins that bind to DNA to regulate gene expression. They specifically recognize a nucleotide sequence called a transcription factor binding site (TFBS) in the promoter and terminator regions of genes. The search of these TFBSs is an empirical discipline in the field of genomics that concerns a key step before TFBS functional validation by gel shift assays (EMSA) and chromatin immunoprecipitation (ChIP) that allow the examination of the interaction between a TF and DNA (Jayaram, Usvyat and R. Martin 2016)
 
@@ -57,12 +62,12 @@ A python package is under development. It will be effective later. The documenta
 - Calculation of the distance of the found element to TSS or Gene End
 - Relative Score calculation:
 <p align="center">
-  <img src="https://latex.codecogs.com/svg.image?{\color{white}\text{Relative&space;Score}=\frac{\text{Score&space;of&space;the&space;element&space;found}-\text{Minimum&space;score&space;of&space;the&space;reference&space;matrix}}{\text{Maximum&space;score&space;of&space;the&space;reference&space;matrix}-\text{Minimum&space;score&space;of&space;the&space;reference&space;matrix}}}" alt="relscore equation">
+  <img src="https://latex.codecogs.com/svg.image?{\color{red}\text{Relative&space;Score}=\frac{\text{Score&space;of&space;the&space;element&space;found}-\text{Minimum&space;score&space;of&space;the&space;reference&space;matrix}}{\text{Maximum&space;score&space;of&space;the&space;reference&space;matrix}-\text{Minimum&space;score&space;of&space;the&space;reference&space;matrix}}}" alt="relscore equation">
 </p>
 
 - p-value: 1000000 random sequences of reactive element length are generated based on the proportion of A, T, G, C in the analysed sequence. p-value is the number of random sequences generated having a relative score greater than or equal to the relative score of the element found divided by the number of random sequences generated
 <p align="center">
-  <img src="https://latex.codecogs.com/svg.image?{\color{white}\text{p-value}=\frac{\text{Nb&space;Relative&space;Score&space;random&space;kmer}\geq\text{Relative&space;Score&space;element&space;found}}{\text{Nb&space;random&space;kmer}}}" alt="relscore equation">
+  <img src="https://latex.codecogs.com/svg.image?{\color{red}\text{p-value}=\frac{\text{Nb&space;Relative&space;Score&space;random&space;kmer}\geq\text{Relative&space;Score&space;element&space;found}}{\text{Nb&space;random&space;kmer}}}" alt="relscore equation">
 </p>
 
 - Interactive graph
