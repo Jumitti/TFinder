@@ -238,6 +238,7 @@ def aio_page():
                         for i, gene_id in enumerate(gene_ids):
                             pbar.progress(i / len(gene_ids),
                                           text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                            st.success(gene_id)
                             result_promoter_output = NCBIdna(gene_id, prom_term, upstream, downstream,
                                                              species).find_sequences()
                             if not result_promoter_output.startswith('P'):
