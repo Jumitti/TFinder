@@ -374,7 +374,7 @@ def aio_page():
                     for i, gene_info in enumerate(data_dff.itertuples(index=False)):
                         gene_id = gene_info.Gene
                         # email_backdoor(str(gene_info))
-                        if gene_id.isdigit():
+                        if gene_id.isdigit() or gene_id.startswith('XM_') or gene_id.startswith('NM_') or gene_id.startswith('XR_') or gene_id.startswith('NR_'):
                             for search_type in search_types:
                                 if getattr(gene_info, f'{search_type}'):
                                     prom_term = search_type.capitalize()
