@@ -108,7 +108,7 @@ class NCBIdna:
         if self.gene_id.isdigit():
             entrez_id = self.gene_id
             gene_name, chraccver, chrstart, chrstop, species_API = NCBIdna.get_gene_info(entrez_id)
-        elif self.gene_id.startswith('XM_') or self.gene_id.startswith('NM_'):
+        elif self.gene_id.startswith('XM_') or self.gene_id.startswith('NM_') or self.gene_id.startswith('XR_') or self.gene_id.startswith('NR_'):
             entrez_id = NCBIdna.XMNM_to_gene_ID(self.gene_id)
             if entrez_id == 'UIDs not founds' or entrez_id == 'Error during process of retrieving UIDs':
                 result_promoter = f'Please verify {self.gene_id} variant'
