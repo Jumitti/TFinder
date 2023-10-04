@@ -36,7 +36,7 @@ Bio==1.5.9
 logomaker==0.8
 openpyxl==3.1.2
 sendgrid==6.10.0
-Pillow==9.5.0
+Pillow==10.0.1
 stqdm==0.0.5
 tqdm==4.66.1
 streamlit-modal==0.1.0
