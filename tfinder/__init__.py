@@ -147,7 +147,8 @@ class NCBIdna:
             result_window = f'Upstream {self.upstream} and Downstream {self.downstream} must be integer'
             return result_window
 
-        if not self.all_slice_forms:
+        if not self.all_slice_forms or self.all_slice_forms and self.gene_id.startswith('XM_') or self.gene_id.startswith('NM_') or self.gene_id.startswith(
+                'XR_') or self.gene_id.startswith('NR_'):
             dna_sequence = NCBIdna.get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop)
 
             if prom_term == 'promoter':
