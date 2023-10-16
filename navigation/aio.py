@@ -260,8 +260,7 @@ def aio_page():
                                 st.error(result_promoter_output)
                                 continue
 
-                        if all_variants and gene_id.startswith('XM_') or gene_id.startswith(
-                                'NM_') or gene_id.startswith('XR_') or gene_id.startswith('NR_'):
+                        if all_variants:
                             result_promoter_text = result_promoter_output
                         else:
                             result_promoter_text = "\n".join(result_promoter)
