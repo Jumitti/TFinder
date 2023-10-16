@@ -26,6 +26,7 @@ import time
 from bs4 import BeautifulSoup
 import re
 import xml.etree.ElementTree as ET
+from tqdm import tqdm
 
 
 class NCBIdna:
@@ -34,12 +35,13 @@ class NCBIdna:
                  prom_term,
                  upstream,
                  downstream,
-                 species=None):
+                 species=None, all_slice_forms=None):
         self.gene_id = gene_id
         self.prom_term = prom_term if prom_term is not None else None
         self.upstream = upstream if upstream is not None else None
         self.downstream = downstream if downstream is not None else None
         self.species = species if species is not None else None
+        self.all_slice_forms = True if all_slice_forms is True else False
 
     @staticmethod
     def XMNM_to_gene_ID(variant):
@@ -105,29 +107,33 @@ class NCBIdna:
     # Sequence extractor
     def find_sequences(self):
         time.sleep(1)
-        if self.gene_id.isdigit():
-            entrez_id = self.gene_id
-            gene_name, chraccver, chrstart, chrstop, species_API = NCBIdna.get_gene_info(entrez_id)
-        elif self.gene_id.startswith('XM_') or self.gene_id.startswith('NM_') or self.gene_id.startswith('XR_') or self.gene_id.startswith('NR_'):
+        if self.gene_id.startswith('XM_') or self.gene_id.startswith('NM_') or self.gene_id.startswith(
+                'XR_') or self.gene_id.startswith('NR_'):
             entrez_id = NCBIdna.XMNM_to_gene_ID(self.gene_id)
             if entrez_id == 'UIDs not founds' or entrez_id == 'Error during process of retrieving UIDs':
                 result_promoter = f'Please verify {self.gene_id} variant'
                 return result_promoter
             else:
-                gene_name, chraccver, chrstart, chrstop, species_API = NCBIdna.get_variant_info(entrez_id, self.gene_id)
-
+                variant, gene_name, chraccver, chrstart, chrstop, species_API = NCBIdna.get_variant_info(entrez_id,
+                                                                                                         self.gene_id)
         else:
-            entrez_id = NCBIdna.convert_gene_to_entrez_id(self.gene_id, self.species)
-            if entrez_id != 'not_found':
-                gene_name, chraccver, chrstart, chrstop, species_API = NCBIdna.get_gene_info(entrez_id)
-                pass
-            else:
-                result_promoter = f'Please verify if {self.gene_id} exist for {self.species}'
-                return result_promoter
+            variant = '0'
+            if self.gene_id.isdigit():
+                entrez_id = self.gene_id
 
-        if gene_name == '0':
-            result_promoter = f'Please verify ID of {self.gene_id}'
-            return result_promoter
+            else:
+                entrez_id = NCBIdna.convert_gene_to_entrez_id(self.gene_id, self.species)
+                if entrez_id == 'not_found':
+                    result_promoter = f'Please verify if {self.gene_id} exist for {self.species}'
+                    return result_promoter
+
+            if not self.all_slice_forms:
+                gene_name, chraccver, chrstart, chrstop, species_API = NCBIdna.get_gene_info(entrez_id)
+                if gene_name == '0':
+                    result_promoter = f'Please verify ID of {self.gene_id}'
+                    return result_promoter
+            elif self.all_slice_forms:
+                all_variants = NCBIdna.all_variant(entrez_id)
 
         prom_term = self.prom_term.lower()
         if prom_term not in ['promoter', 'terminator']:
@@ -141,20 +147,35 @@ class NCBIdna:
             result_window = f'Upstream {self.upstream} and Downstream {self.downstream} must be integer'
             return result_window
 
-        dna_sequence = NCBIdna.get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop)
+        if not self.all_slice_forms:
+            dna_sequence = NCBIdna.get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop)
 
-        if prom_term == 'promoter':
-            if self.gene_id.startswith('XM_') or self.gene_id.startswith('NM_'):
-                dna_sequence = f">{self.gene_id} {gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}"
+            if prom_term == 'promoter':
+                if variant != '0':
+                    dna_sequence = f">{variant} {gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
+                else:
+                    dna_sequence = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
             else:
-                dna_sequence = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}"
-        else:
-            if self.gene_id.startswith('XM_') or self.gene_id.startswith('NM_'):
-                dna_sequence = f">{self.gene_id} {gene_name} | {species_API} | {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}"
-            else:
-                dna_sequence = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}"
+                if variant != '0':
+                    dna_sequence = f">{variant} {gene_name} | {species_API} | {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
+                else:
+                    dna_sequence = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
 
-        return dna_sequence
+            return dna_sequence
+
+        elif self.all_slice_forms:
+            result_compil = []
+            for variant, gene_name, chraccver, chrstart, chrstop, species_API in all_variants:
+                dna_sequence = NCBIdna.get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop)
+                if prom_term == 'promoter':
+                    results = f">{variant} {gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
+                else:
+                    results = f">{variant} {gene_name} | {species_API} | {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
+
+                result_compil.append(results)
+
+            result_output = "\n".join(result_compil)
+            return result_output
 
     @staticmethod
     # Convert gene to ENTREZ_GENE_ID
@@ -239,11 +260,69 @@ class NCBIdna:
             chrstart = int(start_coords[0])
             chrstop = int(end_coords[-1])
 
-            return gene_name, chraccver, chrstart, chrstop, species_API
+            return variant, gene_name, chraccver, chrstart, chrstop, species_API
 
         else:
-            gene_name = int(str('0'))
-            return gene_name, _, _, _, _
+            variant = int(str('0'))
+            return variant, _, _, _, _, _
+
+    @staticmethod
+    # Get gene information
+    def all_variant(entrez_id):
+
+        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id={entrez_id}&retmode=xml"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            root = ET.fromstring(response.text)
+
+            variants = []
+            gene_name = []
+            chraccver = []
+            species_API = []
+
+            all_variants = []
+
+            for elem in root.iter():
+                if elem.tag == "Gene-commentary_accession":
+                    if elem.text.startswith('NM_') or elem.text.startswith('XM_') or elem.text.startswith(
+                            'NR_') or elem.text.startswith('XR_'):
+                        if elem.text not in variants:
+                            variants.append(elem.text)
+                    elif elem.text.startswith('NC_'):
+                        chraccver = elem.text
+
+                elif elem.tag == "Org-ref_taxname":
+                    species_API = elem.text
+
+                elif elem.tag == 'Gene-ref_locus':
+                    gene_name = elem.text
+
+            for variant in variants:
+                start_coords = []
+                end_coords = []
+                found_variant = False
+                for elem in root.iter():
+                    if elem.tag == "Gene-commentary_accession":
+                        if elem.text == variant:
+                            found_variant = True
+                        else:
+                            found_variant = False
+                    elif found_variant and elem.tag == "Seq-interval_from":
+                        start_coords.append(elem.text)
+                    elif found_variant and elem.tag == "Seq-interval_to":
+                        end_coords.append(elem.text)
+
+                chrstart = int(start_coords[0])
+                chrstop = int(end_coords[-1])
+
+                all_variants.append((variant, gene_name, chraccver, chrstart, chrstop, species_API))
+
+            return all_variants
+
+        else:
+            all_variants = '0'
+            return all_variants
 
     @staticmethod
     # Get DNA sequence

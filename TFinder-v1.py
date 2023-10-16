@@ -124,26 +124,26 @@ streamlit_analytics.start_tracking()
 
 # Credit rating
 # st.sidebar.image("https://raw.githubusercontent.com/Jumitti/TFinder/main/img/REF.png")
-try:
-    with open("ratings.pkl", "rb") as file:
-        ratings = pickle.load(file)
-except FileNotFoundError:
-    ratings = []
-rating = st.sidebar.slider("Rate it 😊 (1-5 ⭐)", 1, 5, 5)
-colrate1, colrate2 = st.sidebar.columns(2)
-with colrate1:
-    submit_button = st.button("Submit Rating")
-if submit_button:
-    st.balloons()
-    ratings.append(rating)
-    with open("ratings.pkl", "wb") as file:
-        pickle.dump(ratings, file)
-    st.toast("Thank you for rating the application!", icon='😍')
-    st.balloons()
-average_rating = sum(ratings) / len(ratings) if ratings else 0
-num_ratings = len(ratings)
-with colrate2:
-    st.write(f"{average_rating:.2f} ⭐ ({num_ratings} votes)")
+# try:
+#     with open("ratings.pkl", "rb") as file:
+#         ratings = pickle.load(file)
+# except FileNotFoundError:
+#     ratings = []
+# rating = st.sidebar.slider("Rate it 😊 (1-5 ⭐)", 1, 5, 5)
+# colrate1, colrate2 = st.sidebar.columns(2)
+# with colrate1:
+#     submit_button = st.button("Submit Rating")
+# if submit_button:
+#     st.balloons()
+#     ratings.append(rating)
+#     with open("ratings.pkl", "wb") as file:
+#         pickle.dump(ratings, file)
+#     st.toast("Thank you for rating the application!", icon='😍')
+#     st.balloons()
+# average_rating = sum(ratings) / len(ratings) if ratings else 0
+# num_ratings = len(ratings)
+# with colrate2:
+#     st.write(f"{average_rating:.2f} ⭐ ({num_ratings} votes)")
 
 # Help
 st.sidebar.title("Help")
@@ -235,7 +235,8 @@ streamlit_analytics.stop_tracking()
 
 views = streamlit_analytics.main.counts["total_pageviews"]
 previous_views = st.secrets['previous_views']
-st.sidebar.markdown(f"Total users 👥: {int(views) + int(previous_views)}")
+st.sidebar.markdown(f"Total connections 👨🏼‍💻: {int(views) + int(previous_views)}")
+st.sidebar.markdown(f"Unique users 👥: 51")
 
 modal = Modal(key="TFinder Key", title="Disclaimers")
 
