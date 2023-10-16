@@ -26,13 +26,13 @@ The in-silico research of TFBS can be tedious and time-consuming at various stag
 
 TFinder is an ultra-intuitive, easy-to-use and fast analysis open source and free tool that allows both the retrieval and search of TFBS in a unique site. TFinder allows the analysis of an unlimited number of genes; the selection of up to five different species (human, mouse, rat, drosophila, zebrafish); the choice and examination of either promoter or terminator gene regions; the configuration of an upstream downstream window of sequence analysis and the search of TFBS in different formats including IUPAC code, a JASPAR ID or a Position Weight Matrix. TFinder, searches for TFBS on the sense and antisense strand but also considers the search with the complementary forms. The software takes care of everything in record time.
 
-## How to install
+## How to install/use
 
-No installation is required. You can access it by clicking here [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tfinder-ipmc.streamlit.app/)
+**No installation is required**. You can access it by clicking here [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tfinder-ipmc.streamlit.app/)
 
 A beta version of TFinder exists here. [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tfinder-fyvzny536kxu2qxaqlmbsx.streamlit.app/)
 
-A python package is under development. It will be effective later. The documentation is in beta
+A python package is under development. It will be effective later with a documentation.
 
 ## Functions
 
@@ -47,6 +47,7 @@ A python package is under development. It will be effective later. The documenta
 
 ### Gene regulatory regions Extractor
 - Extract mutliple regulatory regions (promoter/terminator) using ENTREZ_GENE_ID or NCBI Gene Name in FASTA format ([NCBI API](https://www.ncbi.nlm.nih.gov/home/develop/api/))
+- Extract regions of sliced variant (NM, XM, NR, XR) and can extract all sliced variants from a gene name or ENTREZ_GENE_ID
 - Species: Human 🙋🏼‍♂️, Mouse 🖱, Rat 🐀, Drosophila 🦟, Zebrafish 🐟
 - Set Upstream and Downstream from Transcription Start Site (TSS) and Gene End
 
@@ -78,6 +79,13 @@ A python package is under development. It will be effective later. The documenta
 ![graph_webui](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/promtermoriginal.png)
 ![graph_webui](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/bsfMS.png)
 ![graph_webui](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/Graph%20WebUI.png)
+
+## Working on...
+
+- TFinder python package and documentation
+- Cleaning code
+- A standalone version without restriction of resources (Streamlit Cloud allows 1Go RAM, so i need to limit some function..): you can always run le source code locally but it is limited and i want a easy-to-use way to do that. You can also use `TFinder>__init__.py` as a package for you own script (good luck...)
+- Longest Common Subsequence continuous (90%)
 
 ## More
 
