@@ -260,10 +260,21 @@ def aio_page():
                                 st.error(result_promoter_output)
                                 continue
 
-                        if all_variants:
-                            result_promoter_text = result_promoter_output
-                        else:
+                        if gene_id.startswith('XM_') or gene_id.startswith(
+                                'NM_') or gene_id.startswith('XR_') or gene_id.startswith('NR_'):
                             result_promoter_text = "\n".join(result_promoter)
+                        else:
+                            if all_variants:
+                                result_promoter_text = result_promoter_output
+                            else:
+                                result_promoter_text = "\n".join(result_promoter)
+                        # if all_variants and gene_id.isdigit():
+                        #     result_promoter_text = result_promoter_output
+                        # elif all_variants and gene_id.startswith('XM_') or gene_id.startswith(
+                        #         'NM_') or gene_id.startswith('XR_') or gene_id.startswith('NR_'):
+                        #     result_promoter_text = "\n".join(result_promoter)
+                        # else:
+                        #     result_promoter_text = "\n".join(result_promoter)
 
                         st.session_state['result_promoter_text'] = result_promoter_text
 
