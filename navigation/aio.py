@@ -166,7 +166,7 @@ def aio_page():
 
         result_promoter = []
         upstream_entry = []
-        result_promoter_text = ''
+        result_promoter_text = []
 
         # Gene ID
         st.markdown("🔹 :blue[**Step 1.1**] Gene ID:", help='NCBI gene name and NCBI gene ID allowed')
