@@ -253,21 +253,20 @@ def aio_page():
                                 pbar.progress((i + 1) / len(gene_ids),
                                               text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                                 st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
-                                if not all_variants:
-                                    result_promoter.append(result_promoter_output)
-                                pass
+
+                                if gene_id.startswith('XM_') or gene_id.startswith(
+                                        'NM_') or gene_id.startswith('XR_') or gene_id.startswith('NR_'):
+                                    result_promoter_text = "\n".join(result_promoter)
+                                else:
+                                    if all_variants:
+                                        result_promoter_text = result_promoter_output
+                                    else:
+                                        result_promoter_text = "\n".join(result_promoter)
                             else:
                                 st.error(result_promoter_output)
                                 continue
 
-                        if gene_id.startswith('XM_') or gene_id.startswith(
-                                'NM_') or gene_id.startswith('XR_') or gene_id.startswith('NR_'):
-                            result_promoter_text = "\n".join(result_promoter)
-                        else:
-                            if all_variants:
-                                result_promoter_text = result_promoter_output
-                            else:
-                                result_promoter_text = "\n".join(result_promoter)
+
                         # if all_variants and gene_id.isdigit():
                         #     result_promoter_text = result_promoter_output
                         # elif all_variants and gene_id.startswith('XM_') or gene_id.startswith(
