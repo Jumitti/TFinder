@@ -166,7 +166,6 @@ def aio_page():
 
         result_promoter = []
         upstream_entry = []
-        result_promoter_text = ''
 
         # Gene ID
         st.markdown("🔹 :blue[**Step 1.1**] Gene ID:", help='NCBI gene name and NCBI gene ID allowed')
@@ -254,21 +253,14 @@ def aio_page():
                                 pbar.progress((i + 1) / len(gene_ids),
                                               text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                                 st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
-
-                                if gene_id.startswith('XM_') or gene_id.startswith(
-                                        'NM_') or gene_id.startswith('XR_') or gene_id.startswith('NR_'):
-                                    result_promoter_text = "\n".join(result_promoter)
-                                else:
-                                    if all_variants:
-                                        result_promoter_text = result_promoter_output
-                                    else:
-                                        result_promoter_text = "\n".join(result_promoter)
-
-                                result_promoter_text += result_promoter_text
+                                # if not all_variants:
+                                #     result_promoter.append(result_promoter_output)
+                                # else:
+                                # pass
+                                result_promoter.append(result_promoter_output)
                             else:
                                 st.error(result_promoter_output)
                                 continue
-
 
                         # if all_variants and gene_id.isdigit():
                         #     result_promoter_text = result_promoter_output
@@ -277,7 +269,7 @@ def aio_page():
                         #     result_promoter_text = "\n".join(result_promoter)
                         # else:
                         #     result_promoter_text = "\n".join(result_promoter)
-
+                        result_promoter_text = "\n".join(result_promoter)
                         st.session_state['result_promoter_text'] = result_promoter_text
 
                         st.success(f"{prom_term} extraction complete !")
