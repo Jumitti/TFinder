@@ -129,7 +129,7 @@ class NCBIdna:
 
             if not self.all_slice_forms:
                 gene_name, chraccver, chrstart, chrstop, species_API = NCBIdna.get_gene_info(entrez_id)
-                if gene_name == '0':
+                if gene_name == 'Bad ID':
                     result_promoter = f'Please verify ID of {self.gene_id}'
                     return result_promoter
             elif self.all_slice_forms:
@@ -218,8 +218,8 @@ class NCBIdna:
                 species_API = gene_info['organism']['scientificname']
                 return gene_name, chraccver, chrstart, chrstop, species_API
             else:
-                gene_name = int(str('0'))
-                return gene_name, _, _, _, _
+                gene_name = 'Bad ID'
+                return gene_name, None, None, None, None
 
     @staticmethod
     # Get gene information
