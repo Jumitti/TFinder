@@ -239,7 +239,7 @@ try:
     st.sidebar.markdown(f"Total connections 👨🏼‍💻: {int(views) + int(previous_views)}")
     st.sidebar.markdown(f"Unique users 👥: 56")
 
-finally:
+except:
     st.sidebar.markdown(f"TFinder Local Version")
 
 modal = Modal(key="TFinder Key", title="Disclaimers")
