@@ -623,27 +623,30 @@ class IMO:
         }
 
         iupac_codes_score = {
-            "R": 2,  # A or G
-            "Y": 2,  # C or T
-            "M": 2,  # A or C
-            "K": 2,  # G or T
-            "W": 2,  # A or T
-            "S": 2,  # C or G
-            "B": 3,  # C or G or T
-            "D": 3,  # A or G or T
-            "H": 3,  # A or C or T
-            "V": 3,  # A or C or G
-            "N": 4  # A or C or G or T
+            "R": 2,
+            "Y": 2,
+            "M": 2,
+            "K": 2,
+            "W": 2,
+            "S": 2,
+            "B": 3,
+            "D": 3,
+            "H": 3,
+            "V": 3,
+            "N": 4
         }
 
         total_variants = 1
         for base in sequence:
             if base.upper() in iupac_codes_score:
                 total_variants *= iupac_codes_score[base.upper()]
-        if total_variants > max_variant_allowed:
-            sequence = f'Too many variants. Use - or . instead N. Limit: {max_variant_allowed} | Total variants : {total_variants}'
-            return sequence
+        if max_variant_allowed is not None:
+            if total_variants > max_variant_allowed:
+                sequence = f'Too many variants. Use - or . instead N. Limit: {max_variant_allowed} | Total variants : {total_variants}'
+                return sequence
 
+        if progress_bar is True:
+            pbar = tqdm(total=total_variants, desc='Generate variants from IUPAC code...', mininterval=0.1)
         sequences = [sequence]
         for i, base in enumerate(sequence):
             if base.upper() in iupac_codes:
@@ -652,8 +655,8 @@ class IMO:
                     for alternative in iupac_codes[base.upper()]:
                         new_sequence = seq[:i] + alternative + seq[i + 1:]
                         new_sequences.append(new_sequence)
-                        if progress_bar is not None:
-                            progress_bar.update(1)
+                        if progress_bar is True:
+                            pbar.update(1)
                 sequences = new_sequences
 
         return sequences
@@ -786,3 +789,61 @@ class IMO:
 
         else:
             raise Exception(f"You forget FASTA sequences :)")
+
+    @staticmethod
+    def normalize_matrix(matrix):
+        normalized_matrix = {}
+        num_rows = len(next(iter(matrix.values())))
+        for key in matrix.keys():
+            normalized_matrix[key] = [matrix[key][i] / sum(matrix[k][i] for k in matrix) for i in range(num_rows)]
+        return normalized_matrix
+
+    @staticmethod
+    def generate_sequences(matrix):
+        normalized_matrix = IMO.normalize_matrix(matrix)
+        keys = list(normalized_matrix.keys())
+        sequence_length = len(next(iter(normalized_matrix.values())))
+
+        generated_sequences = []
+
+        def generate_sequence_helper(current_sequence, position):
+            if position == sequence_length:
+                generated_sequences.append(current_sequence)
+                return
+
+            for key in keys:
+                if normalized_matrix[key][position] > 0:
+                    generate_sequence_helper(current_sequence + key, position + 1)
+
+        generate_sequence_helper("", 0)
+
+        return generated_sequences
+
+    @staticmethod
+    def LCScontinuous(seqint, seqref):
+        m = len(seqint)
+        n = len(seqref)
+
+        dp = [[0] * (n + 1) for _ in range(m + 1)]
+
+        max_length = 0
+        end_index = 0
+
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if seqint[i - 1] == seqref[j - 1]:
+                    dp[i][j] = dp[i - 1][j - 1] + 1
+                    if dp[i][j] > max_length:
+                        max_length = dp[i][j]
+                        end_index = i
+
+        start_index = end_index - max_length
+        lcs_continuous = seqint[start_index:end_index]
+
+        N_count_before = start_index
+        N_count_after = len(seqint) - end_index
+        N_sequence_before = "N" * N_count_before
+        N_sequence_after = "N" * N_count_after
+        lcs_for_relscore = N_sequence_before + lcs_continuous + N_sequence_after
+
+        return lcs_continuous, lcs_for_relscore

@@ -31,7 +31,7 @@ from navigation.pwm import pwm_page
 from navigation.IMF import BSF_page
 from navigation.regulatory_regions_extractor import prom_extractor_page
 
-#NavBar
+# NavBar
 
 AIO = 'All in One'
 PROM = 'Region Extractor'
@@ -46,15 +46,16 @@ tabs = [
 ]
 
 option_data = [
-   {'icon': "🧬🔎🧮", 'label':AIO},
-   {'icon': "🧬", 'label':PROM},
-   {'icon': "🔎", 'label':REF},
-   {'icon':"🧮",'label':PWM}
-   
+    {'icon': "🧬🔎🧮", 'label': AIO},
+    {'icon': "🧬", 'label': PROM},
+    {'icon': "🔎", 'label': REF},
+    {'icon': "🧮", 'label': PWM}
+
 ]
 
-over_theme = {'txc_inactive': 'black','menu_background':'#D6E5FA','txc_active':'white','option_active':'#749BC2'}
-font_fmt = {'font-class':'h3','font-size':'50%'}
+over_theme = {'txc_inactive': 'black', 'menu_background': '#D6E5FA', 'txc_active': 'white', 'option_active': '#749BC2'}
+font_fmt = {'font-class': 'h3', 'font-size': '50%'}
+
 
 def allapp_page():
     page = hc.option_bar(
@@ -66,16 +67,14 @@ def allapp_page():
     if page == AIO:
         aio_page()
 
-    elif page == PROM: 
+    elif page == PROM:
         prom_extractor_page()
 
-    elif page == REF: 
+    elif page == REF:
         BSF_page()
-        
-    elif page == PWM: 
+
+    elif page == PWM:
         pwm_page()
-        
+
     for i in range(4):
         st.markdown('#')
-        
-
