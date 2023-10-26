@@ -19,7 +19,7 @@
 # SOFTWARE.
 
 extra_streamlit_components==0.1.56
-streamlit==1.26.0
+streamlit==1.27.0
 pyvis==0.3.1
 seaborn==0.12.2
 streamlit-aggrid==0.3.3
@@ -48,3 +48,4 @@ matplotlib==3.7.1
 future==0.18.3
 pyperclip==1.8.2
 tabulate==0.9.0
+streamlit-searchbox

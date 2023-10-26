@@ -1,0 +1,51 @@
+1-Anopheles A virus Group
+17-year locust
+187
+16SrII (Peanut WB group)
+16SrIII (X-disease group)
+16SrV (Elm yellows group)
+16SrVI (Clover proliferation group)
+16SrVII (Ash yellows group)
+16SrVIII (Loofah witches'-broom group)
+16SrIX (Pigeon pea witches'-broom group)
+16SrX (Apple proliferation group)
+16SrXI (Rice yellow dwarf group)
+16SrXII (Stolbur group)
+16SrXIII (Mexican periwinkle virescence group)
+16SrXIV (Bermuda white leaf group)
+16SrXV (Hibiscus witches'-broom group)
+1,MHOM/SD/00/LRC-L61
+16SrXVI (Sugar Cane yellow leaf syndrome group)
+16SrXVII (Papaya bunchy top group)
+16SrXVIII (American (TX + NE) potato purple top wilt group)
+16SrXIX (Japanese chesnut witches'-broom group)
+16SrXX (Buckthorn witches'-broom group)
+16SrXXI (Pine shoot proliferation group)
+16SrXXII (Nigerian coconut lethal decline (LDN) group)
+16SrXXIII (Buckland Valley grapevine yellows group)
+16SrXXIV (Sorghum bunchy shoot group)
+16SrXXV (Weeping tea tree witches'-broom group)
+16SrXXVI (Mauritius sugar cane yellows D3T1 group)
+16SrXXVII (Mauritius sugar cane yellows D3T2 group)
+16SrXXVIII (Havana derbid phytoplasma group)
+1-butene synthase expression construct pBbS5k-bs1
+1-hexene ORF1' expression construct pBbA7c-hexORF1'
+1-hexene ORF2 expression construct pBbS7k-hexORF2
+1-hexene synthase ORF1 expression construct pBbA7c-hexORF1
+142 group
+16SrXXXII (Malaysian periwinkle virescence group)
+16SrXXX (Salt cedar witches'-broom group)
+1925; Lasioglossum (Evylaeus) algirum pseudannulipes
+16SrXXII-A
+16SrXXII-B
+16SrXXIX (Cassia witches'-broom group)
+1,4-dioxane degrading enrichment culture
+1,4-dioxane-degrading enrichment culture
+16SrXXXVI (Foxtail palm yellow decline group)
+1.249.A.
+1.008.O.
+1.020.O.
+1.044.O.
+1.080.O.
+16SrI (Aster yellows group)
+16SrIV (Coconut lethal yellows group)
