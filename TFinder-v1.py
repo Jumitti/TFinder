@@ -18,8 +18,6 @@
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import pickle
-
 import hydralit_components as hc
 import pandas as pd
 import requests
@@ -31,10 +29,7 @@ from navigation.allapp import allapp_page
 from navigation.contact import contact_page
 from navigation.home import home_page
 from navigation.resource import resource_page
-from navigation.tfinder_api import tfinder_api
 from utils.components import footer_style, footer
-
-import img
 
 st.set_page_config(
     page_title='TFinder by Minniti Julien',

@@ -231,8 +231,8 @@ def aio_page():
             col1, col2, = st.columns(2)
             with col1:
                 species = st.selectbox("🔹 :blue[**Step 1.2**] Select species of gene names:",
-                                        ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0,
-                                        label_visibility='collapsed')
+                                       ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0,
+                                       label_visibility='collapsed')
 
                 # selected_value = st_searchbox(
                 #     search_taxo,
