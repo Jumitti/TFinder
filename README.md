@@ -30,7 +30,7 @@ TFinder is an ultra-intuitive, easy-to-use and fast analysis open source and fre
 
 **No installation is required**. You can access it by clicking here [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tfinder-ipmc.streamlit.app/)
 
-A beta version of TFinder exists here. [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tfinder-fyvzny536kxu2qxaqlmbsx.streamlit.app/)
+A beta version of TFinder exists here. [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tfinder-jti99236fxoncgfqnhrcrw.streamlit.app/)
 
 A python package is under development. It will be effective later with a documentation.
 

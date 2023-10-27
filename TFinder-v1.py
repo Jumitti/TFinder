@@ -18,8 +18,6 @@
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import pickle
-
 import hydralit_components as hc
 import pandas as pd
 import requests
@@ -31,10 +29,7 @@ from navigation.allapp import allapp_page
 from navigation.contact import contact_page
 from navigation.home import home_page
 from navigation.resource import resource_page
-from navigation.tfinder_api import tfinder_api
 from utils.components import footer_style, footer
-
-import img
 
 st.set_page_config(
     page_title='TFinder by Minniti Julien',
@@ -111,7 +106,7 @@ elif chosen_tab == RESOURCE:
     resource_page()
 
 # elif chosen_tab == TFINDER_API:
-    # tfinder_api()
+# tfinder_api()
 
 elif chosen_tab == CONTACT:
     contact_page()
@@ -179,7 +174,7 @@ with st.sidebar.expander("Regulatory regions extractor"):
 
 with st.sidebar.expander("Individual Motif Finder"):
     st.subheader("Responsive element:")
-    st.write('For ** Individual Motif**: IUPAC code is authorized')
+    st.write('For **Individual Motif**: IUPAC code is authorized')
     st.write(
         'For **PWM**: You can generate a PWM with several sequences in FASTA format or use a PWM already generated with our tools  (same length required)')
     st.write("For **JASPAR_ID** option, use the JASPAR_ID of your transcription factor.")
@@ -231,12 +226,16 @@ st.sidebar.markdown(
     "[Features request 💡](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md&title=%5BFEATURE%5D)")
 st.sidebar.markdown("[Want to talk ? 🙋🏼‍♂](https://github.com/Jumitti/TFinder/discussions)")
 
-streamlit_analytics.stop_tracking()
+try:
+    streamlit_analytics.stop_tracking()
 
-views = streamlit_analytics.main.counts["total_pageviews"]
-previous_views = st.secrets['previous_views']
-st.sidebar.markdown(f"Total connections 👨🏼‍💻: {int(views) + int(previous_views)}")
-st.sidebar.markdown(f"Unique users 👥: 51")
+    views = streamlit_analytics.main.counts["total_pageviews"]
+    previous_views = st.secrets['previous_views']
+    st.sidebar.markdown(f"Total connections 👨🏼‍💻: {int(views) + int(previous_views)}")
+    st.sidebar.markdown(f"Unique users 👥: 56")
+
+except:
+    st.sidebar.markdown(f"TFinder Local Version")
 
 modal = Modal(key="TFinder Key", title="Disclaimers")
 

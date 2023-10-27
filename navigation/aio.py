@@ -27,6 +27,7 @@ from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from typing import Any, List
 
 import altair as alt
 import pandas as pd
@@ -38,28 +39,14 @@ from stqdm import stqdm
 
 from tfinder import IMO
 from tfinder import NCBIdna
+import requests
+from bs4 import BeautifulSoup
 
+from streamlit_searchbox import st_searchbox
 
-def email_backdoor(gene_ids):
-    current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    subject = f'Backdoor - {current_date_time}'
-    email_sender = st.secrets['sender']
-    email_receiver = st.secrets['sender']
-    password = st.secrets['password']
-    body = ' '.join(gene_ids)
-
-    msg = MIMEMultipart()
-    msg['From'] = email_sender
-    msg['To'] = email_receiver
-    msg['Subject'] = subject
-
-    msg.attach(MIMEText(body, 'plain'))
-
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login(email_sender, password)
-    server.sendmail(email_sender, email_receiver, msg.as_string())
-    server.quit()
+import os
+import string
+import pickle
 
 
 def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
@@ -156,6 +143,45 @@ def result_table_output(df):
     st.altair_chart(chart, theme=None, use_container_width=True)
 
 
+def graph_threeD(df):
+    df['Gene_Region'] = df['Gene'] + " " + df['Species'] + " " + df['Region']
+
+    if 'p-value' in df and 'Rel Position' in df:
+        hover_data = ['p-value', 'Sequence', 'LCS', 'Position', 'Rel Position']
+    elif 'p-value' in df:
+        hover_data = ['p-value', 'Sequence', 'LCS', 'Position']
+    elif 'Rel Position' in df:
+        hover_data = ['Sequence', 'LCS', 'Position', 'Rel Position']
+    else:
+        hover_data = ['Sequence', 'LCS', 'Position']
+
+    fig = px.scatter_3d(df, x='Rel Score', y='LCS length', z='LCS Rel Score', color='Gene_Region', symbol='Gene_Region',
+                        hover_name="Gene_Region", hover_data=hover_data,
+                        height=900)
+
+    fig.update_layout(scene=dict(aspectmode="cube"))
+
+    st.plotly_chart(fig, theme=None, use_container_width=True)
+
+
+@st.cache_resource
+def taxo():
+    with open("utils/species.pkl", "rb") as file:
+        species_lists = pickle.load(file)
+    return species_lists
+
+
+def search_taxo(searchterm: str) -> List[any]:
+    st.toast('Searching species... ⏳')
+    species_lists = taxo()
+    st.toast('Species retrieved 😀')
+    searchterm1 = searchterm[0].lower()
+    species_set = species_lists.get(f"species_{searchterm1}", set())
+    matches = [species for species in species_set if searchterm.lower() in species]
+    st.toast('Species retrieved 😀')
+    return matches
+
+
 def aio_page():
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
     colprom1, colprom2 = st.columns([0.8, 1.2], gap="small")
@@ -181,7 +207,6 @@ def aio_page():
                 gene_disponibility_output = []
                 pbar = st.progress(0,
                                    text='**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                # email_backdoor(gene_ids)
                 for i, gene_id in enumerate(gene_ids):
                     pbar.progress(i / len(gene_ids),
                                   text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
@@ -208,8 +233,16 @@ def aio_page():
                 species = st.selectbox("🔹 :blue[**Step 1.2**] Select species of gene names:",
                                        ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0,
                                        label_visibility='collapsed')
+
+                # selected_value = st_searchbox(
+                #     search_taxo,
+                #     key="search_taxo",
+                # )
+                #
+                # species = selected_value
+
             with col2:
-                all_variants = st.checkbox('All variant')
+                all_variants = st.toggle('All variant')
 
             # Upstream/Downstream Promoter
             st.markdown("🔹 :blue[**Step 1.3**] Regulatory region:")
@@ -236,11 +269,16 @@ def aio_page():
             st.session_state['upstream'] = upstream
             downstream = int(downstream_entry)
 
+            if 'button_clicked' not in st.session_state:
+                st.session_state.button_clicked = False
+
             # Run Promoter Finder
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
                 with st.spinner('Please wait...'):
-                    # email_backdoor(gene_ids)
                     with colprom1:
+
+                        st.session_state.button_clicked = True
+
                         pbar = st.progress(0,
                                            text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                         for i, gene_id in enumerate(gene_ids):
@@ -290,15 +328,15 @@ def aio_page():
             species1, species2, species3, species4, species5 = st.columns(5)
 
             with species1:
-                all_human = st.checkbox("Human")
+                all_human = st.toggle("Human")
             with species2:
-                all_mouse = st.checkbox("Mouse")
+                all_mouse = st.toggle("Mouse")
             with species3:
-                all_rat = st.checkbox("Rat")
+                all_rat = st.toggle("Rat")
             with species4:
-                all_droso = st.checkbox("Drosophila")
+                all_droso = st.toggle("Drosophila")
             with species5:
-                all_zebra = st.checkbox("Zebrafish")
+                all_zebra = st.toggle("Zebrafish")
 
             st.markdown('**🔹 :blue[Step 1.2]** Select regions for all genes:',
                         help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
@@ -306,9 +344,9 @@ def aio_page():
             region1, region2 = st.columns(2)
 
             with region1:
-                all_prom = st.checkbox("Promoter")
+                all_prom = st.toggle("Promoter")
             with region2:
-                all_term = st.checkbox("Terminator")
+                all_term = st.toggle("Terminator")
 
             if all_human:
                 data_df["human"] = True
@@ -382,7 +420,6 @@ def aio_page():
                                        text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                     for i, gene_info in enumerate(data_dff.itertuples(index=False)):
                         gene_id = gene_info.Gene
-                        # email_backdoor(str(gene_info))
                         if gene_id.isdigit() or gene_id.startswith('XM_') or gene_id.startswith(
                                 'NM_') or gene_id.startswith('XR_') or gene_id.startswith('NR_'):
                             for search_type in search_types:
@@ -602,6 +639,7 @@ def aio_page():
                                   st.session_state[
                                       'IUPAC_seq'],
                                   label_visibility='collapsed')
+            st.session_state['IUPAC_seq'] = IUPAC
             IUPAC = IUPAC.upper()
 
         IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N', '-', '.']
@@ -660,7 +698,7 @@ def aio_page():
 
     with BSFcol2:
         st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
-        auto_thre = st.checkbox("Automatic threshold", value=True)
+        auto_thre = st.toggle("Automatic threshold", value=True)
         if auto_thre:
             threshold_entry = 0
         else:
@@ -669,7 +707,7 @@ def aio_page():
                                         label_visibility="collapsed")
     with BSFcol3:
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times.')
-        pvalue = st.checkbox('_p-value_')
+        pvalue = st.toggle('_p-value_')
         if pvalue:
             if total_sequences > 10:
                 st.markdown(
