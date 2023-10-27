@@ -209,14 +209,15 @@ class NCBIdna:
 
         if response.status_code == 200:
             response_data = response.json()
-            gene_info = response_data['result'][str(entrez_id)]
-            if 'chraccver' in str(gene_info):
-                gene_name = gene_info['name']
-                chraccver = gene_info['genomicinfo'][0]['chraccver']
-                chrstart = int(gene_info['genomicinfo'][0]['chrstart'])
-                chrstop = int(gene_info['genomicinfo'][0]['chrstop'])
-                species_API = gene_info['organism']['scientificname']
-                return gene_name, chraccver, chrstart, chrstop, species_API
+            if 'result' in response_data and str(entrez_id) in response_data['result']:
+                gene_info = response_data['result'][str(entrez_id)]
+                if 'chraccver' in str(gene_info):
+                    gene_name = gene_info['name']
+                    chraccver = gene_info['genomicinfo'][0]['chraccver']
+                    chrstart = int(gene_info['genomicinfo'][0]['chrstart'])
+                    chrstop = int(gene_info['genomicinfo'][0]['chrstop'])
+                    species_API = gene_info['organism']['scientificname']
+                    return gene_name, chraccver, chrstart, chrstop, species_API
             else:
                 gene_name = 'Bad ID'
                 return gene_name, None, None, None, None
