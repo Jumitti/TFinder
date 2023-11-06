@@ -226,15 +226,23 @@ st.sidebar.markdown(
     "[Features request 💡](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md&title=%5BFEATURE%5D)")
 st.sidebar.markdown("[Want to talk ? 🙋🏼‍♂](https://github.com/Jumitti/TFinder/discussions)")
 
+streamlit_analytics.stop_tracking()
+views = streamlit_analytics.main.counts["total_pageviews"]
+
+
 try:
-    streamlit_analytics.stop_tracking()
-
-    views = streamlit_analytics.main.counts["total_pageviews"]
     previous_views = st.secrets['previous_views']
+    unique_users = st.secrets['unique_users']
     st.sidebar.markdown(f"Total connections 👨🏼‍💻: {int(views) + int(previous_views)}")
-    st.sidebar.markdown(f"Unique users 👥: 56")
+    st.sidebar.markdown(f"Unique users 👥: {unique_users}")
+    st.session_state["LOCAL"] = False
 
-except:
+except KeyError:
+    st.session_state["LOCAL"] = True
+    st.sidebar.markdown(f"TFinder Local Version")
+
+except FileNotFoundError:
+    st.session_state["LOCAL"] = True
     st.sidebar.markdown(f"TFinder Local Version")
 
 modal = Modal(key="TFinder Key", title="Disclaimers")

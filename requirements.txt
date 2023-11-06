@@ -19,7 +19,7 @@
 # SOFTWARE.
 
 extra_streamlit_components==0.1.56
-streamlit==1.27.0
+streamlit
 pyvis==0.3.1
 seaborn==0.12.2
 streamlit-aggrid==0.3.3
