@@ -462,7 +462,7 @@ class IMO:
 
         num_random_seqs = 1000000
 
-        seq_length = len(matrices['Original']['A'])
+        seq_length = len(matrices['+ f']['A'])
 
         if calc_pvalue == 'ATGCPreset':
             percentage_a = 0.275
