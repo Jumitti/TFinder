@@ -399,10 +399,10 @@ class IMO:
         reversed_complement_matrix = {base: list(reversed(scores)) for base, scores in complement_matrix.items()}
 
         return {
-            'Original': matrix,
-            'Reversed': reversed_matrix,
-            'Complement': complement_matrix,
-            'Reversed Complement': reversed_complement_matrix
+            '+ f': matrix,
+            '+ r': reversed_matrix,
+            '- f': complement_matrix,
+            '- r': reversed_complement_matrix
         }
 
     @staticmethod
@@ -425,7 +425,10 @@ class IMO:
         for i, base in enumerate(sequence):
             if base in {'A', 'C', 'G', 'T'}:
                 base_score = matrix[base]
-                score += base_score[i]
+                if i < len(base_score):
+                    score += base_score[i]
+                else:
+                    score += 0
         return score
 
     @staticmethod
@@ -459,7 +462,7 @@ class IMO:
 
         num_random_seqs = 1000000
 
-        seq_length = len(matrices['Original']['A'])
+        seq_length = len(matrices['+ f']['A'])
 
         if calc_pvalue == 'ATGCPreset':
             percentage_a = 0.275
@@ -510,6 +513,14 @@ class IMO:
                     random_scores = {}
 
             for matrix_name, matrix in matrices.items():
+                if "+" in matrix_name:
+                    strand = "+"
+                else:
+                    strand = "-"
+                if "f" in matrix_name:
+                    direction = "→"
+                else:
+                    direction = "←"
                 found_positions = []
 
                 # Max score per matrix
@@ -583,7 +594,7 @@ class IMO:
                                     "{:.6f}".format(normalized_score).ljust(12)]
                             if calc_pvalue is not None:
                                 row.append("{:.3e}".format(p_value).ljust(12))
-                            row += [name, species, region]
+                            row += [strand, direction, name, species, region]
                             individual_motif_occurrences.append(row)
 
         if len(individual_motif_occurrences) > 0:
@@ -597,7 +608,7 @@ class IMO:
             header += ["Sequence", "Rel Score"]
             if calc_pvalue is not None:
                 header.append("p-value")
-            header += ["Gene", "Species", "Region"]
+            header += ["Strand", "Direction", "Gene", "Species", "Region"]
             individual_motif_occurrences.insert(0, header)
         else:
             "No consensus sequence found with the specified threshold."

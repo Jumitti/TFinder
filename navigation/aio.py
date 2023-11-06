@@ -22,6 +22,7 @@ import datetime
 import io
 import smtplib
 import re
+import time
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
@@ -233,13 +234,6 @@ def aio_page():
                 species = st.selectbox("🔹 :blue[**Step 1.2**] Select species of gene names:",
                                        ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0,
                                        label_visibility='collapsed')
-
-                # selected_value = st_searchbox(
-                #     search_taxo,
-                #     key="search_taxo",
-                # )
-                #
-                # species = selected_value
 
             with col2:
                 all_variants = st.toggle('All variant')
