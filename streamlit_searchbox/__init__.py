@@ -11,6 +11,13 @@ from typing import Any, Callable, List
 import streamlit as st
 import streamlit.components.v1 as components
 
+try:
+    from streamlit import rerun as rerun  # type: ignore
+except ImportError:
+    # conditional import for streamlit version <1.27
+    from streamlit import experimental_rerun as rerun  # type: ignore
+
+
 # point to build directory
 parent_dir = os.path.dirname(os.path.abspath(__file__))
 build_dir = os.path.join(parent_dir, "frontend/build")
@@ -68,7 +75,7 @@ def _process_search(
     search_function: Callable[[str], List[Any]],
     key: str,
     searchterm: str,
-    rerun_on_update: bool,
+    rerun_on_update: bool
 ) -> None:
     # nothing changed, avoid new search
     if searchterm == st.session_state[key]["search"]:
@@ -84,7 +91,7 @@ def _process_search(
     st.session_state[key]["options_py"] = _list_to_options_py(search_results)
 
     if rerun_on_update:
-        st.rerun()
+        rerun()
 
 
 @wrap_inactive_session
@@ -95,7 +102,7 @@ def st_searchbox(
     default: Any = None,
     default_options: List[Any] | None = None,
     clear_on_submit: bool = False,
-    rerun_on_update: bool = True,
+    rerun_on_update: bool = True, delay: float = None,
     key: str = "searchbox",
     **kwargs,
 ) -> Any:
@@ -120,6 +127,7 @@ def st_searchbox(
     Returns:
         any: based on user selection
         :param key:
+        :param delay:
         :param rerun_on_update:
         :param clear_on_submit:
         :param default:
@@ -128,6 +136,10 @@ def st_searchbox(
         :param search_function:
         :param default_options:
     """
+
+    # delay request (useful if you have a limit of request API)
+    if delay:
+        time.sleep(delay)
 
     # key without prefix used by react component
     key_react = f"{key}_react"

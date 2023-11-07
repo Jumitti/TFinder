@@ -28,7 +28,6 @@ from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from typing import Any, List
 
 import altair as alt
 import pandas as pd
@@ -48,6 +47,34 @@ from streamlit_searchbox import st_searchbox
 import os
 import string
 import pickle
+
+
+def search_species_at_NCBI(query_species_name):
+    def clean_text(text):
+        return re.sub(r' <[^>]+>', '', text)
+
+    scientificnames = []
+
+    with st.spinner("Searching for species..."):
+        url = f'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name="{query_species_name}"&srchmode=3&filter=genome_filter'
+
+        response = requests.get(url)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        ul_tag = soup.find("ul")
+        taxonomy_id_tag = soup.find(text="Taxonomy ID:")
+
+        if ul_tag:
+            strong_tags = ul_tag.find_all("strong")
+            for strong_tag in strong_tags:
+                scientificnames.append(clean_text(strong_tag.get_text()))
+
+        elif taxonomy_id_tag:
+            scientificnames.append(query_species_name)
+
+    return scientificnames
 
 
 def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
@@ -135,8 +162,9 @@ def result_table_output(df):
         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                 scale=alt.Scale(domain=[ystart, ystop])),
         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-        tooltip=['Position'] + (['Rel Position'] if "Rel Position" in source else []) + ['Rel Score'] + (
-            ['p-value'] if 'p-value' in source else []) + ['Sequence', 'Gene', 'Species', 'Region'],
+        tooltip=['Sequence', 'Position'] + (['Rel Position'] if "Rel Position" in source else []) + ['Rel Score'] + (
+            ['p-value'] if 'p-value' in source else []) + (
+                    ['LCS', 'LCS length', 'LCS Rel Score'] if "LCS" in source else []) + ['Gene', 'Species', 'Region'],
         opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
     ).transform_calculate(x=f'datum[{xcol_param.name}]').properties(width=600,
                                                                     height=400).interactive().add_params(
@@ -163,24 +191,6 @@ def graph_threeD(df):
     fig.update_layout(scene=dict(aspectmode="cube"))
 
     st.plotly_chart(fig, theme=None, use_container_width=True)
-
-
-@st.cache_resource
-def taxo():
-    with open("utils/species.pkl", "rb") as file:
-        species_lists = pickle.load(file)
-    return species_lists
-
-
-def search_taxo(searchterm: str) -> List[any]:
-    st.toast('Searching species... ⏳')
-    species_lists = taxo()
-    st.toast('Species retrieved 😀')
-    searchterm1 = searchterm[0].lower()
-    species_set = species_lists.get(f"species_{searchterm1}", set())
-    matches = [species for species in species_set if searchterm.lower() in species]
-    st.toast('Species retrieved 😀')
-    return matches
 
 
 def aio_page():
@@ -235,12 +245,18 @@ def aio_page():
                                        ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0,
                                        label_visibility='collapsed')
 
+                # species = st_searchbox(
+                #     search_species_at_NCBI,
+                #     key="search_taxo", delay=0.25
+                # )
+
             with col2:
                 all_variants = st.toggle('All variant')
 
             # Upstream/Downstream Promoter
             st.markdown("🔹 :blue[**Step 1.3**] Regulatory region:")
             prom_term = st.radio("🔹 :blue[**Step 1.3**] Regulatory region:", ('Promoter', 'Terminator'),
+                                 horizontal=True,
                                  label_visibility='collapsed')
             if prom_term == 'Promoter':
                 st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from the TSS (bp)")
@@ -284,7 +300,7 @@ def aio_page():
                             if not str(result_promoter_output).startswith('P'):
                                 pbar.progress((i + 1) / len(gene_ids),
                                               text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                                st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
+                                st.toast(f"{prom_term} **{gene_id}** from **{species}** extracted", icon='🧬')
 
                                 result_promoter.append(result_promoter_output)
                             else:
@@ -723,6 +739,23 @@ def aio_page():
         else:
             calc_pvalue = None
 
+        # lcs = st.toggle('LCS')
+        # if lcs:
+        #     max_variant_allowed = 1048576
+        #     num_positions = len(next(iter(matrix.values())))
+        #     total_sequences_pwm = 1
+        #     for pos in range(num_positions):
+        #         valid_probabilities = [matrix[nuc][pos] for nuc in matrix if matrix[nuc][pos] > 0]
+        #         total_sequences_pwm *= len(valid_probabilities)
+        #     if total_sequences_pwm > max_variant_allowed:
+        #         st.error(
+        #             f'Too many sequences. LCS not allowed for this PWM. Limit: {max_variant_allowed} | Total sequences : {total_sequences_pwm}')
+        #         button = True
+        #     else:
+        #         button = False
+        # else:
+        #     lcs = None
+
     if tss_ge_input != 0:
         tss_ge_distance = int(tss_ge_input)
     else:
@@ -803,19 +836,21 @@ def aio_page():
                                    mime="application/vnd.ms-excel", key='download-excel')
                 st.download_button(label="💾 Download table (.csv)", data=csv_file,
                                    file_name=f"Results_TFinder_{current_date_time}.csv", mime="text/csv")
-                email_receiver = st.text_input('Send results by email ✉',
-                                               value='', placeholder='Send results by email ✉',
-                                               label_visibility="collapsed")
-                if st.button("Send ✉"):
-                    if jaspar == 'PWM':
-                        if matrix_type == 'With PWM':
-                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                        if matrix_type == 'With FASTA sequences':
-                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{individual_motif}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                    elif jaspar == 'JASPAR_ID':
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                    else:
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                    email(excel_file, csv_file, txt_output, email_receiver, body, jaspar)
+
+                if st.session_state["LOCAL"] == 'True':
+                    email_receiver = st.text_input('Send results by email ✉',
+                                                   value='', placeholder='Send results by email ✉',
+                                                   label_visibility="collapsed")
+                    if st.button("Send ✉"):
+                        if jaspar == 'PWM':
+                            if matrix_type == 'With PWM':
+                                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                            if matrix_type == 'With FASTA sequences':
+                                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{individual_motif}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                        elif jaspar == 'JASPAR_ID':
+                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                        else:
+                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                        email(excel_file, csv_file, txt_output, email_receiver, body, jaspar)
         else:
             st.error(f"No consensus sequence found with the specified threshold")
