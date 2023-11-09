@@ -225,7 +225,7 @@ except FileNotFoundError:
     st.session_state["LOCAL"] = True
     st.sidebar.markdown(f"TFinder Local Version")
 
-modal = Modal(key="TFinder Key", title="Disclaimers")
+modal = Modal(key="TFinder Key", title="Disclaimers - Welcome to TFinder", padding=50, max_width=900)
 
 if 'popup_closed' not in st.session_state:
     st.session_state.popup_closed = False
@@ -240,6 +240,7 @@ if not st.session_state.popup_closed:
         st.markdown('')
         st.markdown(
             'If you encounter a problem, please send an email to minniti@ipm.cnrs.fr or minnitijulien06@gmail.com or use the [Issues](https://github.com/Jumitti/TFinder/issues) tab on GitHub')
+        st.markdown('Links are also available at the bottom of the left sidebar. You can contact us using the “Contact” tab too.')
         value = st.checkbox("By checking this box, you agree with data usage polices of NCBI and JASPAR")
         if value:
             st.button('Close')
