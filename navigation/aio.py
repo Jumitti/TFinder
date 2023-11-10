@@ -20,9 +20,8 @@
 
 import datetime
 import io
-import smtplib
 import re
-import time
+import smtplib
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
@@ -31,22 +30,15 @@ from email.mime.text import MIMEText
 
 import altair as alt
 import pandas as pd
-import streamlit as st
-
 import plotly.express as px
-
+import requests
+import streamlit as st
+from bs4 import BeautifulSoup
 from stqdm import stqdm
 
+from streamlit_searchbox import st_searchbox
 from tfinder import IMO
 from tfinder import NCBIdna
-import requests
-from bs4 import BeautifulSoup
-
-from streamlit_searchbox import st_searchbox
-
-import os
-import string
-import pickle
 
 
 def search_species_at_NCBI(query_species_name):
@@ -837,7 +829,7 @@ def aio_page():
                 st.download_button(label="💾 Download table (.csv)", data=csv_file,
                                    file_name=f"Results_TFinder_{current_date_time}.csv", mime="text/csv")
 
-                if st.session_state["LOCAL"] == 'True':
+                if st.session_state["LOCAL"] == "False":
                     email_receiver = st.text_input('Send results by email ✉',
                                                    value='', placeholder='Send results by email ✉',
                                                    label_visibility="collapsed")

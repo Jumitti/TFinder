@@ -10,6 +10,7 @@ from typing import Any, Callable, List
 
 import streamlit as st
 import streamlit.components.v1 as components
+import time
 
 try:
     from streamlit import rerun as rerun  # type: ignore

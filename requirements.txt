@@ -18,33 +18,34 @@
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-extra_streamlit_components==0.1.56
-streamlit
-pyvis==0.3.1
-seaborn==0.12.2
-streamlit-aggrid==0.3.3
-stringdb==0.1.5
-lxml==4.9.3
-requests==2.31.0
-beautifulsoup4==4.12.2
-streamlit-analytics==0.4.1
-pymed==0.8.9
-plotly==5.16.1
-hydralit_components==1.0.10
-weblogo==3.7.12
-Bio==1.5.9
-logomaker==0.8
-openpyxl==3.1.2
-sendgrid==6.10.0
-pillow
-stqdm==0.0.5
-tqdm==4.66.1
-pandas==2.0.3
-numpy==1.24.3
-bs4==0.0.1
-altair==5.0.1
-matplotlib==3.7.1
-future==0.18.3
-pyperclip==1.8.2
-tabulate==0.9.0
+# Old requirements:
+# Bio
+# beautifulsoup4
+# bs4
+# extra_streamlit_components
+# lxml
+# matplotlib
+# pillow
+# pyperclip
+# pyvis
+# seaborn
+# sendgrid
+# streamlit_aggrid
+# stringdb
+# tabulate
+# weblogo
+
+altair
 deprecation
+future
+hydralit_components
+logomaker
+numpy
+openpyxl
+pandas
+plotly
+requests
+stqdm
+streamlit
+streamlit_analytics
+tqdm
