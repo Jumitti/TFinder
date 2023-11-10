@@ -215,14 +215,14 @@ try:
     unique_users = st.secrets['unique_users']
     st.sidebar.markdown(f"Total connections 👨🏼‍💻: {int(views) + int(previous_views)}")
     st.sidebar.markdown(f"Unique users 👥: {unique_users}")
-    st.session_state["LOCAL"] = False
+    st.session_state["LOCAL"] = 'False'
 
 except KeyError:
-    st.session_state["LOCAL"] = True
+    st.session_state["LOCAL"] = "True"
     st.sidebar.markdown(f"TFinder Local Version")
 
 except FileNotFoundError:
-    st.session_state["LOCAL"] = True
+    st.session_state["LOCAL"] = "True"
     st.sidebar.markdown(f"TFinder Local Version")
 
 modal = Modal(key="TFinder Key", title="Disclaimers - Welcome to TFinder", padding=50, max_width=900)
