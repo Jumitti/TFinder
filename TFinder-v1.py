@@ -24,6 +24,9 @@ import requests
 import streamlit as st
 import streamlit_analytics
 from streamlit_modal import Modal
+import streamlit_lottie
+import time
+import json
 
 from navigation.allapp import allapp_page
 from navigation.contact import contact_page
@@ -31,11 +34,29 @@ from navigation.home import home_page
 from navigation.resource import resource_page
 from utils.components import footer_style, footer
 
+import os
+
+
+def load_lottiefile(filepath: str):
+    with open(filepath, "r") as f:
+        return json.load(f)
+
+
 st.set_page_config(
     page_title='TFinder by Minniti Julien',
     page_icon="img/TFinder_logo_page.png",
     initial_sidebar_state="expanded"
 )
+
+if 'lottie' not in st.session_state:
+    st.session_state.lottie = False
+
+if not st.session_state.lottie:
+    lottfinder = load_lottiefile(".streamlit/TFinder_logo_animated.json")
+    st.lottie(lottfinder, speed=1.3, loop=False)
+    time.sleep(2)
+    st.session_state.lottie = True
+    st.rerun()
 
 max_width_str = f"max-width: {75}%;"
 
@@ -178,7 +199,7 @@ if st.sidebar.button("Check"):
         with st.spinner('Please wait...'):
             response = requests.get(
                 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term=nos2[Gene%20Name]+AND+human[Organism]&retmode=json&rettype=xml')
-            response1 = requests.get('https://jaspar.genereg.net/api/v1/matrix/MA0106.1')
+            response1 = requests.get('https://jaspar.elixir.no/api/v1/matrix/MA0106.1')
 
             ncbi_status = "✅" if response.status_code == 200 else "❌"
             jaspar_status = "✅" if response1.status_code == 200 else "❌"
