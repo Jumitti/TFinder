@@ -371,14 +371,14 @@ class IMO:
     @staticmethod
     # Extract JASPAR matrix
     def matrix_extraction(jaspar_id):
-        url = f"https://jaspar.genereg.net/api/v1/matrix/{jaspar_id}/"
+        url = f"https://jaspar.elixir.no/api/v1/matrix/{jaspar_id}/"
         response = requests.get(url)
         if response.status_code == 200:
             response_data = response.json()
             TF_name = response_data['name']
             TF_species = response_data['species'][0]['name']
             matrix = response_data['pfm']
-            weblogo = f"https://jaspar.genereg.net/static/logos/all/svg/{jaspar_id}.svg"
+            weblogo = f"https://jaspar.elixir.no/static/logos/all/svg/{jaspar_id}.svg"
         else:
             TF_name = 'not found'
             TF_species = 'not found'

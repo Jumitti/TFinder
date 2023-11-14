@@ -48,4 +48,5 @@ requests
 stqdm
 streamlit
 streamlit_analytics
+streamlit-lottie
 tqdm
