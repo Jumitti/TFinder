@@ -138,28 +138,6 @@ st.markdown(footer, unsafe_allow_html=True)
 
 streamlit_analytics.start_tracking()
 
-modal = Modal(key="TFinder Key", title="Disclaimers - Welcome to TFinder", padding=50, max_width=900)
-
-if 'popup_closed' not in st.session_state:
-    st.session_state.popup_closed = False
-
-if not st.session_state.popup_closed:
-    with modal.container():
-        st.markdown('')
-        st.markdown(
-            'TFinder use [NCBI API](https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen)'
-            ': More information [NCBI Website and Data Usage Policies and Disclaimers](https://www.ncbi.nlm.nih.gov/home/about/policies/)')
-        st.markdown("TFinder use [JASPAR API](https://doi.org/10.1093/bioinformatics/btx804)")
-        st.markdown('')
-        st.markdown(
-            'If you encounter a problem, please send an email to minniti@ipm.cnrs.fr or minnitijulien06@gmail.com or use the [Issues](https://github.com/Jumitti/TFinder/issues) tab on GitHub')
-        st.markdown(
-            'Links are also available at the bottom of the left sidebar. You can contact us using the “Contact” tab too.')
-        value = st.checkbox("By checking this box, you agree with data usage polices of NCBI and JASPAR")
-        if value:
-            st.button('Close')
-            st.session_state.popup_closed = True
-
 # Credit
 st.sidebar.image("img/TFinder_logo_site.png")
 
@@ -252,6 +230,7 @@ st.sidebar.markdown("[Want to talk ? 🙋🏼‍♂](https://github.com/Jumitti/
 streamlit_analytics.stop_tracking()
 views = streamlit_analytics.main.counts["total_pageviews"]
 
+
 try:
     previous_views = st.secrets['previous_views']
     unique_users = st.secrets['unique_users']
@@ -266,3 +245,25 @@ except KeyError:
 except FileNotFoundError:
     st.session_state["LOCAL"] = "True"
     st.sidebar.markdown(f"TFinder Local Version")
+
+modal = Modal(key="TFinder Key", title="Disclaimers - Welcome to TFinder", padding=50, max_width=900)
+
+if 'popup_closed' not in st.session_state:
+    st.session_state.popup_closed = False
+
+if not st.session_state.popup_closed:
+    with modal.container():
+        st.markdown('')
+        st.markdown(
+            'TFinder use [NCBI API](https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen)'
+            ': More information [NCBI Website and Data Usage Policies and Disclaimers](https://www.ncbi.nlm.nih.gov/home/about/policies/)')
+        st.markdown("TFinder use [JASPAR API](https://doi.org/10.1093/bioinformatics/btx804)")
+        st.error('⚠ JASPAR API has been modified ! Working on a fix...')
+        st.markdown('')
+        st.markdown(
+            'If you encounter a problem, please send an email to minniti@ipm.cnrs.fr or minnitijulien06@gmail.com or use the [Issues](https://github.com/Jumitti/TFinder/issues) tab on GitHub')
+        st.markdown('Links are also available at the bottom of the left sidebar. You can contact us using the “Contact” tab too.')
+        value = st.checkbox("By checking this box, you agree with data usage polices of NCBI and JASPAR")
+        if value:
+            st.button('Close')
+            st.session_state.popup_closed = True
