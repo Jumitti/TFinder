@@ -221,7 +221,7 @@ if st.sidebar.button("Check"):
         with st.spinner('Please wait...'):
             response = requests.get(
                 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term=nos2[Gene%20Name]+AND+human[Organism]&retmode=json&rettype=xml')
-            response1 = requests.get('https://jaspar.elixir.no/api/v1/MA0106.1')
+            response1 = requests.get('https://jaspar.elixir.no/api/v1/matrix/MA0106.1')
 
             ncbi_status = "✅" if response.status_code == 200 else "❌"
             jaspar_status = "✅" if response1.status_code == 200 else "❌"
