@@ -1,6 +1,6 @@
 <picture>
     <img
-        src="/img/banners_TFinder.jpg">
+        src="./img/banners_TFinder.jpg">
 </picture>
 
 # TFinder 🧬🔍 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tfinder-ipmc.streamlit.app/)
@@ -15,7 +15,7 @@ Please cite as: "" | DOI: "".
 
 <picture>
     <img
-        src="/img/tfinder_schema.png">
+        src="./img/tfinder_schema.png">
 </picture>
 
 ## Description

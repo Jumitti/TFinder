@@ -493,10 +493,6 @@ class IMO:
                     progress_bar.update(1)
                 random_scores = np.array(matrix_random_scores)
 
-            if lcs is not None:
-                generated_sequences = IMO.generate_sequences(matrix)
-                LCS[matrix_name] = generated_sequences
-
         for name, dna_sequence, species, region in dna_sequences:
             if calc_pvalue == 'ATGCProportion':
                 count_a = dna_sequence.count('A')
@@ -590,27 +586,6 @@ class IMO:
 
                         if normalized_score >= threshold:
 
-                            if lcs is not None:
-                                seqint = sequence_with_context[3:-3]
-                                best_lcs_continuous = ""
-                                best_lcs_for_relscore = ""
-                                sequences_for_matrix_name = LCS[matrix_name]
-
-                                for seqref in sequences_for_matrix_name:
-                                    lcs_continuous, lcs_for_relscore = IMO.LCScontinuous(seqint, seqref)
-
-                                    if len(lcs_continuous) > len(best_lcs_continuous):
-                                        best_lcs_continuous = lcs_continuous
-                                        score_lcs_continuous = len(best_lcs_continuous)
-                                        best_lcs_for_relscore = lcs_for_relscore
-
-                                lcs_rel_score = IMO.calculate_score(best_lcs_for_relscore, matrix)
-                                if max_score == min_score:
-                                    lcs_normalized_score = lcs_rel_score / max_score
-                                else:
-                                    lcs_normalized_score = (lcs_rel_score - min_score) / (
-                                            max_score - min_score)
-
                             if calc_pvalue is not None:
                                 p_value = (random_scores >= normalized_score).sum() / len(random_scores)
 
@@ -628,26 +603,20 @@ class IMO:
                             individual_motif_occurrences.append(row)
 
         if len(individual_motif_occurrences) > 0:
-            if tss_ge_distance is not None and calc_pvalue is not None and lcs is not None:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[3]), x[6], x[7]), reverse=True)
-            elif tss_ge_distance is not None and lcs is not None:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[3]), x[5], x[6]), reverse=True)
-            elif calc_pvalue is not None and lcs is not None:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[2]), x[5], x[6]), reverse=True)
-            elif lcs is not None:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[2]), x[4], x[5]), reverse=True)
+            if tss_ge_distance is not None and calc_pvalue is not None:
+                individual_motif_occurrences.sort(key=lambda x: (float(x[3]), -float(x[4])))
+            elif calc_pvalue is not None:
+                individual_motif_occurrences.sort(key=lambda x: (float(x[2]), -float(x[3])))
             elif tss_ge_distance is not None:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[3])), reverse=True)
+                individual_motif_occurrences.sort(key=lambda x: (float(x[3])))
             else:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[2])), reverse=True)
+                individual_motif_occurrences.sort(key=lambda x: (float(x[2])))
             header = ["Position"]
             if tss_ge_distance is not None:
                 header.append("Rel Position")
             header += ["Sequence", "Rel Score"]
             if calc_pvalue is not None:
                 header.append("p-value")
-            if lcs is not None:
-                header += ["LCS", 'LCS length', 'LCS Rel Score']
             header += ["Strand", "Direction", "Gene", "Species", "Region"]
             individual_motif_occurrences.insert(0, header)
         else:
