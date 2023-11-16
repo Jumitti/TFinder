@@ -30,43 +30,11 @@ from email.mime.text import MIMEText
 
 import altair as alt
 import pandas as pd
-import plotly.express as px
-import requests
 import streamlit as st
-from bs4 import BeautifulSoup
 from stqdm import stqdm
 
-from streamlit_searchbox import st_searchbox
 from tfinder import IMO
 from tfinder import NCBIdna
-
-
-def search_species_at_NCBI(query_species_name):
-    def clean_text(text):
-        return re.sub(r' <[^>]+>', '', text)
-
-    scientificnames = []
-
-    with st.spinner("Searching for species..."):
-        url = f'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name="{query_species_name}"&srchmode=3&filter=genome_filter'
-
-        response = requests.get(url)
-        response.raise_for_status()
-
-        soup = BeautifulSoup(response.text, "html.parser")
-
-        ul_tag = soup.find("ul")
-        taxonomy_id_tag = soup.find(text="Taxonomy ID:")
-
-        if ul_tag:
-            strong_tags = ul_tag.find_all("strong")
-            for strong_tag in strong_tags:
-                scientificnames.append(clean_text(strong_tag.get_text()))
-
-        elif taxonomy_id_tag:
-            scientificnames.append(query_species_name)
-
-    return scientificnames
 
 
 def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
@@ -155,34 +123,12 @@ def result_table_output(df):
                 scale=alt.Scale(domain=[ystart, ystop])),
         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
         tooltip=['Sequence', 'Position'] + (['Rel Position'] if "Rel Position" in source else []) + ['Rel Score'] + (
-            ['p-value'] if 'p-value' in source else []) + (
-                    ['LCS', 'LCS length', 'LCS Rel Score'] if "LCS" in source else []) + ['Gene', 'Species', 'Region'],
+            ['p-value'] if 'p-value' in source else []) + ['Gene', 'Species', 'Region'],
         opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
     ).transform_calculate(x=f'datum[{xcol_param.name}]').properties(width=600,
                                                                     height=400).interactive().add_params(
         gene_region_selection, xcol_param)
     st.altair_chart(chart, theme=None, use_container_width=True)
-
-
-def graph_threeD(df):
-    df['Gene_Region'] = df['Gene'] + " " + df['Species'] + " " + df['Region']
-
-    if 'p-value' in df and 'Rel Position' in df:
-        hover_data = ['p-value', 'Sequence', 'LCS', 'Position', 'Rel Position']
-    elif 'p-value' in df:
-        hover_data = ['p-value', 'Sequence', 'LCS', 'Position']
-    elif 'Rel Position' in df:
-        hover_data = ['Sequence', 'LCS', 'Position', 'Rel Position']
-    else:
-        hover_data = ['Sequence', 'LCS', 'Position']
-
-    fig = px.scatter_3d(df, x='Rel Score', y='LCS length', z='LCS Rel Score', color='Gene_Region', symbol='Gene_Region',
-                        hover_name="Gene_Region", hover_data=hover_data,
-                        height=900)
-
-    fig.update_layout(scene=dict(aspectmode="cube"))
-
-    st.plotly_chart(fig, theme=None, use_container_width=True)
 
 
 def aio_page():
@@ -236,11 +182,6 @@ def aio_page():
                 species = st.selectbox("🔹 :blue[**Step 1.2**] Select species of gene names:",
                                        ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0,
                                        label_visibility='collapsed')
-
-                # species = st_searchbox(
-                #     search_species_at_NCBI,
-                #     key="search_taxo", delay=0.25
-                # )
 
             with col2:
                 all_variants = st.toggle('All variant')
@@ -730,23 +671,6 @@ def aio_page():
                     calc_pvalue = 'ATGCPreset'
         else:
             calc_pvalue = None
-
-        # lcs = st.toggle('LCS')
-        # if lcs:
-        #     max_variant_allowed = 1048576
-        #     num_positions = len(next(iter(matrix.values())))
-        #     total_sequences_pwm = 1
-        #     for pos in range(num_positions):
-        #         valid_probabilities = [matrix[nuc][pos] for nuc in matrix if matrix[nuc][pos] > 0]
-        #         total_sequences_pwm *= len(valid_probabilities)
-        #     if total_sequences_pwm > max_variant_allowed:
-        #         st.error(
-        #             f'Too many sequences. LCS not allowed for this PWM. Limit: {max_variant_allowed} | Total sequences : {total_sequences_pwm}')
-        #         button = True
-        #     else:
-        #         button = False
-        # else:
-        #     lcs = None
 
     if tss_ge_input != 0:
         tss_ge_distance = int(tss_ge_input)

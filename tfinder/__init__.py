@@ -451,8 +451,7 @@ class IMO:
 
     @staticmethod
     # Find with JASPAR and manual matrix
-    def individual_motif_finder(dna_sequences, threshold, matrix, progress_bar, calc_pvalue=None, tss_ge_distance=None,
-                                lcs=None):
+    def individual_motif_finder(dna_sequences, threshold, matrix, progress_bar, calc_pvalue=None, tss_ge_distance=None):
         if calc_pvalue is not None:
             if calc_pvalue not in ["ATGCPreset", "ATGCProportion"]:
                 raise ValueError("Use 'ATGCPreset' or 'ATGCProportion'")
@@ -477,7 +476,6 @@ class IMO:
 
         random_scores = {}
         matrix_random_scores = []
-        LCS = {}
         for matrix_name, matrix in matrices.items():
             if calc_pvalue == 'ATGCPreset':
                 max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
@@ -492,10 +490,6 @@ class IMO:
                     matrix_random_scores.append(normalized_random_score)
                     progress_bar.update(1)
                 random_scores = np.array(matrix_random_scores)
-
-            if lcs is not None:
-                generated_sequences = IMO.generate_sequences(matrix)
-                LCS[matrix_name] = generated_sequences
 
         for name, dna_sequence, species, region in dna_sequences:
             if calc_pvalue == 'ATGCProportion':
@@ -590,27 +584,6 @@ class IMO:
 
                         if normalized_score >= threshold:
 
-                            if lcs is not None:
-                                seqint = sequence_with_context[3:-3]
-                                best_lcs_continuous = ""
-                                best_lcs_for_relscore = ""
-                                sequences_for_matrix_name = LCS[matrix_name]
-
-                                for seqref in sequences_for_matrix_name:
-                                    lcs_continuous, lcs_for_relscore = IMO.LCScontinuous(seqint, seqref)
-
-                                    if len(lcs_continuous) > len(best_lcs_continuous):
-                                        best_lcs_continuous = lcs_continuous
-                                        score_lcs_continuous = len(best_lcs_continuous)
-                                        best_lcs_for_relscore = lcs_for_relscore
-
-                                lcs_rel_score = IMO.calculate_score(best_lcs_for_relscore, matrix)
-                                if max_score == min_score:
-                                    lcs_normalized_score = lcs_rel_score / max_score
-                                else:
-                                    lcs_normalized_score = (lcs_rel_score - min_score) / (
-                                            max_score - min_score)
-
                             if calc_pvalue is not None:
                                 p_value = (random_scores >= normalized_score).sum() / len(random_scores)
 
@@ -621,33 +594,24 @@ class IMO:
                                     "{:.6f}".format(normalized_score).ljust(12)]
                             if calc_pvalue is not None:
                                 row.append("{:.3e}".format(p_value).ljust(12))
-                            if lcs is not None:
-                                row += [best_lcs_continuous, str(score_lcs_continuous).ljust(15),
-                                        "{:.6f}".format(lcs_normalized_score).ljust(12)]
                             row += [strand, direction, name, species, region]
                             individual_motif_occurrences.append(row)
 
         if len(individual_motif_occurrences) > 0:
-            if tss_ge_distance is not None and calc_pvalue is not None and lcs is not None:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[3]), x[6], x[7]), reverse=True)
-            elif tss_ge_distance is not None and lcs is not None:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[3]), x[5], x[6]), reverse=True)
-            elif calc_pvalue is not None and lcs is not None:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[2]), x[5], x[6]), reverse=True)
-            elif lcs is not None:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[2]), x[4], x[5]), reverse=True)
+            if tss_ge_distance is not None and calc_pvalue is not None:
+                individual_motif_occurrences.sort(key=lambda x: (float(x[3]), -float(x[4])))
+            elif calc_pvalue is not None:
+                individual_motif_occurrences.sort(key=lambda x: (float(x[2]), -float(x[3])))
             elif tss_ge_distance is not None:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[3])), reverse=True)
+                individual_motif_occurrences.sort(key=lambda x: (float(x[3])))
             else:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[2])), reverse=True)
+                individual_motif_occurrences.sort(key=lambda x: (float(x[2])))
             header = ["Position"]
             if tss_ge_distance is not None:
                 header.append("Rel Position")
             header += ["Sequence", "Rel Score"]
             if calc_pvalue is not None:
                 header.append("p-value")
-            if lcs is not None:
-                header += ["LCS", 'LCS length', 'LCS Rel Score']
             header += ["Strand", "Direction", "Gene", "Species", "Region"]
             individual_motif_occurrences.insert(0, header)
         else:
@@ -870,32 +834,3 @@ class IMO:
         generate_sequence_helper("", 0)
 
         return generated_sequences
-
-    @staticmethod
-    def LCScontinuous(seqint, seqref):
-        m = len(seqint)
-        n = len(seqref)
-
-        dp = [[0] * (n + 1) for _ in range(m + 1)]
-
-        max_length = 0
-        end_index = 0
-
-        for i in range(1, m + 1):
-            for j in range(1, n + 1):
-                if seqint[i - 1] == seqref[j - 1]:
-                    dp[i][j] = dp[i - 1][j - 1] + 1
-                    if dp[i][j] > max_length:
-                        max_length = dp[i][j]
-                        end_index = i
-
-        start_index = end_index - max_length
-        lcs_continuous = seqint[start_index:end_index]
-
-        N_count_before = start_index
-        N_count_after = len(seqint) - end_index
-        N_sequence_before = "N" * N_count_before
-        N_sequence_after = "N" * N_count_after
-        lcs_for_relscore = N_sequence_before + lcs_continuous + N_sequence_after
-
-        return lcs_continuous, lcs_for_relscore

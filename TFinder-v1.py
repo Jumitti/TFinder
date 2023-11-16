@@ -87,14 +87,12 @@ st.markdown(footer_style, unsafe_allow_html=True)
 HOME = 'Home'
 APPLICATION = 'Tools/Software'
 RESOURCE = 'Resources'
-# TFINDER_API = 'Package documentation'
 CONTACT = 'Contact'
 
 tabs = [
     HOME,
     APPLICATION,
     RESOURCE,
-    # TFINDER_API,
     CONTACT
 ]
 
@@ -102,7 +100,6 @@ option_data = [
     {'icon': "🏠", 'label': HOME},
     {'icon': "🖥️", 'label': APPLICATION},
     {'icon': "📑", 'label': RESOURCE},
-    # {'icon': "🐍", 'label': TFINDER_API},
     {'icon': "✉️", 'label': CONTACT}
 
 ]
@@ -125,9 +122,6 @@ elif chosen_tab == APPLICATION:
 
 elif chosen_tab == RESOURCE:
     resource_page()
-
-# elif chosen_tab == TFINDER_API:
-# tfinder_api()
 
 elif chosen_tab == CONTACT:
     contact_page()
@@ -230,7 +224,6 @@ st.sidebar.markdown("[Want to talk ? 🙋🏼‍♂](https://github.com/Jumitti/
 streamlit_analytics.stop_tracking()
 views = streamlit_analytics.main.counts["total_pageviews"]
 
-
 try:
     previous_views = st.secrets['previous_views']
     unique_users = st.secrets['unique_users']
@@ -261,7 +254,8 @@ if not st.session_state.popup_closed:
         st.markdown('')
         st.markdown(
             'If you encounter a problem, please send an email to minniti@ipm.cnrs.fr or minnitijulien06@gmail.com or use the [Issues](https://github.com/Jumitti/TFinder/issues) tab on GitHub')
-        st.markdown('Links are also available at the bottom of the left sidebar. You can contact us using the “Contact” tab too.')
+        st.markdown(
+            'Links are also available at the bottom of the left sidebar. You can contact us using the “Contact” tab too.')
         value = st.checkbox("By checking this box, you agree with data usage polices of NCBI and JASPAR")
         if value:
             st.button('Close')
