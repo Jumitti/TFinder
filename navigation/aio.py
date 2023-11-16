@@ -30,13 +30,9 @@ from email.mime.text import MIMEText
 
 import altair as alt
 import pandas as pd
-import plotly.express as px
-import requests
 import streamlit as st
-from bs4 import BeautifulSoup
 from stqdm import stqdm
 
-from streamlit_searchbox import st_searchbox
 from tfinder import IMO
 from tfinder import NCBIdna
 
