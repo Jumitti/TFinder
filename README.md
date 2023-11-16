@@ -32,7 +32,6 @@ TFinder is an ultra-intuitive, easy-to-use and fast analysis open source and fre
 
 A beta version of TFinder exists here. [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tfinder-jti99236fxoncgfqnhrcrw.streamlit.app/)
 
-A python package is under development. It will be effective later with a documentation.
 
 ## Functions
 
@@ -82,10 +81,9 @@ A python package is under development. It will be effective later with a documen
 
 ## Working on...
 
-- TFinder python package and documentation
 - Cleaning code
-- A standalone version without restriction of resources (Streamlit Cloud allows 1Go RAM, so i need to limit some function..): you can always run le source code locally but it is limited and i want a easy-to-use way to do that. You can also use `TFinder>__init__.py` as a package for you own script (good luck...)
-- Longest Common Subsequence continuous (90%)
+- Fixing bug
+- Improvements...
 
 ## More
 
