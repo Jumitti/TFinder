@@ -451,8 +451,7 @@ class IMO:
 
     @staticmethod
     # Find with JASPAR and manual matrix
-    def individual_motif_finder(dna_sequences, threshold, matrix, progress_bar, calc_pvalue=None, tss_ge_distance=None,
-                                lcs=None):
+    def individual_motif_finder(dna_sequences, threshold, matrix, progress_bar, calc_pvalue=None, tss_ge_distance=None):
         if calc_pvalue is not None:
             if calc_pvalue not in ["ATGCPreset", "ATGCProportion"]:
                 raise ValueError("Use 'ATGCPreset' or 'ATGCProportion'")
@@ -477,7 +476,6 @@ class IMO:
 
         random_scores = {}
         matrix_random_scores = []
-        LCS = {}
         for matrix_name, matrix in matrices.items():
             if calc_pvalue == 'ATGCPreset':
                 max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
@@ -596,9 +594,6 @@ class IMO:
                                     "{:.6f}".format(normalized_score).ljust(12)]
                             if calc_pvalue is not None:
                                 row.append("{:.3e}".format(p_value).ljust(12))
-                            if lcs is not None:
-                                row += [best_lcs_continuous, str(score_lcs_continuous).ljust(15),
-                                        "{:.6f}".format(lcs_normalized_score).ljust(12)]
                             row += [strand, direction, name, species, region]
                             individual_motif_occurrences.append(row)
 
@@ -839,32 +834,3 @@ class IMO:
         generate_sequence_helper("", 0)
 
         return generated_sequences
-
-    @staticmethod
-    def LCScontinuous(seqint, seqref):
-        m = len(seqint)
-        n = len(seqref)
-
-        dp = [[0] * (n + 1) for _ in range(m + 1)]
-
-        max_length = 0
-        end_index = 0
-
-        for i in range(1, m + 1):
-            for j in range(1, n + 1):
-                if seqint[i - 1] == seqref[j - 1]:
-                    dp[i][j] = dp[i - 1][j - 1] + 1
-                    if dp[i][j] > max_length:
-                        max_length = dp[i][j]
-                        end_index = i
-
-        start_index = end_index - max_length
-        lcs_continuous = seqint[start_index:end_index]
-
-        N_count_before = start_index
-        N_count_after = len(seqint) - end_index
-        N_sequence_before = "N" * N_count_before
-        N_sequence_after = "N" * N_count_after
-        lcs_for_relscore = N_sequence_before + lcs_continuous + N_sequence_after
-
-        return lcs_continuous, lcs_for_relscore
