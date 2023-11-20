@@ -27,7 +27,6 @@ from bs4 import BeautifulSoup
 import re
 import xml.etree.ElementTree as ET
 from tqdm import tqdm
-import streamlit as st
 
 
 class NCBIdna:
@@ -129,7 +128,6 @@ class NCBIdna:
                     return result_promoter
 
             if not self.all_slice_forms:
-                st.success(entrez_id)
                 gene_name, chraccver, chrstart, chrstop, species_API = NCBIdna.get_gene_info(entrez_id)
                 if gene_name == 'Bad ID':
                     result_promoter = f'Please verify ID of {self.gene_id}'
