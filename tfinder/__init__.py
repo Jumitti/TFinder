@@ -601,13 +601,13 @@ class IMO:
 
         if len(individual_motif_occurrences) > 0:
             if tss_ge_distance is not None and calc_pvalue is not None:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[3]), -float(x[4])))
+                individual_motif_occurrences.sort(key=lambda x: (-float(x[3]), -float(x[4])))
             elif calc_pvalue is not None:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[2]), -float(x[3])))
+                individual_motif_occurrences.sort(key=lambda x: (-float(x[2]), -float(x[3])))
             elif tss_ge_distance is not None:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[3])))
+                individual_motif_occurrences.sort(key=lambda x: (-float(x[3])))
             else:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[2])))
+                individual_motif_occurrences.sort(key=lambda x: (-float(x[2])))
             header = ["Position"]
             if tss_ge_distance is not None:
                 header.append("Rel Position")
