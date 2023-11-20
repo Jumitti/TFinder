@@ -27,6 +27,7 @@ from bs4 import BeautifulSoup
 import re
 import xml.etree.ElementTree as ET
 from tqdm import tqdm
+import streamlit as st
 
 
 class NCBIdna:
@@ -128,6 +129,7 @@ class NCBIdna:
                     return result_promoter
 
             if not self.all_slice_forms:
+                st.success(entrez_id)
                 gene_name, chraccver, chrstart, chrstop, species_API = NCBIdna.get_gene_info(entrez_id)
                 if gene_name == 'Bad ID':
                     result_promoter = f'Please verify ID of {self.gene_id}'
@@ -186,7 +188,7 @@ class NCBIdna:
             return gene_name  # Already an ENTREZ_GENE_ID
 
         # Request for ENTREZ_GENE_ID
-        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={gene_name}[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml "
+        url = f'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term="{gene_name}"[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml'
         response = requests.get(url)
 
         if response.status_code == 200:
@@ -599,13 +601,13 @@ class IMO:
 
         if len(individual_motif_occurrences) > 0:
             if tss_ge_distance is not None and calc_pvalue is not None:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[3]), -float(x[4])))
+                individual_motif_occurrences.sort(key=lambda x: (-float(x[3]), -float(x[4])))
             elif calc_pvalue is not None:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[2]), -float(x[3])))
+                individual_motif_occurrences.sort(key=lambda x: (-float(x[2]), -float(x[3])))
             elif tss_ge_distance is not None:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[3])))
+                individual_motif_occurrences.sort(key=lambda x: (-float(x[3])))
             else:
-                individual_motif_occurrences.sort(key=lambda x: (float(x[2])))
+                individual_motif_occurrences.sort(key=lambda x: (-float(x[2])))
             header = ["Position"]
             if tss_ge_distance is not None:
                 header.append("Rel Position")
