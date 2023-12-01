@@ -243,9 +243,6 @@ class NCBIdna:
                 if elem.tag == "Gene-commentary_accession":
                     if elem.text == variant:
                         found_variant = True
-                    elif elem.text.startswith('NC_'):
-                        chraccver = elem.text
-                        found_variant = False
                     else:
                         found_variant = False
                 elif found_variant and elem.tag == "Seq-interval_from":
@@ -262,6 +259,18 @@ class NCBIdna:
             chrstart = int(start_coords[0])
             chrstop = int(end_coords[-1])
 
+            url2 = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
+            response = requests.get(url2)
+
+            if response.status_code == 200:
+                response_data = response.json()
+                if 'result' in response_data and str(entrez_id) in response_data['result']:
+                    gene_info = response_data['result'][str(entrez_id)]
+                    if 'chraccver' in str(gene_info):
+                        chraccver = gene_info['genomicinfo'][0]['chraccver']
+                else:
+                    gene_name = 'Bad ID'
+
             return variant, gene_name, chraccver, chrstart, chrstop, species_API
 
         else:
@@ -272,6 +281,18 @@ class NCBIdna:
     # Get gene information
     def all_variant(entrez_id):
 
+        url2 = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
+        response = requests.get(url2)
+
+        if response.status_code == 200:
+            response_data = response.json()
+            if 'result' in response_data and str(entrez_id) in response_data['result']:
+                gene_info = response_data['result'][str(entrez_id)]
+                if 'chraccver' in str(gene_info):
+                    chraccver = gene_info['genomicinfo'][0]['chraccver']
+            else:
+                chraccver = 'Bad chraccver'
+
         url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id={entrez_id}&retmode=xml"
         response = requests.get(url)
 
@@ -280,7 +301,6 @@ class NCBIdna:
 
             variants = []
             gene_name = []
-            chraccver = []
             species_API = []
 
             all_variants = []
@@ -291,8 +311,6 @@ class NCBIdna:
                             'NR_') or elem.text.startswith('XR_'):
                         if elem.text not in variants:
                             variants.append(elem.text)
-                    elif elem.text.startswith('NC_'):
-                        chraccver = elem.text
 
                 elif elem.tag == "Org-ref_taxname":
                     species_API = elem.text
