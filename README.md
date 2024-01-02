@@ -11,7 +11,7 @@ TFinder is a Python easy-to-use web tool for identifying Transcription Factor Bi
 
 TFinder is written in Python and is freely available on GitHub under the MIT license: https://github.com/Jumitti/TFinder and can be accessed as a web application implemented in Streamlit at https://tfinder-ipmc.streamlit.app.
 
-Please cite as: "" | DOI: "".
+DOI: [https://doi.org/10.21203/rs.3.rs-3782387/v1](https://doi.org/10.21203/rs.3.rs-3782387/v1)
 
 <picture>
     <img
@@ -101,5 +101,5 @@ Copyright (c) 2023 Minniti Julien.
 
 This software is distributed under an MIT licence. Please consult the LICENSE file for more details.
 
-Please cite as: "" | DOI: "".
+DOI: [https://doi.org/10.21203/rs.3.rs-3782387/v1](https://doi.org/10.21203/rs.3.rs-3782387/v1)
 
