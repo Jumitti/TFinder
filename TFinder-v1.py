@@ -222,7 +222,7 @@ st.sidebar.markdown(
 st.sidebar.markdown("[Want to talk ? 🙋🏼‍♂](https://github.com/Jumitti/TFinder/discussions)")
 
 # streamlit_analytics.stop_tracking()
-views = streamlit_analytics.main.counts["total_pageviews"]
+# views = streamlit_analytics.main.counts["total_pageviews"]
 
 try:
     previous_views = st.secrets['previous_views']
