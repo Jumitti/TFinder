@@ -22,7 +22,7 @@ import hydralit_components as hc
 import pandas as pd
 import requests
 import streamlit as st
-import streamlit_analytics
+# import streamlit_analytics
 from streamlit_modal import Modal
 import streamlit_lottie
 import time
@@ -130,7 +130,7 @@ for i in range(4):
     st.markdown('#')
 st.markdown(footer, unsafe_allow_html=True)
 
-streamlit_analytics.start_tracking()
+# streamlit_analytics.start_tracking()
 
 # Credit
 st.sidebar.image("img/TFinder_logo_site.png")
@@ -221,7 +221,7 @@ st.sidebar.markdown(
     "[Features request 💡](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md&title=%5BFEATURE%5D)")
 st.sidebar.markdown("[Want to talk ? 🙋🏼‍♂](https://github.com/Jumitti/TFinder/discussions)")
 
-streamlit_analytics.stop_tracking()
+# streamlit_analytics.stop_tracking()
 views = streamlit_analytics.main.counts["total_pageviews"]
 
 try:
