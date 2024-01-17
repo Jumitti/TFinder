@@ -227,7 +227,7 @@ views = streamlit_analytics.main.counts["total_pageviews"]
 try:
     previous_views = st.secrets['previous_views']
     unique_users = st.secrets['unique_users']
-    st.sidebar.markdown(f"Total connections (from last reboot) 👨🏼‍💻: {int(views)}")
+    st.sidebar.markdown(f"Total connections (from last reboot 17/01/24) 👨🏼‍💻: {int(views)}")
     st.sidebar.markdown(f"Unique users 👥: {unique_users}")
     st.session_state["LOCAL"] = 'False'
 
