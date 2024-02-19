@@ -114,6 +114,10 @@ chosen_tab = hc.option_bar(
     override_theme=over_theme,
     horizontal_orientation=True)
 
+st.success("Hello everyone, TFinder is growing every day and we would like to know you a little more. "
+           "We will not collect any data through Streamlit and it is difficult for us to know your uses and your feedback.\n\n"
+           f"[HERE](https://airtable.com/appRn3TQqhuSFS8KO/pagm4Vau8lEFdRX3q/form) you will find a form to answer some of our questions if you wish. See you soon 😊")
+
 if chosen_tab == HOME:
     home_page()
 
