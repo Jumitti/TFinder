@@ -258,7 +258,7 @@ if not st.session_state.popup_closed:
         st.markdown("TFinder use [JASPAR API](https://doi.org/10.1093/bioinformatics/btx804)")
         st.markdown('')
         st.markdown(
-            'If you encounter a problem, please send an email to minniti@ipm.cnrs.fr or minnitijulien06@gmail.com or use the [Issues](https://github.com/Jumitti/TFinder/issues) tab on GitHub')
+            'If you encounter a problem, please send an email to minniti@ipmc.cnrs.fr or minnitijulien06@gmail.com or use the [Issues](https://github.com/Jumitti/TFinder/issues) tab on GitHub')
         st.markdown(
             'Links are also available at the bottom of the left sidebar. You can contact us using the “Contact” tab too.')
         value = st.checkbox("By checking this box, you agree with data usage polices of NCBI and JASPAR")
