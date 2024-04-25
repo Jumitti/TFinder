@@ -236,6 +236,7 @@ local_test = platform.processor()
 st.warning(local_test)
 if local_test == "":
     unique_users = st.secrets['unique_users']
+    st.sidebar.markdown(f"Unique users 👥: {unique_users}")
     st.session_state["LOCAL"] = 'False'
 else:
     st.session_state["LOCAL"] = 'True'
