@@ -20,6 +20,7 @@
 
 import streamlit as st
 
+
 def contact_page():
     a, b = st.columns([0.9, 1.4], gap='large')
     a.image('https://www.ipmc.cnrs.fr/fichiers/images/photo_1.jpg')
