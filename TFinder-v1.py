@@ -233,7 +233,6 @@ st.sidebar.markdown("[Want to talk ? 🙋🏼‍♂](https://github.com/Jumitti/
 # streamlit_analytics.stop_tracking()
 # views = streamlit_analytics.main.counts["total_pageviews"]
 local_test = platform.processor()
-st.warning(local_test)
 if local_test == "":
     unique_users = st.secrets['unique_users']
     st.sidebar.markdown(f"Unique users 👥: {unique_users}")
