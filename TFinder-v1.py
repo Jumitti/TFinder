@@ -19,6 +19,7 @@
 # SOFTWARE.
 
 import hydralit_components as hc
+import platform
 import pandas as pd
 import requests
 import streamlit as st
@@ -33,6 +34,11 @@ from navigation.contact import contact_page
 from navigation.home import home_page
 from navigation.resource import resource_page
 from utils.components import footer_style, footer
+try:
+    from streamlit import rerun as rerun
+except ImportError:
+    # conditional import for streamlit version <1.27
+    from streamlit import experimental_rerun as rerun
 
 import os
 
@@ -56,7 +62,7 @@ if not st.session_state.lottie:
     st.lottie(lottfinder, speed=1.3, loop=False)
     time.sleep(2)
     st.session_state.lottie = True
-    st.rerun()
+    rerun()
 
 max_width_str = f"max-width: {75}%;"
 
@@ -93,15 +99,14 @@ tabs = [
     HOME,
     APPLICATION,
     RESOURCE,
-    CONTACT
+    CONTACT,
 ]
 
 option_data = [
     {'icon': "🏠", 'label': HOME},
     {'icon': "🖥️", 'label': APPLICATION},
     {'icon': "📑", 'label': RESOURCE},
-    {'icon': "✉️", 'label': CONTACT}
-
+    {'icon': "✉️", 'label': CONTACT},
 ]
 
 over_theme = {'txc_inactive': 'black', 'menu_background': '#D6E5FA', 'txc_active': 'white', 'option_active': '#749BC2'}
@@ -227,20 +232,13 @@ st.sidebar.markdown("[Want to talk ? 🙋🏼‍♂](https://github.com/Jumitti/
 
 # streamlit_analytics.stop_tracking()
 # views = streamlit_analytics.main.counts["total_pageviews"]
-
-try:
-    previous_views = st.secrets['previous_views']
+local_test = platform.processor()
+if local_test == "":
     unique_users = st.secrets['unique_users']
-    # st.sidebar.markdown(f"Total connections (from last reboot 17/01/24) 👨🏼‍💻: {int(views)}")
     st.sidebar.markdown(f"Unique users 👥: {unique_users}")
     st.session_state["LOCAL"] = 'False'
-
-except KeyError:
-    st.session_state["LOCAL"] = "True"
-    st.sidebar.markdown(f"TFinder Local Version")
-
-except FileNotFoundError:
-    st.session_state["LOCAL"] = "True"
+else:
+    st.session_state["LOCAL"] = 'True'
     st.sidebar.markdown(f"TFinder Local Version")
 
 modal = Modal(key="TFinder Key", title="Disclaimers - Welcome to TFinder", padding=50, max_width=900)
