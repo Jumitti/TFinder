@@ -35,8 +35,6 @@ from stqdm import stqdm
 
 from tfinder import IMO
 from tfinder import NCBIdna
-import logomaker
-import numpy as np
 
 
 def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
@@ -503,8 +501,11 @@ def aio_page():
     if jaspar == 'JASPAR_ID':
         with REcol1:
             st.markdown("🔹 :blue[**Step 2.3**] JASPAR ID:")
-            jaspar_id = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:", value="MA0106.1",
+            jaspar_id = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:",
+                                      value="MA0106.1" if 'JASPAR_ID_save' not in st.session_state
+                                      else st.session_state['JASPAR_ID_save'],
                                       label_visibility='collapsed')
+            st.session_state['JASPAR_ID_save'] = jaspar_id
             if jaspar_id:
                 TF_name, TF_species, matrix, weblogo = IMO.matrix_extraction(jaspar_id)
                 if TF_name != 'not found':
@@ -533,8 +534,10 @@ def aio_page():
                 st.markdown("🔹 :blue[**Step 2.3**] Matrix:",
                             help="Only PWM generated with our tools are allowed")
                 matrix_str = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
-                                          value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
+                                          value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]"
+                                          if 'MATRIX_STR_save' not in st.session_state else st.session_state['MATRIX_STR_save'],
                                           label_visibility='collapsed', height=125)
+                st.session_state['MATRIX_STR_save'] = matrix_str
 
                 lines = matrix_str.split("\n")
                 matrix = {}
@@ -567,8 +570,10 @@ def aio_page():
                 st.markdown("🔹 :blue[**Step 2.3**] Sequences:",
                             help='Put FASTA sequences. Same sequence length required ⚠')
                 individual_motif = st.text_area("🔹 :blue[**Step 2.3**] Sequences:",
-                                                value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG",
+                                                value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG"
+                                                if 'individual_motif_save' not in st.session_state else st.session_state['individual_motif_save'],
                                                 label_visibility='collapsed')
+                st.session_state['individual_motif_save'] = individual_motif
                 individual_motif = individual_motif.upper()
             isUIPAC = True
 
