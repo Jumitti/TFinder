@@ -99,15 +99,16 @@ class Modal:
             """,
             unsafe_allow_html=True
         )
+
         with st.container():
             _container = st.container()
             if self.title:
                 _container.markdown(
                     f"<h2>{self.title}</h2>", unsafe_allow_html=True)
 
-            close_ = st.button('X', key=f'{self.key}-close')
-            if close_:
-                self.close()
+                # close_ = st.button('X', key=f'{self.key}-close')
+                # if close_:
+                #     self.close()
 
         components.html(
             f"""
