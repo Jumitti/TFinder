@@ -426,11 +426,11 @@ class IMO:
 
     @staticmethod
     # Generate random sequences for p_value
-    def generate_ranseq(probabilities, seq_length, progress_bar, num_random_seqs):
+    def generate_ranseq(probabilities, seq_length, progress_bar):
         motif_length = seq_length
         random_sequences = []
 
-        for _ in range(num_random_seqs):
+        for _ in range(1000000):
             random_sequence = IMO.generate_random_sequence(motif_length, probabilities)
             random_sequences.append(random_sequence)
             progress_bar.update(1)
@@ -479,8 +479,6 @@ class IMO:
 
         matrices = IMO.transform_matrix(matrix)
 
-        num_random_seqs = 1000000
-
         seq_length = len(matrices['+ f']['A'])
 
         if calc_pvalue == 'ATGCPreset':
@@ -491,7 +489,7 @@ class IMO:
 
             probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
-            random_sequences = IMO.generate_ranseq(probabilities, seq_length, progress_bar, num_random_seqs)
+            random_sequences = IMO.generate_ranseq(probabilities, seq_length, progress_bar)
 
         random_scores = {}
         matrix_random_scores = []
@@ -525,7 +523,7 @@ class IMO:
 
                 probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
 
-                random_sequences = IMO.generate_ranseq(probabilities, seq_length, progress_bar, num_random_seqs)
+                random_sequences = IMO.generate_ranseq(probabilities, seq_length, progress_bar)
 
                 if calc_pvalue == 'ATGCProportion':
                     random_scores = {}
