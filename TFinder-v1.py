@@ -146,8 +146,8 @@ st.sidebar.image("img/TFinder_logo_site.png")
 
 # Help
 st.sidebar.title("Help")
-with st.sidebar.expander("Video tutorials"):
-    st.write('coming soon')
+# with st.sidebar.expander("Video tutorials"):
+#     st.write('coming soon')
 
 with st.sidebar.expander("Regulatory regions extractor"):
     st.subheader("Gene ID:")

@@ -39,7 +39,7 @@ def prom_extractor_page():
 
         # Gene ID
         st.markdown("🔹 :blue[**Step 1.1**] Gene ID:", help='NCBI gene name and NCBI gene ID allowed')
-        gene_id_entry = st.text_area("🔹 :blue[**Step 1.1**] Gene ID:", value="PRKN\n351",
+        gene_id_entry = st.text_area("🔹 :blue[**Step 1.1**] Gene ID:", value="PRKN\n351\nNM_003130.4",
                                      label_visibility='collapsed')
         gene_ids = gene_id_entry.strip().split("\n")
 
@@ -51,7 +51,6 @@ def prom_extractor_page():
                 gene_disponibility_output = []
                 pbar = st.progress(0,
                                    text='**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                # email_backdoor(gene_ids)
                 for i, gene_id in enumerate(gene_ids):
                     pbar.progress(i / len(gene_ids),
                                   text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
@@ -72,14 +71,20 @@ def prom_extractor_page():
 
         with tab1:
             # Species
-            st.markdown("🔹 :blue[**Step 1.2**] Select species of gene names:")
-            species = st.selectbox("🔹 :blue[**Step 1.2**] Select species of gene names:",
-                                   ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0,
-                                   label_visibility='collapsed')
+            st.markdown("🔹 :blue[**Step 1.2**] Species of gene names and sliced variants:")
+            col1, col2, = st.columns(2)
+            with col1:
+                species = st.selectbox("🔹 :blue[**Step 1.2**] Select species of gene names:",
+                                       ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0,
+                                       label_visibility='collapsed')
+
+            with col2:
+                all_variants = st.toggle('All variant')
 
             # Upstream/Downstream Promoter
             st.markdown("🔹 :blue[**Step 1.3**] Regulatory region:")
             prom_term = st.radio("🔹 :blue[**Step 1.3**] Regulatory region:", ('Promoter', 'Terminator'),
+                                 horizontal=True,
                                  label_visibility='collapsed')
             if prom_term == 'Promoter':
                 st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from the TSS (bp)")
@@ -102,30 +107,36 @@ def prom_extractor_page():
             st.session_state['upstream'] = upstream
             downstream = int(downstream_entry)
 
+            if 'button_clicked' not in st.session_state:
+                st.session_state.button_clicked = False
+
             # Run Promoter Finder
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
                 with st.spinner('Please wait...'):
-                    # email_backdoor(gene_ids)
                     with colprom1:
+
+                        st.session_state.button_clicked = True
+
                         pbar = st.progress(0,
                                            text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                         for i, gene_id in enumerate(gene_ids):
                             pbar.progress(i / len(gene_ids),
                                           text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                             result_promoter_output = NCBIdna(gene_id, prom_term, upstream, downstream,
-                                                             species).find_sequences()
-                            if not result_promoter_output.startswith('P'):
+                                                             species,
+                                                             all_slice_forms=True if all_variants else False).find_sequences()
+                            if not str(result_promoter_output).startswith('P'):
                                 pbar.progress((i + 1) / len(gene_ids),
                                               text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                                st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted', icon='🧬')
-                                result_promoter.append(result_promoter_output)
-                                pass
+                                st.toast(f"{prom_term} **{gene_id}** from **{species}** extracted", icon='🧬')
 
+                                result_promoter.append(result_promoter_output)
                             else:
                                 st.error(result_promoter_output)
                                 continue
 
                         result_promoter_text = "\n".join(result_promoter)
+
                         st.session_state['result_promoter_text'] = result_promoter_text
 
                         st.success(f"{prom_term} extraction complete !")
@@ -155,15 +166,15 @@ def prom_extractor_page():
             species1, species2, species3, species4, species5 = st.columns(5)
 
             with species1:
-                all_human = st.checkbox("Human")
+                all_human = st.toggle("Human")
             with species2:
-                all_mouse = st.checkbox("Mouse")
+                all_mouse = st.toggle("Mouse")
             with species3:
-                all_rat = st.checkbox("Rat")
+                all_rat = st.toggle("Rat")
             with species4:
-                all_droso = st.checkbox("Drosophila")
+                all_droso = st.toggle("Drosophila")
             with species5:
-                all_zebra = st.checkbox("Zebrafish")
+                all_zebra = st.toggle("Zebrafish")
 
             st.markdown('**🔹 :blue[Step 1.2]** Select regions for all genes:',
                         help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
@@ -171,9 +182,9 @@ def prom_extractor_page():
             region1, region2 = st.columns(2)
 
             with region1:
-                all_prom = st.checkbox("Promoter")
+                all_prom = st.toggle("Promoter")
             with region2:
-                all_term = st.checkbox("Terminator")
+                all_term = st.toggle("Terminator")
 
             if all_human:
                 data_df["human"] = True
@@ -247,8 +258,8 @@ def prom_extractor_page():
                                        text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                     for i, gene_info in enumerate(data_dff.itertuples(index=False)):
                         gene_id = gene_info.Gene
-                        # email_backdoor(str(gene_info))
-                        if gene_id.isdigit():
+                        if gene_id.isdigit() or gene_id.startswith('XM_') or gene_id.startswith(
+                                'NM_') or gene_id.startswith('XR_') or gene_id.startswith('NR_'):
                             for search_type in search_types:
                                 if getattr(gene_info, f'{search_type}'):
                                     prom_term = search_type.capitalize()

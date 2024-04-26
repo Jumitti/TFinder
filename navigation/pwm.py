@@ -18,107 +18,36 @@
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import io
+
 import streamlit as st
-import json
-import numpy as np
-import logomaker
+
+from tfinder import IMO
 
 
 def pwm_page():
-    def calculate_pwm(sequences):
-        pwm = np.zeros((4, sequence_length))
-        for i in range(sequence_length):
-            counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
-            for sequence in sequences:
-                nucleotide = sequence[i]
-                if nucleotide in counts:
-                    counts[nucleotide] += 1
-            pwm[0, i] = counts['A'] / num_sequences * 100
-            pwm[1, i] = counts['T'] / num_sequences * 100
-            pwm[2, i] = counts['G'] / num_sequences * 100
-            pwm[3, i] = counts['C'] / num_sequences * 100
+    col1, col2 = st.columns(2)
+    individual_motif = col1.text_area("🔹 :blue[**Step 2.3**] Sequences:",
+                                      value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG"
+                                      if 'individual_motif_save' not in st.session_state else st.session_state[
+                                          'individual_motif_save'], height=125,
+                                      help='Put FASTA sequences. Same sequence length required ⚠')
+    st.session_state['individual_motif_save'] = individual_motif
+    individual_motif = individual_motif.upper()
 
-        return pwm
-
-    def parse_fasta(fasta_text):
-        sequences = []
-        current_sequence = ""
-
-        for line in fasta_text.splitlines():
-            if line.startswith(">"):
-                if current_sequence:
-                    sequences.append(current_sequence)
-                current_sequence = ""
-            else:
-                current_sequence += line
-
-        if current_sequence:
-            sequences.append(current_sequence)
-
-        return sequences
-
-    def create_web_logo(sequences):
-        matrix = logomaker.alignment_to_matrix(sequences)
-        logo = logomaker.Logo(matrix, color_scheme='classic')
-
-        return logo
-
-    st.subheader("🧮 PWM generator")
-
-    fasta_text = st.text_area("Put FASTA sequences. Same sequence length required ⚠️", height=300)
-
-    if st.button('Generate PWM'):
-        sequences = parse_fasta(fasta_text)
-        sequences = [seq.upper() for seq in sequences]
-
-        if len(sequences) > 0:
-            sequence_length = len(sequences[0])
-            num_sequences = len(sequences)
-            inconsistent_lengths = False
-
-            for sequence in sequences[1:]:
-                if len(sequence) != sequence_length:
-                    inconsistent_lengths = True
-                    break
-
-            if inconsistent_lengths:
-                st.error("Sequence lengths are not consistent.")
-            else:
-                pwm = calculate_pwm(sequences)
-
-                st.subheader("PWM: ")
-                st.info("⬇️ Select and copy")
-                bases = ['A', 'T', 'G', 'C']
-                pwm_text = ""
-                for i in range(len(pwm)):
-                    base_name = bases[i]
-                    base_values = pwm[i]
-
-                    base_str = base_name + " ["
-                    for value in base_values:
-                        base_str += "\t" + format(value) + "\t" if np.isfinite(value) else "\t" + "NA" + "\t"
-
-                    base_str += "]\n"
-                    pwm_text += base_str
-
-                st.text_area("PWM résultante", value=pwm_text)
-
-                sequences_text = fasta_text
-                sequences = []
-                current_sequence = ""
-                for line in sequences_text.splitlines():
-                    line = line.strip()
-                    if line.startswith(">"):
-                        if current_sequence:
-                            sequences.append(current_sequence)
-                        current_sequence = ""
-                    else:
-                        current_sequence += line
-
-                sequences.append(current_sequence)
-
-                logo = create_web_logo(sequences)
-                st.pyplot(logo.fig)
-
-        else:
-            st.warning("You forgot FASTA sequences :)")
+    try:
+        matrix, weblogo = IMO.individual_motif_pwm(individual_motif)
+        matrix_str = ""
+        for base, values in matrix.items():
+            values_str = " ".join([f"{val:.4f}" for val in values])
+            matrix_str += f"{base} [ {values_str} ]\n"
+        matrix_text = col2.text_area('PWM', value=matrix_str, height=125,
+                                     help='Copy to use later. Not editable.',
+                                     disabled=True)
+        st.pyplot(weblogo.fig)
+        logo = io.BytesIO()
+        weblogo.fig.savefig(logo, format='png')
+        logo.seek(0)
+        st.session_state['weblogo'] = logo
+    except Exception as e:
+        st.error(e)
