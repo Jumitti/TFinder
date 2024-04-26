@@ -20,6 +20,7 @@
 
 import datetime
 import io
+import re
 import smtplib
 from email import encoders
 from email.mime.base import MIMEBase
@@ -120,8 +121,8 @@ def result_table_output(df):
         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                 scale=alt.Scale(domain=[ystart, ystop])),
         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-        tooltip=['Position'] + (['Rel Position'] if "Rel Position" in source else []) + ['Rel Score'] + (
-            ['p-value'] if 'p-value' in source else []) + ['Sequence', 'Gene', 'Species', 'Region'],
+        tooltip=['Sequence', 'Position'] + (['Rel Position'] if "Rel Position" in source else []) + ['Rel Score'] + (
+            ['p-value'] if 'p-value' in source else []) + ['Gene', 'Species', 'Region'],
         opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
     ).transform_calculate(x=f'datum[{xcol_param.name}]').properties(width=600,
                                                                     height=400).interactive().add_params(
@@ -171,7 +172,12 @@ def BSF_page():
                                 'Danio rerio']
                 promoter_name = line[1:]
                 words = promoter_name.lstrip('>').split()
-                name = words[0]
+                pattern = r">(\w+)\s+(\w+)\s+\|"
+                match = re.search(pattern, line)
+                if match:
+                    name = words[0] + ' ' + words[1]
+                else:
+                    name = words[0]
                 for species in species_prom:
                     if species.lower() in promoter_name.lower():
                         found_species = species
@@ -209,20 +215,27 @@ def BSF_page():
     if jaspar == 'JASPAR_ID':
         with REcol1:
             st.markdown("🔹 :blue[**Step 2.3**] JASPAR ID:")
-            jaspar_id = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:", value="MA0106.1",
+            jaspar_id = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:",
+                                      value="MA0106.1" if 'JASPAR_ID_save' not in st.session_state
+                                      else st.session_state['JASPAR_ID_save'],
                                       label_visibility='collapsed')
-
-            TF_name, TF_species, matrix, weblogo = IMO.matrix_extraction(jaspar_id)
-            if TF_name != 'not found':
-                st.success(f"{TF_species} transcription factor {TF_name}")
-                with REcol2:
-                    st.image(weblogo)
-                button = False
-                error_input_im = True
+            st.session_state['JASPAR_ID_save'] = jaspar_id
+            if jaspar_id:
+                TF_name, TF_species, matrix, weblogo = IMO.matrix_extraction(jaspar_id)
+                if TF_name != 'not found':
+                    st.success(f"{TF_species} transcription factor {TF_name}")
+                    with REcol2:
+                        st.image(weblogo)
+                    button = False
+                    error_input_im = True
+                else:
+                    button = True
+                    error_input_im = False
+                    st.error('Wrong JASPAR_ID')
             else:
                 button = True
                 error_input_im = False
-                st.error('Wrong JASPAR_ID')
+                st.warning('Please enter a JASPAR_ID')
 
     elif jaspar == 'PWM':
         with REcol1:
@@ -235,30 +248,46 @@ def BSF_page():
                 st.markdown("🔹 :blue[**Step 2.3**] Matrix:",
                             help="Only PWM generated with our tools are allowed")
                 matrix_str = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
-                                          value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]",
+                                          value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]"
+                                          if 'MATRIX_STR_save' not in st.session_state else st.session_state['MATRIX_STR_save'],
                                           label_visibility='collapsed', height=125)
+                st.session_state['MATRIX_STR_save'] = matrix_str
 
                 lines = matrix_str.split("\n")
                 matrix = {}
-                for line in lines:
-                    parts = line.split("[")
-                    base = parts[0].strip()
-                    values = [float(val.strip()) for val in parts[1][:-1].split()]
-                    matrix[base] = values
+                if len(lines) > 1:
+                    for line in lines:
+                        parts = line.split("[")
+                        base = parts[0].strip()
+                        values = [float(val.strip()) for val in parts[1][:-1].split()]
+                        matrix[base] = values
 
-                try:
-                    IMO.has_uniform_column_length(matrix_str)
-                    error_input_im = True
-                except Exception as e:
+                    try:
+                        IMO.has_uniform_column_length(matrix_str)
+
+                        weblogo = IMO.PWM_to_weblogo(matrix_str)
+                        st.pyplot(weblogo.fig)
+                        logo = io.BytesIO()
+                        weblogo.fig.savefig(logo, format='png')
+                        logo.seek(0)
+                        st.session_state['weblogo'] = logo
+
+                        error_input_im = True
+                    except Exception as e:
+                        error_input_im = False
+                        REcol2.error(e)
+                else:
                     error_input_im = False
-                    st.error(e)
+                    REcol2.warning("Please input your PWM :)")
         else:
             with REcol1:
                 st.markdown("🔹 :blue[**Step 2.3**] Sequences:",
                             help='Put FASTA sequences. Same sequence length required ⚠')
                 individual_motif = st.text_area("🔹 :blue[**Step 2.3**] Sequences:",
-                                                value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG",
+                                                value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG"
+                                                if 'individual_motif_save' not in st.session_state else st.session_state['individual_motif_save'],
                                                 label_visibility='collapsed')
+                st.session_state['individual_motif_save'] = individual_motif
                 individual_motif = individual_motif.upper()
             isUIPAC = True
 
@@ -280,7 +309,7 @@ def BSF_page():
                 error_input_im = True
             except Exception as e:
                 error_input_im = False
-                st.error(e)
+                REcol1.error(e)
 
     else:
         with REcol1:
@@ -290,6 +319,7 @@ def BSF_page():
                                   st.session_state[
                                       'IUPAC_seq'],
                                   label_visibility='collapsed')
+            st.session_state['IUPAC_seq'] = IUPAC
             IUPAC = IUPAC.upper()
 
         IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N', '-', '.']
@@ -322,7 +352,7 @@ def BSF_page():
                     error_input_im = True
                 except Exception as e:
                     error_input_im = False
-                    st.error(e)
+                    REcol1.error(e)
             else:
                 st.error(sequences)
                 isUIPAC = False
@@ -348,7 +378,7 @@ def BSF_page():
 
     with BSFcol2:
         st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
-        auto_thre = st.checkbox("Automatic threshold", value=True)
+        auto_thre = st.toggle("Automatic threshold", value=True)
         if auto_thre:
             threshold_entry = 0
         else:
@@ -357,7 +387,7 @@ def BSF_page():
                                         label_visibility="collapsed")
     with BSFcol3:
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times.')
-        pvalue = st.checkbox('_p-value_')
+        pvalue = st.toggle('_p-value_')
         if pvalue:
             if total_sequences > 10:
                 st.markdown(
@@ -459,19 +489,21 @@ def BSF_page():
                                    mime="application/vnd.ms-excel", key='download-excel')
                 st.download_button(label="💾 Download table (.csv)", data=csv_file,
                                    file_name=f"Results_TFinder_{current_date_time}.csv", mime="text/csv")
-                email_receiver = st.text_input('Send results by email ✉',
-                                               value='', placeholder='Send results by email ✉',
-                                               label_visibility="collapsed")
-                if st.button("Send ✉"):
-                    if jaspar == 'PWM':
-                        if matrix_type == 'With PWM':
-                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                        if matrix_type == 'With FASTA sequences':
-                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{individual_motif}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                    elif jaspar == 'JASPAR_ID':
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                    else:
-                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                    email(excel_file, csv_file, txt_output, email_receiver, body, jaspar)
+
+                if st.session_state["LOCAL"] == "False":
+                    email_receiver = st.text_input('Send results by email ✉',
+                                                   value='', placeholder='Send results by email ✉',
+                                                   label_visibility="collapsed")
+                    if st.button("Send ✉"):
+                        if jaspar == 'PWM':
+                            if matrix_type == 'With PWM':
+                                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                            if matrix_type == 'With FASTA sequences':
+                                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{individual_motif}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                        elif jaspar == 'JASPAR_ID':
+                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                        else:
+                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                        email(excel_file, csv_file, txt_output, email_receiver, body, jaspar)
         else:
             st.error(f"No consensus sequence found with the specified threshold")
