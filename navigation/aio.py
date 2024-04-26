@@ -35,6 +35,8 @@ from stqdm import stqdm
 
 from tfinder import IMO
 from tfinder import NCBIdna
+import logomaker
+import numpy as np
 
 
 def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
@@ -503,18 +505,22 @@ def aio_page():
             st.markdown("🔹 :blue[**Step 2.3**] JASPAR ID:")
             jaspar_id = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:", value="MA0106.1",
                                       label_visibility='collapsed')
-
-            TF_name, TF_species, matrix, weblogo = IMO.matrix_extraction(jaspar_id)
-            if TF_name != 'not found':
-                st.success(f"{TF_species} transcription factor {TF_name}")
-                with REcol2:
-                    st.image(weblogo)
-                button = False
-                error_input_im = True
+            if jaspar_id:
+                TF_name, TF_species, matrix, weblogo = IMO.matrix_extraction(jaspar_id)
+                if TF_name != 'not found':
+                    st.success(f"{TF_species} transcription factor {TF_name}")
+                    with REcol2:
+                        st.image(weblogo)
+                    button = False
+                    error_input_im = True
+                else:
+                    button = True
+                    error_input_im = False
+                    st.error('Wrong JASPAR_ID')
             else:
                 button = True
                 error_input_im = False
-                st.error('Wrong JASPAR_ID')
+                st.warning('Please enter a JASPAR_ID')
 
     elif jaspar == 'PWM':
         with REcol1:
@@ -532,18 +538,30 @@ def aio_page():
 
                 lines = matrix_str.split("\n")
                 matrix = {}
-                for line in lines:
-                    parts = line.split("[")
-                    base = parts[0].strip()
-                    values = [float(val.strip()) for val in parts[1][:-1].split()]
-                    matrix[base] = values
+                if len(lines) > 1:
+                    for line in lines:
+                        parts = line.split("[")
+                        base = parts[0].strip()
+                        values = [float(val.strip()) for val in parts[1][:-1].split()]
+                        matrix[base] = values
 
-                try:
-                    IMO.has_uniform_column_length(matrix_str)
-                    error_input_im = True
-                except Exception as e:
+                    try:
+                        IMO.has_uniform_column_length(matrix_str)
+
+                        weblogo = IMO.PWM_to_weblogo(matrix_str)
+                        st.pyplot(weblogo.fig)
+                        logo = io.BytesIO()
+                        weblogo.fig.savefig(logo, format='png')
+                        logo.seek(0)
+                        st.session_state['weblogo'] = logo
+
+                        error_input_im = True
+                    except Exception as e:
+                        error_input_im = False
+                        REcol2.error(e)
+                else:
                     error_input_im = False
-                    st.error(e)
+                    REcol2.warning("Please input your PWM :)")
         else:
             with REcol1:
                 st.markdown("🔹 :blue[**Step 2.3**] Sequences:",
@@ -572,7 +590,7 @@ def aio_page():
                 error_input_im = True
             except Exception as e:
                 error_input_im = False
-                st.error(e)
+                REcol1.error(e)
 
     else:
         with REcol1:
@@ -615,7 +633,7 @@ def aio_page():
                     error_input_im = True
                 except Exception as e:
                     error_input_im = False
-                    st.error(e)
+                    REcol1.error(e)
             else:
                 st.error(sequences)
                 isUIPAC = False

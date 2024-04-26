@@ -20,6 +20,7 @@
 
 import logomaker
 import numpy as np
+import pandas as pd
 import random
 import requests
 import time
@@ -780,6 +781,9 @@ class IMO:
     def create_web_logo(sequences):
         matrix = logomaker.alignment_to_matrix(sequences)
         logo = logomaker.Logo(matrix, color_scheme='classic')
+        logo.style_spines(visible=True)
+        logo.style_xticks(fmt='%d')
+        logo.ax.set_ylabel("Bits")
         return logo
 
     @staticmethod
@@ -822,7 +826,29 @@ class IMO:
                 return matrix, weblogo
 
         else:
-            raise Exception(f"You forget FASTA sequences :)")
+            raise Exception(f"You forget to input something :)")
+
+    @staticmethod
+    def PWM_to_weblogo(pwm_str):
+        lines = pwm_str.strip().split('\n')
+        pwm_dict = {}
+        for line in lines:
+            parts = line.strip().split()
+            key = parts[0]
+            values = [float(x) for x in parts[1:] if x != '[' and x != ']']
+            pwm_dict[key] = values
+
+        pwm_df = pd.DataFrame(pwm_dict)
+
+        # Créer le weblogo
+        weblogo = logomaker.Logo(pwm_df, color_scheme='classic')
+
+        # Style du weblogo
+        weblogo.style_spines(visible=True)
+        weblogo.style_xticks(fmt='%d')
+        weblogo.ax.set_ylabel("Bits")
+
+        return weblogo
 
     @staticmethod
     def normalize_matrix(matrix):
