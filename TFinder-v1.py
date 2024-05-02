@@ -120,8 +120,14 @@ chosen_tab = hc.option_bar(
     horizontal_orientation=True)
 
 st.success("Hello everyone, TFinder is growing every day and we would like to know you a little more. "
-           "We will not collect any data through Streamlit and it is difficult for us to know your uses and your feedback.\n\n"
+           "We will not collect any data through Streamlit and it is difficult for us to know your uses and your feedback. "
            f"[HERE](https://airtable.com/appRn3TQqhuSFS8KO/pagm4Vau8lEFdRX3q/form) you will find a form to answer some of our questions if you wish. See you soon 😊")
+
+st.success("If the application does not work, here are other deployments:\n"
+           f"   - TFinder on [Streamlit](https://streamlit.io/): [https://tfinder-ipmc.streamlit.app/](https://tfinder-ipmc.streamlit.app/)\n"
+           f"   - TFinder on [Health Universe](https://www.healthuniverse.com/): [https://apps.healthuniverse.com/nhu-dxv-ktj](https://apps.healthuniverse.com/nhu-dxv-ktj)\n"
+           f"   - TFinder on [Ploomber](https://ploomber.io/): [https://rough-meadow-6083.ploomberapp.io/](https://rough-meadow-6083.ploomberapp.io/)\n"
+           f"   - (BETA) TFinder: [https://tfinder-beta.streamlit.app/](https://tfinder-beta.streamlit.app/)\n")
 
 if chosen_tab == HOME:
     home_page()
