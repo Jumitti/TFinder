@@ -27,6 +27,7 @@ from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import requests
 
 import altair as alt
 import pandas as pd
@@ -210,33 +211,42 @@ def aio_page():
 
             # Run Promoter Finder
             if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
-                with st.spinner('Please wait...'):
-                    with colprom1:
+                response = requests.get(
+                    'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term=nos2[Gene%20Name]+AND+human[Organism]&retmode=json&rettype=xml')
 
-                        pbar = st.progress(0,
-                                           text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                        for i, gene_id in enumerate(gene_ids):
-                            pbar.progress(i / len(gene_ids),
-                                          text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                            result_promoter_output = NCBIdna(gene_id, prom_term, upstream, downstream,
-                                                             species,
-                                                             all_slice_forms=True if all_variants else False).find_sequences()
-                            if not str(result_promoter_output).startswith('P'):
-                                pbar.progress((i + 1) / len(gene_ids),
+                ncbi_status = True if response.status_code == 200 else False
+
+                if ncbi_status is True:
+                    with st.spinner('Please wait...'):
+                        with colprom1:
+
+                            pbar = st.progress(0,
+                                               text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                            for i, gene_id in enumerate(gene_ids):
+                                pbar.progress(i / len(gene_ids),
                                               text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                                st.toast(f"{prom_term} **{gene_id}** from **{species}** extracted", icon='🧬')
+                                result_promoter_output = NCBIdna(gene_id, prom_term, upstream, downstream,
+                                                                 species,
+                                                                 all_slice_forms=True if all_variants else False).find_sequences()
+                                if not str(result_promoter_output).startswith('P'):
+                                    pbar.progress((i + 1) / len(gene_ids),
+                                                  text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                                    st.toast(f"{prom_term} **{gene_id}** from **{species}** extracted", icon='🧬')
 
-                                result_promoter.append(result_promoter_output)
-                            else:
-                                st.error(result_promoter_output)
-                                continue
+                                    result_promoter.append(result_promoter_output)
+                                else:
+                                    st.error(result_promoter_output)
+                                    continue
 
-                        result_promoter_text = "\n".join(result_promoter)
+                            result_promoter_text = "\n".join(result_promoter)
 
-                        st.session_state['result_promoter_text'] = result_promoter_text
+                            st.session_state['result_promoter_text'] = result_promoter_text
 
-                        st.success(f"{prom_term} extraction complete !")
-                        st.toast(f"{prom_term} extraction complete !", icon='😊')
+                            st.success(f"{prom_term} extraction complete !")
+                            st.toast(f"{prom_term} extraction complete !", icon='😊')
+
+                elif ncbi_status is False:
+                    st.warning("⚠ NCBI servers are under maintenance or have an error")
 
         with tab2:
             # Advance mode extraction
@@ -346,54 +356,35 @@ def aio_page():
             downstream_entry = max(updown_slide)
 
             if st.button("🧬 :blue[**Step 1.4**] Extract sequences", help="(~5sec/seq)", key='Advance'):
-                with colprom1:
-                    st.session_state['upstream'] = upstream_entry
-                    upstream = int(upstream_entry)
-                    downstream = int(downstream_entry)
-                    pbar = st.progress(0,
-                                       text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                    for i, gene_info in enumerate(data_dff.itertuples(index=False)):
-                        gene_id = gene_info.Gene
-                        if gene_id.isdigit() or gene_id.startswith('XM_') or gene_id.startswith(
-                                'NM_') or gene_id.startswith('XR_') or gene_id.startswith('NR_'):
-                            for search_type in search_types:
-                                if getattr(gene_info, f'{search_type}'):
-                                    prom_term = search_type.capitalize()
+                response = requests.get(
+                    'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term=nos2[Gene%20Name]+AND+human[Organism]&retmode=json&rettype=xml')
 
-                                    pbar.progress((i + 1) / len(data_dff),
-                                                  text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                ncbi_status = True if response.status_code == 200 else False
 
-                                    result_promoter_output = NCBIdna(gene_id, prom_term, upstream,
-                                                                     downstream).find_sequences()
-
-                                    if not result_promoter_output.startswith('P'):
-                                        st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted',
-                                                 icon='🧬')
-                                        result_promoter.append(result_promoter_output)
-                                        pass
-
-                                    else:
-                                        st.error(result_promoter_output)
-                                        continue
-
-                        else:
-                            for species in species_list:
+                if ncbi_status is True:
+                    with colprom1:
+                        st.session_state['upstream'] = upstream_entry
+                        upstream = int(upstream_entry)
+                        downstream = int(downstream_entry)
+                        pbar = st.progress(0,
+                                           text='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                        for i, gene_info in enumerate(data_dff.itertuples(index=False)):
+                            gene_id = gene_info.Gene
+                            if gene_id.isdigit() or gene_id.startswith('XM_') or gene_id.startswith(
+                                    'NM_') or gene_id.startswith('XR_') or gene_id.startswith('NR_'):
                                 for search_type in search_types:
-                                    if getattr(gene_info, f'{species}') and getattr(gene_info,
-                                                                                    f'{search_type}'):
+                                    if getattr(gene_info, f'{search_type}'):
                                         prom_term = search_type.capitalize()
 
                                         pbar.progress((i + 1) / len(data_dff),
-                                                      text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species.capitalize()}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                                                      text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
 
                                         result_promoter_output = NCBIdna(gene_id, prom_term, upstream,
-                                                                         downstream,
-                                                                         species).find_sequences()
+                                                                         downstream).find_sequences()
 
                                         if not result_promoter_output.startswith('P'):
-                                            st.toast(
-                                                f'{prom_term} **{gene_id}** from **{species.capitalize()}** extracted',
-                                                icon='🧬')
+                                            st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted',
+                                                     icon='🧬')
                                             result_promoter.append(result_promoter_output)
                                             pass
 
@@ -401,10 +392,38 @@ def aio_page():
                                             st.error(result_promoter_output)
                                             continue
 
-                    result_promoter_text = "\n".join(result_promoter)
-                    st.session_state['result_promoter_text'] = result_promoter_text
-                    st.success(f"{prom_term} extraction complete !")
-                    st.toast(f"{prom_term} extraction complete !", icon='😊')
+                            else:
+                                for species in species_list:
+                                    for search_type in search_types:
+                                        if getattr(gene_info, f'{species}') and getattr(gene_info,
+                                                                                        f'{search_type}'):
+                                            prom_term = search_type.capitalize()
+
+                                            pbar.progress((i + 1) / len(data_dff),
+                                                          text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species.capitalize()}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+
+                                            result_promoter_output = NCBIdna(gene_id, prom_term, upstream,
+                                                                             downstream,
+                                                                             species).find_sequences()
+
+                                            if not result_promoter_output.startswith('P'):
+                                                st.toast(
+                                                    f'{prom_term} **{gene_id}** from **{species.capitalize()}** extracted',
+                                                    icon='🧬')
+                                                result_promoter.append(result_promoter_output)
+                                                pass
+
+                                            else:
+                                                st.error(result_promoter_output)
+                                                continue
+
+                        result_promoter_text = "\n".join(result_promoter)
+                        st.session_state['result_promoter_text'] = result_promoter_text
+                        st.success(f"{prom_term} extraction complete !")
+                        st.toast(f"{prom_term} extraction complete !", icon='😊')
+
+                elif ncbi_status is False:
+                    st.warning("⚠ NCBI servers are under maintenance or have an error")
 
     # Promoter output state
     st.divider()
