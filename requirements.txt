@@ -46,7 +46,7 @@ pandas
 plotly
 requests
 stqdm
-streamlit==1.34
+streamlit
 streamlit_analytics
 streamlit-lottie
 tqdm
