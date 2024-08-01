@@ -408,7 +408,7 @@ class IMO:
     @staticmethod
     # Transform JASPAR matrix
     def transform_matrix(matrix):
-        reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
+        # reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
         complement_matrix = {
             'A': matrix['T'],
             'C': matrix['G'],
@@ -417,10 +417,15 @@ class IMO:
         }
         reversed_complement_matrix = {base: list(reversed(scores)) for base, scores in complement_matrix.items()}
 
+        # return {
+        #     '+ f': matrix,
+        #     '+ r': reversed_matrix,
+        #     '- f': complement_matrix,
+        #     '- r': reversed_complement_matrix
+        # }
+
         return {
             '+ f': matrix,
-            '+ r': reversed_matrix,
-            '- f': complement_matrix,
             '- r': reversed_complement_matrix
         }
 
@@ -604,9 +609,9 @@ class IMO:
                             if calc_pvalue is not None:
                                 p_value = (random_scores >= normalized_score).sum() / len(random_scores)
 
-                            row = [str(position).ljust(8)]
+                            row = [position]
                             if tss_ge_distance is not None:
-                                row.append(str(tis_position).ljust(15))
+                                row.append(tis_position)
                             row += [sequence_with_context,
                                     "{:.6f}".format(normalized_score).ljust(12)]
                             if calc_pvalue is not None:

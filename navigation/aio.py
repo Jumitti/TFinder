@@ -725,13 +725,13 @@ def aio_page():
         else:
             button = False
 
-    sequence_iteration = 4 * total_sequences_region_length
+    sequence_iteration = 2 * total_sequences_region_length
     num_random_seqs = 1000000
     if total_sequences <= 10:
         random_gen = total_sequences * num_random_seqs
     else:
         random_gen = num_random_seqs
-    random_score = random_gen * 4
+    random_score = random_gen * 2
 
     if pvalue:
         iteration = sequence_iteration + random_gen + random_score
