@@ -18,15 +18,22 @@
 # OUT OF OR IN CONNECTION WITH TFINDER OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import random
+import re
+import time
+import xml.etree.ElementTree as ET
+
+import altair as alt
 import logomaker
 import numpy as np
 import pandas as pd
-import random
 import requests
-import time
+import streamlit as st
 from bs4 import BeautifulSoup
-import re
-import xml.etree.ElementTree as ET
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.preprocessing import StandardScaler
 from tqdm import tqdm
 
 
@@ -407,8 +414,9 @@ class IMO:
 
     @staticmethod
     # Transform JASPAR matrix
-    def transform_matrix(matrix):
-        # reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
+    def transform_matrix(matrix, alldirection):
+        if alldirection is True:
+            reversed_matrix = {base: list(reversed(scores)) for base, scores in matrix.items()}
         complement_matrix = {
             'A': matrix['T'],
             'C': matrix['G'],
@@ -417,17 +425,18 @@ class IMO:
         }
         reversed_complement_matrix = {base: list(reversed(scores)) for base, scores in complement_matrix.items()}
 
-        # return {
-        #     '+ f': matrix,
-        #     '+ r': reversed_matrix,
-        #     '- f': complement_matrix,
-        #     '- r': reversed_complement_matrix
-        # }
-
-        return {
-            '+ f': matrix,
-            '- r': reversed_complement_matrix
-        }
+        if alldirection is True:
+            return {
+                '+ f': matrix,
+                '+ r': reversed_matrix,
+                '- f': complement_matrix,
+                '- r': reversed_complement_matrix
+            }
+        else:
+            return {
+                '+ f': matrix,
+                '- r': reversed_complement_matrix
+            }
 
     @staticmethod
     # Generate random sequences for p_value
@@ -475,14 +484,14 @@ class IMO:
 
     @staticmethod
     # Find with JASPAR and manual matrix
-    def individual_motif_finder(dna_sequences, threshold, matrix, progress_bar, calc_pvalue=None, tss_ge_distance=None):
+    def individual_motif_finder(dna_sequences, threshold, matrix, progress_bar, calc_pvalue=None, tss_ge_distance=None, alldirection=None):
         if calc_pvalue is not None:
             if calc_pvalue not in ["ATGCPreset", "ATGCProportion"]:
                 raise ValueError("Use 'ATGCPreset' or 'ATGCProportion'")
 
         individual_motif_occurrences = []
 
-        matrices = IMO.transform_matrix(matrix)
+        matrices = IMO.transform_matrix(matrix, alldirection)
 
         seq_length = len(matrices['+ f']['A'])
 
@@ -562,6 +571,55 @@ class IMO:
 
                     random_scores = np.array(matrix_random_scores)
 
+                # p_val = []
+                # for score_pval in np.arange(0.50, 1, 0.001):
+                #     p_val_test = (random_scores >= score_pval).sum() / len(random_scores)
+                #     row = [score_pval, p_val_test]
+                #     p_val.append(row)
+                # headpval = ["Score_pvalue", "p_value"]
+                # p_val.insert(0, headpval)
+                #
+                # p_value_df = pd.DataFrame(p_val[1:], columns=p_val[0])
+                # st.dataframe(p_value_df)
+                #
+                # filtered_df = p_value_df[p_value_df['p_value'] > 0]
+                #
+                # scores = filtered_df['Score_pvalue'].values
+                # p_values = filtered_df['p_value'].values
+                #
+                # log_p_values = np.log(p_values)
+                # model = LinearRegression()
+                # model.fit(scores.reshape(-1, 1), log_p_values)
+                #
+                # fitted_log_values = model.predict(scores.reshape(-1, 1))
+                # fitted_values = np.exp(fitted_log_values)
+                # filtered_df['fitted'] = np.maximum(fitted_values, 0)
+                #
+                # # RMSE
+                # rmse = np.sqrt(mean_squared_error(p_values, filtered_df['fitted']))
+                # st.write(f"RMSE : {rmse}")
+                #
+                # # Coef
+                # coef = model.coef_[0]
+                # intercept = model.intercept_
+                #
+                # # Standard curve
+                # equation = f"y = exp({intercept:.3f} + {coef:.3f}*x)"
+                # st.write(f"Standard curve : {equation}")
+                #
+                # scatter = alt.Chart(filtered_df).mark_point().encode(
+                #     x='Score_pvalue',
+                #     y='p_value'
+                # )
+                #
+                # line = alt.Chart(filtered_df).mark_line(color='red').encode(
+                #     x='Score_pvalue',
+                #     y='fitted'
+                # ).interactive()
+                #
+                # chart = scatter + line
+                # st.altair_chart(chart)
+
                 for i in range(len(dna_sequence) - seq_length + 1):
                     seq = dna_sequence[i:i + seq_length]
                     score = IMO.calculate_score(seq, matrix)
@@ -609,13 +667,19 @@ class IMO:
                             if calc_pvalue is not None:
                                 p_value = (random_scores >= normalized_score).sum() / len(random_scores)
 
+                                # def evaluate_exponential(x, coef, intercept):
+                                #     return np.exp(intercept + coef * x)
+                                #
+                                # y_value = evaluate_exponential(normalized_score, coef, intercept)
+
                             row = [position]
                             if tss_ge_distance is not None:
                                 row.append(tis_position)
                             row += [sequence_with_context,
                                     "{:.6f}".format(normalized_score).ljust(12)]
                             if calc_pvalue is not None:
-                                row.append("{:.3e}".format(p_value).ljust(12))
+                                row.append("{:.6e}".format(p_value))
+                                # row.append("{:.6e}".format(y_value))
                             row += [strand, direction, name, species, region]
                             individual_motif_occurrences.append(row)
 
@@ -634,6 +698,7 @@ class IMO:
             header += ["Sequence", "Rel Score"]
             if calc_pvalue is not None:
                 header.append("p-value")
+                # header.append("p-value_pred")
             header += ["Strand", "Direction", "Gene", "Species", "Region"]
             individual_motif_occurrences.insert(0, header)
         else:
