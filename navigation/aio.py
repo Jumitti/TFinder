@@ -705,6 +705,17 @@ def aio_page():
         else:
             calc_pvalue = None
 
+    with BSFcol3:
+        st.markdown("🔹 :blue[**_Experimental_**] Analyse all directions", help='Directions: **original (+ →)**, **reverse-complement (- ←)**, reverse (+ ←), complement (- →)\n\n'
+                                                                               'Directions in bold are the default directions.')
+        alldirection = st.toggle('All directions')
+        if alldirection:
+            st.markdown(
+                '⚠️Analyzes in the reverse (+ ←) and complement (- →) directions are generally not suitable for studying TFBS.')
+            analyse = 4
+        else:
+            analyse = 2
+
     if tss_ge_input != 0:
         tss_ge_distance = int(tss_ge_input)
     else:
@@ -725,13 +736,13 @@ def aio_page():
         else:
             button = False
 
-    sequence_iteration = 2 * total_sequences_region_length
+    sequence_iteration = analyse * total_sequences_region_length
     num_random_seqs = 1000000
     if total_sequences <= 10:
         random_gen = total_sequences * num_random_seqs
     else:
         random_gen = num_random_seqs
-    random_score = random_gen * 2
+    random_score = random_gen * analyse
 
     if pvalue:
         iteration = sequence_iteration + random_gen + random_score
@@ -743,12 +754,12 @@ def aio_page():
                  use_container_width=True,
                  disabled=button):
         with stqdm(total=iteration,
-                   desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
+                   desc='**:blue[Analyse sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                    mininterval=0.1) as progress_bar:
             individual_motif_occurrences = IMO.individual_motif_finder(dna_sequences, threshold, matrix,
                                                                        progress_bar,
                                                                        calc_pvalue,
-                                                                       tss_ge_distance)
+                                                                       tss_ge_distance, alldirection)
         st.session_state['individual_motif_occurrences'] = individual_motif_occurrences
 
     st.divider()
