@@ -234,29 +234,42 @@ class NCBIdna:
     # Get gene information
     def get_variant_info(entrez_id, variant):
 
-        variant = variant.split(".")
-        variant = variant[0]
-
+        variant = variant.split(".")[0]
         url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id={entrez_id}&retmode=xml"
         response = requests.get(url)
 
         if response.status_code == 200:
             root = ET.fromstring(response.text)
 
+            chromosome = ""
+            found_variant = False
+            k_found = False
             start_coords = []
             end_coords = []
-            found_variant = False
+            orientation = ""
+
+            for elem in root.iter('Gene-commentary_accession'):
+                if elem.text.startswith('NC_'):
+                    chromosome = elem.text
+                    break
 
             for elem in root.iter():
-                if elem.tag == "Gene-commentary_accession":
-                    if elem.text == variant:
-                        found_variant = True
+                if elem.tag == "Gene-commentary_accession" and elem.text != variant:
+                    if elem.text == chromosome:
+                        k_found = True
+                    elif len(start_coords) < 2 and len(end_coords) < 2:
+                        continue
                     else:
-                        found_variant = False
-                elif found_variant and elem.tag == "Seq-interval_from":
+                        break
+
+                if k_found and elem.tag == "Gene-commentary_accession":
+                    found_variant = True if elem.text == variant else False
+                elif k_found and found_variant and elem.tag == "Seq-interval_from":
                     start_coords.append(elem.text)
-                elif found_variant and elem.tag == "Seq-interval_to":
+                elif k_found and found_variant and elem.tag == "Seq-interval_to":
                     end_coords.append(elem.text)
+                elif k_found and found_variant and elem.tag == "Na-strand" and orientation == "":
+                    orientation += elem.attrib.get("value")
 
                 elif elem.tag == "Org-ref_taxname":
                     species_API = elem.text
@@ -264,8 +277,12 @@ class NCBIdna:
                 elif elem.tag == 'Gene-ref_locus':
                     gene_name = elem.text
 
-            chrstart = int(start_coords[0])
-            chrstop = int(end_coords[-1])
+            if orientation != "minus":
+                chrstart = int(start_coords[0]) + 1
+                chrstop = int(end_coords[-1]) + 1
+            else:
+                chrstart = int(end_coords[0]) + 1
+                chrstop = int(start_coords[-1]) + 1
 
             url2 = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
             response = requests.get(url2)
@@ -310,6 +327,7 @@ class NCBIdna:
             variants = []
             gene_name = []
             species_API = []
+            chromosome = ""
 
             all_variants = []
 
@@ -326,23 +344,47 @@ class NCBIdna:
                 elif elem.tag == 'Gene-ref_locus':
                     gene_name = elem.text
 
+            for elem in root.iter('Gene-commentary_accession'):
+                if elem.text.startswith('NC_'):
+                    chromosome = elem.text
+                    break
+
             for variant in variants:
                 start_coords = []
                 end_coords = []
                 found_variant = False
+                k_found = False
+                orientation = ""
                 for elem in root.iter():
-                    if elem.tag == "Gene-commentary_accession":
-                        if elem.text == variant:
-                            found_variant = True
+                    if elem.tag == "Gene-commentary_accession" and elem.text != variant:
+                        if elem.text == chromosome:
+                            k_found = True
+                        elif len(start_coords) < 2 and len(end_coords) < 2:
+                            continue
                         else:
-                            found_variant = False
-                    elif found_variant and elem.tag == "Seq-interval_from":
-                        start_coords.append(elem.text)
-                    elif found_variant and elem.tag == "Seq-interval_to":
-                        end_coords.append(elem.text)
+                            break
 
-                chrstart = int(start_coords[0])
-                chrstop = int(end_coords[-1])
+                    if k_found and elem.tag == "Gene-commentary_accession":
+                        found_variant = True if elem.text == variant else False
+                    elif k_found and found_variant and elem.tag == "Seq-interval_from":
+                        start_coords.append(elem.text)
+                    elif k_found and found_variant and elem.tag == "Seq-interval_to":
+                        end_coords.append(elem.text)
+                    elif k_found and found_variant and elem.tag == "Na-strand" and orientation == "":
+                        orientation += elem.attrib.get("value")
+
+                    elif elem.tag == "Org-ref_taxname":
+                        species_API = elem.text
+
+                    elif elem.tag == 'Gene-ref_locus':
+                        gene_name = elem.text
+
+                if orientation != "minus":
+                    chrstart = int(start_coords[0]) + 1
+                    chrstop = int(end_coords[-1]) + 1
+                else:
+                    chrstart = int(end_coords[0]) + 1
+                    chrstop = int(start_coords[-1]) + 1
 
                 all_variants.append((variant, gene_name, chraccver, chrstart, chrstop, species_API))
 
