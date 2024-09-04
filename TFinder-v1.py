@@ -243,7 +243,7 @@ st.sidebar.markdown("[Want to talk ? 🙋🏼‍♂](https://github.com/Jumitti/
 try:
     local_test = platform.processor()
     if local_test == "":
-        unique_users = st.secrets['unique_users'] == "True"
+        unique_users = st.secrets['unique_users']
         st.sidebar.markdown(f"Unique users 👥: {unique_users}")
         st.session_state["LOCAL"] = 'False'
 except Exception as e:
@@ -261,7 +261,7 @@ if not st.session_state.popup_closed:
         st.markdown(
             'TFinder use [NCBI API](https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen)'
             ': More information [NCBI Website and Data Usage Policies and Disclaimers](https://www.ncbi.nlm.nih.gov/home/about/policies/)')
-        if st.secrets['ncbi_error']:
+        if st.secrets['ncbi_error'] == "True":
             st.error("⚠ NCBI server maintenance, problems and slowdowns may be observed")
         st.markdown("TFinder use [JASPAR API](https://doi.org/10.1093/bioinformatics/btx804)")
         st.markdown('')
