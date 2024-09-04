@@ -128,7 +128,7 @@ st.success("If the application does not work, here are other deployments:\n"
            f"   - TFinder on [Health Universe](https://www.healthuniverse.com/): [https://apps.healthuniverse.com/nhu-dxv-ktj](https://apps.healthuniverse.com/nhu-dxv-ktj)\n"
            f"   - (BETA) TFinder: [https://tfinder-beta.streamlit.app/](https://tfinder-beta.streamlit.app/)\n")
 
-if st.secrets['ncbi_error']:
+if st.secrets['ncbi_error'] == "True":
     st.error("⚠ NCBI server maintenance, problems and slowdowns may be observed")
 
 if chosen_tab == HOME:
@@ -243,7 +243,7 @@ st.sidebar.markdown("[Want to talk ? 🙋🏼‍♂](https://github.com/Jumitti/
 try:
     local_test = platform.processor()
     if local_test == "":
-        unique_users = st.secrets['unique_users']
+        unique_users = st.secrets['unique_users'] == "True"
         st.sidebar.markdown(f"Unique users 👥: {unique_users}")
         st.session_state["LOCAL"] = 'False'
 except Exception as e:
