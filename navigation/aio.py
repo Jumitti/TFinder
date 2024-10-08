@@ -174,14 +174,14 @@ def aio_page():
         with tab1:
             # Species
             st.markdown("🔹 :blue[**Step 1.2**] Species of gene names and sliced variants:")
-            col1, col2, = st.columns(2)
-            with col1:
-                species = st.selectbox("🔹 :blue[**Step 1.2**] Select species of gene names:",
+            col1, col2, col3 = st.columns(3)
+            species = col1.selectbox("🔹 :blue[**Step 1.2**] Select species of gene names:",
                                        ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0,
                                        label_visibility='collapsed')
 
-            with col2:
-                all_variants = st.toggle('All variant')
+            all_variants = col2.toggle('All variant')
+
+            gr = col3.selectbox("Genome", ["Current", "Previous"], index=0, help="For human Current is GRCh38 and Previous is GRCh37 for example")
 
             # Upstream/Downstream Promoter
             st.markdown("🔹 :blue[**Step 1.3**] Regulatory region:")
@@ -226,7 +226,7 @@ def aio_page():
                                 pbar.progress(i / len(gene_ids),
                                               text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                                 result_promoter_output = NCBIdna(gene_id, prom_term, upstream, downstream,
-                                                                 species,
+                                                                 species, gr,
                                                                  all_slice_forms=True if all_variants else False).find_sequences()
                                 if not str(result_promoter_output).startswith('P'):
                                     pbar.progress((i + 1) / len(gene_ids),

@@ -36,6 +36,8 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import StandardScaler
 from tqdm import tqdm
 
+from test import extract_genomic_info
+
 
 class NCBIdna:
     def __init__(self,
@@ -43,12 +45,13 @@ class NCBIdna:
                  prom_term,
                  upstream,
                  downstream,
-                 species=None, all_slice_forms=None):
+                 species=None, gr="Current", all_slice_forms=None):
         self.gene_id = gene_id
         self.prom_term = prom_term if prom_term is not None else None
         self.upstream = upstream if upstream is not None else None
         self.downstream = downstream if downstream is not None else None
         self.species = species if species is not None else None
+        self.gr = gr if gr is not None else "Current"
         self.all_slice_forms = True if all_slice_forms is True else False
 
     @staticmethod
@@ -136,7 +139,7 @@ class NCBIdna:
                     return result_promoter
 
             if not self.all_slice_forms:
-                gene_name, chraccver, chrstart, chrstop, species_API = NCBIdna.get_gene_info(entrez_id)
+                gene_name, chraccver, chrstart, chrstop, species_API = NCBIdna.get_gene_info(entrez_id, self.gr)
                 if gene_name == 'Bad ID':
                     result_promoter = f'Please verify ID of {self.gene_id}'
                     return result_promoter
@@ -210,9 +213,9 @@ class NCBIdna:
 
     @staticmethod
     # Get gene information
-    def get_gene_info(entrez_id):
+    def get_gene_info(entrez_id, gr):
         # Request gene information
-        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
+        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json"
         response = requests.get(url)
 
         if response.status_code == 200:
@@ -221,14 +224,110 @@ class NCBIdna:
                 gene_info = response_data['result'][str(entrez_id)]
                 if 'chraccver' in str(gene_info):
                     gene_name = gene_info['name']
-                    chraccver = gene_info['genomicinfo'][0]['chraccver']
-                    chrstart = int(gene_info['genomicinfo'][0]['chrstart'])
-                    chrstop = int(gene_info['genomicinfo'][0]['chrstop'])
+                    if gr != "Current":
+                        chraccver, chrstart, chrstop = NCBIdna.extract_genomic_info(entrez_id, response_data)
+                    else:
+                        chraccver = gene_info['genomicinfo'][0]['chraccver']
+                        chrstart = int(gene_info['genomicinfo'][0]['chrstart'])
+                        chrstop = int(gene_info['genomicinfo'][0]['chrstop'])
                     species_API = gene_info['organism']['scientificname']
+                    print(chraccver, chrstart, chrstop)
                     return gene_name, chraccver, chrstart, chrstop, species_API
             else:
                 gene_name = 'Bad ID'
                 return gene_name, None, None, None, None
+
+    @staticmethod
+    def extract_genomic_info(gene_id, gene_info):
+        # print(gene_id, gene_info)
+
+        if gene_info and 'result' in gene_info and gene_id in gene_info['result']:
+            accession_dict = {}
+            gene_details = gene_info['result'][gene_id]
+
+            time.sleep(1)
+
+            # Extraction depuis la section locationhist
+            location_hist = gene_details.get('locationhist', [])
+            if len(location_hist) == 0:
+                location_hist = gene_details.get('genomicinfo', [])
+            for loc in location_hist:
+                nc_accver = loc.get('chraccver')  # Extrait le NC_XXXXX.YY
+                chrstart = loc.get('chrstart')
+                chrstop = loc.get('chrstop')
+
+                if nc_accver:
+                    base_accession = nc_accver
+                    if base_accession not in accession_dict:
+                        accession_dict[base_accession] = (chrstart, chrstop)
+                    else:
+                        # Conserver la première occurrence des coordonnées
+                        existing_start, existing_stop = accession_dict[base_accession]
+                        accession_dict[base_accession] = (min(existing_start, chrstart), max(existing_stop, chrstop))
+
+
+            nc_dict = accession_dict
+
+            # Affichage des NC_ et leurs informations de position
+            # for base_accver, (chrstart, chrstop) in nc_dict.items():
+            #     print(f"{base_accver}: chrstart={chrstart}, chrstop={chrstop}")
+
+            # Filtrer pour garder uniquement les entrées qui commencent par "NC_"
+            nc_dict = {base_accver: (chrstart, chrstop) for base_accver, (chrstart, chrstop) in nc_dict.items() if
+                       base_accver.startswith("NC_")}
+
+            # Si le dictionnaire n'est pas vide, récupérez la base avant le point du premier élément
+            if nc_dict:
+                first_base = next(iter(nc_dict)).split('.')[0]  # Récupérer la base avant le point de la première clé
+
+                # Filtrer le dictionnaire pour ne garder que les éléments avec la même base
+                nc_dict = {base_accver: (chrstart, chrstop) for base_accver, (chrstart, chrstop) in nc_dict.items() if
+                           base_accver.split('.')[0] == first_base}
+
+            # Votre code existant pour afficher le dictionnaire filtré
+            # print("\nDictionnaire filtré :")
+            # for base_accver, (chrstart, chrstop) in nc_dict.items():
+            #     print(f"{base_accver}: chrstart={chrstart}, chrstop={chrstop}")
+
+            # Trouver l'entrée avec le chiffre le plus grand et le plus petit après le point
+            max_version = -1
+            max_accver = None
+            max_coords = None  # Pour stocker les coordonnées associées à la version maximale
+            min_version = float('inf')  # Initialiser à l'infini pour trouver la plus petite version
+            min_accver = None
+            min_coords = None  # Pour stocker les coordonnées associées à la version minimale
+
+            for base_accver in nc_dict.keys():
+                version = int(base_accver.split('.')[1])  # Extraire la version après le point
+
+                # Mise à jour pour la version maximale
+                if version > max_version:
+                    max_version = version
+                    max_accver = base_accver
+                    max_coords = nc_dict[base_accver]  # Stocker les coordonnées
+
+                # Mise à jour pour la version minimale
+                if version < min_version:
+                    min_version = version
+                    min_accver = base_accver
+                    min_coords = nc_dict[base_accver]  # Stocker les coordonnées
+
+            # Afficher les résultats
+            # if max_accver:
+            #     print(f"\nL'accès avec la version la plus élevée est : {max_accver} avec la version {max_version}.")
+            #     print(f"Coordonnées : chrstart={max_coords[0]}, chrstop={max_coords[1]}")
+            # else:
+            #     print("\nAucun accès trouvé.")
+            #
+            # if min_accver:
+            #     print(f"L'accès avec la version la plus basse est : {min_accver} avec la version {min_version}.")
+            #     print(f"Coordonnées : chrstart={min_coords[0]}, chrstop={min_coords[1]}")
+            # else:
+            #     print("Aucun accès trouvé.")
+
+            # print("Test", min_accver, min_coords[0], min_coords[1])
+            # print("test")
+            return min_accver, min_coords[0], min_coords[1]
 
     @staticmethod
     # Get gene information
