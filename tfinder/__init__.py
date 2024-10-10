@@ -576,7 +576,6 @@ class NCBIdna:
             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
-                # Extraction of DNA sequence
                 dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
                 if chrstop > chrstart:
                     sequence = dna_sequence
@@ -589,12 +588,6 @@ class NCBIdna:
                 time.sleep(random.uniform(0.25, 0.5))
             else:
                 time.sleep(random.uniform(0.25, 0.5))
-
-            return sequence
-        else:
-            print(f"NCBI is under maintenance. Error {response.status_code}: {str(response.text)}")
-            return f"NCBI is under maintenance. Error {response.status_code}: {str(response.text)}"
-
 
     @staticmethod
     def reverse_complement(dna_sequence):
