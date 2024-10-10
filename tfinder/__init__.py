@@ -472,6 +472,7 @@ class NCBIdna:
             if response.status_code == 200:
                 root = ET.fromstring(response.text)
 
+                tv = []
                 variants = []
                 gene_name = []
                 species_API = []
@@ -480,6 +481,10 @@ class NCBIdna:
                 all_variants = []
 
                 for elem in root.iter():
+                    if elem.tag == "Gene-commentary_label":
+                        if elem.text.startswith('transcript variant'):
+                            if elem.text not in tv:
+                                tv.append(elem.text)
                     if elem.tag == "Gene-commentary_accession":
                         if elem.text.startswith('NM_') or elem.text.startswith('XM_') or elem.text.startswith(
                                 'NR_') or elem.text.startswith('XR_'):
@@ -549,7 +554,11 @@ class NCBIdna:
                             return all_variants, f"Transcript(s) found(s) for {entrez_id}: {all_variants}"
 
                 elif from_id:
-                    return variants[0]
+                    if len(tv) > 0:
+                        associations = dict(zip(tv, variants))
+                        return associations["transcript variant 1"]
+                    else:
+                        return variants[0]
 
             elif response.status_code == 429:
                 time.sleep(random.uniform(0.25, 0.5))
