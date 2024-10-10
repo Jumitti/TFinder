@@ -19,7 +19,7 @@
 # SOFTWARE.
 
 # Old requirements:
-# Bio
+biopython
 # beautifulsoup4
 # bs4
 # extra_streamlit_components
