@@ -438,25 +438,26 @@ class NCBIdna:
     # Get gene information
     def all_variant(entrez_id, from_id=False):
 
-        while True:
-            url2 = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
-            response = requests.get(url2, headers=headers)
+        if not from_id:
+            while True:
+                url2 = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
+                response = requests.get(url2, headers=headers)
 
-            if response.status_code == 200:
-                response_data = response.json()
-                try:
-                    gene_info = response_data['result'][str(entrez_id)]
-                    chraccver = gene_info['genomicinfo'][0]['chraccver']
-                    break
+                if response.status_code == 200:
+                    response_data = response.json()
+                    try:
+                        gene_info = response_data['result'][str(entrez_id)]
+                        chraccver = gene_info['genomicinfo'][0]['chraccver']
+                        break
 
-                except Exception as e:
-                    all_variants = [("Error 200", None, None, None, None, None)]
-                    return "Error 200", f"Transcript not found(s) for {entrez_id}."
+                    except Exception as e:
+                        all_variants = [("Error 200", None, None, None, None, None)]
+                        return "Error 200", f"Transcript not found(s) for {entrez_id}."
 
-            elif response.status_code == 429:
-                time.sleep(random.uniform(0.25, 0.5))
-            else:
-                time.sleep(random.uniform(0.25, 0.5))
+                elif response.status_code == 429:
+                    time.sleep(random.uniform(0.25, 0.5))
+                else:
+                    time.sleep(random.uniform(0.25, 0.5))
 
         while True:
             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id={entrez_id}&retmode=xml"
