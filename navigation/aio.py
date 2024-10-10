@@ -178,13 +178,11 @@ def aio_page():
             # Species
             st.markdown("🔹 :blue[**Step 1.2**] Species of gene names and sliced variants:")
             col1, col2, col3 = st.columns(3)
-            species = col1.selectbox("🔹 :blue[**Step 1.2**] Select species of gene names:",
-                                       ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0,
-                                       label_visibility='collapsed')
-
-            all_variants = col2.toggle('All variant')
-
-            gr = col3.selectbox("Genome", ["Current", "Previous"], index=0, help="For human Current is GRCh38 and Previous is GRCh37 for example")
+            gr = col1.selectbox("Genome:", ["Current", "Previous"], index=0, help='Example for Homo sapiens:\n\n"Current" is GRCh38\n\n"Previous" is GRCh37')
+            species = col2.selectbox("Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
+            col3.markdown("")
+            col3.markdown("")
+            all_variants = col3.toggle(label='All variants')
 
             # Upstream/Downstream Promoter
             st.markdown("🔹 :blue[**Step 1.3**] Regulatory region:")

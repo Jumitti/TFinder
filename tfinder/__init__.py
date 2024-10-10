@@ -36,7 +36,6 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import StandardScaler
 from tqdm import tqdm
 
-
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 }
@@ -128,10 +127,10 @@ class NCBIdna:
                 result_promoter = f'Please verify {self.gene_id} variant'
                 return result_promoter
             else:
-                variant, gene_name, title, chraccver, chrstart, chrstop, species_API = NCBIdna.get_variant_info(entrez_id,
-                                                                                                         self.gene_id)
+                variant, gene_name, title, chraccver, chrstart, chrstop, species_API = NCBIdna.get_variant_info(
+                    entrez_id,
+                    self.gene_id)
         else:
-            variant = '0'
             if self.gene_id.isdigit():
                 entrez_id = self.gene_id
 
@@ -141,7 +140,8 @@ class NCBIdna:
                     return entrez_id, message
 
             if not self.all_slice_forms:
-                variant, gene_name, title, chraccver, chrstart, chrstop, species_API, message = NCBIdna.get_gene_info(entrez_id, self.gr, gene_name_error=self.gene_id)
+                variant, gene_name, title, chraccver, chrstart, chrstop, species_API, message = NCBIdna.get_gene_info(
+                    entrez_id, self.gr, gene_name_error=self.gene_id)
                 if variant == "Error 200":
                     return variant, message
 
@@ -163,20 +163,13 @@ class NCBIdna:
             return result_window, "OK"
 
         if not self.all_slice_forms or self.all_slice_forms and self.gene_id.startswith(
-                'XM_') or self.gene_id.startswith('NM_') or self.gene_id.startswith(
-            'XR_') or self.gene_id.startswith('NR_'):
+                'XM_') or self.gene_id.startswith('NM_') or self.gene_id.startswith('XR_') or self.gene_id.startswith('NR_'):
             dna_sequence = NCBIdna.get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop)
 
             if prom_term == 'promoter':
-                if variant != '0':
-                    dna_sequence = f">{variant} {gene_name} | {title} {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart + 1} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
-                else:
-                    dna_sequence = f">{gene_name} | {title} {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart + 1} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
+                dna_sequence = f">{variant} {gene_name} | {title} {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart + 1} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
             else:
-                if variant != '0':
-                    dna_sequence = f">{variant} {gene_name} | {species_API} | {title} {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
-                else:
-                    dna_sequence = f">{gene_name} | {species_API} | {title} {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
+                dna_sequence = f">{variant} {gene_name} | {title} {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
 
             return dna_sequence, "OK"
 
@@ -545,7 +538,8 @@ class NCBIdna:
                     if len(all_variants) > 0:
                         return all_variants, f"Transcript(s) found(s) for {entrez_id}: {all_variants}"
                     else:
-                        gene_name, title, chraccver, chrstart, chrstop, species_API, message = NCBIdna.get_gene_info(entrez_id, from_id=False)
+                        gene_name, title, chraccver, chrstart, chrstop, species_API, message = NCBIdna.get_gene_info(
+                            entrez_id, from_id=False)
                         if gene_name == "Error 200":
                             all_variants.append(("Error 200", None, None, None, None, None))
                             return "Error 200", f"Transcript not found(s) for {entrez_id}."
@@ -702,7 +696,8 @@ class IMO:
 
     @staticmethod
     # Find with JASPAR and manual matrix
-    def individual_motif_finder(dna_sequences, threshold, matrix, progress_bar=None, calc_pvalue=None, tss_ge_distance=None, alldirection=None):
+    def individual_motif_finder(dna_sequences, threshold, matrix, progress_bar=None, calc_pvalue=None,
+                                tss_ge_distance=None, alldirection=None):
         if calc_pvalue is not None:
             if calc_pvalue not in ["ATGCPreset", "ATGCProportion"]:
                 raise ValueError("Use 'ATGCPreset' or 'ATGCProportion'")
