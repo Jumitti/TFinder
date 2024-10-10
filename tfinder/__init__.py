@@ -128,7 +128,7 @@ class NCBIdna:
                 result_promoter = f'Please verify {self.gene_id} variant'
                 return result_promoter
             else:
-                variant, gene_name, chraccver, chrstart, chrstop, species_API = NCBIdna.get_variant_info(entrez_id,
+                variant, gene_name, title, chraccver, chrstart, chrstop, species_API = NCBIdna.get_variant_info(entrez_id,
                                                                                                          self.gene_id)
         else:
             variant = '0'
@@ -141,9 +141,9 @@ class NCBIdna:
                     return entrez_id, message
 
             if not self.all_slice_forms:
-                gene_name, title, chraccver, chrstart, chrstop, species_API, message = NCBIdna.get_gene_info(entrez_id, self.gr, self.gene_id)
-                if gene_name == "Error 200":
-                    return gene_name, message
+                variant, gene_name, title, chraccver, chrstart, chrstop, species_API, message = NCBIdna.get_gene_info(entrez_id, self.gr, gene_name_error=self.gene_id)
+                if variant == "Error 200":
+                    return variant, message
 
             elif self.all_slice_forms:
                 all_variants, message = NCBIdna.all_variant(entrez_id)
@@ -223,7 +223,7 @@ class NCBIdna:
 
     @staticmethod
     # Get gene information
-    def get_gene_info(entrez_id, gr="Current", gene_name_error=None):
+    def get_gene_info(entrez_id, gr="Current", from_id=True, gene_name_error=None):
 
         while True:
             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
@@ -234,20 +234,17 @@ class NCBIdna:
                     gene_info = response_data['result'][str(entrez_id)]
                     gene_name = gene_info['name']
                     title, chraccver, chrstart, chrstop = NCBIdna.extract_genomic_info(entrez_id, response_data, gr)
-                    # if gr != "Current":
-                    #     chraccver, chrstart, chrstop = NCBIdna.extract_genomic_info(entrez_id, response_data)
-                    # else:
-                    #     chraccver = gene_info['genomicinfo'][0]['chraccver']
-                    #     chrstart = int(gene_info['genomicinfo'][0]['chrstart'])
-                    #     chrstop = int(gene_info['genomicinfo'][0]['chrstop'])
                     species_API = gene_info['organism']['scientificname']
 
-                    return gene_name, title, chraccver, chrstart, chrstop, species_API, (
-                        f"Response 200: Info for {entrez_id} {gene_name} retrieved."
+                    if from_id:
+                        variant = NCBIdna.all_variant(entrez_id, from_id=True)
+
+                    return variant, gene_name, title, chraccver, chrstart, chrstop, species_API, (
+                        f"Response 200: Info for {entrez_id} {variant} {gene_name} retrieved."
                         f"Entrez_ID: {entrez_id} | Gene name: {gene_name} | Genome Assembly: {title} | ChrAccVer: {chraccver}"
                         f"ChrStart/ChrStop: {chrstart}/{chrstop} | Species: {species_API}")
                 except Exception as e:
-                    return "Error 200", None, None, None, None, None, f"Info for {gene_name_error} {entrez_id} not found."
+                    return "Error 200", None, None, None, None, None, None, f"Info for {gene_name_error} {entrez_id} not found."
 
             elif response.status_code == 429:
                 time.sleep(random.uniform(0.25, 0.5))
@@ -256,8 +253,6 @@ class NCBIdna:
 
     @staticmethod
     def extract_genomic_info(gene_id, gene_info, gr):
-        print(gene_info)
-
         if gene_info and 'result' in gene_info and gene_id in gene_info['result']:
             accession_dict = {}
             gene_details = gene_info['result'][gene_id]
@@ -435,10 +430,11 @@ class NCBIdna:
                         gene_info = response_data['result'][str(entrez_id)]
                         if 'chraccver' in str(gene_info):
                             chraccver = gene_info['genomicinfo'][0]['chraccver']
+                            title = NCBIdna.fetch_nc_info(chraccver)
                     else:
                         gene_name = 'Bad ID'
 
-                    return variant, gene_name, chraccver, chrstart, chrstop, species_API
+                    return variant, gene_name, title, chraccver, chrstart, chrstop, species_API
 
                 elif response.status_code == 429:
                     time.sleep(random.uniform(0.25, 0.5))
@@ -447,7 +443,7 @@ class NCBIdna:
 
     @staticmethod
     # Get gene information
-    def all_variant(entrez_id):
+    def all_variant(entrez_id, from_id=False):
 
         while True:
             url2 = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
@@ -496,60 +492,64 @@ class NCBIdna:
                     elif elem.tag == 'Gene-ref_locus':
                         gene_name = elem.text
 
-                for elem in root.iter('Gene-commentary_accession'):
-                    if elem.text.startswith('NC_'):
-                        chromosome = elem.text
-                        break
+                if not from_id:
+                    for elem in root.iter('Gene-commentary_accession'):
+                        if elem.text.startswith('NC_'):
+                            chromosome = elem.text
+                            break
 
-                for variant in variants:
-                    start_coords = []
-                    end_coords = []
-                    found_variant = False
-                    k_found = False
-                    orientation = ""
-                    for elem in root.iter():
-                        if elem.tag == "Gene-commentary_accession" and elem.text != variant:
-                            if elem.text == chromosome:
-                                k_found = True
-                            elif len(start_coords) < 2 and len(end_coords) < 2:
-                                continue
-                            else:
-                                break
+                    for variant in variants:
+                        start_coords = []
+                        end_coords = []
+                        found_variant = False
+                        k_found = False
+                        orientation = ""
+                        for elem in root.iter():
+                            if elem.tag == "Gene-commentary_accession" and elem.text != variant:
+                                if elem.text == chromosome:
+                                    k_found = True
+                                elif len(start_coords) < 2 and len(end_coords) < 2:
+                                    continue
+                                else:
+                                    break
 
-                        if k_found and elem.tag == "Gene-commentary_accession":
-                            found_variant = True if elem.text == variant else False
-                        elif k_found and found_variant and elem.tag == "Seq-interval_from":
-                            start_coords.append(elem.text)
-                        elif k_found and found_variant and elem.tag == "Seq-interval_to":
-                            end_coords.append(elem.text)
-                        elif k_found and found_variant and elem.tag == "Na-strand" and orientation == "":
-                            orientation += elem.attrib.get("value")
+                            if k_found and elem.tag == "Gene-commentary_accession":
+                                found_variant = True if elem.text == variant else False
+                            elif k_found and found_variant and elem.tag == "Seq-interval_from":
+                                start_coords.append(elem.text)
+                            elif k_found and found_variant and elem.tag == "Seq-interval_to":
+                                end_coords.append(elem.text)
+                            elif k_found and found_variant and elem.tag == "Na-strand" and orientation == "":
+                                orientation += elem.attrib.get("value")
 
-                        elif elem.tag == "Org-ref_taxname":
-                            species_API = elem.text
+                            elif elem.tag == "Org-ref_taxname":
+                                species_API = elem.text
 
-                        elif elem.tag == 'Gene-ref_locus':
-                            gene_name = elem.text
+                            elif elem.tag == 'Gene-ref_locus':
+                                gene_name = elem.text
 
-                    if orientation != "minus":
-                        chrstart = int(start_coords[0]) + 1
-                        chrstop = int(end_coords[-1]) + 1
-                    else:
-                        chrstart = int(end_coords[0]) + 1
-                        chrstop = int(start_coords[-1]) + 1
+                        if orientation != "minus":
+                            chrstart = int(start_coords[0]) + 1
+                            chrstop = int(end_coords[-1]) + 1
+                        else:
+                            chrstart = int(end_coords[0]) + 1
+                            chrstop = int(start_coords[-1]) + 1
 
-                    all_variants.append((variant, gene_name, chraccver, chrstart, chrstop, species_API))
+                        all_variants.append((variant, gene_name, chraccver, chrstart, chrstop, species_API))
 
-                if len(all_variants) > 0:
-                    return all_variants, f"Transcript(s) found(s) for {entrez_id}: {all_variants}"
-                else:
-                    gene_name, title, chraccver, chrstart, chrstop, species_API, message = NCBIdna.get_gene_info(entrez_id)
-                    if gene_name == "Error 200":
-                        all_variants.append(("Error 200", None, None, None, None, None))
-                        return "Error 200", f"Transcript not found(s) for {entrez_id}."
-                    else:
-                        all_variants.append((gene_name, gene_name, chraccver, chrstart, chrstop, species_API))
+                    if len(all_variants) > 0:
                         return all_variants, f"Transcript(s) found(s) for {entrez_id}: {all_variants}"
+                    else:
+                        gene_name, title, chraccver, chrstart, chrstop, species_API, message = NCBIdna.get_gene_info(entrez_id, from_id=False)
+                        if gene_name == "Error 200":
+                            all_variants.append(("Error 200", None, None, None, None, None))
+                            return "Error 200", f"Transcript not found(s) for {entrez_id}."
+                        else:
+                            all_variants.append((gene_name, gene_name, chraccver, chrstart, chrstop, species_API))
+                            return all_variants, f"Transcript(s) found(s) for {entrez_id}: {all_variants}"
+
+                elif from_id:
+                    return variants[0]
 
             elif response.status_code == 429:
                 time.sleep(random.uniform(0.25, 0.5))
