@@ -590,6 +590,12 @@ class NCBIdna:
             else:
                 time.sleep(random.uniform(0.25, 0.5))
 
+            return sequence
+        else:
+            print(f"NCBI is under maintenance. Error {response.status_code}: {str(response.text)}")
+            return f"NCBI is under maintenance. Error {response.status_code}: {str(response.text)}"
+
+
     @staticmethod
     def reverse_complement(dna_sequence):
         DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
