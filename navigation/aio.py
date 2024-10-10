@@ -36,6 +36,9 @@ from stqdm import stqdm
 
 from tfinder import IMO
 from tfinder import NCBIdna
+from Bio import motifs
+from Bio.motifs import Motif
+from Bio.motifs.matrix import PositionWeightMatrix, PositionSpecificScoringMatrix
 
 
 def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
@@ -225,17 +228,17 @@ def aio_page():
                             for i, gene_id in enumerate(gene_ids):
                                 pbar.progress(i / len(gene_ids),
                                               text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                                result_promoter_output = NCBIdna(gene_id, prom_term, upstream, downstream,
-                                                                 species, gr,
-                                                                 all_slice_forms=True if all_variants else False).find_sequences()
-                                if not str(result_promoter_output).startswith('P'):
+                                result_promoter_output, message = NCBIdna(gene_id, prom_term, upstream, downstream,
+                                                                 species, gr, all_slice_forms=True if all_variants else False).find_sequences()
+                                if message == "OK":
                                     pbar.progress((i + 1) / len(gene_ids),
+
                                                   text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                                     st.toast(f"{prom_term} **{gene_id}** from **{species}** extracted", icon='🧬')
 
                                     result_promoter.append(result_promoter_output)
                                 else:
-                                    st.error(result_promoter_output)
+                                    st.error(message)
                                     continue
 
                             result_promoter_text = "\n".join(result_promoter)
@@ -753,10 +756,15 @@ def aio_page():
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬",
                  use_container_width=True,
                  disabled=button):
+
+        motif = motifs.Motif(counts=matrix)
+        pwm = motif.counts.normalize(pseudocounts=0.1)
+        log_odds_matrix = pwm.log_odds()
+
         with stqdm(total=iteration,
                    desc='**:blue[Analyse sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                    mininterval=0.1) as progress_bar:
-            individual_motif_occurrences = IMO.individual_motif_finder(dna_sequences, threshold, matrix,
+            individual_motif_occurrences = IMO.individual_motif_finder(dna_sequences, threshold, log_odds_matrix,
                                                                        progress_bar,
                                                                        calc_pvalue,
                                                                        tss_ge_distance, alldirection)

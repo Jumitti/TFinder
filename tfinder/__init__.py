@@ -36,7 +36,10 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import StandardScaler
 from tqdm import tqdm
 
-from test import extract_genomic_info
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+}
 
 
 class NCBIdna:
@@ -133,47 +136,49 @@ class NCBIdna:
                 entrez_id = self.gene_id
 
             else:
-                entrez_id = NCBIdna.convert_gene_to_entrez_id(self.gene_id, self.species)
-                if entrez_id == 'not_found':
-                    result_promoter = f'Please verify if {self.gene_id} exist for {self.species}'
-                    return result_promoter
+                entrez_id, message = NCBIdna.convert_gene_to_entrez_id(self.gene_id, self.species)
+                if entrez_id == "Error 200":
+                    return entrez_id, message
 
             if not self.all_slice_forms:
-                gene_name, chraccver, chrstart, chrstop, species_API = NCBIdna.get_gene_info(entrez_id, self.gr)
-                if gene_name == 'Bad ID':
-                    result_promoter = f'Please verify ID of {self.gene_id}'
-                    return result_promoter
+                gene_name, title, chraccver, chrstart, chrstop, species_API, message = NCBIdna.get_gene_info(entrez_id, self.gr, self.gene_id)
+                if gene_name == "Error 200":
+                    return gene_name, message
+
             elif self.all_slice_forms:
-                all_variants = NCBIdna.all_variant(entrez_id)
+                all_variants, message = NCBIdna.all_variant(entrez_id)
+                if all_variants == "Error 200":
+                    return all_variants, message
 
         prom_term = self.prom_term.lower()
         if prom_term not in ['promoter', 'terminator']:
             result_promoter = f"'{self.prom_term}' not valid. Please use 'Promoter' or 'Terminator'."
-            return result_promoter
+            return result_promoter, "OK"
 
         if isinstance(self.upstream, int) and isinstance(self.downstream, int):
             upstream = int(self.upstream)
             downstream = int(self.downstream)
         else:
             result_window = f'Upstream {self.upstream} and Downstream {self.downstream} must be integer'
-            return result_window
+            return result_window, "OK"
 
-        if not self.all_slice_forms or self.all_slice_forms and self.gene_id.startswith('XM_') or self.gene_id.startswith('NM_') or self.gene_id.startswith(
-                'XR_') or self.gene_id.startswith('NR_'):
+        if not self.all_slice_forms or self.all_slice_forms and self.gene_id.startswith(
+                'XM_') or self.gene_id.startswith('NM_') or self.gene_id.startswith(
+            'XR_') or self.gene_id.startswith('NR_'):
             dna_sequence = NCBIdna.get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop)
 
             if prom_term == 'promoter':
                 if variant != '0':
-                    dna_sequence = f">{variant} {gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
+                    dna_sequence = f">{variant} {gene_name} | {title} {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart + 1} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
                 else:
-                    dna_sequence = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
+                    dna_sequence = f">{gene_name} | {title} {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart + 1} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
             else:
                 if variant != '0':
-                    dna_sequence = f">{variant} {gene_name} | {species_API} | {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
+                    dna_sequence = f">{variant} {gene_name} | {species_API} | {title} {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
                 else:
-                    dna_sequence = f">{gene_name} | {species_API} | {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
+                    dna_sequence = f">{gene_name} | {species_API} | {title} {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
 
-            return dna_sequence
+            return dna_sequence, "OK"
 
         elif self.all_slice_forms:
             result_compil = []
@@ -187,7 +192,7 @@ class NCBIdna:
                 result_compil.append(results)
 
             result_output = "\n".join(result_compil)
-            return result_output
+            return result_output, "OK"
 
     @staticmethod
     # Convert gene to ENTREZ_GENE_ID
@@ -196,50 +201,62 @@ class NCBIdna:
             gene_name = 'Already gene ID'
             return gene_name  # Already an ENTREZ_GENE_ID
 
-        # Request for ENTREZ_GENE_ID
-        url = f'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term="{gene_name}"[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml'
-        response = requests.get(url)
+        while True:
+            # Request for ENTREZ_GENE_ID
+            url = f'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term="{gene_name}"[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml'
+            response = requests.get(url, headers=headers)
 
-        if response.status_code == 200:
-            response_data = response.json()
+            if response.status_code == 200:
+                response_data = response.json()
 
-            if response_data['esearchresult']['count'] == '0':
-                gene_name = 'not_found'
-                return gene_name
+                if response_data['esearchresult']['count'] == '0':
+                    return "Error 200", f"Please verify if {gene_name} exist for {species}"
 
+                else:
+                    gene_id = response_data['esearchresult']['idlist'][0]
+                    return gene_id, f"Response 200: ID found for {species} {gene_name}: {gene_id}"
+
+            elif response.status_code == 429:
+                time.sleep(random.uniform(0.25, 0.5))
             else:
-                gene_name = response_data['esearchresult']['idlist'][0]
-                return gene_name
+                time.sleep(random.uniform(0.25, 0.5))
 
     @staticmethod
     # Get gene information
-    def get_gene_info(entrez_id, gr):
-        # Request gene information
-        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json"
-        response = requests.get(url)
+    def get_gene_info(entrez_id, gr="Current", gene_name_error=None):
 
-        if response.status_code == 200:
-            response_data = response.json()
-            if 'result' in response_data and str(entrez_id) in response_data['result']:
-                gene_info = response_data['result'][str(entrez_id)]
-                if 'chraccver' in str(gene_info):
+        while True:
+            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                response_data = response.json()
+                try:
+                    gene_info = response_data['result'][str(entrez_id)]
                     gene_name = gene_info['name']
-                    if gr != "Current":
-                        chraccver, chrstart, chrstop = NCBIdna.extract_genomic_info(entrez_id, response_data)
-                    else:
-                        chraccver = gene_info['genomicinfo'][0]['chraccver']
-                        chrstart = int(gene_info['genomicinfo'][0]['chrstart'])
-                        chrstop = int(gene_info['genomicinfo'][0]['chrstop'])
+                    title, chraccver, chrstart, chrstop = NCBIdna.extract_genomic_info(entrez_id, response_data, gr)
+                    # if gr != "Current":
+                    #     chraccver, chrstart, chrstop = NCBIdna.extract_genomic_info(entrez_id, response_data)
+                    # else:
+                    #     chraccver = gene_info['genomicinfo'][0]['chraccver']
+                    #     chrstart = int(gene_info['genomicinfo'][0]['chrstart'])
+                    #     chrstop = int(gene_info['genomicinfo'][0]['chrstop'])
                     species_API = gene_info['organism']['scientificname']
-                    print(chraccver, chrstart, chrstop)
-                    return gene_name, chraccver, chrstart, chrstop, species_API
+
+                    return gene_name, title, chraccver, chrstart, chrstop, species_API, (
+                        f"Response 200: Info for {entrez_id} {gene_name} retrieved."
+                        f"Entrez_ID: {entrez_id} | Gene name: {gene_name} | Genome Assembly: {title} | ChrAccVer: {chraccver}"
+                        f"ChrStart/ChrStop: {chrstart}/{chrstop} | Species: {species_API}")
+                except Exception as e:
+                    return "Error 200", None, None, None, None, None, f"Info for {gene_name_error} {entrez_id} not found."
+
+            elif response.status_code == 429:
+                time.sleep(random.uniform(0.25, 0.5))
             else:
-                gene_name = 'Bad ID'
-                return gene_name, None, None, None, None
+                time.sleep(random.uniform(0.25, 0.5))
 
     @staticmethod
-    def extract_genomic_info(gene_id, gene_info):
-        # print(gene_id, gene_info)
+    def extract_genomic_info(gene_id, gene_info, gr):
+        print(gene_info)
 
         if gene_info and 'result' in gene_info and gene_id in gene_info['result']:
             accession_dict = {}
@@ -264,7 +281,6 @@ class NCBIdna:
                         # Conserver la première occurrence des coordonnées
                         existing_start, existing_stop = accession_dict[base_accession]
                         accession_dict[base_accession] = (min(existing_start, chrstart), max(existing_stop, chrstop))
-
 
             nc_dict = accession_dict
 
@@ -325,28 +341,55 @@ class NCBIdna:
             # else:
             #     print("Aucun accès trouvé.")
 
-            # print("Test", min_accver, min_coords[0], min_coords[1])
-            # print("test")
-            return min_accver, min_coords[0], min_coords[1]
+            if gr != "Current":
+                title = NCBIdna.fetch_nc_info(min_accver)
+                return title, min_accver, min_coords[0], min_coords[1]
+            else:
+                title = NCBIdna.fetch_nc_info(max_accver)
+                return title, max_accver, max_coords[0], max_coords[1]
+
+    @staticmethod
+    def fetch_nc_info(nc_accver):
+        while True:
+            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=nuccore&id={nc_accver}&retmode=json"
+            response = requests.get(url)
+            if response.status_code == 200:
+                nc_info = response.json()
+                try:
+                    uid = nc_info['result']['uids'][0]
+                    title = nc_info['result'][uid]['title']
+                    return title
+                except Exception as e:
+                    time.sleep(random.uniform(0.25, 0.5))
+            else:
+                time.sleep(random.uniform(0.25, 0.5))
 
     @staticmethod
     # Get gene information
     def get_variant_info(entrez_id, variant):
 
         variant = variant.split(".")[0]
-        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id={entrez_id}&retmode=xml"
-        response = requests.get(url)
+
+        while True:
+            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id={entrez_id}&retmode=xml"
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                root = ET.fromstring(response.text)
+
+                chromosome = ""
+                found_variant = False
+                k_found = False
+                start_coords = []
+                end_coords = []
+                orientation = ""
+                break
+
+            elif response.status_code == 429:
+                time.sleep(random.uniform(0.25, 0.5))
+            else:
+                time.sleep(random.uniform(0.25, 0.5))
 
         if response.status_code == 200:
-            root = ET.fromstring(response.text)
-
-            chromosome = ""
-            found_variant = False
-            k_found = False
-            start_coords = []
-            end_coords = []
-            orientation = ""
-
             for elem in root.iter('Gene-commentary_accession'):
                 if elem.text.startswith('NC_'):
                     chromosome = elem.text
@@ -383,94 +426,69 @@ class NCBIdna:
                 chrstart = int(end_coords[0]) + 1
                 chrstop = int(start_coords[-1]) + 1
 
-            url2 = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
-            response = requests.get(url2)
+            while True:
+                url2 = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
+                response = requests.get(url2, headers=headers)
+                if response.status_code == 200:
+                    response_data = response.json()
+                    if 'result' in response_data and str(entrez_id) in response_data['result']:
+                        gene_info = response_data['result'][str(entrez_id)]
+                        if 'chraccver' in str(gene_info):
+                            chraccver = gene_info['genomicinfo'][0]['chraccver']
+                    else:
+                        gene_name = 'Bad ID'
 
-            if response.status_code == 200:
-                response_data = response.json()
-                if 'result' in response_data and str(entrez_id) in response_data['result']:
-                    gene_info = response_data['result'][str(entrez_id)]
-                    if 'chraccver' in str(gene_info):
-                        chraccver = gene_info['genomicinfo'][0]['chraccver']
+                    return variant, gene_name, chraccver, chrstart, chrstop, species_API
+
+                elif response.status_code == 429:
+                    time.sleep(random.uniform(0.25, 0.5))
                 else:
-                    gene_name = 'Bad ID'
-
-            return variant, gene_name, chraccver, chrstart, chrstop, species_API
-
-        else:
-            variant = int(str('0'))
-            return variant, _, _, _, _, _
+                    time.sleep(random.uniform(0.25, 0.5))
 
     @staticmethod
     # Get gene information
     def all_variant(entrez_id):
 
-        url2 = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
-        response = requests.get(url2)
+        while True:
+            url2 = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
+            response = requests.get(url2, headers=headers)
 
-        if response.status_code == 200:
-            response_data = response.json()
-            if 'result' in response_data and str(entrez_id) in response_data['result']:
-                gene_info = response_data['result'][str(entrez_id)]
-                if 'chraccver' in str(gene_info):
+            if response.status_code == 200:
+                response_data = response.json()
+                try:
+                    gene_info = response_data['result'][str(entrez_id)]
                     chraccver = gene_info['genomicinfo'][0]['chraccver']
-            else:
-                chraccver = 'Bad chraccver'
-
-        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id={entrez_id}&retmode=xml"
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            root = ET.fromstring(response.text)
-
-            variants = []
-            gene_name = []
-            species_API = []
-            chromosome = ""
-
-            all_variants = []
-
-            for elem in root.iter():
-                if elem.tag == "Gene-commentary_accession":
-                    if elem.text.startswith('NM_') or elem.text.startswith('XM_') or elem.text.startswith(
-                            'NR_') or elem.text.startswith('XR_'):
-                        if elem.text not in variants:
-                            variants.append(elem.text)
-
-                elif elem.tag == "Org-ref_taxname":
-                    species_API = elem.text
-
-                elif elem.tag == 'Gene-ref_locus':
-                    gene_name = elem.text
-
-            for elem in root.iter('Gene-commentary_accession'):
-                if elem.text.startswith('NC_'):
-                    chromosome = elem.text
                     break
 
-            for variant in variants:
-                start_coords = []
-                end_coords = []
-                found_variant = False
-                k_found = False
-                orientation = ""
-                for elem in root.iter():
-                    if elem.tag == "Gene-commentary_accession" and elem.text != variant:
-                        if elem.text == chromosome:
-                            k_found = True
-                        elif len(start_coords) < 2 and len(end_coords) < 2:
-                            continue
-                        else:
-                            break
+                except Exception as e:
+                    all_variants = [("Error 200", None, None, None, None, None)]
+                    return "Error 200", f"Transcript not found(s) for {entrez_id}."
 
-                    if k_found and elem.tag == "Gene-commentary_accession":
-                        found_variant = True if elem.text == variant else False
-                    elif k_found and found_variant and elem.tag == "Seq-interval_from":
-                        start_coords.append(elem.text)
-                    elif k_found and found_variant and elem.tag == "Seq-interval_to":
-                        end_coords.append(elem.text)
-                    elif k_found and found_variant and elem.tag == "Na-strand" and orientation == "":
-                        orientation += elem.attrib.get("value")
+            elif response.status_code == 429:
+                time.sleep(random.uniform(0.25, 0.5))
+            else:
+                time.sleep(random.uniform(0.25, 0.5))
+
+        while True:
+            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id={entrez_id}&retmode=xml"
+            response = requests.get(url, headers=headers)
+
+            if response.status_code == 200:
+                root = ET.fromstring(response.text)
+
+                variants = []
+                gene_name = []
+                species_API = []
+                chromosome = ""
+
+                all_variants = []
+
+                for elem in root.iter():
+                    if elem.tag == "Gene-commentary_accession":
+                        if elem.text.startswith('NM_') or elem.text.startswith('XM_') or elem.text.startswith(
+                                'NR_') or elem.text.startswith('XR_'):
+                            if elem.text not in variants:
+                                variants.append(elem.text)
 
                     elif elem.tag == "Org-ref_taxname":
                         species_API = elem.text
@@ -478,46 +496,95 @@ class NCBIdna:
                     elif elem.tag == 'Gene-ref_locus':
                         gene_name = elem.text
 
-                if orientation != "minus":
-                    chrstart = int(start_coords[0]) + 1
-                    chrstop = int(end_coords[-1]) + 1
+                for elem in root.iter('Gene-commentary_accession'):
+                    if elem.text.startswith('NC_'):
+                        chromosome = elem.text
+                        break
+
+                for variant in variants:
+                    start_coords = []
+                    end_coords = []
+                    found_variant = False
+                    k_found = False
+                    orientation = ""
+                    for elem in root.iter():
+                        if elem.tag == "Gene-commentary_accession" and elem.text != variant:
+                            if elem.text == chromosome:
+                                k_found = True
+                            elif len(start_coords) < 2 and len(end_coords) < 2:
+                                continue
+                            else:
+                                break
+
+                        if k_found and elem.tag == "Gene-commentary_accession":
+                            found_variant = True if elem.text == variant else False
+                        elif k_found and found_variant and elem.tag == "Seq-interval_from":
+                            start_coords.append(elem.text)
+                        elif k_found and found_variant and elem.tag == "Seq-interval_to":
+                            end_coords.append(elem.text)
+                        elif k_found and found_variant and elem.tag == "Na-strand" and orientation == "":
+                            orientation += elem.attrib.get("value")
+
+                        elif elem.tag == "Org-ref_taxname":
+                            species_API = elem.text
+
+                        elif elem.tag == 'Gene-ref_locus':
+                            gene_name = elem.text
+
+                    if orientation != "minus":
+                        chrstart = int(start_coords[0]) + 1
+                        chrstop = int(end_coords[-1]) + 1
+                    else:
+                        chrstart = int(end_coords[0]) + 1
+                        chrstop = int(start_coords[-1]) + 1
+
+                    all_variants.append((variant, gene_name, chraccver, chrstart, chrstop, species_API))
+
+                if len(all_variants) > 0:
+                    return all_variants, f"Transcript(s) found(s) for {entrez_id}: {all_variants}"
                 else:
-                    chrstart = int(end_coords[0]) + 1
-                    chrstop = int(start_coords[-1]) + 1
+                    gene_name, title, chraccver, chrstart, chrstop, species_API, message = NCBIdna.get_gene_info(entrez_id)
+                    if gene_name == "Error 200":
+                        all_variants.append(("Error 200", None, None, None, None, None))
+                        return "Error 200", f"Transcript not found(s) for {entrez_id}."
+                    else:
+                        all_variants.append((gene_name, gene_name, chraccver, chrstart, chrstop, species_API))
+                        return all_variants, f"Transcript(s) found(s) for {entrez_id}: {all_variants}"
 
-                all_variants.append((variant, gene_name, chraccver, chrstart, chrstop, species_API))
-
-            return all_variants
-
-        else:
-            all_variants = '0'
-            return all_variants
+            elif response.status_code == 429:
+                time.sleep(random.uniform(0.25, 0.5))
+            else:
+                time.sleep(random.uniform(0.25, 0.5))
 
     @staticmethod
     # Get DNA sequence
     def get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop):
         # Determine sens of gene + coordinate for upstream and downstream
         if chrstop > chrstart:
-            start = (chrstart if prom_term.lower() == 'promoter' else chrstop) - upstream
+            start = (chrstart if prom_term.lower() == 'promoter' else chrstop) - upstream + 1
             end = (chrstart if prom_term.lower() == 'promoter' else chrstop) + downstream
         else:
-            start = (chrstart if prom_term.lower() == 'promoter' else chrstop) + upstream
-            end = (chrstart if prom_term.lower() == 'promoter' else chrstop) - downstream
+            start = (chrstart if prom_term.lower() == 'promoter' else chrstop) + upstream + 1
+            end = (chrstart if prom_term.lower() == 'promoter' else chrstop) - downstream + 2
 
         # Request for DNA sequence
-        url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
-        print(url)
-        response = requests.get(url)
+        while True:
+            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                # Extraction of DNA sequence
+                dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
+                if chrstop > chrstart:
+                    sequence = dna_sequence
+                else:
+                    sequence = NCBIdna.reverse_complement(dna_sequence)
 
-        if response.status_code == 200:
-            # Extraction of DNA sequence
-            dna_sequence = response.text.split('\n', 1)[1].replace('\n', '')
-            if chrstop > chrstart:
-                sequence = dna_sequence
+                return sequence
+
+            elif response.status_code == 429:
+                time.sleep(random.uniform(0.25, 0.5))
             else:
-                sequence = NCBIdna.reverse_complement(dna_sequence)
-
-            return sequence
+                time.sleep(random.uniform(0.25, 0.5))
 
     @staticmethod
     def reverse_complement(dna_sequence):
@@ -626,7 +693,7 @@ class IMO:
 
     @staticmethod
     # Find with JASPAR and manual matrix
-    def individual_motif_finder(dna_sequences, threshold, matrix, progress_bar, calc_pvalue=None, tss_ge_distance=None, alldirection=None):
+    def individual_motif_finder(dna_sequences, threshold, matrix, progress_bar=None, calc_pvalue=None, tss_ge_distance=None, alldirection=None):
         if calc_pvalue is not None:
             if calc_pvalue not in ["ATGCPreset", "ATGCProportion"]:
                 raise ValueError("Use 'ATGCPreset' or 'ATGCProportion'")
@@ -713,55 +780,6 @@ class IMO:
 
                     random_scores = np.array(matrix_random_scores)
 
-                # p_val = []
-                # for score_pval in np.arange(0.50, 1, 0.001):
-                #     p_val_test = (random_scores >= score_pval).sum() / len(random_scores)
-                #     row = [score_pval, p_val_test]
-                #     p_val.append(row)
-                # headpval = ["Score_pvalue", "p_value"]
-                # p_val.insert(0, headpval)
-                #
-                # p_value_df = pd.DataFrame(p_val[1:], columns=p_val[0])
-                # st.dataframe(p_value_df)
-                #
-                # filtered_df = p_value_df[p_value_df['p_value'] > 0]
-                #
-                # scores = filtered_df['Score_pvalue'].values
-                # p_values = filtered_df['p_value'].values
-                #
-                # log_p_values = np.log(p_values)
-                # model = LinearRegression()
-                # model.fit(scores.reshape(-1, 1), log_p_values)
-                #
-                # fitted_log_values = model.predict(scores.reshape(-1, 1))
-                # fitted_values = np.exp(fitted_log_values)
-                # filtered_df['fitted'] = np.maximum(fitted_values, 0)
-                #
-                # # RMSE
-                # rmse = np.sqrt(mean_squared_error(p_values, filtered_df['fitted']))
-                # st.write(f"RMSE : {rmse}")
-                #
-                # # Coef
-                # coef = model.coef_[0]
-                # intercept = model.intercept_
-                #
-                # # Standard curve
-                # equation = f"y = exp({intercept:.3f} + {coef:.3f}*x)"
-                # st.write(f"Standard curve : {equation}")
-                #
-                # scatter = alt.Chart(filtered_df).mark_point().encode(
-                #     x='Score_pvalue',
-                #     y='p_value'
-                # )
-                #
-                # line = alt.Chart(filtered_df).mark_line(color='red').encode(
-                #     x='Score_pvalue',
-                #     y='fitted'
-                # ).interactive()
-                #
-                # chart = scatter + line
-                # st.altair_chart(chart)
-
                 for i in range(len(dna_sequence) - seq_length + 1):
                     seq = dna_sequence[i:i + seq_length]
                     score = IMO.calculate_score(seq, matrix)
@@ -802,17 +820,12 @@ class IMO:
                         sequence_with_context = ''.join(sequence_parts)
 
                         if tss_ge_distance is not None:
-                            tis_position = position - tss_ge_distance
+                            tis_position = position - tss_ge_distance - 1
 
                         if normalized_score >= threshold:
 
                             if calc_pvalue is not None:
                                 p_value = (random_scores >= normalized_score).sum() / len(random_scores)
-
-                                # def evaluate_exponential(x, coef, intercept):
-                                #     return np.exp(intercept + coef * x)
-                                #
-                                # y_value = evaluate_exponential(normalized_score, coef, intercept)
 
                             row = [position]
                             if tss_ge_distance is not None:
@@ -821,7 +834,6 @@ class IMO:
                                     "{:.6f}".format(normalized_score).ljust(12)]
                             if calc_pvalue is not None:
                                 row.append("{:.6e}".format(p_value))
-                                # row.append("{:.6e}".format(y_value))
                             row += [strand, direction, name, species, region]
                             individual_motif_occurrences.append(row)
 
@@ -840,7 +852,6 @@ class IMO:
             header += ["Sequence", "Rel Score"]
             if calc_pvalue is not None:
                 header.append("p-value")
-                # header.append("p-value_pred")
             header += ["Strand", "Direction", "Gene", "Species", "Region"]
             individual_motif_occurrences.insert(0, header)
         else:
