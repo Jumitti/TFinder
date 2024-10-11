@@ -458,7 +458,9 @@ def aio_page():
         name = "n.d."
         species = "n.d"
         region = "n.d"
-        dna_sequences.append((name, dna_sequence, species, region))
+        strand = "n.d"
+        tss_ch = 0
+        dna_sequences.append((name, dna_sequence, species, region, strand, tss_ch))
     elif lines.startswith(">"):
         lines = dna_sequence.split("\n")
         i = 0
@@ -490,7 +492,22 @@ def aio_page():
                         region = "n.d"
                 dna_sequence = lines[i + 1].upper()
                 isfasta = IMO.is_dna(dna_sequence)
-                dna_sequences.append((name, dna_sequence, found_species, region))
+
+                match = re.search(r"Strand:\s*(\w+)", line)
+                if match:
+                    strand = match.group(1).lower()
+                    if strand not in ["plus", "minus"]:
+                        strand = "n.d"
+                else:
+                    strand = "n.d"
+
+                match = re.search(r"TSS \(on chromosome\):\s*(\d+)", line)
+                if match:
+                    tss_ch = match.group(1)
+                else:
+                    tss_ch = 0
+
+                dna_sequences.append((name, dna_sequence, found_species, region, strand, tss_ch))
                 i += 1
             else:
                 i += 1
@@ -499,7 +516,10 @@ def aio_page():
     else:
         isfasta = False
 
-    total_sequences_region_length = sum(len(dna_sequence) for _, dna_sequence, _, _ in dna_sequences)
+    if st.button("Try"):
+        st.toast(tss_ch)
+
+    total_sequences_region_length = sum(len(dna_sequence) for _, dna_sequence, _, _, _, _ in dna_sequences)
     total_sequences = len(dna_sequences)
 
     # RE entry
@@ -776,6 +796,9 @@ def aio_page():
 
             df = pd.DataFrame(st.session_state['individual_motif_occurrences'][1:],
                               columns=st.session_state['individual_motif_occurrences'][0])
+
+            df = df.sort_values(by='Rel Score', ascending=False)
+
             st.session_state['df'] = df
 
             st.markdown('**Table**')
