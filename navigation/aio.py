@@ -122,7 +122,8 @@ def result_table_output(df):
         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                 scale=alt.Scale(domain=[ystart, ystop])),
         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-        tooltip=['Sequence', 'Position'] + (['Rel Position'] if "Rel Position" in source else []) + ['Rel Score'] + (
+        tooltip=['Sequence', 'Position'] + (['Rel Position'] if "Rel Position" in source else []) + (
+            ['Ch Position'] if "Ch Position" in source else []) + ['Rel Score'] + (
             ['p-value'] if 'p-value' in source else []) + ['Gene', 'Species', 'Region'],
         opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
     ).transform_calculate(x=f'datum[{xcol_param.name}]').properties(width=600,
@@ -178,7 +179,8 @@ def aio_page():
             # Species
             st.markdown("🔹 :blue[**Step 1.2**] Species of gene names and sliced variants:")
             col1, col2, col3 = st.columns(3)
-            gr = col1.selectbox("Genome:", ["Current", "Previous"], index=0, help='Example for Homo sapiens:\n\n"Current" is GRCh38\n\n"Previous" is GRCh37')
+            gr = col1.selectbox("Genome:", ["Current", "Previous"], index=0,
+                                help='Example for Homo sapiens:\n\n"Current" is GRCh38\n\n"Previous" is GRCh37')
             species = col2.selectbox("Species:", ["Human", "Mouse", "Rat", "Drosophila", "Zebrafish"], index=0)
             col3.markdown("")
             col3.markdown("")
@@ -227,7 +229,8 @@ def aio_page():
                                 pbar.progress(i / len(gene_ids),
                                               text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                                 result_promoter_output, message = NCBIdna(gene_id, prom_term, upstream, downstream,
-                                                                 species, gr, all_slice_forms=True if all_variants else False).find_sequences()
+                                                                          species, gr,
+                                                                          all_slice_forms=True if all_variants else False).find_sequences()
                                 if message == "OK":
                                     pbar.progress((i + 1) / len(gene_ids),
 
@@ -458,7 +461,9 @@ def aio_page():
         name = "n.d."
         species = "n.d"
         region = "n.d"
-        dna_sequences.append((name, dna_sequence, species, region))
+        strand = "n.d"
+        tss_ch = 0
+        dna_sequences.append((name, dna_sequence, species, region, strand, tss_ch))
     elif lines.startswith(">"):
         lines = dna_sequence.split("\n")
         i = 0
@@ -490,7 +495,22 @@ def aio_page():
                         region = "n.d"
                 dna_sequence = lines[i + 1].upper()
                 isfasta = IMO.is_dna(dna_sequence)
-                dna_sequences.append((name, dna_sequence, found_species, region))
+
+                match = re.search(r"Strand:\s*(\w+)", line)
+                if match:
+                    strand = match.group(1).lower()
+                    if strand not in ["plus", "minus"]:
+                        strand = "n.d"
+                else:
+                    strand = "n.d"
+
+                match = re.search(r"TSS \(on chromosome\):\s*(\d+)", line)
+                if match:
+                    tss_ch = match.group(1)
+                else:
+                    tss_ch = 0
+
+                dna_sequences.append((name, dna_sequence, found_species, region, strand, tss_ch))
                 i += 1
             else:
                 i += 1
@@ -499,7 +519,7 @@ def aio_page():
     else:
         isfasta = False
 
-    total_sequences_region_length = sum(len(dna_sequence) for _, dna_sequence, _, _ in dna_sequences)
+    total_sequences_region_length = sum(len(dna_sequence) for _, dna_sequence, _, _, _, _ in dna_sequences)
     total_sequences = len(dna_sequences)
 
     # RE entry
@@ -546,7 +566,8 @@ def aio_page():
                             help="Only PWM generated with our tools are allowed")
                 matrix_str = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
                                           value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]"
-                                          if 'MATRIX_STR_save' not in st.session_state else st.session_state['MATRIX_STR_save'],
+                                          if 'MATRIX_STR_save' not in st.session_state else st.session_state[
+                                              'MATRIX_STR_save'],
                                           label_visibility='collapsed', height=125)
                 st.session_state['MATRIX_STR_save'] = matrix_str
 
@@ -582,7 +603,8 @@ def aio_page():
                             help='Put FASTA sequences. Same sequence length required ⚠')
                 individual_motif = st.text_area("🔹 :blue[**Step 2.3**] Sequences:",
                                                 value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG"
-                                                if 'individual_motif_save' not in st.session_state else st.session_state['individual_motif_save'],
+                                                if 'individual_motif_save' not in st.session_state else
+                                                st.session_state['individual_motif_save'],
                                                 label_visibility='collapsed')
                 st.session_state['individual_motif_save'] = individual_motif
                 individual_motif = individual_motif.upper()
@@ -707,8 +729,9 @@ def aio_page():
             calc_pvalue = None
 
     with BSFcol3:
-        st.markdown("🔹 :blue[**_Experimental_**] Analyse all directions", help='Directions: **original (+ →)**, **reverse-complement (- ←)**, reverse (+ ←), complement (- →)\n\n'
-                                                                               'Directions in bold are the default directions.')
+        st.markdown("🔹 :blue[**_Experimental_**] Analyse all directions",
+                    help='Directions: **original (+ →)**, **reverse-complement (- ←)**, reverse (+ ←), complement (- →)\n\n'
+                         'Directions in bold are the default directions.')
         alldirection = st.toggle('All directions')
         if alldirection:
             st.markdown(
@@ -754,7 +777,6 @@ def aio_page():
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬",
                  use_container_width=True,
                  disabled=button):
-
         motif = motifs.Motif(counts=matrix)
         pwm = motif.counts.normalize(pseudocounts=0.1)
         log_odds_matrix = pwm.log_odds()
@@ -776,6 +798,9 @@ def aio_page():
 
             df = pd.DataFrame(st.session_state['individual_motif_occurrences'][1:],
                               columns=st.session_state['individual_motif_occurrences'][0])
+
+            df = df.sort_values(by='Rel Score', ascending=False)
+
             st.session_state['df'] = df
 
             st.markdown('**Table**')

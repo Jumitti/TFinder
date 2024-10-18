@@ -127,7 +127,7 @@ class NCBIdna:
                 result_promoter = f'Please verify {self.gene_id} variant'
                 return result_promoter
             else:
-                variant, gene_name, title, chraccver, chrstart, chrstop, species_API = NCBIdna.get_variant_info(
+                variant, gene_name, title, chraccver, chrstart, chrstop, strand, species_API = NCBIdna.get_variant_info(
                     entrez_id,
                     self.gene_id)
         else:
@@ -140,7 +140,7 @@ class NCBIdna:
                     return entrez_id, message
 
             if not self.all_slice_forms:
-                variant, gene_name, title, chraccver, chrstart, chrstop, species_API, message = NCBIdna.get_gene_info(
+                variant, gene_name, title, chraccver, chrstart, chrstop, strand, species_API, message = NCBIdna.get_gene_info(
                     entrez_id, self.gr, gene_name_error=self.gene_id)
                 if variant == "Error 200":
                     return variant, message
@@ -167,9 +167,9 @@ class NCBIdna:
             dna_sequence = NCBIdna.get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop)
 
             if prom_term == 'promoter':
-                dna_sequence = f">{variant} {gene_name} | {title} {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart + 1} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
+                dna_sequence = f">{variant} {gene_name} | {title} {chraccver} | Strand: {strand} | {self.prom_term} | TSS (on chromosome): {chrstart + 1} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
             else:
-                dna_sequence = f">{variant} {gene_name} | {title} {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
+                dna_sequence = f">{variant} {gene_name} | {title} {chraccver} | Strand: {strand} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
 
             return dna_sequence, "OK"
 
@@ -232,12 +232,14 @@ class NCBIdna:
                     if from_id:
                         variant = NCBIdna.all_variant(entrez_id, from_id=True)
 
-                    return variant, gene_name, title, chraccver, chrstart, chrstop, species_API, (
+                    strand = "plus" if chrstart < chrstop else "minus"
+
+                    return variant, gene_name, title, chraccver, chrstart, chrstop, strand, species_API, (
                         f"Response 200: Info for {entrez_id} {variant} {gene_name} retrieved."
                         f"Entrez_ID: {entrez_id} | Gene name: {gene_name} | Genome Assembly: {title} | ChrAccVer: {chraccver}"
-                        f"ChrStart/ChrStop: {chrstart}/{chrstop} | Species: {species_API}")
+                        f"ChrStart/ChrStop: {chrstart}/{chrstop} | Strand: {strand} | Species: {species_API}")
                 except Exception as e:
-                    return "Error 200", None, None, None, None, None, None, f"Info for {gene_name_error} {entrez_id} not found."
+                    return "Error 200", None, None, None, None, None, None, None, f"Info for {gene_name_error} {entrez_id} not found."
 
             elif response.status_code == 429:
                 time.sleep(random.uniform(0.25, 0.5))
@@ -252,12 +254,11 @@ class NCBIdna:
 
             time.sleep(1)
 
-            # Extraction depuis la section locationhist
             location_hist = gene_details.get('locationhist', [])
             if len(location_hist) == 0:
                 location_hist = gene_details.get('genomicinfo', [])
             for loc in location_hist:
-                nc_accver = loc.get('chraccver')  # Extrait le NC_XXXXX.YY
+                nc_accver = loc.get('chraccver')
                 chrstart = loc.get('chrstart')
                 chrstop = loc.get('chrstop')
 
@@ -266,68 +267,39 @@ class NCBIdna:
                     if base_accession not in accession_dict:
                         accession_dict[base_accession] = (chrstart, chrstop)
                     else:
-                        # Conserver la première occurrence des coordonnées
                         existing_start, existing_stop = accession_dict[base_accession]
                         accession_dict[base_accession] = (min(existing_start, chrstart), max(existing_stop, chrstop))
 
             nc_dict = accession_dict
 
-            # Affichage des NC_ et leurs informations de position
-            # for base_accver, (chrstart, chrstop) in nc_dict.items():
-            #     print(f"{base_accver}: chrstart={chrstart}, chrstop={chrstop}")
-
-            # Filtrer pour garder uniquement les entrées qui commencent par "NC_"
             nc_dict = {base_accver: (chrstart, chrstop) for base_accver, (chrstart, chrstop) in nc_dict.items() if
                        base_accver.startswith("NC_")}
 
-            # Si le dictionnaire n'est pas vide, récupérez la base avant le point du premier élément
             if nc_dict:
-                first_base = next(iter(nc_dict)).split('.')[0]  # Récupérer la base avant le point de la première clé
+                first_base = next(iter(nc_dict)).split('.')[0]
 
-                # Filtrer le dictionnaire pour ne garder que les éléments avec la même base
                 nc_dict = {base_accver: (chrstart, chrstop) for base_accver, (chrstart, chrstop) in nc_dict.items() if
                            base_accver.split('.')[0] == first_base}
 
-            # Votre code existant pour afficher le dictionnaire filtré
-            # print("\nDictionnaire filtré :")
-            # for base_accver, (chrstart, chrstop) in nc_dict.items():
-            #     print(f"{base_accver}: chrstart={chrstart}, chrstop={chrstop}")
-
-            # Trouver l'entrée avec le chiffre le plus grand et le plus petit après le point
             max_version = -1
             max_accver = None
-            max_coords = None  # Pour stocker les coordonnées associées à la version maximale
-            min_version = float('inf')  # Initialiser à l'infini pour trouver la plus petite version
+            max_coords = None
+            min_version = float('inf')
             min_accver = None
-            min_coords = None  # Pour stocker les coordonnées associées à la version minimale
+            min_coords = None
 
             for base_accver in nc_dict.keys():
-                version = int(base_accver.split('.')[1])  # Extraire la version après le point
+                version = int(base_accver.split('.')[1])
 
-                # Mise à jour pour la version maximale
                 if version > max_version:
                     max_version = version
                     max_accver = base_accver
-                    max_coords = nc_dict[base_accver]  # Stocker les coordonnées
+                    max_coords = nc_dict[base_accver]
 
-                # Mise à jour pour la version minimale
                 if version < min_version:
                     min_version = version
                     min_accver = base_accver
-                    min_coords = nc_dict[base_accver]  # Stocker les coordonnées
-
-            # Afficher les résultats
-            # if max_accver:
-            #     print(f"\nL'accès avec la version la plus élevée est : {max_accver} avec la version {max_version}.")
-            #     print(f"Coordonnées : chrstart={max_coords[0]}, chrstop={max_coords[1]}")
-            # else:
-            #     print("\nAucun accès trouvé.")
-            #
-            # if min_accver:
-            #     print(f"L'accès avec la version la plus basse est : {min_accver} avec la version {min_version}.")
-            #     print(f"Coordonnées : chrstart={min_coords[0]}, chrstop={min_coords[1]}")
-            # else:
-            #     print("Aucun accès trouvé.")
+                    min_coords = nc_dict[base_accver]
 
             if gr != "Current":
                 title = NCBIdna.fetch_nc_info(min_accver)
@@ -414,6 +386,8 @@ class NCBIdna:
                 chrstart = int(end_coords[0]) + 1
                 chrstop = int(start_coords[-1]) + 1
 
+            strand = "plus" if chrstart < chrstop else "minus"
+
             while True:
                 url2 = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
                 response = requests.get(url2, headers=headers)
@@ -427,7 +401,7 @@ class NCBIdna:
                     else:
                         gene_name = 'Bad ID'
 
-                    return variant, gene_name, title, chraccver, chrstart, chrstop, species_API
+                    return variant, gene_name, title, chraccver, chrstart, chrstop, strand, species_API
 
                 elif response.status_code == 429:
                     time.sleep(random.uniform(0.25, 0.5))
@@ -539,7 +513,7 @@ class NCBIdna:
                     if len(all_variants) > 0:
                         return all_variants, f"Transcript(s) found(s) for {entrez_id}: {all_variants}"
                     else:
-                        gene_name, title, chraccver, chrstart, chrstop, species_API, message = NCBIdna.get_gene_info(
+                        gene_name, title, chraccver, chrstart, chrstop, strand, species_API, message = NCBIdna.get_gene_info(
                             entrez_id, from_id=False)
                         if gene_name == "Error 200":
                             all_variants.append(("Error 200", None, None, None, None, None))
@@ -652,14 +626,15 @@ class IMO:
 
     @staticmethod
     # Generate random sequences for p_value
-    def generate_ranseq(probabilities, seq_length, progress_bar):
+    def generate_ranseq(probabilities, seq_length, progress_bar=None):
         motif_length = seq_length
         random_sequences = []
 
         for _ in range(1000000):
             random_sequence = IMO.generate_random_sequence(motif_length, probabilities)
             random_sequences.append(random_sequence)
-            progress_bar.update(1)
+            if progress_bar:
+                progress_bar.update(1)
 
         return random_sequences
 
@@ -732,10 +707,11 @@ class IMO:
                     else:
                         normalized_random_score = (random_score - min_score) / (max_score - min_score)
                     matrix_random_scores.append(normalized_random_score)
-                    progress_bar.update(1)
+                    if progress_bar:
+                        progress_bar.update(1)
                 random_scores = np.array(matrix_random_scores)
 
-        for name, dna_sequence, species, region in dna_sequences:
+        for name, dna_sequence, species, region, strand_seq, tss_ch in dna_sequences:
             if calc_pvalue == 'ATGCProportion':
                 count_a = dna_sequence.count('A')
                 count_t = dna_sequence.count('T')
@@ -780,7 +756,8 @@ class IMO:
                         else:
                             normalized_random_score = (random_score - min_score) / (max_score - min_score)
                         matrix_random_scores.append(normalized_random_score)
-                        progress_bar.update(1)
+                        if progress_bar:
+                            progress_bar.update(1)
 
                     random_scores = np.array(matrix_random_scores)
 
@@ -794,7 +771,8 @@ class IMO:
                     position = int(i) + 1
 
                     found_positions.append((position, seq, normalized_score))
-                    progress_bar.update(1)
+                    if progress_bar:
+                        progress_bar.update(1)
 
                 # Sort positions in descending order of score percentage
                 found_positions.sort(key=lambda x: x[1], reverse=True)
@@ -826,6 +804,9 @@ class IMO:
                         if tss_ge_distance is not None:
                             tis_position = position - tss_ge_distance - 1
 
+                            if strand_seq in ["plus", "minus"]:
+                                ch_pos = int(tss_ch) - tis_position if strand_seq == "minus" else int(tss_ch) + tis_position
+
                         if normalized_score >= threshold:
 
                             if calc_pvalue is not None:
@@ -834,6 +815,8 @@ class IMO:
                             row = [position]
                             if tss_ge_distance is not None:
                                 row.append(tis_position)
+                                if strand_seq in ["plus", "minus"]:
+                                    row.append(ch_pos)
                             row += [sequence_with_context,
                                     "{:.6f}".format(normalized_score).ljust(12)]
                             if calc_pvalue is not None:
@@ -842,17 +825,11 @@ class IMO:
                             individual_motif_occurrences.append(row)
 
         if len(individual_motif_occurrences) > 0:
-            if tss_ge_distance is not None and calc_pvalue is not None:
-                individual_motif_occurrences.sort(key=lambda x: (-float(x[3]), -float(x[4])))
-            elif calc_pvalue is not None:
-                individual_motif_occurrences.sort(key=lambda x: (-float(x[2]), -float(x[3])))
-            elif tss_ge_distance is not None:
-                individual_motif_occurrences.sort(key=lambda x: (-float(x[3])))
-            else:
-                individual_motif_occurrences.sort(key=lambda x: (-float(x[2])))
             header = ["Position"]
             if tss_ge_distance is not None:
                 header.append("Rel Position")
+                if strand_seq in ["plus", "minus"]:
+                    header.append("Ch Position")
             header += ["Sequence", "Rel Score"]
             if calc_pvalue is not None:
                 header.append("p-value")
