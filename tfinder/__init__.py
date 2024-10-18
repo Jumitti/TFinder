@@ -127,7 +127,7 @@ class NCBIdna:
                 result_promoter = f'Please verify {self.gene_id} variant'
                 return result_promoter
             else:
-                variant, gene_name, title, chraccver, chrstart, chrstop, species_API = NCBIdna.get_variant_info(
+                variant, gene_name, title, chraccver, chrstart, chrstop, strand, species_API = NCBIdna.get_variant_info(
                     entrez_id,
                     self.gene_id)
         else:
@@ -386,6 +386,8 @@ class NCBIdna:
                 chrstart = int(end_coords[0]) + 1
                 chrstop = int(start_coords[-1]) + 1
 
+            strand = "plus" if chrstart < chrstop else "minus"
+
             while True:
                 url2 = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
                 response = requests.get(url2, headers=headers)
@@ -399,7 +401,7 @@ class NCBIdna:
                     else:
                         gene_name = 'Bad ID'
 
-                    return variant, gene_name, title, chraccver, chrstart, chrstop, species_API
+                    return variant, gene_name, title, chraccver, chrstart, chrstop, strand, species_API
 
                 elif response.status_code == 429:
                     time.sleep(random.uniform(0.25, 0.5))
@@ -624,14 +626,15 @@ class IMO:
 
     @staticmethod
     # Generate random sequences for p_value
-    def generate_ranseq(probabilities, seq_length, progress_bar):
+    def generate_ranseq(probabilities, seq_length, progress_bar=None):
         motif_length = seq_length
         random_sequences = []
 
         for _ in range(1000000):
             random_sequence = IMO.generate_random_sequence(motif_length, probabilities)
             random_sequences.append(random_sequence)
-            progress_bar.update(1)
+            if progress_bar:
+                progress_bar.update(1)
 
         return random_sequences
 
@@ -704,7 +707,8 @@ class IMO:
                     else:
                         normalized_random_score = (random_score - min_score) / (max_score - min_score)
                     matrix_random_scores.append(normalized_random_score)
-                    progress_bar.update(1)
+                    if progress_bar:
+                        progress_bar.update(1)
                 random_scores = np.array(matrix_random_scores)
 
         for name, dna_sequence, species, region, strand_seq, tss_ch in dna_sequences:
@@ -752,7 +756,8 @@ class IMO:
                         else:
                             normalized_random_score = (random_score - min_score) / (max_score - min_score)
                         matrix_random_scores.append(normalized_random_score)
-                        progress_bar.update(1)
+                        if progress_bar:
+                            progress_bar.update(1)
 
                     random_scores = np.array(matrix_random_scores)
 
@@ -766,7 +771,8 @@ class IMO:
                     position = int(i) + 1
 
                     found_positions.append((position, seq, normalized_score))
-                    progress_bar.update(1)
+                    if progress_bar:
+                        progress_bar.update(1)
 
                 # Sort positions in descending order of score percentage
                 found_positions.sort(key=lambda x: x[1], reverse=True)
