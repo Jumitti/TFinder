@@ -28,41 +28,41 @@ import pickle
 
 from navigation.aio import aio_page
 from navigation.pwm import pwm_page
-# from navigation.IMF import BSF_page
-# from navigation.regulatory_regions_extractor import prom_extractor_page
+from navigation.IMF import BSF_page
+from navigation.regulatory_regions_extractor import prom_extractor_page
 
 # NavBar
 
 AIO = 'All in One'
-# PROM = 'Region Extractor'
-# REF = 'Individual Motif Finder'
+PROM = 'Region Extractor'
+REF = 'Motif Finder'
 PWM = 'Position Weight Matrix'
-
-# tabs = [
-#     AIO,
-#     PROM,
-#     REF,
-#     PWM
-# ]
 
 tabs = [
     AIO,
+    PROM,
+    REF,
     PWM
 ]
 
-# option_data = [
-#     {'icon': "🧬🔎🧮", 'label': AIO},
-#     {'icon': "🧬", 'label': PROM},
-#     {'icon': "🔎", 'label': REF},
-#     {'icon': "🧮", 'label': PWM}
-#
+# tabs = [
+#     AIO,
+#     PWM
 # ]
 
 option_data = [
     {'icon': "🧬🔎🧮", 'label': AIO},
+    {'icon': "🧬", 'label': PROM},
+    {'icon': "🔎", 'label': REF},
     {'icon': "🧮", 'label': PWM}
 
 ]
+
+# option_data = [
+#     {'icon': "🧬🔎🧮", 'label': AIO},
+#     {'icon': "🧮", 'label': PWM}
+#
+# ]
 
 over_theme = {'txc_inactive': 'black', 'menu_background': '#D6E5FA', 'txc_active': 'white', 'option_active': '#749BC2'}
 font_fmt = {'font-class': 'h3', 'font-size': '50%'}
@@ -78,11 +78,11 @@ def allapp_page():
     if page == AIO:
         aio_page()
 
-    # elif page == PROM:
-    #     prom_extractor_page()
-    #
-    # elif page == REF:
-    #     BSF_page()
+    elif page == PROM:
+        prom_extractor_page()
+
+    elif page == REF:
+        BSF_page()
 
     elif page == PWM:
         pwm_page()

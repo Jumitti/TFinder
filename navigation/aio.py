@@ -525,8 +525,8 @@ def aio_page():
     # RE entry
     REcol1, REcol2 = st.columns([0.30, 0.70])
     with REcol1:
-        st.markdown('🔹 :blue[**Step 2.2**] Responsive elements type:')
-        jaspar = st.radio('🔹 :blue[**Step 2.2**] Responsive elements type:',
+        st.markdown('🔹 :blue[**Step 2.2**] Motif type:')
+        jaspar = st.radio('🔹 :blue[**Step 2.2**] Motif type:',
                           ('Individual Motif', 'JASPAR_ID', 'PWM'),
                           label_visibility='collapsed')
     if jaspar == 'JASPAR_ID':
@@ -562,13 +562,22 @@ def aio_page():
         if matrix_type == 'With PWM':
             isUIPAC = True
             with REcol2:
-                st.markdown("🔹 :blue[**Step 2.3**] Matrix:",
-                            help="Only PWM generated with our tools are allowed")
+                st.markdown("🔹 :blue[**Step 2.3**] Matrix:")
                 matrix_str = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
                                           value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]"
                                           if 'MATRIX_STR_save' not in st.session_state else st.session_state[
                                               'MATRIX_STR_save'],
                                           label_visibility='collapsed', height=125)
+                with st.expander("How to build your PWM"):
+                    st.write("**Row Structure:**\n\n"
+                             "The PWM should contain four rows, each representing one of the four nucleotides: A (Adenine), T (Thymine), G (Guanine), and C (Cytosine).\n\n"
+                             "**Columns Represent Motif Positions:**\n\n"
+                             "Each column corresponds to a position in the DNA sequence or motif. The values in each column indicate the weight or score for each nucleotide at that position.\n\n"
+                             "**Decimal Numbers:**\n\n"
+                             "Use decimal numbers with a period (.) as the decimal separator. Ensure consistent formatting with at least one decimal place, even if the number is a whole (e.g., 20.0 rather than 20 or 20,0).\n\n"
+                             "**Symmetry and Completeness:**\n\n"
+                             "Ensure each row has the same number of columns (positions) so that the matrix is complete. In the example provided, each nucleotide row has 11 values, one for each position in the motif.")
+
                 st.session_state['MATRIX_STR_save'] = matrix_str
 
                 lines = matrix_str.split("\n")
@@ -632,8 +641,8 @@ def aio_page():
 
     else:
         with REcol1:
-            st.markdown("🔹 :blue[**Step 2.3**] Responsive element:", help="IUPAC authorized")
-            IUPAC = st.text_input("🔹 :blue[**Step 2.3**] Responsive element (IUPAC authorized):",
+            st.markdown("🔹 :blue[**Step 2.3**] Individual motif:", help="IUPAC authorized")
+            IUPAC = st.text_input("🔹 :blue[**Step 2.3**] Individual motif (IUPAC authorized):",
                                   value="GGGRNYYYCC" if 'IUPAC_seq' not in st.session_state else
                                   st.session_state[
                                       'IUPAC_seq'],

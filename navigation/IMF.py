@@ -31,6 +31,7 @@ from email.mime.text import MIMEText
 import altair as alt
 import pandas as pd
 import streamlit as st
+from Bio import motifs
 from stqdm import stqdm
 
 from tfinder import IMO
@@ -64,11 +65,7 @@ def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
                                   filename=f'Results_TFinder_{current_date_time}.csv')
         msg.attach(attachment_csv)
 
-        if jaspar == 'PWM':
-            if matrix_type == 'With FASTA sequences':
-                image = MIMEImage(st.session_state['weblogo'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
-                msg.attach(image)
-        elif jaspar == 'Individual Motif':
+        if jaspar == 'PWM' or jaspar == 'Individual Motif':
             image = MIMEImage(st.session_state['weblogo'].read(), name=f'LOGOMAKER_{current_date_time}.jpg')
             msg.attach(image)
 
@@ -121,7 +118,8 @@ def result_table_output(df):
         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
                 scale=alt.Scale(domain=[ystart, ystop])),
         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
-        tooltip=['Sequence', 'Position'] + (['Rel Position'] if "Rel Position" in source else []) + ['Rel Score'] + (
+        tooltip=['Sequence', 'Position'] + (['Rel Position'] if "Rel Position" in source else []) + (
+            ['Ch Position'] if "Ch Position" in source else []) + ['Rel Score'] + (
             ['p-value'] if 'p-value' in source else []) + ['Gene', 'Species', 'Region'],
         opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
     ).transform_calculate(x=f'datum[{xcol_param.name}]').properties(width=600,
@@ -161,7 +159,9 @@ def BSF_page():
         name = "n.d."
         species = "n.d"
         region = "n.d"
-        dna_sequences.append((name, dna_sequence, species, region))
+        strand = "n.d"
+        tss_ch = 0
+        dna_sequences.append((name, dna_sequence, species, region, strand, tss_ch))
     elif lines.startswith(">"):
         lines = dna_sequence.split("\n")
         i = 0
@@ -193,7 +193,22 @@ def BSF_page():
                         region = "n.d"
                 dna_sequence = lines[i + 1].upper()
                 isfasta = IMO.is_dna(dna_sequence)
-                dna_sequences.append((name, dna_sequence, found_species, region))
+
+                match = re.search(r"Strand:\s*(\w+)", line)
+                if match:
+                    strand = match.group(1).lower()
+                    if strand not in ["plus", "minus"]:
+                        strand = "n.d"
+                else:
+                    strand = "n.d"
+
+                match = re.search(r"TSS \(on chromosome\):\s*(\d+)", line)
+                if match:
+                    tss_ch = match.group(1)
+                else:
+                    tss_ch = 0
+
+                dna_sequences.append((name, dna_sequence, found_species, region, strand, tss_ch))
                 i += 1
             else:
                 i += 1
@@ -202,14 +217,14 @@ def BSF_page():
     else:
         isfasta = False
 
-    total_sequences_region_length = sum(len(dna_sequence) for _, dna_sequence, _, _ in dna_sequences)
+    total_sequences_region_length = sum(len(dna_sequence) for _, dna_sequence, _, _, _, _ in dna_sequences)
     total_sequences = len(dna_sequences)
 
     # RE entry
     REcol1, REcol2 = st.columns([0.30, 0.70])
     with REcol1:
-        st.markdown('🔹 :blue[**Step 2.2**] Responsive elements type:')
-        jaspar = st.radio('🔹 :blue[**Step 2.2**] Responsive elements type:',
+        st.markdown('🔹 :blue[**Step 2.2**] Motif type:')
+        jaspar = st.radio('🔹 :blue[**Step 2.2**] Motif type:',
                           ('Individual Motif', 'JASPAR_ID', 'PWM'),
                           label_visibility='collapsed')
     if jaspar == 'JASPAR_ID':
@@ -245,12 +260,22 @@ def BSF_page():
         if matrix_type == 'With PWM':
             isUIPAC = True
             with REcol2:
-                st.markdown("🔹 :blue[**Step 2.3**] Matrix:",
-                            help="Only PWM generated with our tools are allowed")
+                st.markdown("🔹 :blue[**Step 2.3**] Matrix:")
                 matrix_str = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
                                           value="A [ 20.0 0.0 0.0 0.0 0.0 0.0 0.0 100.0 0.0 60.0 20.0 ]\nT [ 60.0 20.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]\nG [ 0.0 20.0 100.0 0.0 0.0 100.0 100.0 0.0 100.0 40.0 0.0 ]\nC [ 20.0 60.0 0.0 100.0 100.0 0.0 0.0 0.0 0.0 0.0 80.0 ]"
-                                          if 'MATRIX_STR_save' not in st.session_state else st.session_state['MATRIX_STR_save'],
+                                          if 'MATRIX_STR_save' not in st.session_state else st.session_state[
+                                              'MATRIX_STR_save'],
                                           label_visibility='collapsed', height=125)
+                with st.expander("How to build your PWM"):
+                    st.write("**Row Structure:**\n\n"
+                             "The PWM should contain four rows, each representing one of the four nucleotides: A (Adenine), T (Thymine), G (Guanine), and C (Cytosine).\n\n"
+                             "**Columns Represent Motif Positions:**\n\n"
+                             "Each column corresponds to a position in the DNA sequence or motif. The values in each column indicate the weight or score for each nucleotide at that position.\n\n"
+                             "**Decimal Numbers:**\n\n"
+                             "Use decimal numbers with a period (.) as the decimal separator. Ensure consistent formatting with at least one decimal place, even if the number is a whole (e.g., 20.0 rather than 20 or 20,0).\n\n"
+                             "**Symmetry and Completeness:**\n\n"
+                             "Ensure each row has the same number of columns (positions) so that the matrix is complete. In the example provided, each nucleotide row has 11 values, one for each position in the motif.")
+
                 st.session_state['MATRIX_STR_save'] = matrix_str
 
                 lines = matrix_str.split("\n")
@@ -285,7 +310,8 @@ def BSF_page():
                             help='Put FASTA sequences. Same sequence length required ⚠')
                 individual_motif = st.text_area("🔹 :blue[**Step 2.3**] Sequences:",
                                                 value=">seq1\nCTGCCGGAGGA\n>seq2\nAGGCCGGAGGC\n>seq3\nTCGCCGGAGAC\n>seq4\nCCGCCGGAGCG\n>seq5\nAGGCCGGATCG"
-                                                if 'individual_motif_save' not in st.session_state else st.session_state['individual_motif_save'],
+                                                if 'individual_motif_save' not in st.session_state else
+                                                st.session_state['individual_motif_save'],
                                                 label_visibility='collapsed')
                 st.session_state['individual_motif_save'] = individual_motif
                 individual_motif = individual_motif.upper()
@@ -313,8 +339,8 @@ def BSF_page():
 
     else:
         with REcol1:
-            st.markdown("🔹 :blue[**Step 2.3**] Responsive element:", help="IUPAC authorized")
-            IUPAC = st.text_input("🔹 :blue[**Step 2.3**] Responsive element (IUPAC authorized):",
+            st.markdown("🔹 :blue[**Step 2.3**] Individual motif:", help="IUPAC authorized")
+            IUPAC = st.text_input("🔹 :blue[**Step 2.3**] Individual motif (IUPAC authorized):",
                                   value="GGGRNYYYCC" if 'IUPAC_seq' not in st.session_state else
                                   st.session_state[
                                       'IUPAC_seq'],
@@ -409,6 +435,18 @@ def BSF_page():
         else:
             calc_pvalue = None
 
+    with BSFcol3:
+        st.markdown("🔹 :blue[**_Experimental_**] Analyse all directions",
+                    help='Directions: **original (+ →)**, **reverse-complement (- ←)**, reverse (+ ←), complement (- →)\n\n'
+                         'Directions in bold are the default directions.')
+        alldirection = st.toggle('All directions')
+        if alldirection:
+            st.markdown(
+                '⚠️Analyzes in the reverse (+ ←) and complement (- →) directions are generally not suitable for studying TFBS.')
+            analyse = 4
+        else:
+            analyse = 2
+
     if tss_ge_input != 0:
         tss_ge_distance = int(tss_ge_input)
     else:
@@ -429,13 +467,13 @@ def BSF_page():
         else:
             button = False
 
-    sequence_iteration = 4 * total_sequences_region_length
+    sequence_iteration = analyse * total_sequences_region_length
     num_random_seqs = 1000000
     if total_sequences <= 10:
         random_gen = total_sequences * num_random_seqs
     else:
         random_gen = num_random_seqs
-    random_score = random_gen * 4
+    random_score = random_gen * analyse
 
     if pvalue:
         iteration = sequence_iteration + random_gen + random_score
@@ -446,13 +484,17 @@ def BSF_page():
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬",
                  use_container_width=True,
                  disabled=button):
+        motif = motifs.Motif(counts=matrix)
+        pwm = motif.counts.normalize(pseudocounts=0.1)
+        log_odds_matrix = pwm.log_odds()
+
         with stqdm(total=iteration,
-                   desc='**:blue[Extract sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
+                   desc='**:blue[Analyse sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                    mininterval=0.1) as progress_bar:
-            individual_motif_occurrences = IMO.individual_motif_finder(dna_sequences, threshold, matrix,
+            individual_motif_occurrences = IMO.individual_motif_finder(dna_sequences, threshold, log_odds_matrix,
                                                                        progress_bar,
                                                                        calc_pvalue,
-                                                                       tss_ge_distance)
+                                                                       tss_ge_distance, alldirection)
         st.session_state['individual_motif_occurrences'] = individual_motif_occurrences
 
     st.divider()
@@ -463,6 +505,9 @@ def BSF_page():
 
             df = pd.DataFrame(st.session_state['individual_motif_occurrences'][1:],
                               columns=st.session_state['individual_motif_occurrences'][0])
+
+            df = df.sort_values(by='Rel Score', ascending=False)
+
             st.session_state['df'] = df
 
             st.markdown('**Table**')
@@ -497,7 +542,7 @@ def BSF_page():
                     if st.button("Send ✉"):
                         if jaspar == 'PWM':
                             if matrix_type == 'With PWM':
-                                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_str}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                             if matrix_type == 'With FASTA sequences':
                                 body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{individual_motif}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
                         elif jaspar == 'JASPAR_ID':
