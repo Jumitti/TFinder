@@ -36,6 +36,18 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import StandardScaler
 from tqdm import tqdm
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 }
@@ -47,13 +59,13 @@ class NCBIdna:
                  prom_term,
                  upstream,
                  downstream,
-                 species=None, gr="Current", all_slice_forms=None):
+                 species=None, genome_version="Current", all_slice_forms=None):
         self.gene_id = gene_id
-        self.prom_term = prom_term if prom_term is not None else None
-        self.upstream = upstream if upstream is not None else None
-        self.downstream = downstream if downstream is not None else None
-        self.species = species if species is not None else None
-        self.gr = gr if gr is not None else "Current"
+        self.prom_term = prom_term if prom_term is not None else "promoter"
+        self.upstream = upstream if upstream is not None else -2000
+        self.downstream = downstream if downstream is not None else 2000
+        self.species = species if species is not None else "human"
+        self.genome_version = genome_version if genome_version is not None else "Current"
         self.all_slice_forms = True if all_slice_forms is True else False
 
     @staticmethod
@@ -141,7 +153,7 @@ class NCBIdna:
 
             if not self.all_slice_forms:
                 variant, gene_name, title, chraccver, chrstart, chrstop, strand, species_API, message = NCBIdna.get_gene_info(
-                    entrez_id, self.gr, gene_name_error=self.gene_id)
+                    entrez_id, self.genome_version, gene_name_error=self.gene_id)
                 if variant == "Error 200":
                     return variant, message
 
@@ -163,8 +175,10 @@ class NCBIdna:
             return result_window, "OK"
 
         if not self.all_slice_forms or self.all_slice_forms and self.gene_id.startswith(
-                'XM_') or self.gene_id.startswith('NM_') or self.gene_id.startswith('XR_') or self.gene_id.startswith('NR_'):
-            dna_sequence = NCBIdna.get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop)
+                'XM_') or self.gene_id.startswith('NM_') or self.gene_id.startswith('XR_') or self.gene_id.startswith(
+            'NR_'):
+            dna_sequence = NCBIdna.get_dna_sequence(gene_name, prom_term, upstream, downstream, chraccver, chrstart,
+                                                    chrstop)
 
             if prom_term == 'promoter':
                 dna_sequence = f">{variant} {gene_name} | {title} {chraccver} | Strand: {strand} | {self.prom_term} | TSS (on chromosome): {chrstart + 1} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
@@ -176,7 +190,7 @@ class NCBIdna:
         elif self.all_slice_forms:
             result_compil = []
             for variant, gene_name, chraccver, chrstart, chrstop, species_API in all_variants:
-                dna_sequence = NCBIdna.get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop)
+                dna_sequence = NCBIdna.get_dna_sequence(gene_name, prom_term, upstream, downstream, chraccver, chrstart, chrstop)
                 if prom_term == 'promoter':
                     results = f">{variant} {gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
                 else:
@@ -190,9 +204,7 @@ class NCBIdna:
     @staticmethod
     # Convert gene to ENTREZ_GENE_ID
     def convert_gene_to_entrez_id(gene_name, species):
-        if gene_name.isdigit():
-            gene_name = 'Already gene ID'
-            return gene_name  # Already an ENTREZ_GENE_ID
+        global headers
 
         while True:
             # Request for ENTREZ_GENE_ID
@@ -202,35 +214,50 @@ class NCBIdna:
             if response.status_code == 200:
                 response_data = response.json()
 
-                if response_data['esearchresult']['count'] == '0':
-                    return "Error 200", f"Please verify if {gene_name} exist for {species}"
+                if 'count' in response_data.get('esearchresult', {}):
+                    if response_data['esearchresult']['count'] == '0':
+                        print(bcolors.WARNING + f"Please verify if {gene_name} exist for {species}" + bcolors.ENDC)
+                        return "Error 200", f"Please verify if {gene_name} exist for {species}"
 
+                    else:
+                        gene_id = response_data['esearchresult']['idlist'][0]
+                        print(
+                            bcolors.OKGREEN + f"Response 200: ID found for {species} {gene_name}: {gene_id}" + bcolors.ENDC)
+                        return gene_id, bcolors.OKGREEN + f"Response 200: ID found for {species} {gene_name}: {gene_id}" + bcolors.ENDC
                 else:
-                    gene_id = response_data['esearchresult']['idlist'][0]
-                    return gene_id, f"Response 200: ID found for {species} {gene_name}: {gene_id}"
+                    print(
+                        bcolors.FAIL + f"Error 200: Issues for {species} {gene_name}, try again: {response.text}" + bcolors.ENDC)
+                    time.sleep(random.uniform(0.25, 0.5))
 
             elif response.status_code == 429:
+                print(
+                    bcolors.FAIL + f"Error 429: API rate limit exceeded during get ID of {species} {gene_name}, try again: {response.text}" + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
             else:
+                print(bcolors.FAIL + f"Error {response.status_code}: {response.text}" + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
 
     @staticmethod
     # Get gene information
-    def get_gene_info(entrez_id, gr="Current", from_id=True, gene_name_error=None):
+    def get_gene_info(entrez_id, genome_version="Current", from_id=True, gene_name_error=None):
+        global headers
 
         while True:
             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
             response = requests.get(url, headers=headers)
+
             if response.status_code == 200:
                 response_data = response.json()
                 try:
                     gene_info = response_data['result'][str(entrez_id)]
                     gene_name = gene_info['name']
-                    title, chraccver, chrstart, chrstop = NCBIdna.extract_genomic_info(entrez_id, response_data, gr)
+                    title, chraccver, chrstart, chrstop = NCBIdna.extract_genomic_info(entrez_id, response_data, genome_version)
                     species_API = gene_info['organism']['scientificname']
 
                     if from_id:
                         variant = NCBIdna.all_variant(entrez_id, from_id=True)
+                        if not variant:
+                            variant = gene_name
 
                     strand = "plus" if chrstart < chrstop else "minus"
 
@@ -239,15 +266,20 @@ class NCBIdna:
                         f"Entrez_ID: {entrez_id} | Gene name: {gene_name} | Genome Assembly: {title} | ChrAccVer: {chraccver}"
                         f"ChrStart/ChrStop: {chrstart}/{chrstop} | Strand: {strand} | Species: {species_API}")
                 except Exception as e:
+                    print(
+                        bcolors.WARNING + f"Response 200: Info for {gene_name_error} {entrez_id} not found: {e} {traceback.print_exc()}" + bcolors.ENDC)
                     return "Error 200", None, None, None, None, None, None, None, f"Info for {gene_name_error} {entrez_id} not found."
 
             elif response.status_code == 429:
+                print(
+                    bcolors.FAIL + f"Error 429: API rate limit exceeded during get {entrez_id} info, try again: {response.text}" + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
             else:
+                print(bcolors.FAIL + f"Error {response.status_code}: {response.text}" + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
 
     @staticmethod
-    def extract_genomic_info(gene_id, gene_info, gr):
+    def extract_genomic_info(gene_id, gene_info, genome_version):
         if gene_info and 'result' in gene_info and gene_id in gene_info['result']:
             accession_dict = {}
             gene_details = gene_info['result'][gene_id]
@@ -301,7 +333,7 @@ class NCBIdna:
                     min_accver = base_accver
                     min_coords = nc_dict[base_accver]
 
-            if gr != "Current":
+            if genome_version != "Current":
                 title = NCBIdna.fetch_nc_info(min_accver)
                 return title, min_accver, min_coords[0], min_coords[1]
             else:
@@ -310,9 +342,11 @@ class NCBIdna:
 
     @staticmethod
     def fetch_nc_info(nc_accver):
+        global headers
+
         while True:
-            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=nuccore&id={nc_accver}&retmode=json"
-            response = requests.get(url)
+            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=nuccore&id={nc_accver}&retmode=json&api_key=d09dddc7c607744f773e236e9f2b90a23d08"
+            response = requests.get(url, headers=headers)
             if response.status_code == 200:
                 nc_info = response.json()
                 try:
@@ -327,7 +361,7 @@ class NCBIdna:
     @staticmethod
     # Get gene information
     def get_variant_info(entrez_id, variant):
-
+        global headers
         variant = variant.split(".")[0]
 
         while True:
@@ -345,8 +379,11 @@ class NCBIdna:
                 break
 
             elif response.status_code == 429:
+                print(
+                    bcolors.FAIL + f"1 Error 429: API rate limit exceeded during get {entrez_id} {variant} info, try again: {response.text}" + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
             else:
+                print(bcolors.FAIL + f"Error {response.status_code}: {response.text}" + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
 
         if response.status_code == 200:
@@ -401,16 +438,23 @@ class NCBIdna:
                     else:
                         gene_name = 'Bad ID'
 
+                    print(bcolors.OKGREEN + f"Response 200: Info for {entrez_id} {variant} {gene_name} retrieved. "
+                                            f"Entrez_ID: {entrez_id} | Gene name: {gene_name} | ChrAccVer: {chraccver}"
+                                            f"ChrStart/ChrStop: {chrstart}/{chrstop} | Species: {species_API}" + bcolors.ENDC)
                     return variant, gene_name, title, chraccver, chrstart, chrstop, strand, species_API
 
                 elif response.status_code == 429:
+                    print(
+                        bcolors.FAIL + f"2 Error 429: API rate limit exceeded during get {entrez_id} {variant} info, try again: {response.text}" + bcolors.ENDC)
                     time.sleep(random.uniform(0.25, 0.5))
                 else:
+                    print(bcolors.FAIL + f"Error {response.status_code}: {response.text}" + bcolors.ENDC)
                     time.sleep(random.uniform(0.25, 0.5))
 
     @staticmethod
     # Get gene information
     def all_variant(entrez_id, from_id=False):
+        global headers
 
         if not from_id:
             while True:
@@ -422,15 +466,25 @@ class NCBIdna:
                     try:
                         gene_info = response_data['result'][str(entrez_id)]
                         chraccver = gene_info['genomicinfo'][0]['chraccver']
+                        print(
+                            bcolors.OKGREEN + f"Response 200: Chromosome {chraccver} found for {entrez_id}: {response.text}" + bcolors.ENDC)
                         break
 
                     except Exception as e:
+                        print(
+                            bcolors.WARNING + f"Response 200: Chromosome not found for {entrez_id}: {response.text} {e} {traceback.print_exc()}" + bcolors.ENDC)
                         all_variants = [("Error 200", None, None, None, None, None)]
+                        print(
+                            bcolors.WARNING + f"Response 200: Transcript not found(s) for {entrez_id}." + bcolors.ENDC)
                         return "Error 200", f"Transcript not found(s) for {entrez_id}."
 
                 elif response.status_code == 429:
+                    print(
+                        bcolors.ENDC + f"Error {response.status_code}: API rate limit exceeded during get chromosome of {entrez_id}: {response.text}" + bcolors.ENDC)
                     time.sleep(random.uniform(0.25, 0.5))
                 else:
+                    print(
+                        bcolors.ENDC + f"Error {response.status_code}: Error during get chromosome of {entrez_id}: {response.text}" + bcolors.ENDC)
                     time.sleep(random.uniform(0.25, 0.5))
 
         while True:
@@ -511,32 +565,48 @@ class NCBIdna:
                         all_variants.append((variant, gene_name, chraccver, chrstart, chrstop, species_API))
 
                     if len(all_variants) > 0:
+                        print(
+                            bcolors.OKGREEN + f"Response 200: Transcript(s) found(s) for {entrez_id}: {all_variants}" + bcolors.ENDC)
                         return all_variants, f"Transcript(s) found(s) for {entrez_id}: {all_variants}"
                     else:
                         gene_name, title, chraccver, chrstart, chrstop, strand, species_API, message = NCBIdna.get_gene_info(
                             entrez_id, from_id=False)
                         if gene_name == "Error 200":
                             all_variants.append(("Error 200", None, None, None, None, None))
+                            print(
+                                bcolors.WARNING + f"Response 200: Transcript not found(s) for {entrez_id}." + bcolors.ENDC)
                             return "Error 200", f"Transcript not found(s) for {entrez_id}."
                         else:
                             all_variants.append((gene_name, gene_name, chraccver, chrstart, chrstop, species_API))
+                            print(
+                                bcolors.OKGREEN + f"Response 200: Transcript(s) found(s) for {entrez_id}: {all_variants}" + bcolors.ENDC)
                             return all_variants, f"Transcript(s) found(s) for {entrez_id}: {all_variants}"
 
                 elif from_id:
                     if len(tv) > 0:
-                        associations = dict(zip(tv, variants))
-                        return associations["transcript variant 1"]
-                    else:
+                        if "transcript variant 1" in tv:
+                            associations = dict(zip(tv, variants))
+                            return associations["transcript variant 1"]
+                        else:
+                            return variants[0]
+                    elif len(tv) == 0 and len(variants) > 0:
                         return variants[0]
+                    else:
+                        return None
 
             elif response.status_code == 429:
+                print(
+                    bcolors.FAIL + f"Error {response.status_code}: API rate limit exceeded while searching for {entrez_id} transcripts: {response.text}" + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
             else:
+                print(
+                    bcolors.FAIL + f"Error {response.status_code}: Error while searching for {entrez_id} transcripts: {response.text}" + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
 
     @staticmethod
     # Get DNA sequence
-    def get_dna_sequence(prom_term, upstream, downstream, chraccver, chrstart, chrstop):
+    def get_dna_sequence(gene_name, prom_term, upstream, downstream, chraccver, chrstart, chrstop):
+        global headers
         # Determine sens of gene + coordinate for upstream and downstream
         if chrstop > chrstart:
             start = (chrstart if prom_term.lower() == 'promoter' else chrstop) - upstream + 1
@@ -556,11 +626,16 @@ class NCBIdna:
                 else:
                     sequence = NCBIdna.reverse_complement(dna_sequence)
 
+                print(
+                    bcolors.OKGREEN + f"Response 200: DNA sequence for {gene_name} extracted: {sequence}" + bcolors.ENDC)
                 return sequence
 
             elif response.status_code == 429:
+                print(
+                    bcolors.FAIL + f"Error 429: API rate limit exceeded for DNA extraction of {gene_name}, try again: {response.text}" + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
             else:
+                print(bcolors.FAIL + f"Error {response.status_code}: {response.text}" + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
 
     @staticmethod
