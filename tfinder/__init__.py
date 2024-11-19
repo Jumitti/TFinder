@@ -151,16 +151,15 @@ class NCBIdna:
                 if entrez_id == "Error 200":
                     return entrez_id, message
 
-            if not self.all_slice_forms:
-                variant, gene_name, title, chraccver, chrstart, chrstop, strand, species_API, message = NCBIdna.get_gene_info(
-                    entrez_id, self.genome_version, gene_name_error=self.gene_id)
-                if variant == "Error 200":
-                    return variant, message
+            variant, gene_name, title, chraccver, chrstart, chrstop, strand, species_API, message = NCBIdna.get_gene_info(
+                entrez_id, self.genome_version, gene_name_error=self.gene_id)
+            if variant == "Error 200":
+                return variant, message
 
-            elif self.all_slice_forms:
+            if self.all_slice_forms:
                 all_variants, message = NCBIdna.all_variant(entrez_id)
                 if all_variants == "Error 200":
-                    return all_variants, message
+                    all_variants = [(variant, gene_name, chraccver, chrstart, chrstop, species_API)]
 
         prom_term = self.prom_term.lower()
         if prom_term not in ['promoter', 'terminator']:
@@ -192,9 +191,9 @@ class NCBIdna:
             for variant, gene_name, chraccver, chrstart, chrstop, species_API in all_variants:
                 dna_sequence = NCBIdna.get_dna_sequence(gene_name, prom_term, upstream, downstream, chraccver, chrstart, chrstop)
                 if prom_term == 'promoter':
-                    results = f">{variant} {gene_name} | {species_API} | {chraccver} | {self.prom_term} | TSS (on chromosome): {chrstart} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
+                    results = f">{variant} {gene_name} | {title} | {chraccver} | Strand: {strand} | {self.prom_term} | TSS (on chromosome): {chrstart + 1} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
                 else:
-                    results = f">{variant} {gene_name} | {species_API} | {chraccver} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
+                    results = f">{variant} {gene_name} | {title} | {chraccver} | Strand: {strand} | {self.prom_term} | Gene end (on chromosome): {chrstop} | Gene end (on sequence): {self.upstream}\n{dna_sequence}\n"
 
                 result_compil.append(results)
 
@@ -261,7 +260,7 @@ class NCBIdna:
 
                     strand = "plus" if chrstart < chrstop else "minus"
 
-                    return variant, gene_name, title, chraccver, chrstart, chrstop, strand, species_API, (
+                    return variant if variant else None, gene_name, title, chraccver, chrstart, chrstop, strand, species_API, (
                         f"Response 200: Info for {entrez_id} {variant} {gene_name} retrieved."
                         f"Entrez_ID: {entrez_id} | Gene name: {gene_name} | Genome Assembly: {title} | ChrAccVer: {chraccver}"
                         f"ChrStart/ChrStop: {chrstart}/{chrstop} | Strand: {strand} | Species: {species_API}")
@@ -569,18 +568,10 @@ class NCBIdna:
                             bcolors.OKGREEN + f"Response 200: Transcript(s) found(s) for {entrez_id}: {all_variants}" + bcolors.ENDC)
                         return all_variants, f"Transcript(s) found(s) for {entrez_id}: {all_variants}"
                     else:
-                        gene_name, title, chraccver, chrstart, chrstop, strand, species_API, message = NCBIdna.get_gene_info(
-                            entrez_id, from_id=False)
-                        if gene_name == "Error 200":
-                            all_variants.append(("Error 200", None, None, None, None, None))
-                            print(
-                                bcolors.WARNING + f"Response 200: Transcript not found(s) for {entrez_id}." + bcolors.ENDC)
-                            return "Error 200", f"Transcript not found(s) for {entrez_id}."
-                        else:
-                            all_variants.append((gene_name, gene_name, chraccver, chrstart, chrstop, species_API))
-                            print(
-                                bcolors.OKGREEN + f"Response 200: Transcript(s) found(s) for {entrez_id}: {all_variants}" + bcolors.ENDC)
-                            return all_variants, f"Transcript(s) found(s) for {entrez_id}: {all_variants}"
+                        all_variants.append(("Error 200", None, None, None, None, None))
+                        print(
+                            bcolors.WARNING + f"Error 200: Transcript not found(s) for {entrez_id}." + bcolors.ENDC)
+                        return "Error 200", f"Transcript not found(s) for {entrez_id}."
 
                 elif from_id:
                     if len(tv) > 0:
