@@ -345,7 +345,7 @@ class NCBIdna:
         global headers
 
         while True:
-            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=nuccore&id={nc_accver}&retmode=json&api_key=d09dddc7c607744f773e236e9f2b90a23d08"
+            url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=nuccore&id={nc_accver}&retmode=json"
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
                 nc_info = response.json()
