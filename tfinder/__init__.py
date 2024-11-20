@@ -894,8 +894,7 @@ class IMO:
             header = ["Position"]
             if tss_ge_distance is not None:
                 header.append("Rel Position")
-                if strand_seq in ["plus", "minus"]:
-                    header.append("Ch Position")
+                header.append("Ch Position")
             header += ["Sequence", "Rel Score"]
             if calc_pvalue is not None:
                 header.append("p-value")
@@ -904,7 +903,10 @@ class IMO:
         else:
             "No consensus sequence found with the specified threshold."
 
-        return individual_motif_occurrences
+        df = pd.DataFrame(individual_motif_occurrences[1:], columns=individual_motif_occurrences[0])
+        df = df.sort_values(by="Rel Score", ascending=False)
+
+        return df
 
     @staticmethod
     # IUPAC code
