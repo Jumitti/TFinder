@@ -98,17 +98,19 @@ def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
 
 
 def result_table_output(df):
-    x_axis = st.radio("(X-axis) Position from:", ["Beginning of sequences", "From TSS/gene end"], disabled=False if "Rel Position" in df else True, horizontal=True)
+    x_axis = st.radio("(X-axis) Position from:", horizontal=True,
+                      options=["Beginning of sequences", "From TSS/gene end"] if "Rel Position" in df else [
+                          "Beginning of sequences"])
 
     source = df.copy()
     score_range = source['Rel Score'].astype(float)
     ystart = score_range.min() - 0.02
     ystop = score_range.max() + 0.02
     source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
-    if x_axis == 'Beginning of sequences':
-        source['x'] = source['Position']
-    elif 'Rel Position' in source and x_axis == 'From TSS/gene end':
+    if x_axis == 'From TSS/gene end':
         source['x'] = source['Rel Position']
+    else:
+        source['x'] = source['Position']
     scale = alt.Scale(scheme='category10')
     color_scale = alt.Color("Gene_Region:N", scale=scale)
 
