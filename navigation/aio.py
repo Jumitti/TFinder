@@ -97,22 +97,20 @@ def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
         st.toast(f"Unknown error occurred: {e}")
 
 
-def result_table_output(df):
-    source = df.copy()
+def result_table_output(source):
     score_range = source['Rel Score'].astype(float)
     ystart = score_range.min() - 0.02
     ystop = score_range.max() + 0.02
     source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
     source['Beginning of sequences'] = source['Position']
-    if 'Rel Position' in source:
-        source['From TSS/gene end'] = source['Rel Position']
+    source['From TSS/gene end'] = source['Rel Position']
     scale = alt.Scale(scheme='category10')
     color_scale = alt.Color("Gene_Region:N", scale=scale)
 
     gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
 
     dropdown = alt.binding_select(
-        options=['Beginning of sequences', 'From TSS/gene end' if "Rel Position" in source else []],
+        options=['Beginning of sequences', 'From TSS/gene end'] if "Rel Position" in source else ['Beginning of sequences'],
         name='(X-axis) Position from: ')
 
     xcol_param = alt.param(value='Beginning of sequences', bind=dropdown)
@@ -124,9 +122,7 @@ def result_table_output(df):
         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
         tooltip=['Sequence', 'Position'] + (['Rel Position'] if "Rel Position" in source else []) + (
             ['Ch Position'] if "Ch Position" in source else []) + ['Rel Score'] + (
-                    ['p-value'] if 'p-value' in source else []) + (
-                    ['LCS', 'LCS length', 'LCS Rel Score'] if "LCS" in source else []) + ['Gene', 'Species',
-                                                                                          'Region'],
+                    ['p-value'] if 'p-value' in source else []) + ['Gene', 'Species', 'Region'],
         opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
     ).transform_calculate(x=f'datum[{xcol_param.name}]'
                           ).properties(width=600, height=400).interactive(
@@ -803,59 +799,57 @@ def aio_page():
         st.session_state['individual_motif_occurrences'] = individual_motif_occurrences
 
     st.divider()
-    if 'individual_motif_occurrences' in st.session_state:
-        if len(st.session_state['individual_motif_occurrences']) > 1:
-            current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            st.subheader(':blue[Results]')
+    try:
+        if 'individual_motif_occurrences' in st.session_state:
+            if len(st.session_state['individual_motif_occurrences']) > 1:
+                current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                st.subheader(':blue[Results]')
 
-            df = st.session_state['individual_motif_occurrences']
+                st.markdown('**Table**')
+                tablecol1, tablecol2 = st.columns([0.75, 0.25])
+                with tablecol1:
+                    st.dataframe(st.session_state['individual_motif_occurrences'], hide_index=True)
+                    csv_file = st.session_state['individual_motif_occurrences'].to_csv(index=False)
+                    excel_file = io.BytesIO()
+                    st.session_state['individual_motif_occurrences'].to_excel(excel_file, index=False, sheet_name='Sheet1')
+                    excel_file.seek(0)
 
-            # df = pd.DataFrame(st.session_state['individual_motif_occurrences'][1:],
-            #                   columns=st.session_state['individual_motif_occurrences'][0])
-            #
-            # df = df.sort_values(by='Rel Score', ascending=False)
+                with tablecol2:
+                    st.success(f"Finding responsive elements done !")
 
-            st.session_state['df'] = df
+                st.markdown("")
+                st.markdown('**Graph**',
+                            help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
+                
+                result_table_output(st.session_state['individual_motif_occurrences'])
+                
+                with tablecol2:
+                    st.download_button("💾 Download table (.xlsx)", excel_file,
+                                       file_name=f'Results_TFinder_{current_date_time}.xlsx',
+                                       mime="application/vnd.ms-excel", key='download-excel')
+                    st.download_button(label="💾 Download table (.csv)", data=csv_file,
+                                       file_name=f"Results_TFinder_{current_date_time}.csv", mime="text/csv")
 
-            st.markdown('**Table**')
-            tablecol1, tablecol2 = st.columns([0.75, 0.25])
-            with tablecol1:
-                st.dataframe(df, hide_index=True)
-                csv_file = df.to_csv(index=False)
-                excel_file = io.BytesIO()
-                df.to_excel(excel_file, index=False, sheet_name='Sheet1')
-                excel_file.seek(0)
-
-            with tablecol2:
-                st.success(f"Finding responsive elements done !")
-
-            st.markdown("")
-            st.markdown('**Graph**',
-                        help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-
-            result_table_output(df)
-
-            with tablecol2:
-                st.download_button("💾 Download table (.xlsx)", excel_file,
-                                   file_name=f'Results_TFinder_{current_date_time}.xlsx',
-                                   mime="application/vnd.ms-excel", key='download-excel')
-                st.download_button(label="💾 Download table (.csv)", data=csv_file,
-                                   file_name=f"Results_TFinder_{current_date_time}.csv", mime="text/csv")
-
-                if st.session_state["LOCAL"] == "False":
-                    email_receiver = st.text_input('Send results by email ✉',
-                                                   value='', placeholder='Send results by email ✉',
-                                                   label_visibility="collapsed")
-                    if st.button("Send ✉"):
-                        if jaspar == 'PWM':
-                            if matrix_type == 'With PWM':
-                                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_str}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                            if matrix_type == 'With FASTA sequences':
-                                body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{individual_motif}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                        elif jaspar == 'JASPAR_ID':
-                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                        else:
-                            body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
-                        email(excel_file, csv_file, txt_output, email_receiver, body, jaspar)
-        else:
-            st.error(f"No consensus sequence found with the specified threshold")
+                    try:
+                        if st.session_state["LOCAL"] == "False":
+                            email_receiver = st.text_input('Send results by email ✉',
+                                                           value='', placeholder='Send results by email ✉',
+                                                           label_visibility="collapsed")
+                            if st.button("Send ✉"):
+                                if jaspar == 'PWM':
+                                    if matrix_type == 'With PWM':
+                                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nPosition Weight Matrix:\n{matrix_str}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                                    if matrix_type == 'With FASTA sequences':
+                                        body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{individual_motif}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                                elif jaspar == 'JASPAR_ID':
+                                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nJASPAR_ID: {jaspar_id} | Transcription Factor name: {TF_name}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                                else:
+                                    body = f"Hello 🧬\n\nResults obtained with TFinder.\n\nResponsive Elements:\n{IUPAC}\n\nPosition Weight Matrix:\n{matrix_text}\n\nThis email also includes the sequences used in FASTA format and an Excel table of results.\n\nFor all requests/information, please refer to the 'Contact' tab on the TFinder website. We would be happy to answer all your questions.\n\nBest regards\nTFinder Team 🔎🧬"
+                                email(excel_file, csv_file, txt_output, email_receiver, body, jaspar)
+                    except Exception:
+                        print("You are in LOCAL")
+            else:
+                st.error(f"No consensus sequence found with the specified threshold")
+    except Exception as e:
+        print(e)
+        st.write(e)
