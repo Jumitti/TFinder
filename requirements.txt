@@ -21,7 +21,7 @@
 # Old requirements:
 biopython
 
-altair~=5.4.1
+altair~=5.3.0
 deprecation~=2.1.0
 future
 hydralit_components
@@ -32,7 +32,7 @@ pandas~=2.2.2
 plotly
 requests~=2.32.3
 stqdm~=0.0.5
-streamlit~=1.40.0
+streamlit~=1.36.0
 streamlit_analytics
 streamlit-lottie
 tqdm~=4.66.4

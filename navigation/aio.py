@@ -98,23 +98,25 @@ def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
 
 
 def result_table_output(df):
-    x_axis = st.radio("(X-axis) Position from:", horizontal=True,
-                      options=["Beginning of sequences", "From TSS/gene end"] if "Rel Position" in df else [
-                          "Beginning of sequences"])
-
     source = df.copy()
     score_range = source['Rel Score'].astype(float)
     ystart = score_range.min() - 0.02
     ystop = score_range.max() + 0.02
     source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
-    if x_axis == 'From TSS/gene end':
-        source['x'] = source['Rel Position']
-    else:
-        source['x'] = source['Position']
+    source['Beginning of sequences'] = source['Position']
+    if 'Rel Position' in source:
+        source['From TSS/gene end'] = source['Rel Position']
     scale = alt.Scale(scheme='category10')
     color_scale = alt.Color("Gene_Region:N", scale=scale)
 
     gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
+
+    dropdown = alt.binding_select(
+        options=['Beginning of sequences', 'From TSS/gene end' if "Rel Position" in source else []],
+        name='(X-axis) Position from: ')
+
+    xcol_param = alt.param(value='Beginning of sequences', bind=dropdown)
+
     chart = alt.Chart(source).mark_circle().encode(
         x=alt.X('x:Q').title('Position (bp)'),
         y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
@@ -126,7 +128,9 @@ def result_table_output(df):
                     ['LCS', 'LCS length', 'LCS Rel Score'] if "LCS" in source else []) + ['Gene', 'Species',
                                                                                           'Region'],
         opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
-    ).properties(width=600, height=400).interactive().add_params(gene_region_selection)
+    ).transform_calculate(x=f'datum[{xcol_param.name}]'
+                          ).properties(width=600, height=400).interactive(
+    ).add_params(gene_region_selection, xcol_param)
 
     st.altair_chart(chart, theme=None, use_container_width=True)
 
