@@ -51,7 +51,8 @@ def load_lottiefile(filepath: str):
 st.set_page_config(
     page_title='TFinder by Minniti Julien',
     page_icon="img/TFinder_logo_page.png",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
+    layout="wide"
 )
 
 if 'lottie' not in st.session_state:

@@ -36,6 +36,7 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import StandardScaler
 from tqdm import tqdm
 
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -189,7 +190,8 @@ class NCBIdna:
         elif self.all_slice_forms:
             result_compil = []
             for variant, gene_name, chraccver, chrstart, chrstop, species_API in all_variants:
-                dna_sequence = NCBIdna.get_dna_sequence(gene_name, prom_term, upstream, downstream, chraccver, chrstart, chrstop)
+                dna_sequence = NCBIdna.get_dna_sequence(gene_name, prom_term, upstream, downstream, chraccver, chrstart,
+                                                        chrstop)
                 if prom_term == 'promoter':
                     results = f">{variant} {gene_name} | {title} | {chraccver} | Strand: {strand} | {self.prom_term} | TSS (on chromosome): {chrstart + 1} | TSS (on sequence): {self.upstream}\n{dna_sequence}\n"
                 else:
@@ -250,7 +252,8 @@ class NCBIdna:
                 try:
                     gene_info = response_data['result'][str(entrez_id)]
                     gene_name = gene_info['name']
-                    title, chraccver, chrstart, chrstop = NCBIdna.extract_genomic_info(entrez_id, response_data, genome_version)
+                    title, chraccver, chrstart, chrstop = NCBIdna.extract_genomic_info(entrez_id, response_data,
+                                                                                       genome_version)
                     species_API = gene_info['organism']['scientificname']
 
                     if from_id:
@@ -259,6 +262,10 @@ class NCBIdna:
                             variant = gene_name
 
                     strand = "plus" if chrstart < chrstop else "minus"
+
+                    print(bcolors.OKGREEN + f"Response 200: Info for {entrez_id} {variant} {gene_name} retrieved."
+                                            f"Entrez_ID: {entrez_id} | Gene name: {gene_name} | Genome Assembly: {title} | ChrAccVer: {chraccver}"
+                                            f"ChrStart/ChrStop: {chrstart}/{chrstop} | Strand: {strand} | Species: {species_API}" + bcolors.ENDC)
 
                     return variant if variant else None, gene_name, title, chraccver, chrstart, chrstop, strand, species_API, (
                         f"Response 200: Info for {entrez_id} {variant} {gene_name} retrieved."
@@ -304,7 +311,7 @@ class NCBIdna:
             nc_dict = accession_dict
 
             nc_dict = {base_accver: (chrstart, chrstop) for base_accver, (chrstart, chrstop) in nc_dict.items() if
-                       base_accver.startswith("NC_")}
+                       base_accver.startswith(("NC_", "NT_"))}
 
             if nc_dict:
                 first_base = next(iter(nc_dict)).split('.')[0]
@@ -871,7 +878,8 @@ class IMO:
                             tis_position = position - tss_ge_distance - 1
 
                             if strand_seq in ["plus", "minus"]:
-                                ch_pos = int(tss_ch) - tis_position if strand_seq == "minus" else int(tss_ch) + tis_position
+                                ch_pos = int(tss_ch) - tis_position if strand_seq == "minus" else int(
+                                    tss_ch) + tis_position
 
                         if normalized_score >= threshold:
 
@@ -894,8 +902,7 @@ class IMO:
             header = ["Position"]
             if tss_ge_distance is not None:
                 header.append("Rel Position")
-                if strand_seq in ["plus", "minus"]:
-                    header.append("Ch Position")
+                header.append("Ch Position")
             header += ["Sequence", "Rel Score"]
             if calc_pvalue is not None:
                 header.append("p-value")
@@ -904,7 +911,10 @@ class IMO:
         else:
             "No consensus sequence found with the specified threshold."
 
-        return individual_motif_occurrences
+        df = pd.DataFrame(individual_motif_occurrences[1:], columns=individual_motif_occurrences[0])
+        df = df.sort_values(by="Rel Score", ascending=False)
+
+        return df
 
     @staticmethod
     # IUPAC code
