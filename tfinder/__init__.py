@@ -909,13 +909,15 @@ class IMO:
                 header.append("p-value")
             header += ["Strand", "Direction", "Gene", "Species", "Region"]
             individual_motif_occurrences.insert(0, header)
+
+            df = pd.DataFrame(individual_motif_occurrences[1:], columns=individual_motif_occurrences[0])
+            df = df.sort_values(by="Rel Score", ascending=False)
+
+            return df, True
         else:
-            "No consensus sequence found with the specified threshold."
+            return "No consensus sequence found with the specified threshold.", False
 
-        df = pd.DataFrame(individual_motif_occurrences[1:], columns=individual_motif_occurrences[0])
-        df = df.sort_values(by="Rel Score", ascending=False)
 
-        return df
 
     @staticmethod
     # IUPAC code
