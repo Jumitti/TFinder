@@ -880,6 +880,8 @@ class IMO:
                             if strand_seq in ["plus", "minus"]:
                                 ch_pos = int(tss_ch) - tis_position if strand_seq == "minus" else int(
                                     tss_ch) + tis_position
+                            else:
+                                ch_pos = "n.d"
 
                         if normalized_score >= threshold:
 
@@ -889,8 +891,7 @@ class IMO:
                             row = [position]
                             if tss_ge_distance is not None:
                                 row.append(tis_position)
-                                if strand_seq in ["plus", "minus"]:
-                                    row.append(ch_pos)
+                                row.append(ch_pos)
                             row += [sequence_with_context,
                                     "{:.6f}".format(normalized_score).ljust(12)]
                             if calc_pvalue is not None:
