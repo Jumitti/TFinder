@@ -786,16 +786,20 @@ def aio_page():
         with stqdm(total=iteration,
                    desc='**:blue[Analyse sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                    mininterval=0.1) as progress_bar:
-            individual_motif_occurrences = IMO.individual_motif_finder(dna_sequences, threshold, log_odds_matrix,
+            individual_motif_occurrences, message = IMO.individual_motif_finder(dna_sequences, threshold, log_odds_matrix,
                                                                        progress_bar,
                                                                        calc_pvalue,
                                                                        tss_ge_distance, alldirection)
-        st.session_state['individual_motif_occurrences'] = individual_motif_occurrences
+        if message is True:
+            st.session_state['individual_motif_occurrences'] = individual_motif_occurrences
+            st.session_state['message'] = message
+        elif message is False:
+            st.error(individual_motif_occurrences)
 
     st.divider()
     try:
         if 'individual_motif_occurrences' in st.session_state:
-            if len(st.session_state['individual_motif_occurrences']) > 1:
+            if len(st.session_state['individual_motif_occurrences']) > 0:
                 current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 st.subheader(':blue[Results]')
 
