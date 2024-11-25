@@ -113,7 +113,7 @@ def result_table_output(source):
         options=['Beginning of sequences', 'From TSS/gene end'] if "Rel Position" in source else ['Beginning of sequences'],
         name='(X-axis) Position from: ')
 
-    xcol_param = alt.param(value='Beginning of sequences', bind=dropdown)
+    xcol_param = alt.param(value='Beginning of sequences', bind=dropdown, name="x_axis")
 
     chart = alt.Chart(source).mark_circle().encode(
         x=alt.X('x:Q').title('Position (bp)'),
