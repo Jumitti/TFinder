@@ -103,7 +103,8 @@ def result_table_output(source):
     ystop = score_range.max() + 0.02
     source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
     source['Beginning of sequences'] = source['Position']
-    source['From TSS/gene end'] = source['Rel Position']
+    if "Rel Position" in source:
+        source['From TSS/gene end'] = source['Rel Position']
     scale = alt.Scale(scheme='category10')
     color_scale = alt.Color("Gene_Region:N", scale=scale)
 
@@ -113,7 +114,7 @@ def result_table_output(source):
         options=['Beginning of sequences', 'From TSS/gene end'] if "Rel Position" in source else ['Beginning of sequences'],
         name='(X-axis) Position from: ')
 
-    xcol_param = alt.param(value='Beginning of sequences', bind=dropdown)
+    xcol_param = alt.param(value='Beginning of sequences', bind=dropdown, name="x_axis")
 
     chart = alt.Chart(source).mark_circle().encode(
         x=alt.X('x:Q').title('Position (bp)'),

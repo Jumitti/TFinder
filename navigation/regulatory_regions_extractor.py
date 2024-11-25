@@ -278,17 +278,16 @@ def prom_extractor_page():
                                         pbar.progress((i + 1) / len(data_dff),
                                                       text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
 
-                                        result_promoter_output = NCBIdna(gene_id, prom_term, upstream,
-                                                                         downstream).find_sequences()
+                                        result_promoter_output, message = NCBIdna(gene_id, prom_term, upstream,
+                                                                                  downstream).find_sequences()
 
-                                        if not result_promoter_output.startswith('P'):
-                                            st.toast(f'{prom_term} **{gene_id}** from **{species}** extracted',
+                                        if message == "OK":
+                                            st.toast(f"{prom_term} **{gene_id}** from **{species}** extracted",
                                                      icon='🧬')
-                                            result_promoter.append(result_promoter_output)
-                                            pass
 
+                                            result_promoter.append(result_promoter_output)
                                         else:
-                                            st.error(result_promoter_output)
+                                            st.error(message)
                                             continue
 
                             else:
@@ -301,19 +300,17 @@ def prom_extractor_page():
                                             pbar.progress((i + 1) / len(data_dff),
                                                           text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species.capitalize()}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
 
-                                            result_promoter_output = NCBIdna(gene_id, prom_term, upstream,
-                                                                             downstream,
-                                                                             species).find_sequences()
+                                            result_promoter_output, message = NCBIdna(gene_id, prom_term, upstream,
+                                                                                      downstream,
+                                                                                      species).find_sequences()
 
-                                            if not result_promoter_output.startswith('P'):
-                                                st.toast(
-                                                    f'{prom_term} **{gene_id}** from **{species.capitalize()}** extracted',
-                                                    icon='🧬')
+                                            if message == "OK":
+                                                st.toast(f"{prom_term} **{gene_id}** from **{species}** extracted",
+                                                         icon='🧬')
+
                                                 result_promoter.append(result_promoter_output)
-                                                pass
-
                                             else:
-                                                st.error(result_promoter_output)
+                                                st.error(message)
                                                 continue
 
                         result_promoter_text = "\n".join(result_promoter)
