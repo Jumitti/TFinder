@@ -103,7 +103,8 @@ def result_table_output(source):
     ystop = score_range.max() + 0.02
     source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
     source['Beginning of sequences'] = source['Position']
-    source['From TSS/gene end'] = source['Rel Position']
+    if "Rel Position" in source:
+        source['From TSS/gene end'] = source['Rel Position']
     scale = alt.Scale(scheme='category10')
     color_scale = alt.Color("Gene_Region:N", scale=scale)
 
