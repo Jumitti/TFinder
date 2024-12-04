@@ -848,10 +848,11 @@ class IMO:
         max_prob = 1.0
 
         for i in range(len(next(iter(pwm.values())))):
-            col = {base: pwm[base][i] / background_freq.get(base) for base in pwm}
-
+            col = {base: pwm[base][i] / (background_freq.get(base) or 1e-64) for base in pwm}
+            print(col)
             min_value = min(col.values())
             max_value = max(col.values())
+            print(max_value)
 
             min_prob *= min_value
             max_prob *= max_value
@@ -986,7 +987,6 @@ class IMO:
                     percentage_c = count_c / length_prom
 
                     background_freq = {'A': percentage_a, 'C': percentage_c, 'G': percentage_g, 'T': percentage_t}
-
                     weight = IMO.calculate_weight(seq, pwm_weight[matrix_name], background_freq)
                     min_weight, max_weight = IMO.calculate_min_max_weights(pwm_weight[matrix_name], background_freq)
                     relative_weight = (weight - min_weight) / (max_weight - min_weight)

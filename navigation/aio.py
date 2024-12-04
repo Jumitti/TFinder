@@ -27,18 +27,16 @@ from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import requests
 
 import altair as alt
 import pandas as pd
+import requests
 import streamlit as st
+from Bio import motifs
 from stqdm import stqdm
 
 from tfinder import IMO
 from tfinder import NCBIdna
-from Bio import motifs
-from Bio.motifs import Motif
-from Bio.motifs.matrix import PositionWeightMatrix, PositionSpecificScoringMatrix
 
 
 def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
@@ -856,7 +854,8 @@ def aio_page():
                     st.dataframe(st.session_state['individual_motif_occurrences'], hide_index=True)
                     csv_file = st.session_state['individual_motif_occurrences'].to_csv(index=False)
                     excel_file = io.BytesIO()
-                    st.session_state['individual_motif_occurrences'].to_excel(excel_file, index=False, sheet_name='Sheet1')
+                    st.session_state['individual_motif_occurrences'].to_excel(excel_file, index=False,
+                                                                              sheet_name='Sheet1')
                     excel_file.seek(0)
 
                 with tablecol2:
@@ -865,9 +864,9 @@ def aio_page():
                 st.markdown("")
                 st.markdown('**Graph**',
                             help='Zoom +/- with the mouse wheel. Drag while pressing the mouse to move the graph. Selection of a group by clicking on a point of the graph (double click de-selection). Double-click on a point to reset the zoom and the moving of graph.')
-                
+
                 result_table_output(st.session_state['individual_motif_occurrences'])
-                
+
                 with tablecol2:
                     st.download_button("💾 Download table (.xlsx)", excel_file,
                                        file_name=f'Results_TFinder_{current_date_time}.xlsx',

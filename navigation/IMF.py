@@ -29,7 +29,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import altair as alt
-import pandas as pd
 import streamlit as st
 from Bio import motifs
 from stqdm import stqdm
@@ -485,17 +484,17 @@ def BSF_page():
                  use_container_width=True,
                  disabled=button):
         motif = motifs.Motif(counts=matrix)
-        pwm = motif.counts.normalize(pseudocounts=0.1)
+        pwm = motif.counts.normalize(pseudocounts=0.2)
         log_odds_matrix = pwm.log_odds()
 
         with stqdm(total=iteration,
                    desc='**:blue[Analyse sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                    mininterval=0.1) as progress_bar:
-            individual_motif_occurrences, message = IMO.individual_motif_finder(dna_sequences, threshold,
-                                                                                log_odds_matrix,
-                                                                                progress_bar,
-                                                                                calc_pvalue,
-                                                                                tss_ge_distance, alldirection)
+            individual_motif_occurrences, message = IMO.individual_motif_finder(dna_sequences, threshold, log_odds_matrix,
+                                                                                pwm,
+                                                                       progress_bar,
+                                                                       calc_pvalue,
+                                                                       tss_ge_distance, alldirection)
         if message is True:
             st.session_state['individual_motif_occurrences'] = individual_motif_occurrences
             st.session_state['message'] = message
