@@ -36,6 +36,8 @@ from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import StandardScaler
 from tqdm import tqdm
+from Bio import motifs
+from Bio.motifs.jaspar import calculate_pseudocounts
 
 
 class bcolors:
@@ -839,8 +841,7 @@ class IMO:
 
         pwm_prob = calculate_pwm_probability(sequence, pwm)
         background_prob = calculate_background_probability(sequence, background_freq)
-
-        return math.log(pwm_prob / background_prob)
+        return math.log2(pwm_prob / background_prob)
 
     @staticmethod
     def calculate_min_max_weights(pwm, background_freq):
@@ -849,16 +850,15 @@ class IMO:
 
         for i in range(len(next(iter(pwm.values())))):
             col = {base: pwm[base][i] / (background_freq.get(base) or 1e-64) for base in pwm}
-            print(col)
+
             min_value = min(col.values())
             max_value = max(col.values())
-            print(max_value)
 
             min_prob *= min_value
             max_prob *= max_value
 
-        min_weight = math.log(min_prob)
-        max_weight = math.log(max_prob)
+        min_weight = math.log2(min_prob)
+        max_weight = math.log2(max_prob)
 
         return min_weight, max_weight
 
@@ -883,16 +883,26 @@ class IMO:
             return isfasta
 
     @staticmethod
+    def transform_PWM(matrix, pseudocount=None):
+        motif = motifs.Motif(counts=matrix)
+        pseudocount_auto = calculate_pseudocounts(motif)
+        pwm = motif.counts.normalize(pseudocounts=pseudocount_auto if pseudocount is None else pseudocount)
+        background_preset = {'A': 0.25, 'C': 0.25, 'G': 0.25, 'T': 0.25}
+        log_odds_matrix = pwm.log_odds(background=background_preset)
+
+        return pseudocount_auto, pwm, log_odds_matrix
+
+    @staticmethod
     # Find with JASPAR and manual matrix
-    def individual_motif_finder(dna_sequences, threshold, matrix, pwm, progress_bar=None, calc_pvalue=None,
-                                tss_ge_distance=None, alldirection=None):
+    def individual_motif_finder(dna_sequences, threshold, matrix, progress_bar=None, calc_pvalue=None,
+                                tss_ge_distance=None, alldirection=None, pseudocount=None, bgnf=None):
         if calc_pvalue is not None:
             if calc_pvalue not in ["ATGCPreset", "ATGCProportion"]:
                 raise ValueError("Use 'ATGCPreset' or 'ATGCProportion'")
 
         individual_motif_occurrences = []
-
-        matrices = IMO.transform_matrix(matrix, alldirection)
+        _, pwm, log_odds_matrix = IMO.transform_PWM(matrix, pseudocount)
+        matrices = IMO.transform_matrix(log_odds_matrix, alldirection)
         pwm_weight = IMO.transform_matrix(pwm, alldirection)
 
         seq_length = len(matrices['+ f']['A'])
@@ -923,21 +933,20 @@ class IMO:
                 random_scores = np.array(matrix_random_scores)
 
         for name, dna_sequence, species, region, strand_seq, tss_ch in dna_sequences:
+            count_a = dna_sequence.count('A')
+            count_t = dna_sequence.count('T')
+            count_g = dna_sequence.count('G')
+            count_c = dna_sequence.count('C')
+
+            length_prom = len(dna_sequence)
+            percentage_a = count_a / length_prom
+            percentage_t = count_t / length_prom
+            percentage_g = count_g / length_prom
+            percentage_c = count_c / length_prom
+
             if calc_pvalue == 'ATGCProportion':
-                count_a = dna_sequence.count('A')
-                count_t = dna_sequence.count('T')
-                count_g = dna_sequence.count('G')
-                count_c = dna_sequence.count('C')
-
-                length_prom = len(dna_sequence)
-                percentage_a = count_a / length_prom
-                percentage_t = count_t / length_prom
-                percentage_g = count_g / length_prom
-                percentage_c = count_c / length_prom
-
-                probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
-
-                random_sequences = IMO.generate_ranseq(probabilities, seq_length, progress_bar)
+                random_sequences = IMO.generate_ranseq([percentage_a, percentage_c, percentage_g, percentage_t],
+                                                       seq_length, progress_bar)
 
                 if calc_pvalue == 'ATGCProportion':
                     random_scores = {}
@@ -975,18 +984,8 @@ class IMO:
                     normalized_score = (score - min_score) / (max_score - min_score)
                     position = int(i) + 1
 
-                    count_a = dna_sequence.count('A')
-                    count_t = dna_sequence.count('T')
-                    count_g = dna_sequence.count('G')
-                    count_c = dna_sequence.count('C')
-
-                    length_prom = len(dna_sequence)
-                    percentage_a = count_a / length_prom
-                    percentage_t = count_t / length_prom
-                    percentage_g = count_g / length_prom
-                    percentage_c = count_c / length_prom
-
-                    background_freq = {'A': percentage_a, 'C': percentage_c, 'G': percentage_g, 'T': percentage_t}
+                    background_freq = {'A': percentage_a, 'C': percentage_c,
+                                       'G': percentage_g, 'T': percentage_t} if bgnf is None else bgnf
                     weight = IMO.calculate_weight(seq, pwm_weight[matrix_name], background_freq)
                     min_weight, max_weight = IMO.calculate_min_max_weights(pwm_weight[matrix_name], background_freq)
                     relative_weight = (weight - min_weight) / (max_weight - min_weight)
@@ -1158,10 +1157,10 @@ class IMO:
                 pwm[2, i] = 0
                 pwm[3, i] = 0
             else:
-                pwm[0, i] = counts['A'] / num_sequences
-                pwm[1, i] = counts['T'] / num_sequences
-                pwm[2, i] = counts['G'] / num_sequences
-                pwm[3, i] = counts['C'] / num_sequences
+                pwm[0, i] = counts['A']
+                pwm[1, i] = counts['T']
+                pwm[2, i] = counts['G']
+                pwm[3, i] = counts['C']
 
         bases = ['A', 'T', 'G', 'C']
         pwm_text = ""
