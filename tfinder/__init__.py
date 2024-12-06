@@ -1054,7 +1054,7 @@ class IMO:
             if tss_ge_distance is not None:
                 header.append("Rel Position")
                 header.append("Ch Position")
-            header += ["Sequence", "Rel Score", 'Score', 'Rel Weight', 'Weight']
+            header += ["Sequence", "Rel Score", 'Score', 'Rel Score Adj', 'Score Adj']
             if calc_pvalue is not None:
                 header.append("p-value")
             header += ["Strand", "Direction", "Gene", "Species", "Region"]
