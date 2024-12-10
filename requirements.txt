@@ -42,4 +42,3 @@ pillow~=10.3.0
 scipy
 matplotlib
 scikit-learn
-primer3-py

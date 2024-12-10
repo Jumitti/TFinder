@@ -99,29 +99,20 @@ def result_table_output(source):
 
     source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
     source['Beginning of sequences'] = source['Position']
-    if "Rel Position" in source:
-        source['From TSS/gene end'] = source['Rel Position']
 
     scale = alt.Scale(scheme='category10')
     color_scale = alt.Color("Gene_Region:N", scale=scale)
 
     gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
 
-    x_dropdown = alt.binding_select(
-        options=['Beginning of sequences', 'From TSS/gene end'] if "Rel Position" in source else [
-            'Beginning of sequences'],
-        name='(X-axis) Position from: '
-    )
-    xcol_param = alt.param(value='Beginning of sequences', bind=x_dropdown, name="x_axis")
-
     y_dropdown = alt.binding_select(
         options=['Rel Score', 'Rel Score Adj'],
-        name='(Y-axis) Metric: '
+        name='(Y-axis) Relative Score: '
     )
     ycol_param = alt.param(value='Rel Score', bind=y_dropdown, name="y_axis")
 
-    chart = alt.Chart(source).mark_circle().encode(
-        x=alt.X('x:Q', title='Position (bp)'),
+    base_chart = alt.Chart(source).mark_circle().encode(
+        x=alt.X('Beginning of sequences:Q', title='Position (bp)', axis=alt.Axis(labelAngle=0)),
         y=alt.Y('y:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
         tooltip=['Sequence', 'Position'] + (['Rel Position'] if "Rel Position" in source else []) + (
@@ -129,12 +120,25 @@ def result_table_output(source):
                     ['Rel Score Adj'] + ['Score Adj'] + (
                     ['p-value'] if 'p-value' in source else []) + ['Gene', 'Species', 'Region'],
         opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
-    ).transform_calculate(y=f'datum[{ycol_param.name}]', x=f'datum[{xcol_param.name}]'
-                          ).properties(
+    ).transform_calculate(
+        y=f'datum[{ycol_param.name}]'
+    ).properties(
         width=600, height=400
-    ).interactive().add_params(
-        gene_region_selection, ycol_param, xcol_param
     )
+
+    if "Rel Position" in source:
+        secondary_axis = alt.Chart(source).mark_rule(opacity=0).encode(
+            x=alt.X('Rel Position:Q', title='Position from TSS/Gene end (bp)',
+                    axis=alt.Axis(orient='top')),
+        ).interactive()
+
+        chart = alt.layer(base_chart, secondary_axis).resolve_scale(x='independent', y='shared')
+    else:
+        chart = base_chart
+
+    chart = chart.add_params(
+        gene_region_selection, ycol_param
+    ).interactive()
 
     st.altair_chart(chart, theme=None, use_container_width=True)
 
