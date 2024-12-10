@@ -94,11 +94,8 @@ def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
 
 def result_table_output(source):
     score_range = source['Rel Score'].astype(float)
-    ystart = score_range.min() - 0.02
-    ystop = score_range.max() + 0.02
 
     source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
-    source['Beginning of sequences'] = source['Position']
 
     scale = alt.Scale(scheme='category10')
     color_scale = alt.Color("Gene_Region:N", scale=scale)
@@ -112,8 +109,10 @@ def result_table_output(source):
     ycol_param = alt.param(value='Rel Score', bind=y_dropdown, name="y_axis")
 
     base_chart = alt.Chart(source).mark_circle().encode(
-        x=alt.X('Beginning of sequences:Q', title='Position (bp)', axis=alt.Axis(labelAngle=0)),
-        y=alt.Y('y:Q', axis=alt.Axis(title='Relative Score'), scale=alt.Scale(domain=[ystart, ystop])),
+        x=alt.X('Position:Q', title='Position (bp)', axis=alt.Axis(labelAngle=0),
+                scale=alt.Scale(domain=[source["Position"].min() - 100, source["Position"].max() + 100])),
+        y=alt.Y('y:Q', axis=alt.Axis(title='Relative Score'),
+                scale=alt.Scale(domain=[score_range.min() - 0.05, score_range.max() + 0.05])),
         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
         tooltip=['Sequence', 'Position'] + (['Rel Position'] if "Rel Position" in source else []) + (
             ['Ch Position'] if "Ch Position" in source else []) + ['Rel Score'] + ['Score'] +
@@ -129,10 +128,12 @@ def result_table_output(source):
     if "Rel Position" in source:
         secondary_axis = alt.Chart(source).mark_rule(opacity=0).encode(
             x=alt.X('Rel Position:Q', title='Position from TSS/Gene end (bp)',
-                    axis=alt.Axis(orient='top')),
+                    axis=alt.Axis(orient='top'),
+                    scale=alt.Scale(domain=[source['Rel Position'].min() - 100, source['Rel Position'].max() + 100])),
+
         ).interactive()
 
-        chart = alt.layer(base_chart, secondary_axis).resolve_scale(x='independent', y='shared')
+        chart = alt.layer(base_chart, secondary_axis).resolve_scale(x='independent').interactive()
     else:
         chart = base_chart
 
