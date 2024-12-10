@@ -44,52 +44,239 @@ A beta version of TFinder exists here. [![Streamlit App](https://static.streamli
 - Mozilla
 - Phone
 
-### Gene regulatory regions Extractor
-- Extract mutliple regulatory regions (promoter/terminator) using ENTREZ_GENE_ID or NCBI Gene Name in FASTA format ([NCBI API](https://www.ncbi.nlm.nih.gov/home/develop/api/))
-- Extract regions of sliced variant (NM, XM, NR, XR) and can extract all sliced variants from a gene name or ENTREZ_GENE_ID
-- Species: Human 🙋🏼‍♂️, Mouse 🖱, Rat 🐀, Drosophila 🦟, Zebrafish 🐟
-- Set Upstream and Downstream from Transcription Start Site (TSS) and Gene End
+# **Gene Regulatory Regions Extractor**
 
+### **Description**
+Gene Regulatory Regions Extractor is a tool designed to streamline the extraction of regulatory regions (promoters and terminators) for multiple species and transcript variants. The tool supports customization to extract regions based on gene name, transcript ID, or ENTREZ_GENE_ID, while providing flexibility in choosing genome assemblies.
 
-- Mode "Advance": allows to extract for the same gene the promoter and terminator regions for several species
+## **Features**
 
-### Individual Motif Finder
-- Support multiple DNA sequences in FASTA format
-- Find Individual Motif occurrences (like TFBS, enzymes restriction site, specific pattern... whatever you want)
-- Support IUPAC code
-- Generate PWM Individual Motif
-- Support PWM transcription factor of JASPAR ([JASPAR API](https://jaspar.genereg.net/api/v1/docs/))
-- Calculation of the distance of the found element to TSS or Gene End
-- Relative Score calculation:
+### **Supported Species**
+- **Human** 🙋🏼‍♂️  
+- **Mouse** 🖱  
+- **Rat** 🐀  
+- **Drosophila** 🦟  
+- **Zebrafish** 🐟  
+
+### **Extraction Capabilities**
+- **Flexible Input Options**:  
+  - Extract regulatory regions using:
+    - **ENTREZ_GENE_ID**
+    - **Gene Name**
+    - **Transcript ID** (e.g., NM, XM, NR, XR)
+- **Transcript Variants**:  
+  - Retrieve regions for specific transcript IDs.
+  - Option to extract all transcript variants for a single gene simultaneously.
+
+### **Genome Assembly Selection**
+Choose between the current or previous genome assemblies for greater flexibility:
+
+| **Species**     | **Current Genome Assembly** | **Previous Genome Assembly** |
+|------------------|-----------------------------|--------------------------------|
+| **Human**       | GrCh38                      | GrCh37                         |
+| **Mouse**       | GRCm39                      | GRCm38                         |
+| **Rat**         | GRCr8                       | mRatBN7.2                      |
+| **Drosophila**  | BDGP6                       | BDGP5                          |
+| **Zebrafish**   | GRCz11                      | GRCz10                         |
+
+### **Customizable Parameters**
+- Set **Upstream** and **Downstream** regions relative to:
+  - **Transcription Start Site (TSS)**  
+  - **Gene End**
+- Fine-tune the length of promoter and terminator regions.
+
+### **Advanced Mode**
+The **Advanced Mode** allows for:
+- Simultaneous extraction of promoter and terminator regions for multiple species.
+- Application of different parameters to each extraction task.
+
+Voici une version adaptée pour votre `README.md` :
+
+---
+
+## **Understanding the FASTA Format for Regulatory Regions**
+
+The FASTA format is used for representing nucleotide sequences, such as promoters and terminators. Below is a guide to help users understand the format and integrate their custom sequences.
+
+### **FASTA Example**
+```plaintext
+>NM_004562 PRKN | Homo sapiens chromosome 6, GRCh38.p14 Primary Assembly NC_000006.12 | Strand: minus | Promoter | TSS (on chromosome): 162727766 | TSS (on sequence): 2000
+TATGAATACAGGTTTAGGAAAAAACAGAAAAGAACCCCAACCAGTAAAAAAAAAATTAAAGTATAACATTAAAAAACATCAAAATTGTAAATATTGTGTAGAAGAAAAACTAAATGATTAACCTGAATGG...
+```
+
+### **Key Components**
+1. **Header Line (`>`):** Contains metadata about the sequence.
+   - `NM_004562 PRKN`: Transcript ID and gene name.
+   - `Homo sapiens chromosome 6`: Species and chromosome.
+   - `GRCh38.p14 Primary Assembly NC_000006.12`: Genome assembly version and chromosome accession.
+   - `Strand: minus`: Indicates the strand (`plus` or `minus`).
+   - `Promoter`: Specifies the region type (e.g., Promoter or Terminator).
+   - `TSS (on chromosome): 162727766`: Transcription start site (TSS) on the genome.
+   - `TSS (on sequence): 2000`: TSS relative to the sequence provided.
+
+2. **Sequence Line:** The nucleotide sequence in uppercase letters (`A`, `T`, `G`, `C`).
+
+---
+
+### **Custom FASTA Integration**
+
+#### **Adding Your Own Sequences**
+You can upload custom FASTA files with headers that include metadata. The application automatically extracts the following parameters:
+- **Gene name**: Derived from the first part of the header.
+- **Species**: Detected from predefined species names (*Homo sapiens*, *Mus musculus*, etc.).
+- **Region Type**: Identified as `Promoter` or `Terminator`.
+- **Strand**: Extracted as `plus` or `minus`.
+- **TSS (on chromosome)**: Parsed from the header if present.
+
+#### **Manually Adding Parameters**
+If your header lacks sufficient metadata, you can manually include fields in the following format:
+```plaintext
+>YourGeneID YourGeneName | YourSpecies | Strand: [plus/minus] | [Promoter/Terminator] | TSS (on chromosome): [TSS_position] | TSS (on sequence): [TSS_on_sequence]
+```
+
+If fields are missing, default values will be applied:
+- **Species**: `"n.d"` (not determined).
+- **Region Type**: `"n.d"`.
+- **Strand**: `"n.d"`.
+- **TSS (on chromosome)**: `"n.d"`.
+- **TSS (on sequence)**: `0`.
+
+---
+
+### **How Metadata is Processed**
+
+1. **Species Detection:** Compares species in the header to the supported list:
+   - *Homo sapiens*
+   - *Mus musculus*
+   - *Rattus norvegicus*
+   - *Drosophila melanogaster*
+   - *Danio rerio*
+
+   If no match is found, it defaults to `"n.d"`.
+
+2. **Region Type Detection:** Searches for `Promoter` or `Terminator`. Defaults to `"n.d"` if absent.
+
+3. **Strand Validation:** Ensures the strand is valid (`plus` or `minus`). Defaults to `"n.d"` otherwise.
+
+4. **TSS Extraction:** Extracts TSS coordinates if present in the header. Defaults to `0` if missing.
+
+---
+
+### **Custom FASTA Example**
+```plaintext
+>NM_123456 MyGene | Mus musculus | Strand: plus | Terminator | TSS (on chromosome): 123456789 | TSS (on sequence): 2000
+```
+
+This format ensures compatibility with the application and proper parameter extraction.
+
+### **Recommendation**
+- Include all relevant metadata in the header for precise parameter assignment.
+- Use consistent formatting to facilitate parsing by the tool.
+
+--- 
+
+Voici une version complète et adaptée pour votre `README.md` :  
+
+---
+
+## **Individual Motif Finder**
+
+The **Individual Motif Finder** tool allows for the identification of specific DNA motifs across multiple sequences. It offers flexible input formats, customizable parameters, and robust statistical analysis to ensure accurate motif detection.
+
+---
+
+### **Features**
+
+- **Multiple Input Options:**  
+  - Accepts multiple DNA sequences in FASTA format.  
+  - Supports motif detection using:
+    - **IUPAC codes** (e.g., `Y = C/T`).
+    - **JASPAR transcription factor IDs** via the [JASPAR API](https://jaspar.genereg.net/api/v1/docs/).  
+    - **Custom Position Weight Matrices (PWM)** generated from user-provided sequences or uploaded directly.  
+
+---
+
+### **Advanced Analysis Tools**
+- Detects motif occurrences (e.g., transcription factor binding sites, enzyme restriction sites, or custom patterns).
+- Calculates distances of detected motifs to **Transcription Start Sites (TSS)** or **Gene Ends** and **on Chromosome**.
+- Outputs results with **Relative Scores**, **Scores**, **Adjusted Scores**, and **P-values**.
+    - **Relative Score** is computed by comparing the motif score to the maximum and minimum values from a reference PWM matrix.
+    - **Score** is calculated as below
+    - **Score Adjusted** accounts for the background nucleotide frequencies from the sequence being studied.
+    - The **Relative Score Adjusted** normalizes this score using the adjusted scores.
+    - The **p-value** is calculated by generating 1,000,000 random sequences of the same length as the element being analyzed, based on the nucleotide frequencies (either fixed or derived from the sequence) and compares the relative score of the motif to the scores from these random sequences.
+- **Thresholds** for these calculations are automatically set for accurate analysis, though advanced users can manually adjust certain parameters for customization.
+- Generates **interactive graphs** and allows users to:
+  - Download results in `.xlsx` format.
+  - Share results via email.
+
+---
+
+### **Motif Scoring**
+
+#### **Score and Adjusted Score Calculations**
+- The **Score** is calculated using a **log-odds PSSM** (Position-Specific Scoring Matrix) generated from the PWM.  
+- **Score (and Relative Score)**: Assuming equal base distribution (0.25/base)
+- **Adjusted Score (Score Adj.) (and Relative Score Adj.):** Accounts for the nucleotide frequencies of the analyzed sequence rather than assuming equal base distribution (0.25/base).  
+- **Customization:**  
+  - The pseudocount for converting PWM to log-odds PSSM is handled automatically using the [Perl TFBS module](https://biopython.org/docs/dev/Tutorial/chapter_motifs.html#:~:text=Choice%20of%20pseudocounts%3A) but can be modified in the advanced settings.  
+  - Background nucleotide frequencies (0.25/base by default) can also be adjusted.
+
+#### **Score Formula:**
+The score for a k-mer sequence is computed as:  
 <p align="center">
-  <img src="https://latex.codecogs.com/svg.image?{\color{red}\text{Relative&space;Score}=\frac{\text{Score&space;of&space;the&space;element&space;found}-\text{Minimum&space;score&space;of&space;the&space;reference&space;matrix}}{\text{Maximum&space;score&space;of&space;the&space;reference&space;matrix}-\text{Minimum&space;score&space;of&space;the&space;reference&space;matrix}}}" alt="relscore equation">
+  <img src="https://latex.codecogs.com/svg.image?{\color{cyan}\text{Score} = \sum_{i=1}^{L} \log_2 \left( \frac{P_{\text{PWM}}(a_i, i)}{P_{\text{bg}}(a_i)} \right)
+}" alt="relscore equation">
 </p>
 
-- p-value: 1000000 random sequences of reactive element length are generated based on the proportion of A, T, G, C in the analysed sequence. p-value is the number of random sequences generated having a relative score greater than or equal to the relative score of the element found divided by the number of random sequences generated
+Where:
+- (P_(PWM)(a_i, i)): Probability of nucleotide (a_i) at position (i) based on the PWM (Position Weight Matrix).
+- (P_(bg)(a_i)): Background nucleotide probability for (a_i).
+- (L): Length of the sequence being analyzed.
+
+
+#### **Relative Score Formula:**
+The **Relative Score** normalizes the raw score to a scale of 0 to 1:
 <p align="center">
-  <img src="https://latex.codecogs.com/svg.image?{\color{red}\text{p-value}=\frac{\text{Nb&space;Relative&space;Score&space;random&space;kmer}\geq\text{Relative&space;Score&space;element&space;found}}{\text{Nb&space;random&space;kmer}}}" alt="relscore equation">
+  <img src="https://latex.codecogs.com/svg.image?{\color{cyan}\text{Relative Score} = \frac{\text{Score of the element found} - \text{Minimum score of the reference matrix}}{\text{Maximum score of the reference matrix} - \text{Minimum score of the reference matrix}}
+}" alt="relscore equation">
 </p>
 
-- Interactive graph
-- Download results as excel (.xlsx)
-- Export results via e-mail
+---
 
+### **P-value Calculation**
+
+#### **P-value Definition:**
+To estimate the accuracy of motif detection, a p-value is calculated by generating 1,000,000 random sequences of the same length as the detected motif:  
+- The **p-value** is the proportion of random sequences with a relative score greater than or equal to the detected motif's relative score.  
+
+#### **P-value Formula:**
+<p align="center">
+  <img src="https://latex.codecogs.com/svg.image?{\color{cyan}\text{p-value} = \frac{\text{Number of random k-mers with Relative Score} \geq \text{Relative Score of the element found}}{\text{Total number of random k-mers}}
+}" alt="relscore equation">
+</p>
+
+#### **Customizable Background Frequencies:**
+- Users can select between:  
+  - **Fixed nucleotide frequencies** (default: 0.25/base).  
+  - **Nucleotide frequencies derived from the analyzed sequence.**  
+
+---
+
+### **Visualization and Output**
+- **Interactive Graphs:** View motif occurrences and distances to TSS or Gene End.  
+- **Download Options:** Save results as `.xlsx` files for further analysis.  
+- **Email Integration:** Export results directly via email.
+- 
+---
 
 ![graph_webui](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/promtermoriginal.png)
 ![graph_webui](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/bsfMS.png)
 ![graph_webui](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/Graph%20WebUI.png)
 
-## Working on...
-
-- Cleaning code
-- Fixing bug
-- Improvements...
-
 ## More
 
 Report an issue/bug 🆘 ➡️ [Click here](https://github.com/Jumitti/TFinder/issues/new/choose)
-
-Want to talk ? 🙋🏼‍♂️ -> [Chat Room](https://github.com/Jumitti/TFinder/discussions)
 
 Banner was generated with [Adobe Firefly](https://firefly.adobe.com/inspire/images)
 
