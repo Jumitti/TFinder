@@ -145,6 +145,20 @@ for i in range(4):
     st.markdown('#')
 st.markdown(footer, unsafe_allow_html=True)
 
+if 'LOCAL' not in st.session_state:
+    local_test = platform.processor()
+    print("Platform:", local_test)
+    if local_test == "":
+        st.session_state["LOCAL"] = 'False'
+    else:
+        st.session_state["LOCAL"] = 'True'
+
+if st.session_state["LOCAL"] == 'False':
+    if st.secrets["message_from_god"] != "":
+        st.warning(st.secrets["message_from_god"])
+    if st.secrets['ncbi_error'] == "True":
+        st.error("⚠ NCBI server maintenance, problems and slowdowns may be observed")
+
 # streamlit_analytics.start_tracking()
 
 # Credit
@@ -239,25 +253,12 @@ st.sidebar.markdown(
 
 # streamlit_analytics.stop_tracking()
 # views = streamlit_analytics.main.counts["total_pageviews"]
-if 'LOCAL' not in st.session_state:
-    local_test = platform.processor()
-    print("Platform:", local_test)
-    if local_test == "":
-        st.session_state["LOCAL"] = 'False'
-    else:
-        st.session_state["LOCAL"] = 'True'
 
 if st.session_state["LOCAL"] == 'True':
     st.sidebar.markdown(f"TFinder Local Version")
 else:
     unique_users = st.secrets['unique_users']
     st.sidebar.markdown(f"Unique users 👥: {unique_users}")
-    st.session_state["LOCAL"] = 'False'
-    print(st.secrets["message_from_god"], st.secrets['ncbi_error'])
-    if st.secrets["message_from_god"] != "":
-        st.warning(st.secrets["message_from_god"])
-    if st.secrets['ncbi_error'] == "True":
-        st.error("⚠ NCBI server maintenance, problems and slowdowns may be observed")
 
 
 modal = Modal(key="TFinder Key", title="Disclaimers - Welcome to TFinder", padding=50, max_width=900)
