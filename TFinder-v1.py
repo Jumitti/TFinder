@@ -253,6 +253,7 @@ else:
     unique_users = st.secrets['unique_users']
     st.sidebar.markdown(f"Unique users 👥: {unique_users}")
     st.session_state["LOCAL"] = 'False'
+    print(st.secrets["message_from_god"], st.secrets['ncbi_error'])
     if st.secrets["message_from_god"] != "":
         st.warning(st.secrets["message_from_god"])
     if st.secrets['ncbi_error'] == "True":
