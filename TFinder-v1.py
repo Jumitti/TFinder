@@ -93,20 +93,20 @@ st.markdown(footer_style, unsafe_allow_html=True)
 
 HOME = 'Home'
 APPLICATION = 'Tools/Software'
-RESOURCE = 'Resources'
+# RESOURCE = 'Resources'
 CONTACT = 'Contact'
 
 tabs = [
     HOME,
     APPLICATION,
-    RESOURCE,
+    # RESOURCE,
     CONTACT,
 ]
 
 option_data = [
     {'icon': "🏠", 'label': HOME},
     {'icon': "🖥️", 'label': APPLICATION},
-    {'icon': "📑", 'label': RESOURCE},
+    # {'icon': "📑", 'label': RESOURCE},
     {'icon': "✉️", 'label': CONTACT},
 ]
 
@@ -135,8 +135,8 @@ if chosen_tab == HOME:
 elif chosen_tab == APPLICATION:
     allapp_page()
 
-elif chosen_tab == RESOURCE:
-    resource_page()
+# elif chosen_tab == RESOURCE:
+#     resource_page()
 
 elif chosen_tab == CONTACT:
     contact_page()
@@ -148,12 +148,14 @@ st.markdown(footer, unsafe_allow_html=True)
 # streamlit_analytics.start_tracking()
 
 # Credit
+st.logo("img/TFinder_logo_site.png")
 st.sidebar.image("img/TFinder_logo_site.png")
 
 # Help
 st.sidebar.title("Help")
 # with st.sidebar.expander("Video tutorials"):
 #     st.write('coming soon')
+st.sidebar.markdown("FULL DOCUMENTATION [HERE](https://jumitti.notion.site/tfinder?pvs=4)")
 
 with st.sidebar.expander("Regulatory regions extractor"):
     st.subheader("Gene ID:")
@@ -241,19 +243,18 @@ if 'LOCAL' not in st.session_state:
     local_test = platform.processor()
     print("Platform:", local_test)
     if local_test == "":
-        unique_users = st.secrets['unique_users']
-        st.sidebar.markdown(f"Unique users 👥: {unique_users}")
         st.session_state["LOCAL"] = 'False'
-        if st.secrets['ncbi_error'] == "True":
-            st.error("⚠ NCBI server maintenance, problems and slowdowns may be observed")
     else:
         st.session_state["LOCAL"] = 'True'
+
 if st.session_state["LOCAL"] == 'True':
     st.sidebar.markdown(f"TFinder Local Version")
 else:
     unique_users = st.secrets['unique_users']
     st.sidebar.markdown(f"Unique users 👥: {unique_users}")
     st.session_state["LOCAL"] = 'False'
+    if st.secrets["message_from_god"] != "":
+        st.warning(st.secrets["message_from_god"])
     if st.secrets['ncbi_error'] == "True":
         st.error("⚠ NCBI server maintenance, problems and slowdowns may be observed")
 

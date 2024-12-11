@@ -111,9 +111,9 @@ def result_table_output(source):
 
     base_chart = alt.Chart(source).mark_circle().encode(
         x=alt.X('Position:Q', title='Position (bp)', axis=alt.Axis(labelAngle=0),
-                scale=alt.Scale(domain=[source["Position"].min() - 100, source["Position"].max() + 100])),
+                scale=alt.Scale(domain=[source["Position"].min() - 25, source["Position"].max() + 25])),
         y=alt.Y('y:Q', axis=alt.Axis(title='Relative Score'),
-                scale=alt.Scale(domain=[score_range.min() - 0.05, score_range.max() + 0.05])),
+                scale=alt.Scale(domain=[min(source["Rel Score"].astype(float).min(), source["Rel Score Adj"].astype(float).min()) - 0.05, max(source["Rel Score"].astype(float).max(), source["Rel Score Adj"].astype(float).max()) + 0.05])),
         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
         tooltip=['Sequence', 'Position'] + (['Rel Position'] if "Rel Position" in source else []) + (
             ['Ch Position'] if "Ch Position" in source else []) + ['Rel Score'] + ['Score'] +
@@ -130,7 +130,7 @@ def result_table_output(source):
         secondary_axis = alt.Chart(source).mark_rule(opacity=0).encode(
             x=alt.X('Rel Position:Q', title='Position from TSS/Gene end (bp)',
                     axis=alt.Axis(orient='top'),
-                    scale=alt.Scale(domain=[source['Rel Position'].min() - 100, source['Rel Position'].max() + 100])),
+                    scale=alt.Scale(domain=[source['Rel Position'].min() - 25, source['Rel Position'].max() + 25])),
 
         ).interactive()
 
