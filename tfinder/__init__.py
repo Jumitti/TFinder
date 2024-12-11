@@ -291,69 +291,6 @@ class NCBIdna:
                 print(bcolors.FAIL + f"Error {response.status_code}: {response.text}" + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
 
-    # @staticmethod
-    # def extract_genomic_info(gene_id, gene_info, genome_version):
-    #     if gene_info and 'result' in gene_info and gene_id in gene_info['result']:
-    #         accession_dict = {}
-    #         gene_details = gene_info['result'][gene_id]
-    #
-    #         time.sleep(1)
-    #
-    #         location_hist = gene_details.get('locationhist', [])
-    #         if len(location_hist) == 0:
-    #             location_hist = gene_details.get('genomicinfo', [])
-    #         for loc in location_hist:
-    #             nc_accver = loc.get('chraccver')
-    #             chrstart = loc.get('chrstart')
-    #             chrstop = loc.get('chrstop')
-    #
-    #             if nc_accver:
-    #                 base_accession = nc_accver
-    #                 if base_accession not in accession_dict:
-    #                     accession_dict[base_accession] = (chrstart, chrstop)
-    #                 else:
-    #                     existing_start, existing_stop = accession_dict[base_accession]
-    #                     accession_dict[base_accession] = (min(existing_start, chrstart), max(existing_stop, chrstop))
-    #
-    #         nc_dict = accession_dict
-    #
-    #         nc_dict = {base_accver: (chrstart, chrstop) for base_accver, (chrstart, chrstop) in nc_dict.items() if
-    #                    base_accver.startswith(("NC_", "NT_"))}
-    #         print(nc_dict)
-    #         if nc_dict:
-    #             first_base = next(iter(nc_dict)).split('.')[0]
-    #
-    #             nc_dict = {base_accver: (chrstart, chrstop) for base_accver, (chrstart, chrstop) in nc_dict.items() if
-    #                        base_accver.split('.')[0] == first_base}
-    #
-    #         max_version = -1
-    #         max_accver = None
-    #         max_coords = None
-    #         min_version = float('inf')
-    #         min_accver = None
-    #         min_coords = None
-    #
-    #         for base_accver in nc_dict.keys():
-    #             print(nc_dict)
-    #             version = int(base_accver.split('.')[1])
-    #
-    #             if version > max_version:
-    #                 max_version = version
-    #                 max_accver = base_accver
-    #                 max_coords = nc_dict[base_accver]
-    #
-    #             if version < min_version:
-    #                 min_version = version
-    #                 min_accver = base_accver
-    #                 min_coords = nc_dict[base_accver]
-    #         print(min_accver, max_accver)
-    #         if genome_version != "current":
-    #             title = NCBIdna.fetch_nc_info(min_accver)
-    #             return title, min_accver, min_coords[0], min_coords[1]
-    #         else:
-    #             title = NCBIdna.fetch_nc_info(max_accver)
-    #             return title, max_accver, max_coords[0], max_coords[1]
-
     @staticmethod
     def extract_genomic_info(gene_id, gene_info, genome_version, species=None):
         if gene_info and 'result' in gene_info and gene_id in gene_info['result']:

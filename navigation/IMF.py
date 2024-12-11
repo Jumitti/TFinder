@@ -34,6 +34,7 @@ from Bio import motifs
 from stqdm import stqdm
 
 from tfinder import IMO
+from navigation.regulatory_regions_extractor import fasta
 
 
 def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
@@ -144,97 +145,86 @@ def result_table_output(source):
     st.altair_chart(chart, theme=None, use_container_width=True)
 
 
-def BSF_page():
-    st.subheader(':blue[Step 2] Binding Sites Finder')
-    promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
-    with promcol1:
-        st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-        if 'result_promoter_text' not in st.session_state:
-            result_promoter_text = ''
-            st.session_state['result_promoter_text'] = result_promoter_text
-        dna_sequence = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
-                                    value=st.session_state['result_promoter_text'],
-                                    placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
-                                    label_visibility='collapsed', height=125)
+def BSF_page(aio=False, dna_sequence=None):
+    if aio is False:
+        dna_sequence = fasta()
 
-    with promcol2:
-        st.markdown('')
-        st.markdown('')
-        st.markdown('')
-        current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        txt_output = f"{dna_sequence}"
-        st.download_button(label="💾 Download (.fasta)", data=txt_output,
-                           file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain")
+    analyse(dna_sequence)
 
-    # Promoter detection information
-    lines = dna_sequence
-    dna_sequences = []
-    if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
-        dna_sequence = lines.upper()
-        isfasta = IMO.is_dna(dna_sequence)
-        name = "n.d."
-        species = "n.d"
-        region = "n.d"
-        strand = "n.d"
-        tss_ch = 0
-        dna_sequences.append((name, dna_sequence, species, region, strand, tss_ch))
-    elif lines.startswith(">"):
-        lines = dna_sequence.split("\n")
-        i = 0
-        while i < len(lines):
-            line = lines[i]
-            if line.startswith(">"):
-                species_prom = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster',
-                                'Danio rerio']
-                promoter_name = line[1:]
-                words = promoter_name.lstrip('>').split()
-                pattern = r">(\w+)\s+(\w+)\s+\|"
-                match = re.search(pattern, line)
-                if match:
-                    name = words[0] + ' ' + words[1]
-                else:
-                    name = words[0]
-                for species in species_prom:
-                    if species.lower() in promoter_name.lower():
-                        found_species = species
-                        break
+
+def analyse(dna_sequence=None):
+    if dna_sequence is not None:
+        # Promoter detection information
+        lines = dna_sequence
+        dna_sequences = []
+        if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
+            dna_sequence = lines.upper()
+            isfasta = IMO.is_dna(dna_sequence)
+            name = "n.d."
+            species = "n.d"
+            region = "n.d"
+            strand = "n.d"
+            tss_ch = 0
+            dna_sequences.append((name, dna_sequence, species, region, strand, tss_ch))
+        elif lines.startswith(">"):
+            lines = dna_sequence.split("\n")
+            i = 0
+            while i < len(lines):
+                line = lines[i]
+                if line.startswith(">"):
+                    species_prom = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster',
+                                    'Danio rerio']
+                    promoter_name = line[1:]
+                    words = promoter_name.lstrip('>').split()
+                    pattern = r">(\w+)\s+(\w+)\s+\|"
+                    match = re.search(pattern, line)
+                    if match:
+                        name = words[0] + ' ' + words[1]
                     else:
-                        found_species = "n.d"
-                regions_prom = ['Promoter', 'Terminator']
-                for regions in regions_prom:
-                    if regions.lower() in promoter_name.lower():
-                        region = regions[:4] + "."
-                        break
-                    else:
-                        region = "n.d"
-                dna_sequence = lines[i + 1].upper()
-                isfasta = IMO.is_dna(dna_sequence)
+                        name = words[0]
+                    for species in species_prom:
+                        if species.lower() in promoter_name.lower():
+                            found_species = species
+                            break
+                        else:
+                            found_species = "n.d"
+                    regions_prom = ['Promoter', 'Terminator']
+                    for regions in regions_prom:
+                        if regions.lower() in promoter_name.lower():
+                            region = regions[:4] + "."
+                            break
+                        else:
+                            region = "n.d"
+                    dna_sequence = lines[i + 1].upper()
+                    isfasta = IMO.is_dna(dna_sequence)
 
-                match = re.search(r"Strand:\s*(\w+)", line)
-                if match:
-                    strand = match.group(1).lower()
-                    if strand not in ["plus", "minus"]:
+                    match = re.search(r"Strand:\s*(\w+)", line)
+                    if match:
+                        strand = match.group(1).lower()
+                        if strand not in ["plus", "minus"]:
+                            strand = "n.d"
+                    else:
                         strand = "n.d"
-                else:
-                    strand = "n.d"
 
-                match = re.search(r"TSS \(on chromosome\):\s*(\d+)", line)
-                if match:
-                    tss_ch = match.group(1)
-                else:
-                    tss_ch = 0
+                    match = re.search(r"TSS \(on chromosome\):\s*(\d+)", line)
+                    if match:
+                        tss_ch = match.group(1)
+                    else:
+                        tss_ch = 0
 
-                dna_sequences.append((name, dna_sequence, found_species, region, strand, tss_ch))
-                i += 1
-            else:
-                i += 1
-    elif not lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n", "I", "i", "")):
-        isfasta = True
+                    dna_sequences.append((name, dna_sequence, found_species, region, strand, tss_ch))
+                    i += 1
+                else:
+                    i += 1
+        elif not lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n", "I", "i", "")):
+            isfasta = True
+        else:
+            isfasta = False
+
+        total_sequences_region_length = sum(len(dna_sequence) for _, dna_sequence, _, _, _, _ in dna_sequences)
+        total_sequences = len(dna_sequences)
     else:
         isfasta = False
-
-    total_sequences_region_length = sum(len(dna_sequence) for _, dna_sequence, _, _, _, _ in dna_sequences)
-    total_sequences = len(dna_sequences)
 
     # RE entry
     REcol1, REcol2 = st.columns([0.30, 0.70])
@@ -547,18 +537,19 @@ def BSF_page():
         else:
             button = False
 
-    sequence_iteration = analyse * total_sequences_region_length
-    num_random_seqs = 1000000
-    if total_sequences <= 10:
-        random_gen = total_sequences * num_random_seqs
-    else:
-        random_gen = num_random_seqs
-    random_score = random_gen * analyse
+    if dna_sequence is not None:
+        sequence_iteration = analyse * total_sequences_region_length
+        num_random_seqs = 1000000
+        if total_sequences <= 10:
+            random_gen = total_sequences * num_random_seqs
+        else:
+            random_gen = num_random_seqs
+        random_score = random_gen * analyse
 
-    if pvalue:
-        iteration = sequence_iteration + random_gen + random_score
-    else:
-        iteration = sequence_iteration
+        if pvalue:
+            iteration = sequence_iteration + random_gen + random_score
+        else:
+            iteration = sequence_iteration
 
     st.markdown("")
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬",

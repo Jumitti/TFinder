@@ -28,6 +28,12 @@ from tfinder import NCBIdna
 
 
 def prom_extractor_page():
+    result = extract()
+    dna_sequence = fasta(result)
+    return dna_sequence
+
+
+def extract():
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
     colprom1, colprom2 = st.columns([0.8, 1.2], gap="small")
 
@@ -368,6 +374,8 @@ def prom_extractor_page():
                 elif ncbi_status is False:
                     st.warning("⚠ NCBI servers are under maintenance or have an error")
 
+
+def fasta(result_promoter_text=None):
     # Promoter output state
     st.divider()
     promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
@@ -388,3 +396,5 @@ def prom_extractor_page():
         txt_output = f"{dna_sequence}"
         st.download_button(label="💾 Download (.fasta)", data=txt_output,
                            file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain")
+
+    return dna_sequence
