@@ -129,6 +129,20 @@ st.success("If the application does not work, here are other deployments:\n"
            f"   - TFinder on [Health Universe](https://www.healthuniverse.com/): [https://apps.healthuniverse.com/nhu-dxv-ktj](https://apps.healthuniverse.com/nhu-dxv-ktj)\n"
            f"   - (BETA) TFinder: [https://tfinder-beta.streamlit.app/](https://tfinder-beta.streamlit.app/)\n")
 
+if 'LOCAL' not in st.session_state:
+    local_test = platform.processor()
+    print("Platform:", local_test)
+    if local_test == "":
+        st.session_state["LOCAL"] = 'False'
+    else:
+        st.session_state["LOCAL"] = 'True'
+
+if st.session_state["LOCAL"] == 'False':
+    if st.secrets["message_from_god"] != "":
+        st.warning(st.secrets["message_from_god"])
+    if st.secrets['ncbi_error'] == "True":
+        st.error("⚠ NCBI server maintenance, problems and slowdowns may be observed")
+
 if chosen_tab == HOME:
     home_page()
 
@@ -144,20 +158,6 @@ elif chosen_tab == CONTACT:
 for i in range(4):
     st.markdown('#')
 st.markdown(footer, unsafe_allow_html=True)
-
-if 'LOCAL' not in st.session_state:
-    local_test = platform.processor()
-    print("Platform:", local_test)
-    if local_test == "":
-        st.session_state["LOCAL"] = 'False'
-    else:
-        st.session_state["LOCAL"] = 'True'
-
-if st.session_state["LOCAL"] == 'False':
-    if st.secrets["message_from_god"] != "":
-        st.warning(st.secrets["message_from_god"])
-    if st.secrets['ncbi_error'] == "True":
-        st.error("⚠ NCBI server maintenance, problems and slowdowns may be observed")
 
 # streamlit_analytics.start_tracking()
 
