@@ -26,70 +26,45 @@ The in-silico research of TFBS can be tedious and time-consuming at various stag
 
 TFinder is an ultra-intuitive, easy-to-use and fast analysis open source and free tool that allows both the retrieval and search of TFBS in a unique site. TFinder allows the analysis of an unlimited number of genes; the selection of up to five different species (human, mouse, rat, drosophila, zebrafish); the choice and examination of either promoter or terminator gene regions; the configuration of an upstream downstream window of sequence analysis and the search of TFBS in different formats including IUPAC code, a JASPAR ID or a Position Weight Matrix. TFinder, searches for TFBS on the sense and antisense strand but also considers the search with the complementary forms. The software takes care of everything in record time.
 
+## Features - FULL DOCUMENTATION [HERE](https://jumitti.notion.site/tfinder?pvs=4)
+
+### Promoter and Terminator Extractor
+
+- Support gene name (for Human, Mouse, Rat, Drosophila, Zebrafish), Gene ID and transcripts (NM_, XM_, NR_, XR_)
+- Support Current genome version and previous (see [documentation](https://www.notion.so/jumitti/Promoter-and-Terminator-Extraction-15973c6e8b9c8016ad21d5f070eac965?pvs=4#15973c6e8b9c80efae51fc76c56bbc06))
+- Support extraction of all transcripts variants
+- Extract promoter and/or terminator of gene by setting upstream and downstream from TSS/gene end
+- Extract unlimited number of gene
+- Advance mode for settings (ex: extract promoter and terminator at the same time)
+- Speed: 12 sequence / min
+
+### Motif Finder
+
+- Support IUPAC individual motif
+- Support JASPAR ID
+- Support Position Weight Matrix
+- Create a PWM from FASTA sequence
+- Calcul of Score (Weight) and normalization for better interpretation
+- Automatic Threshold function to Score normalized
+- (Pseudocount, background nucleotide frequencies... can be set by users)
+- p-value dependant from nucleotide frequencies from the sequence or imposed
+- Speed: 80kb/sec (without p-value)
+
 ## How to install/use
 
 **No installation is required**. You can access it by clicking here [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tfinder-ipmc.streamlit.app/)
 
 A beta version of TFinder exists here. [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tfinder-jti99236fxoncgfqnhrcrw.streamlit.app/)
 
-
-## Functions
-
-### Browser compatibility
-
-- Opera GX
-- Chrome (also Chromium)
-- Safari
-- Edge
-- Mozilla
-- Phone
-
-### Gene regulatory regions Extractor
-- Extract mutliple regulatory regions (promoter/terminator) using ENTREZ_GENE_ID or NCBI Gene Name in FASTA format ([NCBI API](https://www.ncbi.nlm.nih.gov/home/develop/api/))
-- Extract regions of sliced variant (NM, XM, NR, XR) and can extract all sliced variants from a gene name or ENTREZ_GENE_ID
-- Species: Human 🙋🏼‍♂️, Mouse 🖱, Rat 🐀, Drosophila 🦟, Zebrafish 🐟
-- Set Upstream and Downstream from Transcription Start Site (TSS) and Gene End
-
-
-- Mode "Advance": allows to extract for the same gene the promoter and terminator regions for several species
-
-### Individual Motif Finder
-- Support multiple DNA sequences in FASTA format
-- Find Individual Motif occurrences (like TFBS, enzymes restriction site, specific pattern... whatever you want)
-- Support IUPAC code
-- Generate PWM Individual Motif
-- Support PWM transcription factor of JASPAR ([JASPAR API](https://jaspar.genereg.net/api/v1/docs/))
-- Calculation of the distance of the found element to TSS or Gene End
-- Relative Score calculation:
-<p align="center">
-  <img src="https://latex.codecogs.com/svg.image?{\color{red}\text{Relative&space;Score}=\frac{\text{Score&space;of&space;the&space;element&space;found}-\text{Minimum&space;score&space;of&space;the&space;reference&space;matrix}}{\text{Maximum&space;score&space;of&space;the&space;reference&space;matrix}-\text{Minimum&space;score&space;of&space;the&space;reference&space;matrix}}}" alt="relscore equation">
-</p>
-
-- p-value: 1000000 random sequences of reactive element length are generated based on the proportion of A, T, G, C in the analysed sequence. p-value is the number of random sequences generated having a relative score greater than or equal to the relative score of the element found divided by the number of random sequences generated
-<p align="center">
-  <img src="https://latex.codecogs.com/svg.image?{\color{red}\text{p-value}=\frac{\text{Nb&space;Relative&space;Score&space;random&space;kmer}\geq\text{Relative&space;Score&space;element&space;found}}{\text{Nb&space;random&space;kmer}}}" alt="relscore equation">
-</p>
-
-- Interactive graph
-- Download results as excel (.xlsx)
-- Export results via e-mail
-
+## Image
 
 ![graph_webui](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/promtermoriginal.png)
 ![graph_webui](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/bsfMS.png)
 ![graph_webui](https://raw.githubusercontent.com/Jumitti/TFinder/main/img/Graph%20WebUI.png)
 
-## Working on...
-
-- Cleaning code
-- Fixing bug
-- Improvements...
-
 ## More
 
 Report an issue/bug 🆘 ➡️ [Click here](https://github.com/Jumitti/TFinder/issues/new/choose)
-
-Want to talk ? 🙋🏼‍♂️ -> [Chat Room](https://github.com/Jumitti/TFinder/discussions)
 
 Banner was generated with [Adobe Firefly](https://firefly.adobe.com/inspire/images)
 

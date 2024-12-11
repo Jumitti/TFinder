@@ -145,3 +145,4 @@ def resource_page():
     with dispcol2:
         st.image('img/dispersion.jpg',
                  caption='Dispersion coefficient of human genome: 0.17; dispersion coefficient of FiMO: 0.1')
+

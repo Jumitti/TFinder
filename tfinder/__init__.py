@@ -24,6 +24,7 @@ import time
 import xml.etree.ElementTree as ET
 
 import altair as alt
+import math
 import logomaker
 import numpy as np
 import pandas as pd
@@ -35,6 +36,8 @@ from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import StandardScaler
 from tqdm import tqdm
+from Bio import motifs
+from Bio.motifs.jaspar import calculate_pseudocounts
 
 
 class bcolors:
@@ -60,13 +63,13 @@ class NCBIdna:
                  prom_term,
                  upstream,
                  downstream,
-                 species=None, genome_version="Current", all_slice_forms=None):
+                 species=None, genome_version="current", all_slice_forms=None):
         self.gene_id = gene_id
         self.prom_term = prom_term if prom_term is not None else "promoter"
         self.upstream = upstream if upstream is not None else -2000
         self.downstream = downstream if downstream is not None else 2000
         self.species = species if species is not None else "human"
-        self.genome_version = genome_version if genome_version is not None else "Current"
+        self.genome_version = genome_version if genome_version is not None else "current"
         self.all_slice_forms = True if all_slice_forms is True else False
 
     @staticmethod
@@ -160,7 +163,7 @@ class NCBIdna:
             if self.all_slice_forms:
                 all_variants, message = NCBIdna.all_variant(entrez_id)
                 if all_variants == "Error 200":
-                    all_variants = [(variant, gene_name, chraccver, chrstart, chrstop, species_API)]
+                    all_variants = [(variant, gene_name, chraccver, exon_coords, normalized_exon_coords, species_API)]
 
         prom_term = self.prom_term.lower()
         if prom_term not in ['promoter', 'terminator']:
@@ -189,7 +192,9 @@ class NCBIdna:
 
         elif self.all_slice_forms:
             result_compil = []
-            for variant, gene_name, chraccver, chrstart, chrstop, species_API in all_variants:
+            for variant, gene_name, chraccver, exon_coords, _, species_API in all_variants:
+                chrstart = exon_coords[0][0]
+                chrstop = exon_coords[-1][1]
                 dna_sequence = NCBIdna.get_dna_sequence(gene_name, prom_term, upstream, downstream, chraccver, chrstart,
                                                         chrstop)
                 if prom_term == 'promoter':
@@ -240,7 +245,7 @@ class NCBIdna:
 
     @staticmethod
     # Get gene information
-    def get_gene_info(entrez_id, genome_version="Current", from_id=True, gene_name_error=None):
+    def get_gene_info(entrez_id, genome_version="current", from_id=True, gene_name_error=None):
         global headers
 
         while True:
@@ -252,9 +257,11 @@ class NCBIdna:
                 try:
                     gene_info = response_data['result'][str(entrez_id)]
                     gene_name = gene_info['name']
-                    title, chraccver, chrstart, chrstop = NCBIdna.extract_genomic_info(entrez_id, response_data,
-                                                                                       genome_version)
                     species_API = gene_info['organism']['scientificname']
+
+                    title, chraccver, chrstart, chrstop = NCBIdna.extract_genomic_info(entrez_id, response_data,
+                                                                                       genome_version, species_API)
+
 
                     if from_id:
                         variant = NCBIdna.all_variant(entrez_id, from_id=True)
@@ -285,7 +292,7 @@ class NCBIdna:
                 time.sleep(random.uniform(0.25, 0.5))
 
     @staticmethod
-    def extract_genomic_info(gene_id, gene_info, genome_version):
+    def extract_genomic_info(gene_id, gene_info, genome_version, species=None):
         if gene_info and 'result' in gene_info and gene_id in gene_info['result']:
             accession_dict = {}
             gene_details = gene_info['result'][gene_id]
@@ -295,6 +302,7 @@ class NCBIdna:
             location_hist = gene_details.get('locationhist', [])
             if len(location_hist) == 0:
                 location_hist = gene_details.get('genomicinfo', [])
+
             for loc in location_hist:
                 nc_accver = loc.get('chraccver')
                 chrstart = loc.get('chrstart')
@@ -313,9 +321,22 @@ class NCBIdna:
             nc_dict = {base_accver: (chrstart, chrstop) for base_accver, (chrstart, chrstop) in nc_dict.items() if
                        base_accver.startswith(("NC_", "NT_"))}
 
+            if species == "Rattus norvegicus" and 'locationhist' in gene_details:
+                location_hist = gene_details['locationhist']
+                rs_annotations = [
+                    loc for loc in location_hist if loc.get('annotationrelease', "").startswith("RS_")
+                ]
+                rs_annotations.sort(key=lambda x: int(x['annotationrelease'].split('_')[1]))
+                if rs_annotations:
+                    selected_annotation = rs_annotations[-1] if genome_version == "current" else rs_annotations[0]
+                    selected_nc_accver = selected_annotation.get('chraccver')
+                    if selected_nc_accver:
+                        nc_dict = {
+                            selected_nc_accver: (selected_annotation['chrstart'], selected_annotation['chrstop'])
+                        }
+
             if nc_dict:
                 first_base = next(iter(nc_dict)).split('.')[0]
-
                 nc_dict = {base_accver: (chrstart, chrstop) for base_accver, (chrstart, chrstop) in nc_dict.items() if
                            base_accver.split('.')[0] == first_base}
 
@@ -339,7 +360,7 @@ class NCBIdna:
                     min_accver = base_accver
                     min_coords = nc_dict[base_accver]
 
-            if genome_version != "Current":
+            if genome_version != "current":
                 title = NCBIdna.fetch_nc_info(min_accver)
                 return title, min_accver, min_coords[0], min_coords[1]
             else:
@@ -532,16 +553,16 @@ class NCBIdna:
                             break
 
                     for variant in variants:
-                        start_coords = []
-                        end_coords = []
+                        exon_coords = []  # Liste pour stocker toutes les paires (start, end)
                         found_variant = False
                         k_found = False
                         orientation = ""
+
                         for elem in root.iter():
                             if elem.tag == "Gene-commentary_accession" and elem.text != variant:
                                 if elem.text == chromosome:
                                     k_found = True
-                                elif len(start_coords) < 2 and len(end_coords) < 2:
+                                elif len(exon_coords) == 0:
                                     continue
                                 else:
                                     break
@@ -549,9 +570,10 @@ class NCBIdna:
                             if k_found and elem.tag == "Gene-commentary_accession":
                                 found_variant = True if elem.text == variant else False
                             elif k_found and found_variant and elem.tag == "Seq-interval_from":
-                                start_coords.append(elem.text)
+                                start = int(elem.text)  # Ajuster pour 1-based
                             elif k_found and found_variant and elem.tag == "Seq-interval_to":
-                                end_coords.append(elem.text)
+                                end = int(elem.text)  # Ajuster pour 1-based
+                                exon_coords.append((start, end))  # Ajouter le couple (start, end) pour chaque exon
                             elif k_found and found_variant and elem.tag == "Na-strand" and orientation == "":
                                 orientation += elem.attrib.get("value")
 
@@ -561,14 +583,24 @@ class NCBIdna:
                             elif elem.tag == 'Gene-ref_locus':
                                 gene_name = elem.text
 
-                        if orientation != "minus":
-                            chrstart = int(start_coords[0]) + 1
-                            chrstop = int(end_coords[-1]) + 1
-                        else:
-                            chrstart = int(end_coords[0]) + 1
-                            chrstop = int(start_coords[-1]) + 1
+                        # Si des exons sont trouvés, normalisez les coordonnées
+                        if exon_coords:
 
-                        all_variants.append((variant, gene_name, chraccver, chrstart, chrstop, species_API))
+                            if orientation == "minus":
+                                # Inverser les exons pour le brin négatif
+                                exon_coords = [(end, start) for start, end in exon_coords]
+
+                            # La première coordonnée du premier exon (start) devient la référence pour la normalisation
+                            first_exon_start = exon_coords[0][0]
+
+                            # Normalisation: soustraction de la première coordonnée
+                            normalized_exon_coords = [
+                                (abs(start - first_exon_start), abs(end - first_exon_start)) for start, end in
+                                exon_coords]
+
+                            # Ajouter les coordonnées chromosomiques et normalisées à la liste
+                            all_variants.append(
+                                (variant, gene_name, chraccver, exon_coords, normalized_exon_coords, species_API))
 
                     if len(all_variants) > 0:
                         print(
@@ -686,14 +718,24 @@ class IMO:
 
         if alldirection is True:
             return {
-                '+ f': matrix,
+                '+ f': {
+                        'A': matrix['A'],
+                        'C': matrix['C'],
+                        'G': matrix['G'],
+                        'T': matrix['T']
+                    },
                 '+ r': reversed_matrix,
                 '- f': complement_matrix,
                 '- r': reversed_complement_matrix
             }
         else:
             return {
-                '+ f': matrix,
+                '+ f': {
+                        'A': matrix['A'],
+                        'C': matrix['C'],
+                        'G': matrix['G'],
+                        'T': matrix['T']
+                    },
                 '- r': reversed_complement_matrix
             }
 
@@ -714,15 +756,50 @@ class IMO:
     @staticmethod
     # Calculate matrix score
     def calculate_score(sequence, matrix):
-        score = 0
-        for i, base in enumerate(sequence):
-            if base in {'A', 'C', 'G', 'T'}:
-                base_score = matrix[base]
-                if i < len(base_score):
-                    score += base_score[i]
-                else:
-                    score += 0
+        score = sum(matrix[base][position] for position, base in enumerate(sequence))
         return score
+
+    ###
+
+    @staticmethod
+    def calculate_weight(sequence, pwm, background_freq):
+
+        def calculate_pwm_probability(sequence, pwm):
+            probability = 1.0
+            for i, base in enumerate(sequence):
+                probability *= pwm[base][i]
+            return probability
+
+        def calculate_background_probability(sequence, background_freq):
+            probability = 1.0
+            for base in sequence:
+                probability *= background_freq.get(base)
+            return probability
+
+        pwm_prob = calculate_pwm_probability(sequence, pwm)
+        background_prob = calculate_background_probability(sequence, background_freq)
+        return math.log2(pwm_prob / background_prob)
+
+    @staticmethod
+    def calculate_min_max_weights(pwm, background_freq):
+        min_prob = 1.0
+        max_prob = 1.0
+
+        for i in range(len(next(iter(pwm.values())))):
+            col = {base: pwm[base][i] / (background_freq.get(base) or 1e-64) for base in pwm}
+
+            min_value = min(col.values())
+            max_value = max(col.values())
+
+            min_prob *= min_value
+            max_prob *= max_value
+
+        min_weight = math.log2(min_prob)
+        max_weight = math.log2(max_prob)
+
+        return min_weight, max_weight
+
+    ###
 
     @staticmethod
     # Generate random sequences
@@ -743,16 +820,27 @@ class IMO:
             return isfasta
 
     @staticmethod
+    def transform_PWM(matrix, pseudocount=None):
+        motif = motifs.Motif(counts=matrix)
+        pseudocount_auto = calculate_pseudocounts(motif)
+        pwm = motif.counts.normalize(pseudocounts=pseudocount_auto if pseudocount is None else pseudocount)
+        background_preset = {'A': 0.25, 'C': 0.25, 'G': 0.25, 'T': 0.25}
+        log_odds_matrix = pwm.log_odds(background=background_preset)
+
+        return pseudocount_auto, pwm, log_odds_matrix
+
+    @staticmethod
     # Find with JASPAR and manual matrix
     def individual_motif_finder(dna_sequences, threshold, matrix, progress_bar=None, calc_pvalue=None,
-                                tss_ge_distance=None, alldirection=None):
+                                tss_ge_distance=None, alldirection=None, pseudocount=None, bgnf=None):
         if calc_pvalue is not None:
             if calc_pvalue not in ["ATGCPreset", "ATGCProportion"]:
                 raise ValueError("Use 'ATGCPreset' or 'ATGCProportion'")
 
         individual_motif_occurrences = []
-
-        matrices = IMO.transform_matrix(matrix, alldirection)
+        _, pwm, log_odds_matrix = IMO.transform_PWM(matrix, pseudocount)
+        matrices = IMO.transform_matrix(log_odds_matrix, alldirection)
+        pwm_weight = IMO.transform_matrix(pwm, alldirection)
 
         seq_length = len(matrices['+ f']['A'])
 
@@ -775,31 +863,27 @@ class IMO:
                 for random_sequence in random_sequences:
                     sequence = random_sequence
                     random_score = IMO.calculate_score(sequence, matrix)
-                    if max_score == min_score:
-                        normalized_random_score = random_score / max_score
-                    else:
-                        normalized_random_score = (random_score - min_score) / (max_score - min_score)
+                    normalized_random_score = (random_score - min_score) / (max_score - min_score)
                     matrix_random_scores.append(normalized_random_score)
                     if progress_bar:
                         progress_bar.update(1)
                 random_scores = np.array(matrix_random_scores)
 
         for name, dna_sequence, species, region, strand_seq, tss_ch in dna_sequences:
+            count_a = dna_sequence.count('A')
+            count_t = dna_sequence.count('T')
+            count_g = dna_sequence.count('G')
+            count_c = dna_sequence.count('C')
+
+            length_prom = len(dna_sequence)
+            percentage_a = count_a / length_prom
+            percentage_t = count_t / length_prom
+            percentage_g = count_g / length_prom
+            percentage_c = count_c / length_prom
+
             if calc_pvalue == 'ATGCProportion':
-                count_a = dna_sequence.count('A')
-                count_t = dna_sequence.count('T')
-                count_g = dna_sequence.count('G')
-                count_c = dna_sequence.count('C')
-
-                length_prom = len(dna_sequence)
-                percentage_a = count_a / length_prom
-                percentage_t = count_t / length_prom
-                percentage_g = count_g / length_prom
-                percentage_c = count_c / length_prom
-
-                probabilities = [percentage_a, percentage_c, percentage_g, percentage_t]
-
-                random_sequences = IMO.generate_ranseq(probabilities, seq_length, progress_bar)
+                random_sequences = IMO.generate_ranseq([percentage_a, percentage_c, percentage_g, percentage_t],
+                                                       seq_length, progress_bar)
 
                 if calc_pvalue == 'ATGCProportion':
                     random_scores = {}
@@ -824,10 +908,7 @@ class IMO:
                     for random_sequence in random_sequences:
                         sequence = random_sequence
                         random_score = IMO.calculate_score(sequence, matrix)
-                        if max_score == min_score:
-                            normalized_random_score = random_score / max_score
-                        else:
-                            normalized_random_score = (random_score - min_score) / (max_score - min_score)
+                        normalized_random_score = (random_score - min_score) / (max_score - min_score)
                         matrix_random_scores.append(normalized_random_score)
                         if progress_bar:
                             progress_bar.update(1)
@@ -837,13 +918,16 @@ class IMO:
                 for i in range(len(dna_sequence) - seq_length + 1):
                     seq = dna_sequence[i:i + seq_length]
                     score = IMO.calculate_score(seq, matrix)
-                    if max_score == min_score:
-                        normalized_score = score / max_score
-                    else:
-                        normalized_score = (score - min_score) / (max_score - min_score)
+                    normalized_score = (score - min_score) / (max_score - min_score)
                     position = int(i) + 1
 
-                    found_positions.append((position, seq, normalized_score))
+                    background_freq = {'A': percentage_a, 'C': percentage_c,
+                                       'G': percentage_g, 'T': percentage_t} if bgnf is None else bgnf
+                    weight = IMO.calculate_weight(seq, pwm_weight[matrix_name], background_freq)
+                    min_weight, max_weight = IMO.calculate_min_max_weights(pwm_weight[matrix_name], background_freq)
+                    relative_weight = (weight - min_weight) / (max_weight - min_weight)
+                    found_positions.append((position, seq, normalized_score, score, weight, relative_weight))
+
                     if progress_bar:
                         progress_bar.update(1)
 
@@ -854,13 +938,13 @@ class IMO:
                 if len(found_positions) > 0:
                     if threshold < 0.5:
                         highest_normalized_score = max(
-                            [normalized_score for _, _, normalized_score in found_positions])
+                            [normalized_score for _, _, normalized_score, _, _, _ in found_positions])
                         if highest_normalized_score >= 0.6:
                             threshold = highest_normalized_score - 0.10
                         else:
                             threshold = 0.5
 
-                    for position, seq, normalized_score in found_positions:
+                    for position, seq, normalized_score, score, weight, relative_weight in found_positions:
                         start_position = max(0, position - 4)
                         end_position = min(len(dna_sequence), position + len(seq) + 2)
                         sequence_with_context = dna_sequence[start_position:end_position]
@@ -893,7 +977,10 @@ class IMO:
                                 row.append(tis_position)
                                 row.append(ch_pos)
                             row += [sequence_with_context,
-                                    "{:.6f}".format(normalized_score).ljust(12)]
+                                    "{:.6f}".format(normalized_score).ljust(12),
+                                    "{:.6f}".format(score).ljust(12),
+                                    "{:.6f}".format(relative_weight).ljust(12),
+                                    "{:.6f}".format(weight).ljust(12)]
                             if calc_pvalue is not None:
                                 row.append("{:.6e}".format(p_value))
                             row += [strand, direction, name, species, region]
@@ -904,7 +991,7 @@ class IMO:
             if tss_ge_distance is not None:
                 header.append("Rel Position")
                 header.append("Ch Position")
-            header += ["Sequence", "Rel Score"]
+            header += ["Sequence", "Rel Score", 'Score', 'Rel Score Adj', 'Score Adj']
             if calc_pvalue is not None:
                 header.append("p-value")
             header += ["Strand", "Direction", "Gene", "Species", "Region"]
@@ -916,8 +1003,6 @@ class IMO:
             return df, True
         else:
             return "No consensus sequence found with the specified threshold.", False
-
-
 
     @staticmethod
     # IUPAC code
@@ -1009,10 +1094,10 @@ class IMO:
                 pwm[2, i] = 0
                 pwm[3, i] = 0
             else:
-                pwm[0, i] = counts['A'] / num_sequences
-                pwm[1, i] = counts['T'] / num_sequences
-                pwm[2, i] = counts['G'] / num_sequences
-                pwm[3, i] = counts['C'] / num_sequences
+                pwm[0, i] = counts['A']
+                pwm[1, i] = counts['T']
+                pwm[2, i] = counts['G']
+                pwm[3, i] = counts['C']
 
         bases = ['A', 'T', 'G', 'C']
         pwm_text = ""

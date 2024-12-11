@@ -60,7 +60,7 @@ if 'lottie' not in st.session_state:
 
 if not st.session_state.lottie:
     lottfinder = load_lottiefile(".streamlit/TFinder_logo_animated.json")
-    st.lottie(lottfinder, speed=1.3, loop=False)
+    st.lottie(lottfinder, speed=1.3, loop=False, quality="high", height=1520, width=1520)
     time.sleep(2)
     st.session_state.lottie = True
     rerun()
@@ -93,20 +93,20 @@ st.markdown(footer_style, unsafe_allow_html=True)
 
 HOME = 'Home'
 APPLICATION = 'Tools/Software'
-RESOURCE = 'Resources'
+# RESOURCE = 'Resources'
 CONTACT = 'Contact'
 
 tabs = [
     HOME,
     APPLICATION,
-    RESOURCE,
+    # RESOURCE,
     CONTACT,
 ]
 
 option_data = [
     {'icon': "🏠", 'label': HOME},
     {'icon': "🖥️", 'label': APPLICATION},
-    {'icon': "📑", 'label': RESOURCE},
+    # {'icon': "📑", 'label': RESOURCE},
     {'icon': "✉️", 'label': CONTACT},
 ]
 
@@ -128,11 +128,20 @@ st.success("If the application does not work, here are other deployments:\n"
            f"   - TFinder on [Streamlit](https://streamlit.io/): [https://tfinder-ipmc.streamlit.app/](https://tfinder-ipmc.streamlit.app/)\n"
            f"   - TFinder on [Health Universe](https://www.healthuniverse.com/): [https://apps.healthuniverse.com/nhu-dxv-ktj](https://apps.healthuniverse.com/nhu-dxv-ktj)\n"
            f"   - (BETA) TFinder: [https://tfinder-beta.streamlit.app/](https://tfinder-beta.streamlit.app/)\n")
-try:
+
+if 'LOCAL' not in st.session_state:
+    local_test = platform.processor()
+    print("Platform:", local_test)
+    if local_test == "":
+        st.session_state["LOCAL"] = 'False'
+    else:
+        st.session_state["LOCAL"] = 'True'
+
+if st.session_state["LOCAL"] == 'False':
+    if st.secrets["message_from_god"] != "":
+        st.warning(st.secrets["message_from_god"])
     if st.secrets['ncbi_error'] == "True":
         st.error("⚠ NCBI server maintenance, problems and slowdowns may be observed")
-except Exception as e:
-    print(e)
 
 if chosen_tab == HOME:
     home_page()
@@ -140,8 +149,8 @@ if chosen_tab == HOME:
 elif chosen_tab == APPLICATION:
     allapp_page()
 
-elif chosen_tab == RESOURCE:
-    resource_page()
+# elif chosen_tab == RESOURCE:
+#     resource_page()
 
 elif chosen_tab == CONTACT:
     contact_page()
@@ -153,12 +162,14 @@ st.markdown(footer, unsafe_allow_html=True)
 # streamlit_analytics.start_tracking()
 
 # Credit
+st.logo("img/TFinder_logo_site.png")
 st.sidebar.image("img/TFinder_logo_site.png")
 
 # Help
 st.sidebar.title("Help")
 # with st.sidebar.expander("Video tutorials"):
 #     st.write('coming soon')
+st.sidebar.markdown("FULL DOCUMENTATION [HERE](https://jumitti.notion.site/tfinder?pvs=4)")
 
 with st.sidebar.expander("Regulatory regions extractor"):
     st.subheader("Gene ID:")
@@ -239,19 +250,16 @@ st.sidebar.markdown(
     "[Have a question 🤔](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=question&projects=&template=question_report.md&title=%5BQUESTION%5D)")
 st.sidebar.markdown(
     "[Features request 💡](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md&title=%5BFEATURE%5D)")
-st.sidebar.markdown("[Want to talk ? 🙋🏼‍♂](https://github.com/Jumitti/TFinder/discussions)")
 
 # streamlit_analytics.stop_tracking()
 # views = streamlit_analytics.main.counts["total_pageviews"]
-try:
-    local_test = platform.processor()
-    if local_test == "":
-        unique_users = st.secrets['unique_users']
-        st.sidebar.markdown(f"Unique users 👥: {unique_users}")
-        st.session_state["LOCAL"] = 'False'
-except Exception as e:
-    st.session_state["LOCAL"] = 'True'
+
+if st.session_state["LOCAL"] == 'True':
     st.sidebar.markdown(f"TFinder Local Version")
+else:
+    unique_users = st.secrets['unique_users']
+    st.sidebar.markdown(f"Unique users 👥: {unique_users}")
+
 
 modal = Modal(key="TFinder Key", title="Disclaimers - Welcome to TFinder", padding=50, max_width=900)
 
@@ -264,11 +272,9 @@ if not st.session_state.popup_closed:
         st.markdown(
             'TFinder use [NCBI API](https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen)'
             ': More information [NCBI Website and Data Usage Policies and Disclaimers](https://www.ncbi.nlm.nih.gov/home/about/policies/)')
-        try:
+        if st.session_state['LOCAL'] == 'False':
             if st.secrets['ncbi_error'] == "True":
                 st.error("⚠ NCBI server maintenance, problems and slowdowns may be observed")
-        except Exception as e:
-            print(e)
         st.markdown("TFinder use [JASPAR API](https://doi.org/10.1093/bioinformatics/btx804)")
         st.markdown('')
         st.markdown(

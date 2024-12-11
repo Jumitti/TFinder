@@ -29,12 +29,12 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import altair as alt
-import pandas as pd
 import streamlit as st
 from Bio import motifs
 from stqdm import stqdm
 
 from tfinder import IMO
+from navigation.regulatory_regions_extractor import fasta
 
 
 def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
@@ -95,130 +95,136 @@ def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
 
 def result_table_output(source):
     score_range = source['Rel Score'].astype(float)
-    ystart = score_range.min() - 0.02
-    ystop = score_range.max() + 0.02
+
     source['Gene_Region'] = source['Gene'] + " " + source['Species'] + " " + source['Region']
-    source['Beginning of sequences'] = source['Position']
-    if "Rel Position" in source:
-        source['From TSS/gene end'] = source['Rel Position']
+
     scale = alt.Scale(scheme='category10')
     color_scale = alt.Color("Gene_Region:N", scale=scale)
 
     gene_region_selection = alt.selection_point(fields=['Gene_Region'], on='click', bind='legend')
 
-    dropdown = alt.binding_select(
-        options=['Beginning of sequences', 'From TSS/gene end'] if "Rel Position" in source else ['Beginning of sequences'],
-        name='(X-axis) Position from: ')
+    y_dropdown = alt.binding_select(
+        options=['Rel Score', 'Rel Score Adj'],
+        name='(Y-axis) Relative Score: '
+    )
+    ycol_param = alt.param(value='Rel Score', bind=y_dropdown, name="y_axis")
 
-    xcol_param = alt.param(value='Beginning of sequences', bind=dropdown, name="x_axis")
-
-    chart = alt.Chart(source).mark_circle().encode(
-        x=alt.X('x:Q').title('Position (bp)'),
-        y=alt.Y('Rel Score:Q', axis=alt.Axis(title='Relative Score'),
-                scale=alt.Scale(domain=[ystart, ystop])),
+    base_chart = alt.Chart(source).mark_circle().encode(
+        x=alt.X('Position:Q', title='Position (bp)', axis=alt.Axis(labelAngle=0),
+                scale=alt.Scale(domain=[source["Position"].min() - 25, source["Position"].max() + 25])),
+        y=alt.Y('y:Q', axis=alt.Axis(title='Relative Score'),
+                scale=alt.Scale(domain=[min(source["Rel Score"].astype(float).min(), source["Rel Score Adj"].astype(float).min()) - 0.05, max(source["Rel Score"].astype(float).max(), source["Rel Score Adj"].astype(float).max()) + 0.05])),
         color=alt.condition(gene_region_selection, color_scale, alt.value('lightgray')),
         tooltip=['Sequence', 'Position'] + (['Rel Position'] if "Rel Position" in source else []) + (
-            ['Ch Position'] if "Ch Position" in source else []) + ['Rel Score'] + (
+            ['Ch Position'] if "Ch Position" in source else []) + ['Rel Score'] + ['Score'] +
+                    ['Rel Score Adj'] + ['Score Adj'] + (
                     ['p-value'] if 'p-value' in source else []) + ['Gene', 'Species', 'Region'],
         opacity=alt.condition(gene_region_selection, alt.value(0.8), alt.value(0.2))
-    ).transform_calculate(x=f'datum[{xcol_param.name}]'
-                          ).properties(width=600, height=400).interactive(
-    ).add_params(gene_region_selection, xcol_param)
+    ).transform_calculate(
+        y=f'datum[{ycol_param.name}]'
+    ).properties(
+        width=600, height=400
+    )
+
+    if "Rel Position" in source:
+        secondary_axis = alt.Chart(source).mark_rule(opacity=0).encode(
+            x=alt.X('Rel Position:Q', title='Position from TSS/Gene end (bp)',
+                    axis=alt.Axis(orient='top'),
+                    scale=alt.Scale(domain=[source['Rel Position'].min() - 25, source['Rel Position'].max() + 25])),
+
+        ).interactive()
+
+        chart = alt.layer(base_chart, secondary_axis).resolve_scale(x='independent').interactive()
+    else:
+        chart = base_chart
+
+    chart = chart.add_params(
+        gene_region_selection, ycol_param
+    ).interactive()
 
     st.altair_chart(chart, theme=None, use_container_width=True)
 
 
-def BSF_page():
-    st.subheader(':blue[Step 2] Binding Sites Finder')
-    promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
-    with promcol1:
-        st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-        if 'result_promoter_text' not in st.session_state:
-            result_promoter_text = ''
-            st.session_state['result_promoter_text'] = result_promoter_text
-        dna_sequence = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
-                                    value=st.session_state['result_promoter_text'],
-                                    placeholder='If Step 1 not used, paste sequences here (FASTA required for multiple sequences).',
-                                    label_visibility='collapsed', height=125)
+def BSF_page(aio=False, dna_sequence=None):
+    if aio is False:
+        dna_sequence = fasta()
 
-    with promcol2:
-        st.markdown('')
-        st.markdown('')
-        st.markdown('')
-        current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        txt_output = f"{dna_sequence}"
-        st.download_button(label="💾 Download (.fasta)", data=txt_output,
-                           file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain")
+    analyse(dna_sequence)
 
-    # Promoter detection information
-    lines = dna_sequence
-    dna_sequences = []
-    if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
-        dna_sequence = lines.upper()
-        isfasta = IMO.is_dna(dna_sequence)
-        name = "n.d."
-        species = "n.d"
-        region = "n.d"
-        strand = "n.d"
-        tss_ch = 0
-        dna_sequences.append((name, dna_sequence, species, region, strand, tss_ch))
-    elif lines.startswith(">"):
-        lines = dna_sequence.split("\n")
-        i = 0
-        while i < len(lines):
-            line = lines[i]
-            if line.startswith(">"):
-                species_prom = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster',
-                                'Danio rerio']
-                promoter_name = line[1:]
-                words = promoter_name.lstrip('>').split()
-                pattern = r">(\w+)\s+(\w+)\s+\|"
-                match = re.search(pattern, line)
-                if match:
-                    name = words[0] + ' ' + words[1]
-                else:
-                    name = words[0]
-                for species in species_prom:
-                    if species.lower() in promoter_name.lower():
-                        found_species = species
-                        break
+
+def analyse(dna_sequence=None):
+    if dna_sequence is not None:
+        # Promoter detection information
+        lines = dna_sequence
+        dna_sequences = []
+        if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
+            dna_sequence = lines.upper()
+            isfasta = IMO.is_dna(dna_sequence)
+            name = "n.d."
+            species = "n.d"
+            region = "n.d"
+            strand = "n.d"
+            tss_ch = 0
+            dna_sequences.append((name, dna_sequence, species, region, strand, tss_ch))
+        elif lines.startswith(">"):
+            lines = dna_sequence.split("\n")
+            i = 0
+            while i < len(lines):
+                line = lines[i]
+                if line.startswith(">"):
+                    species_prom = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster',
+                                    'Danio rerio']
+                    promoter_name = line[1:]
+                    words = promoter_name.lstrip('>').split()
+                    pattern = r">(\w+)\s+(\w+)\s+\|"
+                    match = re.search(pattern, line)
+                    if match:
+                        name = words[0] + ' ' + words[1]
                     else:
-                        found_species = "n.d"
-                regions_prom = ['Promoter', 'Terminator']
-                for regions in regions_prom:
-                    if regions.lower() in promoter_name.lower():
-                        region = regions[:4] + "."
-                        break
-                    else:
-                        region = "n.d"
-                dna_sequence = lines[i + 1].upper()
-                isfasta = IMO.is_dna(dna_sequence)
+                        name = words[0]
+                    for species in species_prom:
+                        if species.lower() in promoter_name.lower():
+                            found_species = species
+                            break
+                        else:
+                            found_species = "n.d"
+                    regions_prom = ['Promoter', 'Terminator']
+                    for regions in regions_prom:
+                        if regions.lower() in promoter_name.lower():
+                            region = regions[:4] + "."
+                            break
+                        else:
+                            region = "n.d"
+                    dna_sequence = lines[i + 1].upper()
+                    isfasta = IMO.is_dna(dna_sequence)
 
-                match = re.search(r"Strand:\s*(\w+)", line)
-                if match:
-                    strand = match.group(1).lower()
-                    if strand not in ["plus", "minus"]:
+                    match = re.search(r"Strand:\s*(\w+)", line)
+                    if match:
+                        strand = match.group(1).lower()
+                        if strand not in ["plus", "minus"]:
+                            strand = "n.d"
+                    else:
                         strand = "n.d"
-                else:
-                    strand = "n.d"
 
-                match = re.search(r"TSS \(on chromosome\):\s*(\d+)", line)
-                if match:
-                    tss_ch = match.group(1)
-                else:
-                    tss_ch = 0
+                    match = re.search(r"TSS \(on chromosome\):\s*(\d+)", line)
+                    if match:
+                        tss_ch = match.group(1)
+                    else:
+                        tss_ch = 0
 
-                dna_sequences.append((name, dna_sequence, found_species, region, strand, tss_ch))
-                i += 1
-            else:
-                i += 1
-    elif not lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n", "I", "i", "")):
-        isfasta = True
+                    dna_sequences.append((name, dna_sequence, found_species, region, strand, tss_ch))
+                    i += 1
+                else:
+                    i += 1
+        elif not lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n", "I", "i", "")):
+            isfasta = True
+        else:
+            isfasta = False
+
+        total_sequences_region_length = sum(len(dna_sequence) for _, dna_sequence, _, _, _, _ in dna_sequences)
+        total_sequences = len(dna_sequences)
     else:
         isfasta = False
-
-    total_sequences_region_length = sum(len(dna_sequence) for _, dna_sequence, _, _, _, _ in dna_sequences)
-    total_sequences = len(dna_sequences)
 
     # RE entry
     REcol1, REcol2 = st.columns([0.30, 0.70])
@@ -228,6 +234,7 @@ def BSF_page():
                           ('Individual Motif', 'JASPAR_ID', 'PWM'),
                           label_visibility='collapsed')
     if jaspar == 'JASPAR_ID':
+        isUIPAC = True
         with REcol1:
             st.markdown("🔹 :blue[**Step 2.3**] JASPAR ID:")
             jaspar_id = st.text_input("🔹 :blue[**Step 2.3**] JASPAR ID:",
@@ -387,7 +394,7 @@ def BSF_page():
             isUIPAC = False
 
     # TSS entry
-    BSFcol1, BSFcol2, BSFcol3 = st.columns([2, 2, 2], gap="medium")
+    BSFcol1, BSFcol2, BSFcol3, BSFcol4 = st.columns([1, 1, 1, 2], gap="small")
     with BSFcol1:
         st.markdown("🔹 :blue[**Step 2.4**] Transcription Start Site (TSS)/gene end at (in bp):",
                     help="Distance of TSS and gene end from begin of sequences. If you use Step 1, it is positive value of upstream")
@@ -405,12 +412,12 @@ def BSF_page():
     with BSFcol2:
         st.markdown("🔹 :blue[**Step 2.5**] Relative Score threshold")
         auto_thre = st.toggle("Automatic threshold", value=True)
-        if auto_thre:
+        threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.5, 1.0, 0.85,
+                                    step=0.05,
+                                    label_visibility="collapsed", disabled=auto_thre)
+        if auto_thre is True:
             threshold_entry = 0
-        else:
-            threshold_entry = st.slider("🔹 :blue[**Step 2.5**] Relative Score threshold", 0.5, 1.0, 0.85,
-                                        step=0.05,
-                                        label_visibility="collapsed")
+
     with BSFcol3:
         st.markdown("🔹 :blue[**_Experimental_**] Calcul _p-value_", help='Experimental, take more times.')
         pvalue = st.toggle('_p-value_')
@@ -435,17 +442,82 @@ def BSF_page():
         else:
             calc_pvalue = None
 
-    with BSFcol3:
-        st.markdown("🔹 :blue[**_Experimental_**] Analyse all directions",
-                    help='Directions: **original (+ →)**, **reverse-complement (- ←)**, reverse (+ ←), complement (- →)\n\n'
-                         'Directions in bold are the default directions.')
-        alldirection = st.toggle('All directions')
-        if alldirection:
-            st.markdown(
-                '⚠️Analyzes in the reverse (+ ←) and complement (- →) directions are generally not suitable for studying TFBS.')
-            analyse = 4
-        else:
-            analyse = 2
+    with BSFcol4:
+        with st.expander("Advanced settings", icon="🔹"):
+            pseudocount_type = st.checkbox("Automatic pseudocount (to normalize PWM)", True,
+                                           help="TFinder transforms PWM into PSSM log-odds. If a value is strictly equal "
+                                                "to 0 in the PWM we cannot perform the transformation into log-odds "
+                                                "(log(0) = -inf). To overcome this problem, we introduce a pseudocount "
+                                                "calculated automatically as follows: √N ∗ bg[nucleotide] where N "
+                                                "represents the total number of sequences used to construct the matrix "
+                                                "and bg[nucleotide] represents the background of nucleotide frequencies.\n\n"
+                                                "If you want to define it yourself, generally, the pseudocount is placed "
+                                                "around 1. In our hands, a pseudocount of 0.2 for each nucleotide is "
+                                                "sufficient (and gives the same results as "
+                                                "[TFBSTools](https://bioconductor.org/packages/release/bioc/html/TFBSTools.html))."
+                                                f"")
+            if isUIPAC is True:
+                pseudocount_auto, _, _ = IMO.transform_PWM(matrix)
+                pc_col1, pc_col2, pc_col3, pc_col4 = st.columns(4, gap="small")
+                pseudocount_A = pc_col1.number_input('A',
+                                                     value=0.20 if pseudocount_type is False else pseudocount_auto['A'],
+                                                     step=0.01, disabled=pseudocount_type)
+                pseudocount_T = pc_col2.number_input('T',
+                                                     value=0.20 if pseudocount_type is False else pseudocount_auto['T'],
+                                                     step=0.01, disabled=pseudocount_type)
+                pseudocount_G = pc_col3.number_input('G',
+                                                     value=0.20 if pseudocount_type is False else pseudocount_auto['G'],
+                                                     step=0.01, disabled=pseudocount_type)
+                pseudocount_C = pc_col4.number_input('C',
+                                                     value=0.20 if pseudocount_type is False else pseudocount_auto['C'],
+                                                     step=0.01, disabled=pseudocount_type)
+                pseudocount = {'A': pseudocount_A, 'T': pseudocount_T, 'G': pseudocount_G, 'C': pseudocount_C}
+
+            st.divider()
+
+            bgnf_type = st.checkbox("Automatic background nucleotide frequencies (for Score)", True,
+                                    help="TFinder has 2 types of Score (and their respective normalization). For more "
+                                         'information on the formula, refer to the article or “Resource”.\n\n'
+                                         "The **first type (Score and Rel. Score)**: In order to compare the TFBS found and"
+                                         " the TFBS requested independently of the heterogeneity of the nucleotide "
+                                         "frequencies, we set for this score only the background frequencies at 0.25 per "
+                                         "nucleotide.\n\n"
+                                         "The 2nd type (Adj. Score and Rel. Adj. Score): This calculation is based on "
+                                         "the same mathematical formula but the nucleotide frequencies of the background "
+                                         "are calculated directly for each sequence analyzed. This allows you to obtain "
+                                         "an Adj Score. (and Rel. Score Adj.) compensating for biases linked to the "
+                                         "heterogeneity of nucleotide frequencies for a given sequence. For the "
+                                         "calculation of the Adj Score. (and Rel. Score Adj.), you can let the software "
+                                         "configure the background itself. However, it is important to note that "
+                                         "(as for the p-value) small sequences (100-500bp) have higher heterogeneity "
+                                         "(see Resources). In this case, you can configure the nucleotide frequencies "
+                                         "of the background yourself.")
+            bg_col1, bg_col2, bg_col3, bg_col4 = st.columns(4, gap="small")
+            bgnf_A = bg_col1.number_input('A', value=0.25, min_value=0.00, max_value=1.00, step=0.01,
+                                          disabled=bgnf_type)
+            bgnf_T = bg_col2.number_input('T', value=0.25, min_value=0.00, max_value=1.00, step=0.01,
+                                          disabled=bgnf_type)
+            bgnf_G = bg_col3.number_input('G', value=0.25, min_value=0.00, max_value=1.00, step=0.01,
+                                          disabled=bgnf_type)
+            bgnf_C = bg_col4.number_input('C', value=0.25, min_value=0.00, max_value=1.00, step=0.01,
+                                          disabled=bgnf_type)
+            if bgnf_A + bgnf_G + bgnf_C + bgnf_T > 1 and bgnf_type is False:
+                st.error(f"The sum of frequencies must equal 1.0. Current: {(bgnf_A + bgnf_G + bgnf_C + bgnf_T):.2f}")
+            else:
+                bgnf = {'A': bgnf_A, 'T': bgnf_T, 'G': bgnf_G, 'C': bgnf_C}
+
+            st.divider()
+
+            st.markdown("🔹 :blue[**_Experimental_**] Analyse all directions",
+                        help='Directions: **original (+ →)**, **reverse-complement (- ←)**, reverse (+ ←), complement (- →)\n\n'
+                             'Directions in bold are the default directions.')
+            alldirection = st.toggle('All directions')
+            if alldirection:
+                st.markdown(
+                    '⚠️Analyzes in the reverse (+ ←) and complement (- →) directions are generally not suitable for studying TFBS.')
+                analyse = 4
+            else:
+                analyse = 2
 
     if tss_ge_input != 0:
         tss_ge_distance = int(tss_ge_input)
@@ -456,46 +528,41 @@ def BSF_page():
     if jaspar == 'JASPAR_ID':
         pass
     else:
-        if not isUIPAC:
-            st.error("Please use IUPAC code for Responsive Elements")
+        if not isUIPAC or not error_input_im or isfasta or bgnf_A + bgnf_G + bgnf_C + bgnf_T > 1 and bgnf_type is False:
             button = True
-        elif not error_input_im:
-            button = True
-        elif isfasta:
-            st.error("Please use only A, T, G, C, N in your sequence")
-            button = True
+            if not isUIPAC:
+                st.error("Please use IUPAC code for Responsive Elements")
+            elif isfasta:
+                st.error("Please use only A, T, G, C, N in your sequence")
         else:
             button = False
 
-    sequence_iteration = analyse * total_sequences_region_length
-    num_random_seqs = 1000000
-    if total_sequences <= 10:
-        random_gen = total_sequences * num_random_seqs
-    else:
-        random_gen = num_random_seqs
-    random_score = random_gen * analyse
+    if dna_sequence is not None:
+        sequence_iteration = analyse * total_sequences_region_length
+        num_random_seqs = 1000000
+        if total_sequences <= 10:
+            random_gen = total_sequences * num_random_seqs
+        else:
+            random_gen = num_random_seqs
+        random_score = random_gen * analyse
 
-    if pvalue:
-        iteration = sequence_iteration + random_gen + random_score
-    else:
-        iteration = sequence_iteration
+        if pvalue:
+            iteration = sequence_iteration + random_gen + random_score
+        else:
+            iteration = sequence_iteration
 
     st.markdown("")
     if st.button("🔹 :blue[**Step 2.6**] Click here to find motif in your sequences 🔎 🧬",
                  use_container_width=True,
                  disabled=button):
-        motif = motifs.Motif(counts=matrix)
-        pwm = motif.counts.normalize(pseudocounts=0.1)
-        log_odds_matrix = pwm.log_odds()
 
         with stqdm(total=iteration,
                    desc='**:blue[Analyse sequence...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**',
                    mininterval=0.1) as progress_bar:
-            individual_motif_occurrences, message = IMO.individual_motif_finder(dna_sequences, threshold,
-                                                                                log_odds_matrix,
-                                                                                progress_bar,
-                                                                                calc_pvalue,
-                                                                                tss_ge_distance, alldirection)
+            individual_motif_occurrences, message = IMO.individual_motif_finder(
+                dna_sequences, threshold, matrix, progress_bar, calc_pvalue, tss_ge_distance, alldirection,
+                pseudocount if pseudocount_type is False else None,
+                bgnf if bgnf_type is False else None)
         if message is True:
             st.session_state['individual_motif_occurrences'] = individual_motif_occurrences
             st.session_state['message'] = message
