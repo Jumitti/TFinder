@@ -250,6 +250,13 @@ if 'LOCAL' not in st.session_state:
         st.session_state["LOCAL"] = 'True'
 if st.session_state["LOCAL"] == 'True':
     st.sidebar.markdown(f"TFinder Local Version")
+else:
+    unique_users = st.secrets['unique_users']
+    st.sidebar.markdown(f"Unique users 👥: {unique_users}")
+    st.session_state["LOCAL"] = 'False'
+    if st.secrets['ncbi_error'] == "True":
+        st.error("⚠ NCBI server maintenance, problems and slowdowns may be observed")
+
 
 modal = Modal(key="TFinder Key", title="Disclaimers - Welcome to TFinder", padding=50, max_width=900)
 
