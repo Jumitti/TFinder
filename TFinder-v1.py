@@ -126,7 +126,7 @@ st.success("Hello everyone, TFinder is growing every day and we would like to kn
 
 st.success("If the application does not work, here are other deployments:\n"
            f"   - TFinder on [Streamlit](https://streamlit.io/): [https://tfinder-ipmc.streamlit.app/](https://tfinder-ipmc.streamlit.app/)\n"
-           f"   - TFinder on [Health Universe](https://www.healthuniverse.com/): [https://apps.healthuniverse.com/nhu-dxv-ktj](https://apps.healthuniverse.com/nhu-dxv-ktj)\n"
+           f"   - TFinder on [Health Universe](https://www.healthuniverse.com/): [https://apps.healthuniverse.com/pmb-xci-tsb](https://apps.healthuniverse.com/pmb-xci-tsb)\n"
            f"   - (BETA) TFinder: [https://tfinder-beta.streamlit.app/](https://tfinder-beta.streamlit.app/)\n")
 
 if 'LOCAL' not in st.session_state:
