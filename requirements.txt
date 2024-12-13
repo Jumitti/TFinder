@@ -24,7 +24,7 @@ biopython
 altair~=5.5.0
 deprecation~=2.1.0
 future
-hydralit_components
+hydralit-components
 logomaker~=0.8
 numpy~=1.26.4
 openpyxl
@@ -33,7 +33,7 @@ plotly
 requests~=2.32.3
 stqdm~=0.0.5
 streamlit~=1.40.1
-streamlit_analytics
+streamlit-analytics
 streamlit-lottie
 tqdm~=4.66.4
 bs4~=0.0.2
