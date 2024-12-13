@@ -32,7 +32,6 @@ import json
 from navigation.allapp import allapp_page
 from navigation.contact import contact_page
 from navigation.home import home_page
-from navigation.resource import resource_page
 from utils.components import footer_style, footer
 try:
     from streamlit import rerun as rerun
