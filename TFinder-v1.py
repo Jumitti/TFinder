@@ -130,10 +130,11 @@ st.success("If the application does not work, here are other deployments:\n"
 
 if 'LOCAL' not in st.session_state:
     local_test = platform.processor()
-    print("Platform:", local_test)
+
     if local_test == "":
         st.session_state["LOCAL"] = 'False'
     else:
+        print("Platform:", local_test)
         st.session_state["LOCAL"] = 'True'
 
 if st.session_state["LOCAL"] == 'False':
