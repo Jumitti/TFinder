@@ -188,7 +188,7 @@ def analyse(dna_sequence=None):
                             break
                         else:
                             found_species = "n.d"
-                    regions_prom = ['Promoter', 'Terminator']
+                    regions_prom = ['promoter', 'terminator', 'rna', 'mrna']
                     for regions in regions_prom:
                         if regions.lower() in promoter_name.lower():
                             region = regions[:4] + "."
@@ -359,37 +359,31 @@ def analyse(dna_sequence=None):
 
         if all(char in IUPAC_code for char in IUPAC):
             isUIPAC = True
+            try:
+                matrix = IMO.generate_iupac_variants(IUPAC)
+                _, weblogo = IMO.individual_motif_pwm(matrix, "UIPAC")
 
-            sequences = IMO.generate_iupac_variants(IUPAC, max_variant_allowed=1048576)
+                matrix_str = ""
+                for base, values in matrix.items():
+                    values_str = " ".join([f"{val:.4f}" for val in values])
+                    matrix_str += f"{base} [ {values_str} ]\n"
 
-            if 'Too many' not in sequences:
-                individual_motif = ""
-                for i, seq in enumerate(sequences):
-                    individual_motif += f">seq{i + 1}\n{seq}\n"
+                with REcol2:
+                    matrix_text = st.text_area('PWM', value=matrix_str, height=125,
+                                               help='Copy to use later. Not editable.',
+                                               disabled=True)
 
-                try:
-                    matrix, weblogo = IMO.individual_motif_pwm(individual_motif)
-                    matrix_str = ""
-                    for base, values in matrix.items():
-                        values_str = " ".join([f"{val:.4f}" for val in values])
-                        matrix_str += f"{base} [ {values_str} ]\n"
-                    with REcol2:
-                        matrix_text = st.text_area('PWM', value=matrix_str, height=125,
-                                                   help='Copy to use later. Not editable.',
-                                                   disabled=True)
-                        st.pyplot(weblogo.fig)
-                        logo = io.BytesIO()
-                        weblogo.fig.savefig(logo, format='png')
-                        logo.seek(0)
-                        st.session_state['weblogo'] = logo
-                    error_input_im = True
-                except Exception as e:
-                    error_input_im = False
-                    REcol1.error(e)
-            else:
-                st.error(sequences)
-                isUIPAC = False
+                    st.pyplot(weblogo.fig)
+                    logo = io.BytesIO()
+                    weblogo.fig.savefig(logo, format='png')
+                    logo.seek(0)
+                    st.session_state['weblogo'] = logo
 
+                error_input_im = True
+
+            except Exception as e:
+                error_input_im = False
+                REcol1.error(e)
         else:
             isUIPAC = False
 

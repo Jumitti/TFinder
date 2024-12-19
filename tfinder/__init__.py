@@ -89,7 +89,7 @@ class NCBIdna:
 
                 return entrez_id
             else:
-                print("Error during process of retrieving UIDs")
+                print(bcolors.FAIL + "Error during process of retrieving UIDs" + bcolors.ENDC)
 
     # Sequence extractor
     def find_sequences(self):
@@ -124,6 +124,8 @@ class NCBIdna:
                     data['sequence'] = sequence
 
             return all_variants, "OK"
+        else:
+            return all_variants, "Error 200"
 
     @staticmethod
     # Convert gene to ENTREZ_GENE_ID
@@ -175,8 +177,7 @@ class NCBIdna:
                 try:
                     gene_info = response_data['result'][str(entrez_id)]
                     species_API = gene_info['organism']['scientificname']
-                    title, chraccver = NCBIdna.extract_genomic_info(entrez_id, response_data,
-                                                                                       genome_version, species_API)
+                    title, chraccver = NCBIdna.extract_genomic_info(entrez_id, response_data, genome_version, species_API)
                     print(
                         bcolors.OKGREEN + f"Response 200: Chromosome {chraccver} found for {entrez_id}: {response.text}" + bcolors.ENDC)
                     break
@@ -225,7 +226,7 @@ class NCBIdna:
                         gene_name = elem.text
 
                 for elem in root.iter('Gene-commentary_accession'):
-                    if elem.text.startswith('NC_'):
+                    if elem.text.startswith(("NC_", "NT_")):
                         chromosome = elem.text
                         break
 
@@ -334,8 +335,6 @@ class NCBIdna:
     def get_dna_sequence(gene_name, chraccver, chrstart, chrstop, seq_type, upstream=2000, downstream=2000):
         global headers
 
-        print(seq_type)
-
         if seq_type in ['mrna', 'rna']:
             if chrstop > chrstart:
                 start = chrstart + 1
@@ -364,14 +363,14 @@ class NCBIdna:
                 else:
                     sequence = dna_sequence
 
-                print(f"Response 200: DNA sequence for {gene_name} extracted: {sequence}")
+                print(bcolors.OKGREEN + f"Response 200: DNA sequence for {gene_name} extracted: {sequence}" + bcolors.ENDC)
                 return sequence
 
             elif response.status_code == 429:
-                print(f"Error 429: API rate limit exceeded for DNA extraction of {gene_name}, try again.")
+                print(bcolors.FAIL + f"Error 429: API rate limit exceeded for DNA extraction of {gene_name}, try again." + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
             else:
-                print(f"Error {response.status_code}: {response.text}")
+                print(bcolors.OKGREEN + f"Error {response.status_code}: {response.text}" + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
 
     @staticmethod
@@ -729,7 +728,8 @@ class IMO:
                     found_positions.append((position, seq, normalized_score, score, weight, relative_weight))
 
                     if progress_bar:
-                        progress_bar.update(1)
+                        pb = 1 if region in ["prom.", "term."] else 2
+                        progress_bar.update(pb)
 
                 # Sort positions in descending order of score percentage
                 found_positions.sort(key=lambda x: x[1], reverse=True)
@@ -758,23 +758,29 @@ class IMO:
 
                         sequence_with_context = ''.join(sequence_parts)
 
-                        if tss_ge_distance is not None:
-                            tis_position = position - tss_ge_distance - 1
+                        tis_position = None
+                        ch_pos = None
+                        if region in ["prom.", "term."]:
+                            if tss_ge_distance is not None:
+                                tis_position = position - tss_ge_distance - 1
 
-                            if strand_seq in ["plus", "minus"]:
-                                ch_pos = int(tss_ch) - tis_position if strand_seq == "minus" else int(
-                                    tss_ch) + tis_position
-                            else:
-                                ch_pos = "n.d"
+                                if strand_seq in ["plus", "minus"] and tss_ch != 0:
+                                    ch_pos = int(tss_ch) - tis_position if strand_seq == "minus" else int(
+                                        tss_ch) + tis_position
+
+                        elif region in ["rna.", "mrna."]:
+                            if strand_seq in ["plus", "minus"] and tss_ch != 0:
+                                ch_pos = int(tss_ch) - position if strand_seq == "minus" else int(
+                                    tss_ch) + position
 
                         if normalized_score >= threshold:
-
                             if calc_pvalue is not None:
                                 p_value = (random_scores >= normalized_score).sum() / len(random_scores)
 
                             row = [position]
-                            if tss_ge_distance is not None:
+                            if tis_position is not None:
                                 row.append(tis_position)
+                            if ch_pos is not None:
                                 row.append(ch_pos)
                             row += [sequence_with_context,
                                     "{:.6f}".format(normalized_score).ljust(12),
@@ -786,10 +792,14 @@ class IMO:
                             row += [strand, direction, name, species, region]
                             individual_motif_occurrences.append(row)
 
+                if region in ["rna.", "mrna."]:
+                    break
+
         if len(individual_motif_occurrences) > 0:
             header = ["Position"]
-            if tss_ge_distance is not None:
+            if tis_position is not None:
                 header.append("Rel Position")
+            if ch_pos is not None:
                 header.append("Ch Position")
             header += ["Sequence", "Rel Score", 'Score', 'Rel Score Adj', 'Score Adj']
             if calc_pvalue is not None:
@@ -805,24 +815,7 @@ class IMO:
             return "No consensus sequence found with the specified threshold.", False
 
     @staticmethod
-    # IUPAC code
-    def generate_iupac_variants(sequence, max_variant_allowed=None, progress_bar=None):
-        iupac_codes = {
-            "R": ["A", "G"],
-            "Y": ["C", "T"],
-            "M": ["A", "C"],
-            "K": ["G", "T"],
-            "W": ["A", "T"],
-            "S": ["C", "G"],
-            "B": ["C", "G", "T"],
-            "D": ["A", "G", "T"],
-            "H": ["A", "C", "T"],
-            "V": ["A", "C", "G"],
-            "N": ["A", "C", "G", "T"],
-            "-": ['-'],
-            ".": ['-']
-        }
-
+    def generate_iupac_variants(sequence):
         iupac_codes_score = {
             "R": 2,
             "Y": 2,
@@ -841,26 +834,36 @@ class IMO:
         for base in sequence:
             if base.upper() in iupac_codes_score:
                 total_variants *= iupac_codes_score[base.upper()]
-        if max_variant_allowed is not None:
-            if total_variants > max_variant_allowed:
-                sequence = f'Too many variants. Use - or . instead N. Limit: {max_variant_allowed} | Total variants : {total_variants}'
-                return sequence
 
-        if progress_bar is True:
-            pbar = tqdm(total=total_variants, desc='Generate variants from IUPAC code...', mininterval=0.1)
-        sequences = [sequence]
-        for i, base in enumerate(sequence):
-            if base.upper() in iupac_codes:
-                new_sequences = []
-                for seq in sequences:
-                    for alternative in iupac_codes[base.upper()]:
-                        new_sequence = seq[:i] + alternative + seq[i + 1:]
-                        new_sequences.append(new_sequence)
-                        if progress_bar is True:
-                            pbar.update(1)
-                sequences = new_sequences
+        iupac_frequencies = {
+            "A": {"A": 1.0, "C": 0.0, "G": 0.0, "T": 0.0},
+            "C": {"A": 0.0, "C": 1.0, "G": 0.0, "T": 0.0},
+            "G": {"A": 0.0, "C": 0.0, "G": 1.0, "T": 0.0},
+            "T": {"A": 0.0, "C": 0.0, "G": 0.0, "T": 1.0},
+            "R": {"A": 0.5, "C": 0.0, "G": 0.5, "T": 0.0},
+            "Y": {"A": 0.0, "C": 0.5, "G": 0.0, "T": 0.5},
+            "M": {"A": 0.5, "C": 0.5, "G": 0.0, "T": 0.0},
+            "K": {"A": 0.0, "C": 0.0, "G": 0.5, "T": 0.5},
+            "W": {"A": 0.5, "C": 0.0, "G": 0.0, "T": 0.5},
+            "S": {"A": 0.0, "C": 0.5, "G": 0.5, "T": 0.0},
+            "B": {"A": 0.0, "C": 0.333, "G": 0.333, "T": 0.333},
+            "D": {"A": 0.333, "C": 0.0, "G": 0.333, "T": 0.333},
+            "H": {"A": 0.333, "C": 0.333, "G": 0.0, "T": 0.333},
+            "V": {"A": 0.333, "C": 0.333, "G": 0.333, "T": 0.0},
+            "N": {"A": 0.25, "C": 0.25, "G": 0.25, "T": 0.25},
+            "-": {"A": 0.0, "C": 0.0, "G": 0.0, "T": 0.0},
+            ".": {"A": 0.0, "C": 0.0, "G": 0.0, "T": 0.0}}
 
-        return sequences
+        pwm_dict = {'A': [], 'C': [], 'G': [], 'T': []}
+        for char in sequence:
+            freq = iupac_frequencies.get(char, {"A": 0.0, "C": 0.0, "G": 0.0, "T": 0.0})
+
+            pwm_dict['A'].append(math.ceil(freq['A'] * total_variants))
+            pwm_dict['C'].append(math.ceil(freq['C'] * total_variants))
+            pwm_dict['G'].append(math.ceil(freq['G'] * total_variants))
+            pwm_dict['T'].append(math.ceil(freq['T'] * total_variants))
+
+        return pwm_dict
 
     @staticmethod
     # is PWM good ?
@@ -943,56 +946,105 @@ class IMO:
         return sequences
 
     @staticmethod
-    # generate Weblogo
-    def create_web_logo(sequences):
-        matrix = logomaker.alignment_to_matrix(sequences)
+    def create_web_logo(sequences, type_input):
+        if type_input == "PWM":
+            matrix = logomaker.alignment_to_matrix(sequences)
+        elif type_input == "UIPAC":
+            matrix = pd.DataFrame(sequences)
         logo = logomaker.Logo(matrix, color_scheme='classic')
         logo.style_spines(visible=True)
         logo.style_xticks(fmt='%d')
         logo.ax.set_ylabel("Bits")
         return logo
 
+    # @staticmethod
+    # # Individual motif PWM and weblogo
+    # def individual_motif_pwm(individual_motif):
+    #     sequences = IMO.parse_fasta(individual_motif)
+    #     sequences = [seq.upper() for seq in sequences]
+    #
+    #     if len(sequences) > 0:
+    #         sequence_length = len(sequences[0])
+    #         inconsistent_lengths = False
+    #
+    #         for sequence in sequences[1:]:
+    #             if len(sequence) != sequence_length:
+    #                 inconsistent_lengths = True
+    #                 break
+    #
+    #         if inconsistent_lengths:
+    #             raise Exception(f"Sequence lengths are not consistent.")
+    #
+    #         else:
+    #             matrix = IMO.calculate_pwm(sequences)
+    #
+    #             sequences_text = individual_motif
+    #             sequences = []
+    #             current_sequence = ""
+    #             for line in sequences_text.splitlines():
+    #                 line = line.strip()
+    #                 if line.startswith(">"):
+    #                     if current_sequence:
+    #                         sequences.append(current_sequence)
+    #                     current_sequence = ""
+    #                 else:
+    #                     current_sequence += line
+    #
+    #             sequences.append(current_sequence)
+    #
+    #             weblogo = IMO.create_web_logo(sequences)
+    #
+    #             return matrix, weblogo
+    #
+    #     else:
+    #         raise Exception(f"You forget to input something :)")
+
     @staticmethod
-    # Individual motif PWM and weblogo
-    def individual_motif_pwm(individual_motif):
-        sequences = IMO.parse_fasta(individual_motif)
-        sequences = [seq.upper() for seq in sequences]
+    def individual_motif_pwm(individual_motif, type_input="PWM"):
+        if type_input == "PWM":
+            sequences = IMO.parse_fasta(individual_motif)
+            sequences = [seq.upper() for seq in sequences]
 
-        if len(sequences) > 0:
-            sequence_length = len(sequences[0])
-            inconsistent_lengths = False
+            if len(sequences) > 0:
+                sequence_length = len(sequences[0])
+                inconsistent_lengths = False
 
-            for sequence in sequences[1:]:
-                if len(sequence) != sequence_length:
-                    inconsistent_lengths = True
-                    break
+                for sequence in sequences[1:]:
+                    if len(sequence) != sequence_length:
+                        inconsistent_lengths = True
+                        break
 
-            if inconsistent_lengths:
-                raise Exception(f"Sequence lengths are not consistent.")
+                if inconsistent_lengths:
+                    raise Exception(f"Sequence lengths are not consistent.")
+
+                else:
+                    matrix = IMO.calculate_pwm(sequences)
+
+                    sequences_text = individual_motif
+                    sequences = []
+                    current_sequence = ""
+                    for line in sequences_text.splitlines():
+                        line = line.strip()
+                        if line.startswith(">"):
+                            if current_sequence:
+                                sequences.append(current_sequence)
+                            current_sequence = ""
+                        else:
+                            current_sequence += line
+
+                    sequences.append(current_sequence)
+
+                    weblogo = IMO.create_web_logo(sequences, type_input)
+
+                    return matrix, weblogo
 
             else:
-                matrix = IMO.calculate_pwm(sequences)
+                raise Exception(f"You forget to input something :)")
 
-                sequences_text = individual_motif
-                sequences = []
-                current_sequence = ""
-                for line in sequences_text.splitlines():
-                    line = line.strip()
-                    if line.startswith(">"):
-                        if current_sequence:
-                            sequences.append(current_sequence)
-                        current_sequence = ""
-                    else:
-                        current_sequence += line
+        elif type_input == "UIPAC":
+            weblogo = IMO.create_web_logo(individual_motif, type_input)
 
-                sequences.append(current_sequence)
-
-                weblogo = IMO.create_web_logo(sequences)
-
-                return matrix, weblogo
-
-        else:
-            raise Exception(f"You forget to input something :)")
+            return None, weblogo
 
     @staticmethod
     def PWM_to_weblogo(pwm_str):
