@@ -957,48 +957,6 @@ class IMO:
         logo.ax.set_ylabel("Bits")
         return logo
 
-    # @staticmethod
-    # # Individual motif PWM and weblogo
-    # def individual_motif_pwm(individual_motif):
-    #     sequences = IMO.parse_fasta(individual_motif)
-    #     sequences = [seq.upper() for seq in sequences]
-    #
-    #     if len(sequences) > 0:
-    #         sequence_length = len(sequences[0])
-    #         inconsistent_lengths = False
-    #
-    #         for sequence in sequences[1:]:
-    #             if len(sequence) != sequence_length:
-    #                 inconsistent_lengths = True
-    #                 break
-    #
-    #         if inconsistent_lengths:
-    #             raise Exception(f"Sequence lengths are not consistent.")
-    #
-    #         else:
-    #             matrix = IMO.calculate_pwm(sequences)
-    #
-    #             sequences_text = individual_motif
-    #             sequences = []
-    #             current_sequence = ""
-    #             for line in sequences_text.splitlines():
-    #                 line = line.strip()
-    #                 if line.startswith(">"):
-    #                     if current_sequence:
-    #                         sequences.append(current_sequence)
-    #                     current_sequence = ""
-    #                 else:
-    #                     current_sequence += line
-    #
-    #             sequences.append(current_sequence)
-    #
-    #             weblogo = IMO.create_web_logo(sequences)
-    #
-    #             return matrix, weblogo
-    #
-    #     else:
-    #         raise Exception(f"You forget to input something :)")
-
     @staticmethod
     def individual_motif_pwm(individual_motif, type_input="PWM"):
         if type_input == "PWM":

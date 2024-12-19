@@ -126,6 +126,7 @@ def extract():
                 ncbi_status = True if response.status_code == 200 else False
 
                 if ncbi_status is True:
+                    st.session_state['result_promoter_text'] = ""
                     with st.spinner('Please wait...'):
                         with colprom1:
 
@@ -352,6 +353,7 @@ def extract():
                 ncbi_status = True if response.status_code == 200 else False
 
                 if ncbi_status is True:
+                    st.session_state['result_promoter_text'] = ""
                     with colprom1:
                         st.session_state['upstream'] = upstream_entry
                         upstream = int(upstream_entry)
@@ -490,25 +492,53 @@ def extract():
 
 
 def fasta(result_promoter_text=None):
-    # Promoter output state
     st.divider()
-    promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
-    with promcol1:
-        st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-        if 'result_promoter_text' not in st.session_state:
-            result_promoter_text = ''
-            st.session_state['result_promoter_text'] = result_promoter_text
-        dna_sequence = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
-                                    value=st.session_state['result_promoter_text'],
-                                    label_visibility='collapsed', height=125)
+    promcol1, promcol2 = st.columns([0.75, 0.25], gap='small')
 
     with promcol2:
         st.markdown('')
-        st.markdown('')
-        st.markdown('')
-        current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        txt_output = f"{dna_sequence}"
-        st.download_button(label="💾 Download (.fasta)", data=txt_output,
-                           file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain")
+        uploaded_files = st.file_uploader(
+            "Upload FASTA/TXT files:",
+            type=["fasta", "txt"],
+            accept_multiple_files=True,
+            help="Upload multiple FASTA/TXT files"
+        )
+        if uploaded_files:
+            concatenated_sequences = ""
+            for uploaded_file in uploaded_files:
+                uploaded_content = uploaded_file.getvalue().decode("utf-8")
+                concatenated_sequences += uploaded_content + "\n"
+            st.session_state['result_promoter_text'] = concatenated_sequences.strip()
+
+    with promcol1:
+        st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
+
+        dna_sequence = st.text_area(
+            "🔹 :blue[**Step 2.1**] Sequences:",
+            value="" if 'result_promoter_text' not in st.session_state
+            else st.session_state['result_promoter_text'],
+            label_visibility='collapsed',
+            height=125
+        )
+        st.session_state['result_promoter_text'] = dna_sequence
+
+        if '>' in dna_sequence:
+            num_sequences = dna_sequence.count('>')
+            st.markdown(f"**Number of sequences**: {num_sequences}")
+        elif dna_sequence.strip():
+            num_sequences = 1
+            st.markdown("**Single sequence detected**")
+        else:
+            num_sequences = 0
+            st.markdown("**No sequence entered**")
+
+    current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    txt_output = f"{dna_sequence}"
+    promcol2.download_button(
+        label="💾 Download sequence (.fasta)",
+        data=txt_output,
+        file_name=f"Sequences_{current_date_time}.fasta",
+        mime="text/plain"
+    )
 
     return dna_sequence
