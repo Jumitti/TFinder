@@ -451,7 +451,7 @@ def analyse(dna_sequence=None):
                                                 "[TFBSTools](https://bioconductor.org/packages/release/bioc/html/TFBSTools.html))."
                                                 f"")
             if isUIPAC is True:
-                pseudocount_auto, _, _ = IMO.transform_PWM(matrix)
+                pseudocount_auto, _ = IMO.transform_PWM(matrix)
                 pc_col1, pc_col2, pc_col3, pc_col4 = st.columns(4, gap="small")
                 pseudocount_A = pc_col1.number_input('A',
                                                      value=0.20 if pseudocount_type is False else pseudocount_auto['A'],

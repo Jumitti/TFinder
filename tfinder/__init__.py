@@ -619,27 +619,26 @@ class IMO:
             return isfasta
 
     @staticmethod
-    def transform_PWM(matrix, pseudocount=None):
+    def transform_PWM(matrix, pseudocount=None, bg=None):
         motif = motifs.Motif(counts=matrix)
         pseudocount_auto = calculate_pseudocounts(motif)
         pwm = motif.counts.normalize(pseudocounts=pseudocount_auto if pseudocount is None else pseudocount)
         background_preset = {'A': 0.25, 'C': 0.25, 'G': 0.25, 'T': 0.25}
-        log_odds_matrix = pwm.log_odds(background=background_preset)
+        log_odds_matrix = pwm.log_odds(background=bg if bg is not None else background_preset)
 
-        return pseudocount_auto, pwm, log_odds_matrix
+        return pseudocount_auto, log_odds_matrix
 
     @staticmethod
     # Find with JASPAR and manual matrix
-    def individual_motif_finder(dna_sequences, threshold, matrix, progress_bar=None, calc_pvalue=None,
+    def individual_motif_finder(dna_sequences, threshold, matrix_input, progress_bar=None, calc_pvalue=None,
                                 tss_ge_distance=None, alldirection=None, pseudocount=None, bgnf=None):
         if calc_pvalue is not None:
             if calc_pvalue not in ["ATGCPreset", "ATGCProportion"]:
                 raise ValueError("Use 'ATGCPreset' or 'ATGCProportion'")
 
         individual_motif_occurrences = []
-        _, pwm, log_odds_matrix = IMO.transform_PWM(matrix, pseudocount)
+        _, log_odds_matrix = IMO.transform_PWM(matrix_input, pseudocount)
         matrices = IMO.transform_matrix(log_odds_matrix, alldirection)
-        pwm_weight = IMO.transform_matrix(pwm, alldirection)
 
         seq_length = len(matrices['+ f']['A'])
 
@@ -680,6 +679,12 @@ class IMO:
             percentage_g = count_g / length_prom
             percentage_c = count_c / length_prom
 
+            background_freq = {'A': percentage_a, 'C': percentage_c,
+                               'G': percentage_g, 'T': percentage_t} if bgnf is None else bgnf
+
+            _, pwm = IMO.transform_PWM(matrix_input, pseudocount, background_freq)
+            pwm_weight = IMO.transform_matrix(pwm, alldirection)
+
             if calc_pvalue == 'ATGCProportion':
                 random_sequences = IMO.generate_ranseq([percentage_a, percentage_c, percentage_g, percentage_t],
                                                        seq_length, progress_bar)
@@ -701,6 +706,8 @@ class IMO:
                 # Max score per matrix
                 max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
                 min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
+                max_score_pwm = sum(max(pwm_weight[matrix_name][base][i] for base in pwm_weight[matrix_name].keys()) for i in range(seq_length))
+                min_score_pwm = sum(min(pwm_weight[matrix_name][base][i] for base in pwm_weight[matrix_name].keys()) for i in range(seq_length))
 
                 if calc_pvalue == 'ATGCProportion':
                     matrix_random_scores = []
@@ -720,15 +727,10 @@ class IMO:
                     normalized_score = (score - min_score) / (max_score - min_score)
                     position = int(i) + 1
 
-                    background_freq = {'A': percentage_a, 'C': percentage_c,
-                                       'G': percentage_g, 'T': percentage_t} if bgnf is None else bgnf
-                    weight = IMO.calculate_weight(seq, pwm_weight[matrix_name], background_freq)
-                    min_weight, max_weight = IMO.calculate_min_max_weights(pwm_weight[matrix_name], background_freq)
-                    relative_weight = (weight - min_weight) / (max_weight - min_weight)
-                    found_positions.append((position, seq, normalized_score, score, weight, relative_weight))
+                    found_positions.append((position, seq, normalized_score, score))
 
                     if progress_bar:
-                        pb = 1 if region in ["prom.", "term."] else 2
+                        pb = 1 if region in ["prom.", "term.", "n.d"] else 2
                         progress_bar.update(pb)
 
                 # Sort positions in descending order of score percentage
@@ -738,42 +740,46 @@ class IMO:
                 if len(found_positions) > 0:
                     if threshold < 0.5:
                         highest_normalized_score = max(
-                            [normalized_score for _, _, normalized_score, _, _, _ in found_positions])
+                            [normalized_score for _, _, normalized_score, _, in found_positions])
                         if highest_normalized_score >= 0.6:
                             threshold = highest_normalized_score - 0.10
                         else:
                             threshold = 0.5
 
-                    for position, seq, normalized_score, score, weight, relative_weight in found_positions:
-                        start_position = max(0, position - 4)
-                        end_position = min(len(dna_sequence), position + len(seq) + 2)
-                        sequence_with_context = dna_sequence[start_position:end_position]
-
-                        sequence_parts = []
-                        for j in range(start_position, end_position):
-                            if j < position - 1 or j + 2 > position + len(seq):
-                                sequence_parts.append(sequence_with_context[j - start_position].lower())
-                            else:
-                                sequence_parts.append(sequence_with_context[j - start_position].upper())
-
-                        sequence_with_context = ''.join(sequence_parts)
-
-                        tis_position = None
-                        ch_pos = None
-                        if region in ["prom.", "term."]:
-                            if tss_ge_distance is not None:
-                                tis_position = position - tss_ge_distance - 1
-
-                                if strand_seq in ["plus", "minus"] and tss_ch != 0:
-                                    ch_pos = int(tss_ch) - tis_position if strand_seq == "minus" else int(
-                                        tss_ch) + tis_position
-
-                        elif region in ["rna.", "mrna."]:
-                            if strand_seq in ["plus", "minus"] and tss_ch != 0:
-                                ch_pos = int(tss_ch) - position if strand_seq == "minus" else int(
-                                    tss_ch) + position
-
+                    for position, seq, normalized_score, score in found_positions:
                         if normalized_score >= threshold:
+
+                            weight = IMO.calculate_score(seq, pwm_weight[matrix_name])
+                            relative_weight = (weight - min_score_pwm) / (max_score_pwm - min_score_pwm)
+
+                            start_position = max(0, position - 4)
+                            end_position = min(len(dna_sequence), position + len(seq) + 2)
+                            sequence_with_context = dna_sequence[start_position:end_position]
+
+                            sequence_parts = []
+                            for j in range(start_position, end_position):
+                                if j < position - 1 or j + 2 > position + len(seq):
+                                    sequence_parts.append(sequence_with_context[j - start_position].lower())
+                                else:
+                                    sequence_parts.append(sequence_with_context[j - start_position].upper())
+
+                            sequence_with_context = ''.join(sequence_parts)
+
+                            tis_position = None
+                            ch_pos = None
+                            if region in ["prom.", "term."]:
+                                if tss_ge_distance is not None:
+                                    tis_position = position - tss_ge_distance - 1
+
+                                    if strand_seq in ["plus", "minus"] and tss_ch != 0:
+                                        ch_pos = int(tss_ch) - tis_position if strand_seq == "minus" else int(
+                                            tss_ch) + tis_position
+
+                            elif region in ["rna.", "mrna."]:
+                                if strand_seq in ["plus", "minus"] and tss_ch != 0:
+                                    ch_pos = int(tss_ch) - position if strand_seq == "minus" else int(
+                                        tss_ch) + position
+
                             if calc_pvalue is not None:
                                 p_value = (random_scores >= normalized_score).sum() / len(random_scores)
 

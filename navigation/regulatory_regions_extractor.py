@@ -535,7 +535,7 @@ def fasta(result_promoter_text=None):
     current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     txt_output = f"{dna_sequence}"
     promcol2.download_button(
-        label="💾 Download sequence (.fasta)",
+        label="💾 Download sequence(s) (.fasta)",
         data=txt_output,
         file_name=f"Sequences_{current_date_time}.fasta",
         mime="text/plain"
