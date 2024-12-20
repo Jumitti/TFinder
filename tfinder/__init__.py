@@ -558,48 +558,6 @@ class IMO:
         score = sum(matrix[base][position] for position, base in enumerate(sequence))
         return score
 
-    ###
-
-    @staticmethod
-    def calculate_weight(sequence, pwm, background_freq):
-
-        def calculate_pwm_probability(sequence, pwm):
-            probability = 1.0
-            for i, base in enumerate(sequence):
-                probability *= pwm[base][i]
-            return probability
-
-        def calculate_background_probability(sequence, background_freq):
-            probability = 1.0
-            for base in sequence:
-                probability *= background_freq.get(base)
-            return probability
-
-        pwm_prob = calculate_pwm_probability(sequence, pwm)
-        background_prob = calculate_background_probability(sequence, background_freq)
-        return math.log2(pwm_prob / background_prob)
-
-    @staticmethod
-    def calculate_min_max_weights(pwm, background_freq):
-        min_prob = 1.0
-        max_prob = 1.0
-
-        for i in range(len(next(iter(pwm.values())))):
-            col = {base: pwm[base][i] / (background_freq.get(base) or 1e-64) for base in pwm}
-
-            min_value = min(col.values())
-            max_value = max(col.values())
-
-            min_prob *= min_value
-            max_prob *= max_value
-
-        min_weight = math.log2(min_prob)
-        max_weight = math.log2(max_prob)
-
-        return min_weight, max_weight
-
-    ###
-
     @staticmethod
     # Generate random sequences
     def generate_random_sequence(length, probabilities):
