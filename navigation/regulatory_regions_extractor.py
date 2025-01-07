@@ -50,29 +50,6 @@ def extract():
                                      label_visibility='collapsed')
         gene_ids = gene_id_entry.strip().split("\n")
 
-        # Verify if gene is available for all species
-        if st.button('🔎 Check genes avaibility',
-                     help='Sometimes genes do not have the same name in all species or do not exist.'):
-            with st.spinner('Please wait...'):
-                species_list = ['ID', 'Human', 'Mouse', 'Rat', 'Drosophila', 'Zebrafish']
-                gene_disponibility_output = []
-                pbar = st.progress(0,
-                                   text='**:blue[Analyse genes...] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                for i, gene_id in enumerate(gene_ids):
-                    pbar.progress(i / len(gene_ids),
-                                  text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                    gene_disponibility_output.append(NCBIdna.analyse_gene(gene_id))
-                    pbar.progress((i + 1) / len(gene_ids),
-                                  text=f'**:blue[Analyse genes... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-
-                species_columns = ['Gene'] + species_list
-                gene_disponibility_output = pd.DataFrame(gene_disponibility_output, columns=species_columns)
-
-                st.session_state['gene_disponibility_output'] = gene_disponibility_output
-
-        if 'gene_disponibility_output' in st.session_state:
-            st.dataframe(st.session_state['gene_disponibility_output'], hide_index=True)
-
     with colprom2:
         tab1, tab2 = st.tabs(['Default', 'Advance'])
 
@@ -99,26 +76,40 @@ def extract():
 
             col3.markdown("")
             col3.markdown("")
-            all_variants = col3.toggle(label='All variants')
+            all_slice_forms = col3.toggle(label='All variants')
 
-            # Upstream/Downstream Promoter
-            st.markdown("🔹 :blue[**Step 1.3**] Regulatory region:")
-            prom_term = st.radio("🔹 :blue[**Step 1.3**] Regulatory region:", ('Promoter', 'Terminator'),
-                                 horizontal=True,
-                                 label_visibility='collapsed')
-            if prom_term == 'Promoter':
-                st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from the TSS (bp)")
-            else:
-                st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from gene end (bp)")
+            st.markdown("🔹 :blue[**Step 1.3**] Sequence type:")
+            seq_type_display = st.radio(
+                "🔹 :blue[**Step 1.3**] Sequence type:",
+                ('Promoter', 'Terminator', "RNA (exon + intron)", "mRNA (exon)"),
+                horizontal=True,
+                label_visibility='collapsed'
+            )
+            seq_type_mapping = {
+                "Promoter": "Promoter",
+                "Terminator": "Terminator",
+                "RNA (exon + intron)": "RNA",
+                "mRNA (exon)": "mRNA"
+            }
 
-            updown_slide = st.slider("🔹 :blue[**Step 1.4**] Upstream/downstream", -10000, 10000,
-                                     (-2000, 2000), step=100, label_visibility='collapsed')
-            if prom_term == 'Promoter':
-                st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide),
-                         " bp from TSS")
+            seq_type = seq_type_mapping[seq_type_display]
+
+            if seq_type in ['Promoter', 'Terminator']:
+                if seq_type == 'Promoter':
+                    st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from the TSS (bp)")
+                elif seq_type == "Terminator":
+                    st.markdown("🔹 :blue[**Step 1.4**] Upstream/downstream from gene end (bp)")
+
+                updown_slide = st.slider("🔹 :blue[**Step 1.4**] Upstream/downstream", -10000, 10000,
+                                         (-2000, 2000), step=100, label_visibility='collapsed', disabled=True if seq_type in ['mRNA', "RNA"] else False)
+                if seq_type == 'Promoter':
+                    st.write("Upstream: ", min(updown_slide), " bp from TSS | Downstream: ", max(updown_slide),
+                             " bp from TSS")
+                elif seq_type == "Terminator":
+                    st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide),
+                             " bp from gene end")
             else:
-                st.write("Upstream: ", min(updown_slide), " bp from gene end | Downstream: ", max(updown_slide),
-                         " bp from gene end")
+                updown_slide = [0, 0]
 
             upstream_entry = -min(updown_slide)
             downstream_entry = max(updown_slide)
@@ -128,13 +119,14 @@ def extract():
             downstream = int(downstream_entry)
 
             # Run Promoter Finder
-            if st.button(f"🧬 :blue[**Step 1.5**] Extract {prom_term}", help='(~5sec/gene)'):
+            if st.button(f"🧬 :blue[**Step 1.5**] Extract {seq_type}", help='(~5sec/gene)'):
                 response = requests.get(
                     'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term=nos2[Gene%20Name]+AND+human[Organism]&retmode=json&rettype=xml')
 
                 ncbi_status = True if response.status_code == 200 else False
 
                 if ncbi_status is True:
+                    st.session_state['result_promoter_text'] = ""
                     with st.spinner('Please wait...'):
                         with colprom1:
 
@@ -143,16 +135,53 @@ def extract():
                             for i, gene_id in enumerate(gene_ids):
                                 pbar.progress(i / len(gene_ids),
                                               text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                                result_promoter_output, message = NCBIdna(gene_id, prom_term, upstream, downstream,
-                                                                          species, gr.lower(),
-                                                                          all_slice_forms=True if all_variants else False).find_sequences()
+                                all_variants, message = NCBIdna(gene_id, species, seq_type.lower(), upstream, downstream, gr.lower(),
+                                                                          all_slice_forms=True if all_slice_forms else False).find_sequences()
                                 if message == "OK":
-                                    pbar.progress((i + 1) / len(gene_ids),
+                                    for nm_id, data in all_variants.items():
+                                        exon_coords = data.get('exon_coords', [])
+                                        upstream_seq = data.get('upstream')
 
-                                                  text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
-                                    st.toast(f"{prom_term} **{gene_id}** from **{species}** extracted", icon='🧬')
+                                        dna_sequence = (
+                                            f">{nm_id} {data.get('gene_name', 'Unknown')} | "
+                                            f"{data.get('genomic_info', 'No Title')} {data.get('chraccver', 'No chraccver')} | "
+                                            f"Strand: {data.get('strand', 'Unknown')} | "
+                                            f"Type: {data.get('seq_type', 'Unknown')} | "
+                                        )
 
-                                    result_promoter.append(result_promoter_output)
+                                        if data.get('seq_type') == 'promoter':
+                                            coord = (
+                                                f"TSS (on chromosome): {exon_coords[0][0] + 1} "
+                                                f"{f'| TSS (on sequence): {upstream_seq}' if upstream_seq is not None else ''}\n"
+                                            )
+                                        elif data.get('seq_type') == 'terminator':
+                                            coord = (
+                                                f"Gene end (on chromosome): {exon_coords[-1][1]} "
+                                                f"{f'| Gene end (on sequence): {upstream_seq}' if upstream_seq is not None else ''}\n"
+                                            )
+                                        else:
+                                            coord = (
+                                                f"TSS (on chromosome): {exon_coords[0][0] + 1} "
+                                                f"| Gene end (on chromosome): {exon_coords[-1][1]}\n"
+                                            )
+
+                                        sequence = f"{data.get('sequence', 'No sequence available')}\n"
+
+                                        result_promoter.append(dna_sequence + coord + sequence)
+
+                                        pbar.progress(
+                                            (i + 1) / len(gene_ids),
+                                            text=(
+                                                f"**:blue[Extract sequence... {gene_id}] "
+                                                f"⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**"
+                                            )
+                                        )
+
+                                        st.toast(
+                                            f"{data.get('seq_type', 'Unknown')} **{gene_id}** from **{species}** extracted",
+                                            icon='🧬'
+                                        )
+
                                 else:
                                     st.error(message)
                                     continue
@@ -161,8 +190,8 @@ def extract():
 
                             st.session_state['result_promoter_text'] = result_promoter_text
 
-                            st.success(f"{prom_term} extraction complete !")
-                            st.toast(f"{prom_term} extraction complete !", icon='😊')
+                            st.success(f"{seq_type} extraction complete !")
+                            st.toast(f"{seq_type} extraction complete !", icon='😊')
 
                 elif ncbi_status is False:
                     st.warning("⚠ NCBI servers are under maintenance or have an error")
@@ -179,13 +208,15 @@ def extract():
                     "zebrafish": [False] * len(gene_ids),
                     "promoter": [False] * len(gene_ids),
                     "terminator": [False] * len(gene_ids),
+                    "rna": [False] * len(gene_ids),
+                    "mrna": [False] * len(gene_ids),
                     "current": [False] * len(gene_ids),
                     "previous": [False] * len(gene_ids),
                 }
             )
 
             species_list = ['human', 'mouse', 'rat', 'drosophila', 'zebrafish']
-            search_types = ['promoter', 'terminator']
+            search_types = ['promoter', 'terminator', "rna", "mrna"]
             genome_type = ["current", "previous"]
 
             st.markdown('**🔹 :blue[Step 1.2]** Select species for all genes:',
@@ -207,12 +238,12 @@ def extract():
             st.markdown('**🔹 :blue[Step 1.2]** Select regions for all genes:',
                         help='Checking a box allows you to check all the corresponding boxes for each gene. Warning: if you have manually checked boxes in the table, they will be reset.')
 
-            region1, region2 = st.columns(2)
+            region1, region2, region3, region4 = st.columns(4)
 
-            with region1:
-                all_prom = st.toggle("Promoter")
-            with region2:
-                all_term = st.toggle("Terminator")
+            all_prom = region1.toggle("Promoter")
+            all_term = region2.toggle("Terminator")
+            all_rna = region3.toggle("RNA")
+            all_mrna = region4.toggle("mRNA")
 
             st.markdown('**🔹 :blue[Step 1.2]** Select genome version for all genes:',
                         help="Human: Current  ->  GrCh38, Previous  ->  GrCh37\n\n"
@@ -242,6 +273,10 @@ def extract():
                 data_df["promoter"] = True
             if all_term:
                 data_df["terminator"] = True
+            if all_rna:
+                data_df["rna"] = True
+            if all_mrna:
+                data_df["mrna"] = True
             if gr_current:
                 data_df['current'] = True
             if gr_previous:
@@ -281,6 +316,14 @@ def extract():
                         "Terminator",
                         default=False,
                     ),
+                    "rna": st.column_config.CheckboxColumn(
+                        "RNA",
+                        default=False,
+                    ),
+                    "mrna": st.column_config.CheckboxColumn(
+                        "mRNA",
+                        default=False,
+                    ),
                     "current": st.column_config.CheckboxColumn(
                         "Current genome",
                         default=False,
@@ -310,6 +353,7 @@ def extract():
                 ncbi_status = True if response.status_code == 200 else False
 
                 if ncbi_status is True:
+                    st.session_state['result_promoter_text'] = ""
                     with colprom1:
                         st.session_state['upstream'] = upstream_entry
                         upstream = int(upstream_entry)
@@ -323,20 +367,55 @@ def extract():
                                 for genome in genome_type:
                                     for search_type in search_types:
                                         if getattr(gene_info, f'{search_type}') and getattr(gene_info, f'{genome}'):
-                                            prom_term = search_type.capitalize()
+                                            seq_type = search_type.capitalize()
 
                                             pbar.progress((i + 1) / len(data_dff),
-                                                          text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                                                          text=f'**:blue[Extract sequence... {seq_type} **{gene_id}** from **{species}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
 
-                                            result_promoter_output, message = NCBIdna(gene_id, prom_term, upstream,
-                                                                                      downstream,
-                                                                                      genome_version=genome).find_sequences()
-
+                                            all_variants, message = NCBIdna(gene_id, seq_type=seq_type.lower(),
+                                                                            upstream=upstream, downstream=downstream, genome_version=gr.lower(),
+                                                                            all_slice_forms=True if all_slice_forms else False).find_sequences()
                                             if message == "OK":
-                                                st.toast(f"{prom_term} **{gene_id}** from **{species}** extracted",
-                                                         icon='🧬')
+                                                for nm_id, data in all_variants.items():
+                                                    exon_coords = data.get('exon_coords', [])
+                                                    upstream_seq = data.get('upstream')
 
-                                                result_promoter.append(result_promoter_output)
+                                                    if not exon_coords:
+                                                        print(
+                                                            f"Erreur: 'exon_coords' est manquant ou vide pour {nm_id}.")
+                                                        continue
+
+                                                    dna_sequence = (
+                                                        f">{nm_id} {data.get('gene_name', 'Unknown')} | "
+                                                        f"{data.get('genomic_info', 'No Title')} {data.get('chraccver', 'No chraccver')} | "
+                                                        f"Strand: {data.get('strand', 'Unknown')} | "
+                                                        f"Type: {data.get('seq_type', 'Unknown')} | "
+                                                    )
+
+                                                    if data.get('seq_type') == 'promoter':
+                                                        coord = (
+                                                            f"TSS (on chromosome): {exon_coords[0][0] + 1} "
+                                                            f"{f'| TSS (on sequence): {upstream_seq}' if upstream_seq is not None else ''}\n"
+                                                        )
+                                                    elif data.get('seq_type') == 'terminator':
+                                                        coord = (
+                                                            f"Gene end (on chromosome): {exon_coords[-1][1]} "
+                                                            f"{f'| Gene end (on sequence): {upstream_seq}' if upstream_seq is not None else ''}\n"
+                                                        )
+                                                    else:
+                                                        coord = (
+                                                            f"TSS (on chromosome): {exon_coords[0][0] + 1} "
+                                                            f"| Gene end (on chromosome): {exon_coords[-1][1]}\n"
+                                                        )
+
+                                                    sequence = f"{data.get('sequence', 'No sequence available')}\n"
+
+                                                    result_promoter.append(dna_sequence + coord + sequence)
+
+                                                    st.toast(
+                                                        f"{data.get('seq_type', 'Unknown')} **{gene_id}** from **{species}** extracted",
+                                                        icon='🧬'
+                                                    )
                                             else:
                                                 st.error(message)
                                                 continue
@@ -348,53 +427,118 @@ def extract():
                                             if getattr(gene_info, f'{species}') and getattr(gene_info,
                                                                                             f'{search_type}') and getattr(
                                                 gene_info, f'{genome}'):
-                                                prom_term = search_type.capitalize()
+                                                seq_type = search_type.capitalize()
 
                                                 pbar.progress((i + 1) / len(data_dff),
-                                                              text=f'**:blue[Extract sequence... {prom_term} **{gene_id}** from **{species.capitalize()}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
+                                                              text=f'**:blue[Extract sequence... {seq_type} **{gene_id}** from **{species.capitalize()}**] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
 
-                                                result_promoter_output, message = NCBIdna(gene_id, prom_term, upstream,
-                                                                                          downstream, species,
-                                                                                          genome).find_sequences()
-
+                                                all_variants, message = NCBIdna(gene_id, species, seq_type=seq_type.lower(),
+                                                                                upstream=upstream,
+                                                                                downstream=downstream,
+                                                                                genome_version=gr.lower(),
+                                                                                all_slice_forms=True if all_slice_forms else False).find_sequences()
                                                 if message == "OK":
-                                                    st.toast(f"{prom_term} **{gene_id}** from **{species}** extracted",
-                                                             icon='🧬')
+                                                    for nm_id, data in all_variants.items():
+                                                        exon_coords = data.get('exon_coords', [])
+                                                        upstream_seq = data.get('upstream')
 
-                                                    result_promoter.append(result_promoter_output)
+                                                        if not exon_coords:
+                                                            print(
+                                                                f"Erreur: 'exon_coords' est manquant ou vide pour {nm_id}.")
+                                                            continue
+
+                                                        dna_sequence = (
+                                                            f">{nm_id} {data.get('gene_name', 'Unknown')} | "
+                                                            f"{data.get('genomic_info', 'No Title')} {data.get('chraccver', 'No chraccver')} | "
+                                                            f"Strand: {data.get('strand', 'Unknown')} | "
+                                                            f"Type: {data.get('seq_type', 'Unknown')} | "
+                                                        )
+
+                                                        if data.get('seq_type') == 'promoter':
+                                                            coord = (
+                                                                f"TSS (on chromosome): {exon_coords[0][0] + 1} "
+                                                                f"{f'| TSS (on sequence): {upstream_seq}' if upstream_seq is not None else ''}\n"
+                                                            )
+                                                        elif data.get('seq_type') == 'terminator':
+                                                            coord = (
+                                                                f"Gene end (on chromosome): {exon_coords[-1][1]} "
+                                                                f"{f'| Gene end (on sequence): {upstream_seq}' if upstream_seq is not None else ''}\n"
+                                                            )
+                                                        else:
+                                                            coord = (
+                                                                f"TSS (on chromosome): {exon_coords[0][0] + 1} "
+                                                                f"| Gene end (on chromosome): {exon_coords[-1][1]}\n"
+                                                            )
+
+                                                        sequence = f"{data.get('sequence', 'No sequence available')}\n"
+
+                                                        result_promoter.append(dna_sequence + coord + sequence)
+
+                                                        st.toast(
+                                                            f"{data.get('seq_type', 'Unknown')} **{gene_id}** from **{species}** extracted",
+                                                            icon='🧬'
+                                                        )
                                                 else:
                                                     st.error(message)
                                                     continue
 
                         result_promoter_text = "\n".join(result_promoter)
                         st.session_state['result_promoter_text'] = result_promoter_text
-                        st.success(f"{prom_term} extraction complete !")
-                        st.toast(f"{prom_term} extraction complete !", icon='😊')
+                        st.success(f"{seq_type} extraction complete !")
+                        st.toast(f"{seq_type} extraction complete !", icon='😊')
 
                 elif ncbi_status is False:
                     st.warning("⚠ NCBI servers are under maintenance or have an error")
 
 
 def fasta(result_promoter_text=None):
-    # Promoter output state
     st.divider()
-    promcol1, promcol2 = st.columns([0.9, 0.1], gap='small')
-    with promcol1:
-        st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
-        if 'result_promoter_text' not in st.session_state:
-            result_promoter_text = ''
-            st.session_state['result_promoter_text'] = result_promoter_text
-        dna_sequence = st.text_area("🔹 :blue[**Step 2.1**] Sequences:",
-                                    value=st.session_state['result_promoter_text'],
-                                    label_visibility='collapsed', height=125)
+    promcol1, promcol2 = st.columns([0.75, 0.25], gap='small')
 
     with promcol2:
         st.markdown('')
-        st.markdown('')
-        st.markdown('')
-        current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        txt_output = f"{dna_sequence}"
-        st.download_button(label="💾 Download (.fasta)", data=txt_output,
-                           file_name=f"Sequences_{current_date_time}.fasta", mime="text/plain")
+        uploaded_files = st.file_uploader(
+            "Upload FASTA/TXT files:",
+            type=["fasta", "txt"],
+            accept_multiple_files=True,
+            help="Upload multiple FASTA/TXT files"
+        )
+        if uploaded_files:
+            concatenated_sequences = ""
+            for uploaded_file in uploaded_files:
+                uploaded_content = uploaded_file.getvalue().decode("utf-8")
+                concatenated_sequences += uploaded_content + "\n"
+            st.session_state['result_promoter_text'] = concatenated_sequences.strip()
+
+    with promcol1:
+        st.markdown("🔹 :blue[**Step 2.1**] Sequences:", help='Copy: Click in sequence, CTRL+A, CTRL+C')
+
+        dna_sequence = st.text_area(
+            "🔹 :blue[**Step 2.1**] Sequences:",
+            value="" if 'result_promoter_text' not in st.session_state
+            else st.session_state['result_promoter_text'],
+            label_visibility='collapsed',
+            height=125
+        )
+        st.session_state['result_promoter_text'] = dna_sequence
+
+        if '>' in dna_sequence:
+            num_sequences = dna_sequence.count('>')
+            st.markdown(f"**Number of sequences**: {num_sequences}")
+        elif dna_sequence.strip():
+            num_sequences = 1
+            st.markdown("**Single sequence detected**")
+        else:
+            num_sequences = 0
+            st.markdown("**No sequence entered**")
+
+    current_date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    txt_output = f"{dna_sequence}"
+    promcol2.download_button(
+        label="💾 Download sequence(s) (.fasta)",
+        data=txt_output,
+        file_name=f"Sequences_{current_date_time}.fasta",
+        mime="text/plain"
+    )
 
     return dna_sequence

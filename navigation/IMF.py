@@ -188,7 +188,7 @@ def analyse(dna_sequence=None):
                             break
                         else:
                             found_species = "n.d"
-                    regions_prom = ['Promoter', 'Terminator']
+                    regions_prom = ['promoter', 'terminator', 'rna', 'mrna']
                     for regions in regions_prom:
                         if regions.lower() in promoter_name.lower():
                             region = regions[:4] + "."
@@ -248,13 +248,16 @@ def analyse(dna_sequence=None):
                     st.success(f"{TF_species} transcription factor {TF_name}")
                     with REcol2:
                         st.image(weblogo)
+                    isUIPAC = True
                     button = False
                     error_input_im = True
                 else:
+                    isUIPAC = False
                     button = True
                     error_input_im = False
                     st.error('Wrong JASPAR_ID')
             else:
+                isUIPAC = False
                 button = True
                 error_input_im = False
                 st.warning('Please enter a JASPAR_ID')
@@ -265,7 +268,6 @@ def analyse(dna_sequence=None):
             matrix_type = st.radio('🔹 :blue[**Step 2.2bis**] Matrix:', ('With FASTA sequences', 'With PWM'),
                                    label_visibility='collapsed')
         if matrix_type == 'With PWM':
-            isUIPAC = True
             with REcol2:
                 st.markdown("🔹 :blue[**Step 2.3**] Matrix:")
                 matrix_str = st.text_area("🔹 :blue[**Step 2.3**] Matrix:",
@@ -303,12 +305,14 @@ def analyse(dna_sequence=None):
                         weblogo.fig.savefig(logo, format='png')
                         logo.seek(0)
                         st.session_state['weblogo'] = logo
-
+                        isUIPAC = True
                         error_input_im = True
                     except Exception as e:
+                        isUIPAC = False
                         error_input_im = False
                         REcol2.error(e)
                 else:
+                    isUIPAC = False
                     error_input_im = False
                     REcol2.warning("Please input your PWM :)")
         else:
@@ -322,7 +326,6 @@ def analyse(dna_sequence=None):
                                                 label_visibility='collapsed')
                 st.session_state['individual_motif_save'] = individual_motif
                 individual_motif = individual_motif.upper()
-            isUIPAC = True
 
             try:
                 matrix, weblogo = IMO.individual_motif_pwm(individual_motif)
@@ -339,8 +342,10 @@ def analyse(dna_sequence=None):
                     weblogo.fig.savefig(logo, format='png')
                     logo.seek(0)
                     st.session_state['weblogo'] = logo
+                isUIPAC = True
                 error_input_im = True
             except Exception as e:
+                isUIPAC = False
                 error_input_im = False
                 REcol1.error(e)
 
@@ -357,39 +362,36 @@ def analyse(dna_sequence=None):
 
         IUPAC_code = ['A', 'T', 'G', 'C', 'R', 'Y', 'M', 'K', 'W', 'S', 'B', 'D', 'H', 'V', 'N', '-', '.']
 
-        if all(char in IUPAC_code for char in IUPAC):
-            isUIPAC = True
-
-            sequences = IMO.generate_iupac_variants(IUPAC, max_variant_allowed=1048576)
-
-            if 'Too many' not in sequences:
-                individual_motif = ""
-                for i, seq in enumerate(sequences):
-                    individual_motif += f">seq{i + 1}\n{seq}\n"
-
+        if len(IUPAC) > 0:
+            if all(char in IUPAC_code for char in IUPAC):
+                isUIPAC = True
                 try:
-                    matrix, weblogo = IMO.individual_motif_pwm(individual_motif)
+                    matrix = IMO.generate_iupac_variants(IUPAC)
+                    _, weblogo = IMO.individual_motif_pwm(matrix, "UIPAC")
+
                     matrix_str = ""
                     for base, values in matrix.items():
                         values_str = " ".join([f"{val:.4f}" for val in values])
                         matrix_str += f"{base} [ {values_str} ]\n"
+
                     with REcol2:
                         matrix_text = st.text_area('PWM', value=matrix_str, height=125,
                                                    help='Copy to use later. Not editable.',
                                                    disabled=True)
+
                         st.pyplot(weblogo.fig)
                         logo = io.BytesIO()
                         weblogo.fig.savefig(logo, format='png')
                         logo.seek(0)
                         st.session_state['weblogo'] = logo
+
                     error_input_im = True
+
                 except Exception as e:
                     error_input_im = False
                     REcol1.error(e)
             else:
-                st.error(sequences)
                 isUIPAC = False
-
         else:
             isUIPAC = False
 
@@ -457,7 +459,7 @@ def analyse(dna_sequence=None):
                                                 "[TFBSTools](https://bioconductor.org/packages/release/bioc/html/TFBSTools.html))."
                                                 f"")
             if isUIPAC is True:
-                pseudocount_auto, _, _ = IMO.transform_PWM(matrix)
+                pseudocount_auto, _ = IMO.transform_PWM(matrix)
                 pc_col1, pc_col2, pc_col3, pc_col4 = st.columns(4, gap="small")
                 pseudocount_A = pc_col1.number_input('A',
                                                      value=0.20 if pseudocount_type is False else pseudocount_auto['A'],
