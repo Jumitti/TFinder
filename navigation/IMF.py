@@ -154,11 +154,14 @@ def BSF_page(aio=False, dna_sequence=None):
 
 def analyse(dna_sequence=None):
     if dna_sequence is not None:
-        # Promoter detection information
-        lines = dna_sequence
+        lines = dna_sequence.strip()
         dna_sequences = []
+
+        def clean_sequence(sequence):
+            return sequence.replace("\r", "").replace("\n", "").strip().upper()
+
         if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
-            dna_sequence = lines.upper()
+            dna_sequence = clean_sequence(lines)
             isfasta = IMO.is_dna(dna_sequence)
             name = "n.d."
             species = "n.d"
@@ -170,7 +173,7 @@ def analyse(dna_sequence=None):
             lines = dna_sequence.split("\n")
             i = 0
             while i < len(lines):
-                line = lines[i]
+                line = lines[i].strip()
                 if line.startswith(">"):
                     species_prom = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster',
                                     'Danio rerio']
@@ -195,7 +198,13 @@ def analyse(dna_sequence=None):
                             break
                         else:
                             region = "n.d"
-                    dna_sequence = lines[i + 1].upper()
+
+                    sequence_lines = []
+                    i += 1
+                    while i < len(lines) and not lines[i].startswith(">"):
+                        sequence_lines.append(lines[i].strip())
+                        i += 1
+                    dna_sequence = clean_sequence("".join(sequence_lines))
                     isfasta = IMO.is_dna(dna_sequence)
 
                     match = re.search(r"Strand:\s*(\w+)", line)
@@ -208,12 +217,11 @@ def analyse(dna_sequence=None):
 
                     match = re.search(r"TSS \(on chromosome\):\s*(\d+)", line)
                     if match:
-                        tss_ch = match.group(1)
+                        tss_ch = int(match.group(1))
                     else:
                         tss_ch = 0
 
                     dna_sequences.append((name, dna_sequence, found_species, region, strand, tss_ch))
-                    i += 1
                 else:
                     i += 1
         elif not lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n", "I", "i", "")):
@@ -221,7 +229,7 @@ def analyse(dna_sequence=None):
         else:
             isfasta = False
 
-        total_sequences_region_length = sum(len(dna_sequence) for _, dna_sequence, _, _, _, _ in dna_sequences)
+        total_sequences_region_length = sum(len(seq) for _, seq, _, _, _, _ in dna_sequences)
         total_sequences = len(dna_sequences)
     else:
         isfasta = False
@@ -530,11 +538,11 @@ def analyse(dna_sequence=None):
     if jaspar == 'JASPAR_ID':
         pass
     else:
-        if not isUIPAC or not error_input_im or isfasta or bgnf_A + bgnf_G + bgnf_C + bgnf_T > 1 and bgnf_type is False:
+        if not isUIPAC or not error_input_im or isfasta is False or bgnf_A + bgnf_G + bgnf_C + bgnf_T > 1 and bgnf_type is False:
             button = True
             if not isUIPAC:
                 st.error("Please use IUPAC code for Responsive Elements")
-            elif isfasta:
+            elif isfasta is False:
                 st.error("Please use only A, T, G, C, N in your sequence")
         else:
             button = False
