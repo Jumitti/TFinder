@@ -154,7 +154,7 @@ def BSF_page(aio=False, dna_sequence=None):
 
 def analyse(dna_sequence=None):
     if dna_sequence is not None:
-        lines = dna_sequence.strip().split("\n")  # Découpe le contenu en lignes
+        lines = dna_sequence.strip().split("\n")
         dna_sequences = []
         isfasta = True
 
@@ -163,9 +163,8 @@ def analyse(dna_sequence=None):
 
         i = 0
         while i < len(lines):
-            line = lines[i].strip()  # Nettoie la ligne
+            line = lines[i].strip()
             if line.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
-                # Fusionner toutes les lignes suivantes jusqu'à la fin ou une ligne commençant par ">"
                 sequence_lines = [line]
                 i += 1
                 while i < len(lines) and not lines[i].startswith(">"):
@@ -182,7 +181,6 @@ def analyse(dna_sequence=None):
                 dna_sequences.append((name, dna_sequence, species, region, strand, tss_ch))
 
             elif line.startswith(">"):
-                # Traiter les séquences FASTA avec en-tête
                 species_prom = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster',
                                 'Danio rerio']
                 promoter_name = line[1:]
@@ -205,7 +203,6 @@ def analyse(dna_sequence=None):
                         region = regions[:4] + "."
                         break
 
-                # Fusionner toutes les lignes suivantes jusqu'à la fin ou une ligne commençant par ">"
                 sequence_lines = []
                 i += 1
                 while i < len(lines) and not lines[i].startswith(">"):
@@ -215,7 +212,6 @@ def analyse(dna_sequence=None):
                 if IMO.is_dna(dna_sequence) is False:
                     isfasta = False
 
-                # Récupérer le brin (strand) et le TSS
                 match = re.search(r"Strand:\s*(\w+)", line)
                 strand = match.group(1).lower() if match and match.group(1).lower() in ["plus", "minus"] else "n.d"
                 match = re.search(r"TSS \(on chromosome\):\s*(\d+)", line)
@@ -223,10 +219,8 @@ def analyse(dna_sequence=None):
 
                 dna_sequences.append((name, dna_sequence, found_species, region, strand, tss_ch))
             else:
-                # Ignorer les lignes non pertinentes
                 i += 1
 
-        # Calcul des statistiques sur les séquences
         total_sequences_region_length = sum(len(seq) for _, seq, _, _, _, _ in dna_sequences)
         total_sequences = len(dna_sequences)
     else:
