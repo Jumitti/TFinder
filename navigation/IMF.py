@@ -154,86 +154,85 @@ def BSF_page(aio=False, dna_sequence=None):
 
 def analyse(dna_sequence=None):
     if dna_sequence is not None:
-        lines = dna_sequence.strip()
+        lines = dna_sequence.strip().split("\n")  # Découpe le contenu en lignes
         dna_sequences = []
+        isfasta = True
 
         def clean_sequence(sequence):
             return sequence.replace("\r", "").replace("\n", "").strip().upper()
 
-        if lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
-            dna_sequence = clean_sequence(lines)
-            isfasta = IMO.is_dna(dna_sequence)
-            name = "n.d."
-            species = "n.d"
-            region = "n.d"
-            strand = "n.d"
-            tss_ch = 0
-            dna_sequences.append((name, dna_sequence, species, region, strand, tss_ch))
-        elif lines.startswith(">"):
-            lines = dna_sequence.split("\n")
-            i = 0
-            while i < len(lines):
-                line = lines[i].strip()
-                if line.startswith(">"):
-                    species_prom = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster',
-                                    'Danio rerio']
-                    promoter_name = line[1:]
-                    words = promoter_name.lstrip('>').split()
-                    pattern = r">(\w+)\s+(\w+)\s+\|"
-                    match = re.search(pattern, line)
-                    if match:
-                        name = words[0] + ' ' + words[1]
-                    else:
-                        name = words[0]
-                    for species in species_prom:
-                        if species.lower() in promoter_name.lower():
-                            found_species = species
-                            break
-                        else:
-                            found_species = "n.d"
-                    regions_prom = ['promoter', 'terminator', 'rna', 'mrna']
-                    for regions in regions_prom:
-                        if regions.lower() in promoter_name.lower():
-                            region = regions[:4] + "."
-                            break
-                        else:
-                            region = "n.d"
-
-                    sequence_lines = []
+        i = 0
+        while i < len(lines):
+            line = lines[i].strip()  # Nettoie la ligne
+            if line.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n")):
+                # Fusionner toutes les lignes suivantes jusqu'à la fin ou une ligne commençant par ">"
+                sequence_lines = [line]
+                i += 1
+                while i < len(lines) and not lines[i].startswith(">"):
+                    sequence_lines.append(lines[i].strip())
                     i += 1
-                    while i < len(lines) and not lines[i].startswith(">"):
-                        sequence_lines.append(lines[i].strip())
-                        i += 1
-                    dna_sequence = clean_sequence("".join(sequence_lines))
-                    isfasta = IMO.is_dna(dna_sequence)
+                dna_sequence = clean_sequence("".join(sequence_lines))
+                if IMO.is_dna(dna_sequence) is False:
+                    isfasta = False
+                name = "n.d."
+                species = "n.d"
+                region = "n.d"
+                strand = "n.d"
+                tss_ch = 0
+                dna_sequences.append((name, dna_sequence, species, region, strand, tss_ch))
 
-                    match = re.search(r"Strand:\s*(\w+)", line)
-                    if match:
-                        strand = match.group(1).lower()
-                        if strand not in ["plus", "minus"]:
-                            strand = "n.d"
-                    else:
-                        strand = "n.d"
-
-                    match = re.search(r"TSS \(on chromosome\):\s*(\d+)", line)
-                    if match:
-                        tss_ch = int(match.group(1))
-                    else:
-                        tss_ch = 0
-
-                    dna_sequences.append((name, dna_sequence, found_species, region, strand, tss_ch))
+            elif line.startswith(">"):
+                # Traiter les séquences FASTA avec en-tête
+                species_prom = ['Homo sapiens', 'Mus musculus', 'Rattus norvegicus', 'Drosophila melanogaster',
+                                'Danio rerio']
+                promoter_name = line[1:]
+                words = promoter_name.split()
+                pattern = r">(\w+)\s+(\w+)\s+\|"
+                match = re.search(pattern, line)
+                if match:
+                    name = words[0] + ' ' + words[1]
                 else:
-                    i += 1
-        elif not lines.startswith(("A", "T", "C", "G", "N", "a", "t", "c", "g", "n", "I", "i", "")):
-            isfasta = True
-        else:
-            isfasta = False
+                    name = words[0]
+                found_species = "n.d"
+                for species in species_prom:
+                    if species.lower() in promoter_name.lower():
+                        found_species = species
+                        break
+                regions_prom = ['promoter', 'terminator', 'rna', 'mrna']
+                region = "n.d"
+                for regions in regions_prom:
+                    if regions.lower() in promoter_name.lower():
+                        region = regions[:4] + "."
+                        break
 
+                # Fusionner toutes les lignes suivantes jusqu'à la fin ou une ligne commençant par ">"
+                sequence_lines = []
+                i += 1
+                while i < len(lines) and not lines[i].startswith(">"):
+                    sequence_lines.append(lines[i].strip())
+                    i += 1
+                dna_sequence = clean_sequence("".join(sequence_lines))
+                if IMO.is_dna(dna_sequence) is False:
+                    isfasta = False
+
+                # Récupérer le brin (strand) et le TSS
+                match = re.search(r"Strand:\s*(\w+)", line)
+                strand = match.group(1).lower() if match and match.group(1).lower() in ["plus", "minus"] else "n.d"
+                match = re.search(r"TSS \(on chromosome\):\s*(\d+)", line)
+                tss_ch = int(match.group(1)) if match else 0
+
+                dna_sequences.append((name, dna_sequence, found_species, region, strand, tss_ch))
+            else:
+                # Ignorer les lignes non pertinentes
+                i += 1
+
+        # Calcul des statistiques sur les séquences
         total_sequences_region_length = sum(len(seq) for _, seq, _, _, _, _ in dna_sequences)
         total_sequences = len(dna_sequences)
     else:
         isfasta = False
 
+    st.write(dna_sequences)
     # RE entry
     REcol1, REcol2 = st.columns([0.30, 0.70])
     with REcol1:

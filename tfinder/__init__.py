@@ -585,12 +585,12 @@ class IMO:
     # Analyse sequence for non-authorized characters
     def is_dna(dna_sequence):
         DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
-        if not all(char in DNA_code for char in dna_sequence):
+        if all(char in DNA_code for char in dna_sequence):
             isfasta = True
-            return isfasta
         else:
             isfasta = False
-            return isfasta
+
+        return isfasta
 
     @staticmethod
     def transform_PWM(matrix, pseudocount=None, bg=None):
