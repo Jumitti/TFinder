@@ -96,7 +96,7 @@ class NCBIdna:
     def find_sequences(self):
         time.sleep(1)
         if self.gene_id.startswith('XM_') or self.gene_id.startswith('NM_') or self.gene_id.startswith(
-                'XR_') or self.gene_id.startswith('NR_'):
+                'XR_') or self.gene_id.startswith('NR_') or self.gene_id.startswith('YP_'):
             if '.' in self.gene_id:
                 self.gene_id = self.gene_id.split('.')[0]
             entrez_id = NCBIdna.XMNM_to_gene_ID(self.gene_id)
@@ -186,10 +186,10 @@ class NCBIdna:
                 try:
                     gene_info = response_data['result'][str(entrez_id)]
                     species_API = gene_info['organism']['scientificname']
-                    title, chraccver = NCBIdna.extract_genomic_info(entrez_id, response_data, genome_version,
-                                                                    species_API)
+                    title, chrloc, chraccver = NCBIdna.extract_genomic_info(entrez_id, response_data,
+                                                                            genome_version, species_API)
                     print(
-                        bcolors.OKGREEN + f"Response 200: Chromosome {chraccver} found for {entrez_id}: {response.text}" + bcolors.ENDC)
+                        bcolors.OKGREEN + f"Response 200: Chromosome {chrloc} {chraccver} found for {entrez_id}: {response.text}" + bcolors.ENDC)
                     break
 
                 except Exception as e:
@@ -228,7 +228,7 @@ class NCBIdna:
                                 tv.append(elem.text)
                     if elem.tag == "Gene-commentary_accession":
                         if elem.text.startswith('NM_') or elem.text.startswith('XM_') or elem.text.startswith(
-                                'NR_') or elem.text.startswith('XR_'):
+                                'NR_') or elem.text.startswith('XR_') or elem.text.startswith('YP_'):
                             if elem.text not in variants:
                                 variants.append(elem.text)
 
@@ -311,8 +311,6 @@ class NCBIdna:
                             bcolors.WARNING + f"Error 200: Transcript not found(s) for {entrez_id}." + bcolors.ENDC)
                         return all_variants, f"Error 200: Transcript not found(s) for {entrez_id}."
 
-                print("TV", tv)
-                print("Variants", variants)
                 if all_slice_forms is True:
                     all_variants, message = calc_exon(root, variants)
                     return all_variants, message
@@ -413,6 +411,7 @@ class NCBIdna:
                 location_hist = gene_details.get('genomicinfo', [])
 
             for loc in location_hist:
+                nc_loc = loc.get("chrloc")
                 nc_accver = loc.get('chraccver')
                 chrstart = loc.get('chrstart')
                 chrstop = loc.get('chrstop')
@@ -471,10 +470,10 @@ class NCBIdna:
 
             if genome_version != "current":
                 title = NCBIdna.fetch_nc_info(min_accver)
-                return title, min_accver
+                return title, nc_loc, min_accver
             else:
                 title = NCBIdna.fetch_nc_info(max_accver)
-                return title, max_accver
+                return title, nc_loc, max_accver
 
     @staticmethod
     def fetch_nc_info(nc_accver):
