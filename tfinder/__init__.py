@@ -58,7 +58,8 @@ headers = {
 
 
 class NCBIdna:
-    def __init__(self, gene_id, species=None, seq_type="mrna", upstream=2000, downstream=2000, genome_version="Current", all_slice_forms=None):
+    def __init__(self, gene_id, species=None, seq_type="mrna", upstream=2000, downstream=2000, genome_version="Current",
+                 all_slice_forms=None):
         self.gene_id = gene_id
         self.species = species if species is not None else "human"
         self.seq_type = seq_type if seq_type is not None else "mrna"
@@ -95,7 +96,9 @@ class NCBIdna:
     def find_sequences(self):
         time.sleep(1)
         if self.gene_id.startswith('XM_') or self.gene_id.startswith('NM_') or self.gene_id.startswith(
-                'XR_') or self.gene_id.startswith('NR_'):
+                'XR_') or self.gene_id.startswith('NR_') or self.gene_id.startswith('YP_'):
+            if '.' in self.gene_id:
+                self.gene_id = self.gene_id.split('.')[0]
             entrez_id = NCBIdna.XMNM_to_gene_ID(self.gene_id)
             if entrez_id == 'UIDs not founds':
                 result_promoter = f'Please verify {self.gene_id} variant'
@@ -109,7 +112,12 @@ class NCBIdna:
                 if entrez_id == "Error 200":
                     return entrez_id, message
 
-        all_variants, message = NCBIdna.all_variant(entrez_id, self.genome_version, self.all_slice_forms)
+        all_variants, message = NCBIdna.all_variant(entrez_id, self.genome_version, self.all_slice_forms,
+                                                    self.gene_id if
+                                                    self.gene_id.startswith('XM_') or
+                                                    self.gene_id.startswith('NM_') or
+                                                    self.gene_id.startswith('XR_') or
+                                                    self.gene_id.startswith('NR_') else None)
         if "Error 200" not in all_variants:
             for nm_id, data in all_variants.items():
                 exon_coords = data.get('exon_coords')
@@ -119,7 +127,8 @@ class NCBIdna:
                                                     exon_coords[-1][1], self.seq_type, self.upstream, self.downstream)
                 if self.seq_type in ['mrna']:
                     if self.seq_type == 'mrna':
-                        data['sequence'] = "".join(sequence[start:end + 1] for start, end in data["normalized_exon_coords"])
+                        data['sequence'] = "".join(
+                            sequence[start:end + 1] for start, end in data["normalized_exon_coords"])
                 else:
                     data['sequence'] = sequence
 
@@ -165,7 +174,7 @@ class NCBIdna:
 
     @staticmethod
     # Get gene information
-    def all_variant(entrez_id, genome_version="current", all_slice_forms=False):
+    def all_variant(entrez_id, genome_version="current", all_slice_forms=False, specific_form=None):
         global headers
 
         while True:
@@ -177,9 +186,10 @@ class NCBIdna:
                 try:
                     gene_info = response_data['result'][str(entrez_id)]
                     species_API = gene_info['organism']['scientificname']
-                    title, chraccver = NCBIdna.extract_genomic_info(entrez_id, response_data, genome_version, species_API)
+                    title, chrloc, chraccver = NCBIdna.extract_genomic_info(entrez_id, response_data,
+                                                                            genome_version, species_API)
                     print(
-                        bcolors.OKGREEN + f"Response 200: Chromosome {chraccver} found for {entrez_id}: {response.text}" + bcolors.ENDC)
+                        bcolors.OKGREEN + f"Response 200: Chromosome {chrloc} {chraccver} found for {entrez_id}: {response.text}" + bcolors.ENDC)
                     break
 
                 except Exception as e:
@@ -218,7 +228,7 @@ class NCBIdna:
                                 tv.append(elem.text)
                     if elem.tag == "Gene-commentary_accession":
                         if elem.text.startswith('NM_') or elem.text.startswith('XM_') or elem.text.startswith(
-                                'NR_') or elem.text.startswith('XR_'):
+                                'NR_') or elem.text.startswith('XR_') or elem.text.startswith('YP_'):
                             if elem.text not in variants:
                                 variants.append(elem.text)
 
@@ -306,7 +316,9 @@ class NCBIdna:
                     return all_variants, message
 
                 elif all_slice_forms is False:
-                    if len(tv) > 0:
+                    if specific_form in variants:
+                        variant = specific_form
+                    elif len(tv) > 0:
                         if "transcript variant 1" in tv:
                             associations = dict(zip(tv, variants))
                             variant = associations["transcript variant 1"]
@@ -363,11 +375,13 @@ class NCBIdna:
                 else:
                     sequence = dna_sequence
 
-                print(bcolors.OKGREEN + f"Response 200: DNA sequence for {gene_name} extracted: {sequence}" + bcolors.ENDC)
+                print(
+                    bcolors.OKGREEN + f"Response 200: DNA sequence for {gene_name} extracted: {sequence}" + bcolors.ENDC)
                 return sequence
 
             elif response.status_code == 429:
-                print(bcolors.FAIL + f"Error 429: API rate limit exceeded for DNA extraction of {gene_name}, try again." + bcolors.ENDC)
+                print(
+                    bcolors.FAIL + f"Error 429: API rate limit exceeded for DNA extraction of {gene_name}, try again." + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
             else:
                 print(bcolors.OKGREEN + f"Error {response.status_code}: {response.text}" + bcolors.ENDC)
@@ -397,6 +411,7 @@ class NCBIdna:
                 location_hist = gene_details.get('genomicinfo', [])
 
             for loc in location_hist:
+                nc_loc = loc.get("chrloc")
                 nc_accver = loc.get('chraccver')
                 chrstart = loc.get('chrstart')
                 chrstop = loc.get('chrstop')
@@ -455,10 +470,10 @@ class NCBIdna:
 
             if genome_version != "current":
                 title = NCBIdna.fetch_nc_info(min_accver)
-                return title, min_accver
+                return title, nc_loc, min_accver
             else:
                 title = NCBIdna.fetch_nc_info(max_accver)
-                return title, max_accver
+                return title, nc_loc, max_accver
 
     @staticmethod
     def fetch_nc_info(nc_accver):
@@ -518,11 +533,11 @@ class IMO:
         if alldirection is True:
             return {
                 '+ f': {
-                        'A': matrix['A'],
-                        'C': matrix['C'],
-                        'G': matrix['G'],
-                        'T': matrix['T']
-                    },
+                    'A': matrix['A'],
+                    'C': matrix['C'],
+                    'G': matrix['G'],
+                    'T': matrix['T']
+                },
                 '+ r': reversed_matrix,
                 '- f': complement_matrix,
                 '- r': reversed_complement_matrix
@@ -530,11 +545,11 @@ class IMO:
         else:
             return {
                 '+ f': {
-                        'A': matrix['A'],
-                        'C': matrix['C'],
-                        'G': matrix['G'],
-                        'T': matrix['T']
-                    },
+                    'A': matrix['A'],
+                    'C': matrix['C'],
+                    'G': matrix['G'],
+                    'T': matrix['T']
+                },
                 '- r': reversed_complement_matrix
             }
 
@@ -569,12 +584,12 @@ class IMO:
     # Analyse sequence for non-authorized characters
     def is_dna(dna_sequence):
         DNA_code = ["A", "T", "C", "G", "N", "a", "t", "c", "g", "n"]
-        if not all(char in DNA_code for char in dna_sequence):
+        if all(char in DNA_code for char in dna_sequence):
             isfasta = True
-            return isfasta
         else:
             isfasta = False
-            return isfasta
+
+        return isfasta
 
     @staticmethod
     def transform_PWM(matrix, pseudocount=None, bg=None):
@@ -664,8 +679,12 @@ class IMO:
                 # Max score per matrix
                 max_score = sum(max(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
                 min_score = sum(min(matrix[base][i] for base in matrix.keys()) for i in range(seq_length))
-                max_score_pwm = sum(max(pwm_weight[matrix_name][base][i] for base in pwm_weight[matrix_name].keys()) for i in range(seq_length))
-                min_score_pwm = sum(min(pwm_weight[matrix_name][base][i] for base in pwm_weight[matrix_name].keys()) for i in range(seq_length))
+                max_score_pwm = sum(
+                    max(pwm_weight[matrix_name][base][i] for base in pwm_weight[matrix_name].keys()) for i in
+                    range(seq_length))
+                min_score_pwm = sum(
+                    min(pwm_weight[matrix_name][base][i] for base in pwm_weight[matrix_name].keys()) for i in
+                    range(seq_length))
 
                 if calc_pvalue == 'ATGCProportion':
                     matrix_random_scores = []

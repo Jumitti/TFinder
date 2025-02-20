@@ -174,7 +174,7 @@ text-align: center;
 <div class="footer">
 <p style="font-size:  13px">Copyright (c) 2023 Minniti Julien.</p>
 <p style="font-size: 13px">This software is distributed under an MIT licence. Please consult the LICENSE file for more details.</p>
-<p style="font-size: 13px">Please cite as: Julien Minniti, Eric Duplan, Frédéric Checler et al. TFinder: a Python web tool for predicting Transcription Factor Binding Sites, PREPRINT (Version 1) available at Research Square <a href="https://www.researchsquare.com/article/rs-3782387/v1">[https://www.researchsquare.com/article/rs-3782387/v1]</a></p>
+<p style="font-size: 13px">Please cite as: Julien Minniti, Eric Duplan, Frédéric Checler et al. TFinder: a Python web tool for predicting Transcription Factor Binding Sites, <a href="https://doi.org/10.1016/j.jmb.2024.168921">[https://doi.org/10.1016/j.jmb.2024.168921]</a></p>
 <a href="https://www.ipmc.cnrs.fr/cgi-bin/site.cgi"><img class="image2" src="https://raw.githubusercontent.com/Jumitti/TFinder/main/img/logo%20ipmc.png"alt="github" width="80" height=57"></a>
 <a href="https://www.cnrs.fr/fr"><img class="image2" src="https://www.cnrs.fr/themes/custom/cnrs/logo.svg"alt="github" width="70" height="70"></a>
 <a href="https://www.inserm.fr/"><img class="image2" src="https://raw.githubusercontent.com/Jumitti/TFinder/main/img/logo%20inserm.png"alt="github" width="100" height="70"></a>
