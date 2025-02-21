@@ -95,8 +95,7 @@ class NCBIdna:
     # Sequence extractor
     def find_sequences(self):
         time.sleep(1)
-        if self.gene_id.startswith('XM_') or self.gene_id.startswith('NM_') or self.gene_id.startswith(
-                'XR_') or self.gene_id.startswith('NR_') or self.gene_id.startswith('YP_'):
+        if self.gene_id.startswith(('XM_', 'NM_', 'XR_', 'NR_', 'YP_')):
             if '.' in self.gene_id:
                 self.gene_id = self.gene_id.split('.')[0]
             entrez_id = NCBIdna.XMNM_to_gene_ID(self.gene_id)
@@ -114,10 +113,7 @@ class NCBIdna:
 
         all_variants, message = NCBIdna.all_variant(entrez_id, self.genome_version, self.all_slice_forms,
                                                     self.gene_id if
-                                                    self.gene_id.startswith('XM_') or
-                                                    self.gene_id.startswith('NM_') or
-                                                    self.gene_id.startswith('XR_') or
-                                                    self.gene_id.startswith('NR_') else None)
+                                                    self.gene_id.startswith(('XM_', 'NM_', 'XR_', 'NR_', 'YP_')) else None)
         if "Error 200" not in all_variants:
             for nm_id, data in all_variants.items():
                 exon_coords = data.get('exon_coords')
@@ -174,7 +170,7 @@ class NCBIdna:
 
     @staticmethod
     # Get gene information
-    def all_variant(entrez_id, genome_version="current", all_slice_forms=False, specific_form=None):
+    def all_variant(entrez_id, genome_version="current", all_slice_forms=False, specific_transcript=None):
         global headers
 
         while True:
@@ -186,8 +182,11 @@ class NCBIdna:
                 try:
                     gene_info = response_data['result'][str(entrez_id)]
                     species_API = gene_info['organism']['scientificname']
-                    title, chrloc, chraccver = NCBIdna.extract_genomic_info(entrez_id, response_data,
+                    gene_name = gene_info['name']
+                    title, chrloc, chraccver, coords = NCBIdna.extract_genomic_info(entrez_id, response_data,
                                                                             genome_version, species_API)
+                    chrstart = coords[0]
+                    chrstop = coords[1]
                     print(
                         bcolors.OKGREEN + f"Response 200: Chromosome {chrloc} {chraccver} found for {entrez_id}: {response.text}" + bcolors.ENDC)
                     break
@@ -218,7 +217,6 @@ class NCBIdna:
 
                 tv = []
                 variants = []
-                gene_name = []
                 chromosome = ""
 
                 for elem in root.iter():
@@ -232,8 +230,21 @@ class NCBIdna:
                             if elem.text not in variants:
                                 variants.append(elem.text)
 
-                    elif elem.tag == 'Gene-ref_locus':
-                        gene_name = elem.text
+                    if elem.tag == "Gene-commentary_type":
+                        all_variants = {}
+                        if elem.attrib.get("value") == "tRNA":
+                            all_variants[entrez_id] = {
+                                'entrez_id': entrez_id,
+                                'gene_name': gene_name,
+                                'genomic_info': title,
+                                'chraccver': chraccver,
+                                'strand': "plus" if chrstart < chrstop else "minus",
+                                'exon_coords': [(chrstart if chrstart < chrstop else chrstop,
+                                                 chrstop if chrstart < chrstop else chrstart)],
+                                'normalized_exon_coords': [(0, abs(chrstart - chrstop))],
+                                'species': species_API
+                            }
+                            return all_variants, f"Transcript(s) found(s) for {entrez_id}: {list(all_variants.keys())}"
 
                 for elem in root.iter('Gene-commentary_accession'):
                     if elem.text.startswith(("NC_", "NT_")):
@@ -269,9 +280,6 @@ class NCBIdna:
 
                             elif elem.tag == "Org-ref_taxname":
                                 species_API = elem.text
-
-                            elif elem.tag == 'Gene-ref_locus':
-                                gene_name = elem.text
 
                         if exon_coords:
                             if orientation == "minus":
@@ -316,18 +324,22 @@ class NCBIdna:
                     return all_variants, message
 
                 elif all_slice_forms is False:
-                    if specific_form in variants:
-                        variant = specific_form
-                    elif len(tv) > 0:
-                        if "transcript variant 1" in tv:
+                    variant = None
+
+                    if specific_transcript and re.search(r"\.\d+$", specific_transcript):
+                        specific_transcript = re.sub(r"\.\d+$", "", specific_transcript)
+
+                    if len(tv) > 0:
+                        if specific_transcript and specific_transcript in variants:
+                            variant = specific_transcript
+                        elif "transcript variant 1" in tv:
                             associations = dict(zip(tv, variants))
                             variant = associations["transcript variant 1"]
                         else:
                             variant = variants[0]
+
                     elif len(tv) == 0 and len(variants) > 0:
                         variant = variants[0]
-                    else:
-                        variant = None
 
                     if variant is not None:
                         all_variants, message = calc_exon(root, [variant])
@@ -411,7 +423,8 @@ class NCBIdna:
                 location_hist = gene_details.get('genomicinfo', [])
 
             for loc in location_hist:
-                nc_loc = loc.get("chrloc")
+
+                nc_loc = loc.get('chrloc')
                 nc_accver = loc.get('chraccver')
                 chrstart = loc.get('chrstart')
                 chrstop = loc.get('chrstop')
@@ -470,10 +483,10 @@ class NCBIdna:
 
             if genome_version != "current":
                 title = NCBIdna.fetch_nc_info(min_accver)
-                return title, nc_loc, min_accver
+                return title, nc_loc, min_accver, min_coords
             else:
                 title = NCBIdna.fetch_nc_info(max_accver)
-                return title, nc_loc, max_accver
+                return title, nc_loc, max_accver, max_coords
 
     @staticmethod
     def fetch_nc_info(nc_accver):
