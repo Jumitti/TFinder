@@ -95,7 +95,7 @@ class NCBIdna:
     # Sequence extractor
     def find_sequences(self):
         time.sleep(1)
-        if self.gene_id.startswith(('XM_', 'NM_', 'XR_', 'NR_', 'YP_')):
+        if self.gene_id.upper().startswith(('XM_', 'NM_', 'XR_', 'NR_', 'YP_')):
             if '.' in self.gene_id:
                 self.gene_id = self.gene_id.split('.')[0]
             entrez_id = NCBIdna.XMNM_to_gene_ID(self.gene_id)
@@ -113,7 +113,7 @@ class NCBIdna:
 
         all_variants, message = NCBIdna.all_variant(entrez_id, self.genome_version, self.all_slice_forms,
                                                     self.gene_id if
-                                                    self.gene_id.startswith(('XM_', 'NM_', 'XR_', 'NR_', 'YP_')) else None)
+                                                    self.gene_id.upper().startswith(('XM_', 'NM_', 'XR_', 'NR_', 'YP_')) else None)
         if "Error 200" not in all_variants:
             for nm_id, data in all_variants.items():
                 exon_coords = data.get('exon_coords')
@@ -184,7 +184,7 @@ class NCBIdna:
                     species_API = gene_info['organism']['scientificname']
                     gene_name = gene_info['name']
                     title, chrloc, chraccver, coords = NCBIdna.extract_genomic_info(entrez_id, response_data,
-                                                                            genome_version, species_API)
+                                                                                    genome_version, species_API)
                     chrstart = coords[0]
                     chrstop = coords[1]
                     print(
@@ -209,6 +209,8 @@ class NCBIdna:
                 time.sleep(random.uniform(0.25, 0.5))
 
         while True:
+            all_variants = {}
+
             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id={entrez_id}&retmode=xml"
             response = requests.get(url, headers=headers)
 
@@ -225,13 +227,11 @@ class NCBIdna:
                             if elem.text not in tv:
                                 tv.append(elem.text)
                     if elem.tag == "Gene-commentary_accession":
-                        if elem.text.startswith('NM_') or elem.text.startswith('XM_') or elem.text.startswith(
-                                'NR_') or elem.text.startswith('XR_') or elem.text.startswith('YP_'):
+                        if elem.text.upper().startswith(('XM_', 'NM_', 'XR_', 'NR_', 'YP_')):
                             if elem.text not in variants:
                                 variants.append(elem.text)
 
                     if elem.tag == "Gene-commentary_type":
-                        all_variants = {}
                         if elem.attrib.get("value") in ["tRNA", "rRNA", "d-segment"]:
                             all_variants[entrez_id] = {
                                 'entrez_id': entrez_id,
@@ -252,7 +252,6 @@ class NCBIdna:
                         break
 
                 def calc_exon(root, variants):
-                    all_variants = {}
 
                     for variant in variants:
                         exon_coords = []
@@ -583,7 +582,10 @@ class IMO:
     @staticmethod
     # Calculate matrix score
     def calculate_score(sequence, matrix):
-        score = sum(matrix[base][position] for position, base in enumerate(sequence))
+        score = sum(
+            min(matrix[base][position] for base in matrix) if base not in matrix else matrix[base][position]
+            for position, base in enumerate(sequence)
+        )
         return score
 
     @staticmethod
