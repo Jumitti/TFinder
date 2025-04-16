@@ -232,7 +232,7 @@ class NCBIdna:
                                 variants.append(elem.text)
 
                     if elem.tag == "Gene-commentary_type":
-                        if elem.attrib.get("value") in ["tRNA", "rRNA", "d-segment"]:
+                        if elem.attrib.get("value") in ["tRNA", "rRNA", "d-segment", "v-segment", "j-segment"]:
                             all_variants[entrez_id] = {
                                 'entrez_id': entrez_id,
                                 'gene_name': gene_name,
