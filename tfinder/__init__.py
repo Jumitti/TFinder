@@ -378,13 +378,11 @@ class NCBIdna:
             response = requests.get(url, headers=headers)
 
             if response.status_code == 200:
-                dna_sequence = response.text.split('\n', 1)[1].replace('\n',
+                sequence = response.text.split('\n', 1)[1].replace('\n',
                                                                        '')
 
                 if chrstop < chrstart:
-                    sequence = NCBIdna.reverse_complement(dna_sequence)
-                else:
-                    sequence = dna_sequence
+                    sequence = NCBIdna.reverse_complement(sequence)
 
                 print(
                     bcolors.OKGREEN + f"Response 200: DNA sequence for {gene_name} extracted: {sequence}" + bcolors.ENDC)
