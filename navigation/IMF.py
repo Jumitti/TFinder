@@ -226,7 +226,7 @@ def analyse(dna_sequence=None):
     else:
         isfasta = False
 
-    st.write(dna_sequences)
+    # st.write(dna_sequences)
     # RE entry
     REcol1, REcol2 = st.columns([0.30, 0.70])
     with REcol1:
