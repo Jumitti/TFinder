@@ -23,7 +23,6 @@ import platform
 import pandas as pd
 import requests
 import streamlit as st
-# import streamlit_analytics
 from streamlit_modal import Modal
 import streamlit_lottie
 import time
@@ -93,20 +92,17 @@ st.markdown(footer_style, unsafe_allow_html=True)
 
 HOME = 'Home'
 APPLICATION = 'Tools/Software'
-# RESOURCE = 'Resources'
 CONTACT = 'Contact'
 
 tabs = [
     HOME,
     APPLICATION,
-    # RESOURCE,
     CONTACT,
 ]
 
 option_data = [
     {'icon': "🏠", 'label': HOME},
     {'icon': "🖥️", 'label': APPLICATION},
-    # {'icon': "📑", 'label': RESOURCE},
     {'icon': "✉️", 'label': CONTACT},
 ]
 
@@ -145,17 +141,12 @@ if chosen_tab == HOME:
 elif chosen_tab == APPLICATION:
     allapp_page()
 
-# elif chosen_tab == RESOURCE:
-#     resource_page()
-
 elif chosen_tab == CONTACT:
     contact_page()
 
 for i in range(4):
     st.markdown('#')
 st.markdown(footer, unsafe_allow_html=True)
-
-# streamlit_analytics.start_tracking()
 
 # Credit
 st.logo("img/TFinder_logo_site.png")
@@ -169,8 +160,6 @@ st.sidebar.markdown("If the application does not work, here are other deployment
 
 # Help
 st.sidebar.title("Help")
-# with st.sidebar.expander("Video tutorials"):
-#     st.write('coming soon')
 st.sidebar.markdown("FULL DOCUMENTATION [HERE](https://jumitti.notion.site/tfinder?pvs=4)")
 
 st.sidebar.title("Servers status",
@@ -223,36 +212,8 @@ st.sidebar.markdown(
 st.sidebar.markdown(
     "[Features request 💡](https://github.com/Jumitti/TFinder/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md&title=%5BFEATURE%5D)")
 
-# streamlit_analytics.stop_tracking()
-# views = streamlit_analytics.main.counts["total_pageviews"]
-
 if st.session_state["LOCAL"] == 'True':
     st.sidebar.markdown(f"TFinder Local Version")
 else:
     unique_users = st.secrets['unique_users']
     st.sidebar.markdown(f"Unique users 👥: {unique_users}")
-
-# modal = Modal(key="TFinder Key", title="Disclaimers - Welcome to TFinder", padding=50, max_width=900)
-
-# if 'popup_closed' not in st.session_state:
-#     st.session_state.popup_closed = False
-#
-# if not st.session_state.popup_closed:
-#     with modal.container():
-#         st.markdown('')
-#         st.markdown(
-#             'TFinder use [NCBI API](https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen)'
-#             ': More information [NCBI Website and Data Usage Policies and Disclaimers](https://www.ncbi.nlm.nih.gov/home/about/policies/)')
-#         if st.session_state['LOCAL'] == 'False':
-#             if st.secrets['ncbi_error'] == "True":
-#                 st.error("⚠ NCBI server maintenance, problems and slowdowns may be observed")
-#         st.markdown("TFinder use [JASPAR API](https://doi.org/10.1093/bioinformatics/btx804)")
-#         st.markdown('')
-#         st.markdown(
-#             'If you encounter a problem, please send an email to minniti@ipmc.cnrs.fr or minnitijulien06@gmail.com or use the [Issues](https://github.com/Jumitti/TFinder/issues) tab on GitHub')
-#         st.markdown(
-#             'Links are also available at the bottom of the left sidebar. You can contact us using the “Contact” tab too.')
-#         value = st.checkbox("By using TFinder, you agree with data usage polices of NCBI and JASPAR")
-#         if value:
-#             st.button('Close')
-#             st.session_state.popup_closed = True
