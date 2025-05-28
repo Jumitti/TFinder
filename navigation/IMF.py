@@ -93,6 +93,74 @@ def email(excel_file, csv_file, txt_output, email_receiver, body, jaspar):
         st.toast(f"Unknown error occurred: {e}")
 
 
+def parse_pwm(matrix_str):
+    lines = [l.strip() for l in matrix_str.strip().splitlines() if l.strip()]
+    bases = ['A', 'C', 'G', 'T']
+    pwm = {b: [] for b in bases}
+
+    # --- Case 1: "A [ ... ]" ---
+    if all(re.match(r"^[ACGT]\s+\[", line) for line in lines[:4]):
+        for line in lines:
+            base, values = re.match(r"^([ACGT])\s+\[([^\]]+)\]", line).groups()
+            pwm[base] = [float(v) for v in values.split()]
+        return pwm, pwm_to_str(pwm)
+
+    # --- Case 2: JASPAR table PO format ---
+    if any(line.startswith("PO") for line in lines):
+        po_lines = [line for line in lines if re.match(r"^\d{2}", line)]
+        for i, base in enumerate(bases):
+            pwm[base] = [float(l.split()[i + 1]) for l in po_lines]
+        return pwm, pwm_to_str(pwm)
+
+    # --- Case 3: MEME style matrix ---
+    if any("letter-probability matrix" in line for line in lines):
+        pwm_matrix = []
+        for line in lines:
+            if re.match(r"^[\d\.\s\-eE]+$", line):
+                vals = [float(v) for v in line.strip().split()]
+                pwm_matrix.append(vals)
+        for i, base in enumerate(bases):
+            pwm[base] = [row[i] for row in pwm_matrix]
+        return pwm, pwm_to_str(pwm)
+
+    # --- Case 4: ">MA..." style ---
+    if any(line.startswith(">") for line in lines):
+        matrix_lines = lines[1:]
+
+        # --- Case 4a: Lignes A C G T étiquetées ---
+        if any(re.match(r"^[ACGT]\s+\[", line) for line in matrix_lines[:4]):
+            for line in matrix_lines:
+                m = re.match(r"^([ACGT])\s+\[([^\]]+)\]", line)
+                if m:
+                    base, values = m.groups()
+                    pwm[base] = [float(v) for v in values.split()]
+            return pwm, pwm_to_str(pwm)
+
+        # --- Case 4b: 4 lignes brutes, ordre ACGT implicite ---
+        elif len(matrix_lines) == 4 and all(re.match(r"^[\d\s\.\-eE]+$", line) for line in matrix_lines):
+            for i, base in enumerate(bases):
+                pwm[base] = [float(v) for v in matrix_lines[i].split()]
+            return pwm, pwm_to_str(pwm)
+
+        else:
+            raise ValueError("Format detected but insufficient lines for an ACGT matrix.")
+
+    # --- Case 5: TSV Pos + A/C/G/T ---
+    if "Pos" in lines[0] and all(b in lines[0] for b in bases):
+        idx = {b: i for i, b in enumerate(lines[0].split())}
+        for line in lines[1:]:
+            parts = line.strip().split()
+            for b in bases:
+                pwm[b].append(float(parts[idx[b]]))
+        return pwm, pwm_to_str(pwm)
+
+    raise ValueError("Error format PWM")
+
+
+def pwm_to_str(pwm):
+    return "\n".join(f"{base} [ {' '.join(f'{v:.1f}' for v in pwm[base])} ]" for base in ['A', 'T', 'G', 'C'])
+
+
 def result_table_output(source):
     score_range = source['Rel Score'].astype(float)
 
@@ -287,20 +355,13 @@ def analyse(dna_sequence=None):
                              "Ensure each row has the same number of columns (positions) so that the matrix is complete. In the example provided, each nucleotide row has 11 values, one for each position in the motif.")
 
                 st.session_state['MATRIX_STR_save'] = matrix_str
+                matrix, matrix_for_weblogo = parse_pwm(matrix_str)
 
-                lines = matrix_str.split("\n")
-                matrix = {}
+                lines = matrix_for_weblogo.split("\n")
                 if len(lines) > 1:
-                    for line in lines:
-                        parts = line.split("[")
-                        base = parts[0].strip()
-                        values = [float(val.strip()) for val in parts[1][:-1].split()]
-                        matrix[base] = values
-
                     try:
-                        IMO.has_uniform_column_length(matrix_str)
-
-                        weblogo = IMO.PWM_to_weblogo(matrix_str)
+                        IMO.has_uniform_column_length(matrix_for_weblogo)
+                        weblogo = IMO.PWM_to_weblogo(matrix_for_weblogo)
                         st.pyplot(weblogo.fig)
                         logo = io.BytesIO()
                         weblogo.fig.savefig(logo, format='png')
