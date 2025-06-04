@@ -34,6 +34,11 @@ def prom_extractor_page():
 
 
 def extract():
+    if st.session_state['LOCAL'] == 'False':
+        max_attempts = st.secrets['max_attempts']
+    else:
+        max_attempts = 25
+
     st.subheader(':blue[Step 1] Promoter and Terminator Extractor')
     colprom1, colprom2 = st.columns([0.8, 1.2], gap="small")
 
@@ -136,7 +141,8 @@ def extract():
                                 pbar.progress(i / len(gene_ids),
                                               text=f'**:blue[Extract sequence... {gene_id}] ⚠️:red[PLEASE WAIT UNTIL END WITHOUT CHANGING ANYTHING]**')
                                 all_variants, message = NCBIdna(gene_id, species, seq_type.lower(), upstream, downstream, gr.lower(),
-                                                                          all_slice_forms=True if all_slice_forms else False).find_sequences()
+                                                                all_slice_forms=True if all_slice_forms else False,
+                                                                max_attempts=max_attempts).find_sequences()
                                 if message == "OK":
                                     for nm_id, data in all_variants.items():
                                         exon_coords = data.get('exon_coords', [])
@@ -374,7 +380,8 @@ def extract():
 
                                             all_variants, message = NCBIdna(gene_id, seq_type=seq_type.lower(),
                                                                             upstream=upstream, downstream=downstream, genome_version=gr.lower(),
-                                                                            all_slice_forms=True if all_slice_forms else False).find_sequences()
+                                                                            all_slice_forms=True if all_slice_forms else False,
+                                                                            max_attempts=max_attempts).find_sequences()
                                             if message == "OK":
                                                 for nm_id, data in all_variants.items():
                                                     exon_coords = data.get('exon_coords', [])
@@ -436,7 +443,8 @@ def extract():
                                                                                 upstream=upstream,
                                                                                 downstream=downstream,
                                                                                 genome_version=gr.lower(),
-                                                                                all_slice_forms=True if all_slice_forms else False).find_sequences()
+                                                                                all_slice_forms=True if all_slice_forms else False,
+                                                                                max_attempts=max_attempts).find_sequences()
                                                 if message == "OK":
                                                     for nm_id, data in all_variants.items():
                                                         exon_coords = data.get('exon_coords', [])

@@ -59,7 +59,7 @@ headers = {
 
 class NCBIdna:
     def __init__(self, gene_id, species=None, seq_type="mrna", upstream=2000, downstream=2000, genome_version="Current",
-                 all_slice_forms=None):
+                 all_slice_forms=None, max_attempts=25):
         self.gene_id = gene_id
         self.species = species if species is not None else "human"
         self.seq_type = seq_type if seq_type is not None else "mrna"
@@ -67,12 +67,17 @@ class NCBIdna:
         self.downstream = downstream if downstream is not None and seq_type in ["promoter", "terminator"] else None
         self.genome_version = genome_version if genome_version is not None else "current"
         self.all_slice_forms = True if all_slice_forms is True else False
+        self.max_attempts = max_attempts
 
     @staticmethod
-    def XMNM_to_gene_ID(variant):
+    def XMNM_to_gene_ID(variant, max_attempts=25):
         global headers
 
-        while True:
+        attempt = 0
+
+        while attempt < max_attempts:
+            attempt += 1
+
             uids = f"https://www.ncbi.nlm.nih.gov/nuccore/{variant}"
 
             response = requests.get(uids, headers=headers)
@@ -92,13 +97,15 @@ class NCBIdna:
             else:
                 print(bcolors.FAIL + "Error during process of retrieving UIDs" + bcolors.ENDC)
 
+        return "UIDs not founds"
+
     # Sequence extractor
     def find_sequences(self):
         time.sleep(1)
         if self.gene_id.upper().startswith(('XM_', 'NM_', 'XR_', 'NR_', 'YP_')):
             if '.' in self.gene_id:
                 self.gene_id = self.gene_id.split('.')[0]
-            entrez_id = NCBIdna.XMNM_to_gene_ID(self.gene_id)
+            entrez_id = NCBIdna.XMNM_to_gene_ID(self.gene_id, self.max_attempts)
             if entrez_id == 'UIDs not founds':
                 result_promoter = f'Please verify {self.gene_id} variant'
                 return result_promoter, result_promoter
@@ -107,37 +114,43 @@ class NCBIdna:
                 entrez_id = self.gene_id
 
             else:
-                entrez_id, message = NCBIdna.convert_gene_to_entrez_id(self.gene_id, self.species)
-                if entrez_id == "Error 200":
+                entrez_id, message = NCBIdna.convert_gene_to_entrez_id(self.gene_id, self.species, self.max_attempts)
+                if entrez_id == "Error":
                     return entrez_id, message
 
         all_variants, message = NCBIdna.all_variant(entrez_id, self.genome_version, self.all_slice_forms,
                                                     self.gene_id if
-                                                    self.gene_id.upper().startswith(('XM_', 'NM_', 'XR_', 'NR_', 'YP_')) else None)
-        if "Error 200" not in all_variants:
+                                                    self.gene_id.upper().startswith(('XM_', 'NM_', 'XR_', 'NR_', 'YP_')) else None,
+                                                    self.max_attempts)
+        if "Error" not in all_variants:
             for nm_id, data in all_variants.items():
                 exon_coords = data.get('exon_coords')
                 data['upstream'] = self.upstream
                 data['seq_type'] = self.seq_type
-                sequence = NCBIdna.get_dna_sequence(data.get("entrez_id"), data.get("chraccver"), exon_coords[0][0],
-                                                    exon_coords[-1][1], self.seq_type, self.upstream, self.downstream)
-                if self.seq_type in ['mrna']:
-                    if self.seq_type == 'mrna':
-                        data['sequence'] = "".join(
-                            sequence[start:end + 1] for start, end in data["normalized_exon_coords"])
-                else:
-                    data['sequence'] = sequence
+                sequence, message_seq = NCBIdna.get_dna_sequence(data.get("entrez_id"), data.get("chraccver"), exon_coords[0][0],
+                                                    exon_coords[-1][1], self.seq_type, self.upstream, self.downstream,
+                                                    self.max_attempts)
+                if sequence != "Error":
+                    if self.seq_type in ['mrna']:
+                        if self.seq_type == 'mrna':
+                            data['sequence'] = "".join(
+                                sequence[start:end + 1] for start, end in data["normalized_exon_coords"])
+                    else:
+                        data['sequence'] = sequence
 
             return all_variants, "OK"
         else:
-            return all_variants, "Error 200"
+            return all_variants, f"Error: {message}"
 
     @staticmethod
     # Convert gene to ENTREZ_GENE_ID
-    def convert_gene_to_entrez_id(gene_name, species):
+    def convert_gene_to_entrez_id(gene_name, species, max_attempts=25):
         global headers
 
-        while True:
+        attempt = 0
+
+        while attempt < max_attempts:
+            attempt += 1
             # Request for ENTREZ_GENE_ID
             url = f'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term="{gene_name}"[Gene%20Name]+AND+{species}[Organism]&retmode=json&rettype=xml'
             response = requests.get(url, headers=headers)
@@ -148,7 +161,7 @@ class NCBIdna:
                 if 'count' in response_data.get('esearchresult', {}):
                     if response_data['esearchresult']['count'] == '0':
                         print(bcolors.WARNING + f"Please verify if {gene_name} exist for {species}" + bcolors.ENDC)
-                        return "Error 200", f"Please verify if {gene_name} exist for {species}"
+                        return "Error", f"Please verify if {gene_name} exist for {species}"
 
                     else:
                         gene_id = response_data['esearchresult']['idlist'][0]
@@ -165,15 +178,20 @@ class NCBIdna:
                     bcolors.FAIL + f"Error 429: API rate limit exceeded during get ID of {species} {gene_name}, try again: {response.text}" + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
             else:
-                print(bcolors.FAIL + f"Error {response.status_code}: {response.text}" + bcolors.ENDC)
+                print(bcolors.FAIL + f"Error {response.status_code}, try again: {response.text}" + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
+
+        return "Error", f"{response.status_code} for {gene_name} {species}"
 
     @staticmethod
     # Get gene information
-    def all_variant(entrez_id, genome_version="current", all_slice_forms=False, specific_transcript=None):
+    def all_variant(entrez_id, genome_version="current", all_slice_forms=False, specific_transcript=None, max_attempts=25):
         global headers
 
-        while True:
+        attempt = 0
+        while attempt < max_attempts:
+            attempt += 1
+
             url2 = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={entrez_id}&retmode=json&rettype=xml"
             response = requests.get(url2, headers=headers)
 
@@ -184,7 +202,7 @@ class NCBIdna:
                     species_API = gene_info['organism']['scientificname']
                     gene_name = gene_info['name']
                     title, chrloc, chraccver, coords = NCBIdna.extract_genomic_info(entrez_id, response_data,
-                                                                                    genome_version, species_API)
+                                                                                    genome_version, species_API, max_attempts)
                     chrstart = coords[0]
                     chrstop = coords[1]
                     print(
@@ -194,10 +212,9 @@ class NCBIdna:
                 except Exception as e:
                     print(
                         bcolors.WARNING + f"Response 200: Chromosome not found for {entrez_id}: {response.text} {e} {traceback.print_exc()}" + bcolors.ENDC)
-                    all_variants = [("Error 200", None, None, None, None, None)]
                     print(
                         bcolors.WARNING + f"Response 200: Transcript not found(s) for {entrez_id}." + bcolors.ENDC)
-                    return "Error 200", f"Transcript not found(s) for {entrez_id}."
+                    return [("Error", None, None, None, None, None)], f"Transcript not found(s) for {entrez_id}."
 
             elif response.status_code == 429:
                 print(
@@ -208,7 +225,13 @@ class NCBIdna:
                     bcolors.ENDC + f"Error {response.status_code}: Error during get chromosome of {entrez_id}: {response.text}" + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
 
-        while True:
+        if attempt == max_attempts:
+            return [("Error", None, None, None, None, None)], f"{response.status_code} {entrez_id}."
+
+        attempt = 0
+        while attempt < max_attempts:
+            attempt += 1
+
             all_variants = {}
 
             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id={entrez_id}&retmode=xml"
@@ -306,7 +329,7 @@ class NCBIdna:
                             bcolors.OKGREEN + f"Response 200: Transcript(s) found(s) for {entrez_id}: {all_variants}" + bcolors.ENDC)
                         return all_variants, f"Transcript(s) found(s) for {entrez_id}: {list(all_variants.keys())}"
                     else:
-                        all_variants["Error 200"] = {
+                        all_variants["Error"] = {
                             "entrez_id": f"Transcript not found for {entrez_id}.",
                             "gene_name": None,
                             "chraccver": None,
@@ -353,9 +376,11 @@ class NCBIdna:
                     bcolors.FAIL + f"Error {response.status_code}: Error while searching for {entrez_id} transcripts: {response.text}" + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
 
+        return [("Error", None, None, None, None, None)], f"{response.status_code} {entrez_id}."
+
     @staticmethod
     # Get DNA sequence
-    def get_dna_sequence(gene_name, chraccver, chrstart, chrstop, seq_type, upstream=2000, downstream=2000):
+    def get_dna_sequence(gene_name, chraccver, chrstart, chrstop, seq_type, upstream=2000, downstream=2000, max_attempts=25):
         global headers
 
         if seq_type in ['mrna', 'rna']:
@@ -373,7 +398,10 @@ class NCBIdna:
                 start = (chrstart if seq_type == 'promoter' else chrstop) + upstream + 1
                 end = (chrstart if seq_type == 'promoter' else chrstop) - downstream + 2
 
-        while True:
+        attempt = 0
+        while attempt < max_attempts:
+            attempt += 1
+
             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={chraccver}&from={start}&to={end}&rettype=fasta&retmode=text"
             response = requests.get(url, headers=headers)
 
@@ -386,7 +414,7 @@ class NCBIdna:
 
                 print(
                     bcolors.OKGREEN + f"Response 200: DNA sequence for {gene_name} extracted: {sequence}" + bcolors.ENDC)
-                return sequence
+                return sequence, "OK"
 
             elif response.status_code == 429:
                 print(
@@ -395,6 +423,8 @@ class NCBIdna:
             else:
                 print(bcolors.OKGREEN + f"Error {response.status_code}: {response.text}" + bcolors.ENDC)
                 time.sleep(random.uniform(0.25, 0.5))
+
+        return "Error", f"{response.status_code}: during extraction of DNA sequence"
 
     @staticmethod
     def reverse_complement(dna_sequence):
@@ -408,7 +438,7 @@ class NCBIdna:
         return complement_sequence
 
     @staticmethod
-    def extract_genomic_info(gene_id, gene_info, genome_version, species=None):
+    def extract_genomic_info(gene_id, gene_info, genome_version, species=None, max_attempts=25):
         if gene_info and 'result' in gene_info and gene_id in gene_info['result']:
             accession_dict = {}
             gene_details = gene_info['result'][gene_id]
@@ -479,17 +509,20 @@ class NCBIdna:
                     min_coords = nc_dict[base_accver]
 
             if genome_version != "current":
-                title = NCBIdna.fetch_nc_info(min_accver)
+                title = NCBIdna.fetch_nc_info(min_accver, max_attempts)
                 return title, nc_loc, min_accver, min_coords
             else:
-                title = NCBIdna.fetch_nc_info(max_accver)
+                title = NCBIdna.fetch_nc_info(max_accver, max_attempts)
                 return title, nc_loc, max_accver, max_coords
 
     @staticmethod
-    def fetch_nc_info(nc_accver):
+    def fetch_nc_info(nc_accver, max_attempts=25):
         global headers
 
-        while True:
+        attempt = 0
+        while attempt < max_attempts:
+            attempt += 1
+
             url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=nuccore&id={nc_accver}&retmode=json"
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
@@ -502,6 +535,8 @@ class NCBIdna:
                     time.sleep(random.uniform(0.25, 0.5))
             else:
                 time.sleep(random.uniform(0.25, 0.5))
+
+        return f"Error {response.status_code} fetch NC info"
 
 
 class IMO:
